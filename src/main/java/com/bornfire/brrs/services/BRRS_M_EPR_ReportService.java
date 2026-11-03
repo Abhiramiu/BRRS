@@ -40,21 +40,25 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.AuditServicesEntity;
 import com.bornfire.brrs.entities.UserProfileRep;
-import org.springframework.beans.BeanUtils;
 
 
 @Service
@@ -653,7 +657,7 @@ obj.setR23_tot_mar_ris_chrg(rs.getBigDecimal("r23_tot_mar_ris_chrg"));
 }
 
 
-public class M_EPR_Summary_Entity {
+public static class M_EPR_Summary_Entity {
 	
 private BigDecimal	r11_market;
 	private BigDecimal	r11_gpfsr_nom_amt;
@@ -11612,151 +11616,331 @@ public List<Object[]> getM_EPRArchival() {
 // UPDATE REPORT
 //=====================================================
 
-@Transactional
-public void updateReport(M_EPR_Summary_Entity updatedEntity) {
+public List<M_EPR_Summary_Entity> getSummaryByDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_EPR_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		return jdbcTemplate.query(selectSql, new BeanPropertyRowMapper<>(M_EPR_Summary_Entity.class), reportDate);
+	}
 
-    System.out.println("Came to M_EPR Update");
-    System.out.println("Report Date: " + updatedEntity.getReport_date());
+	public M_EPR_Summary_Entity findM_EPR_ModRecordByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_EPR_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<M_EPR_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(M_EPR_Summary_Entity.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+	
+	
+	@Transactional
+	public void updateReport(M_EPR_Summary_Entity updatedEntity) {
+		System.out.println("Came to M_EPR Unified Update");
+		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-    // ==========================================
-    // FETCH EXISTING RECORD FOR AUDIT
-    // ==========================================
+		// 1. Fetch live summary record as baseline reference
+		List<M_EPR_Summary_Entity> summaryList = getSummaryByDate(updatedEntity.getReport_date());
+		if (summaryList.isEmpty()) {
+			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
+		}
+		M_EPR_Summary_Entity liveSummary = summaryList.get(0);
 
-    M_EPR_Summary_Entity existingSummary =
-            findByReportDate(updatedEntity.getReport_date());
+		// 2. Fetch or create mod record copy
+		final M_EPR_Summary_Entity modRecord = findM_EPR_ModRecordByReportDate(updatedEntity.getReport_date()) != null
+				? findM_EPR_ModRecordByReportDate(updatedEntity.getReport_date())
+				: new M_EPR_Summary_Entity();
 
-    if (existingSummary == null) {
-        throw new RuntimeException(
-                "Record not found for REPORT_DATE : "
-                        + updatedEntity.getReport_date());
-    }
+		if (findM_EPR_ModRecordByReportDate(updatedEntity.getReport_date()) == null) {
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
 
-    // ==========================================
-    // OLD COPY FOR AUDIT
-    // ==========================================
+		// 3. Old copy for audit comparison
+		M_EPR_Summary_Entity oldcopy = new M_EPR_Summary_Entity();
+		BeanUtils.copyProperties(modRecord, oldcopy);
 
-    M_EPR_Summary_Entity oldcopy =
-            new M_EPR_Summary_Entity();
+		String[] fields = {
+				"market",
+				"gpfsr_nom_amt",
+				"gpfsr_pos_att8_per_spe_ris",
+				"gpfsr_chrg",
+				"gpfsr_nom_amt1",
+				"gpfsr_pos_att4_per_spe_ris",
+				"gpfsr_chrg1",
+				"gpfsr_nom_amt2",
+				"gpfsr_pos_att2_per_spe_ris",
+				"gpfsr_chrg2",
+				"tot_spe_ris_chrg",
+				"net_pos_gen_mar_ris",
+				"gen_mar_ris_chrg_8per",
+				"2per_gen_mar_ris_chrg_div_port",
+				"tot_gen_mar_risk_chrg",
+				"tot_mar_ris_chrg"
+		};
 
-    BeanUtils.copyProperties(existingSummary, oldcopy);
+		try {
+			for (int i = 11; i <= 23; i++) {
+				String prefix = "R" + i + "_";
 
-    String[] fields = {
-            "market",
-            "gpfsr_nom_amt",
-            "gpfsr_pos_att8_per_spe_ris",
-            "gpfsr_chrg",
-            "gpfsr_nom_amt1",
-            "gpfsr_pos_att4_per_spe_ris",
-            "gpfsr_chrg1",
-            "gpfsr_nom_amt2",
-            "gpfsr_pos_att2_per_spe_ris",
-            "gpfsr_chrg2",
-            "tot_spe_ris_chrg",
-            "net_pos_gen_mar_ris",
-            "gen_mar_ris_chrg_8per",
-            "2per_gen_mar_ris_chrg_div_port",
-            "tot_gen_mar_risk_chrg",
-            "tot_mar_ris_chrg"
-    };
+				for (String field : fields) {
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
 
-    try {
+					try {
+						Method getter = M_EPR_Summary_Entity.class.getMethod(getterName);
+						Object value = getter.invoke(updatedEntity);
 
-        for (int i = 11; i <= 23; i++) {
+						boolean isStringField = field.equals("market");
+						if (value instanceof String) {
+							String valStr = ((String) value).trim();
+							if (valStr.isEmpty()) {
+								value = null;
+							} else if (!isStringField) {
+								try {
+									value = new java.math.BigDecimal(valStr);
+								} catch (NumberFormatException e) {
+									value = null;
+								}
+							}
+						}
 
-            for (String field : fields) {
+						if (value == null) {
+							continue;
+						}
 
-                String getterName = "getR" + i + "_" + field;
-                String setterName = "setR" + i + "_" + field;
-                String columnName = "R" + i + "_" + field;
+						Method setter = null;
+						for (Method m : M_EPR_Summary_Entity.class.getMethods()) {
+							if (m.getName().equals(setterName) && m.getParameterCount() == 1) {
+								setter = m;
+								break;
+							}
+						}
 
-                try {
+						if (setter != null) {
+							Class<?> paramType = setter.getParameterTypes()[0];
+							if (value != null && !paramType.isAssignableFrom(value.getClass())) {
+								if (paramType.equals(String.class)) {
+									value = value.toString();
+								} else if (paramType.equals(java.math.BigDecimal.class) && value instanceof String) {
+									value = new java.math.BigDecimal((String) value);
+								}
+							}
+							setter.invoke(modRecord, value);
+						}
 
-                    Method getter =
-                            M_EPR_Summary_Entity.class.getMethod(getterName);
+					} catch (NoSuchMethodException e) {
+						continue;
+					} catch (Exception innerEx) {
+						System.out.println("⚠ Error at Row " + i + ", Field " + field + ": " + innerEx.getMessage());
+						throw innerEx;
+					}
+				}
+			}
 
-                    Object value = getter.invoke(updatedEntity);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error while updating M_EPR fields: " + e.getMessage(), e);
+		}
 
-                    if (value == null) {
-                        continue;
-                    }
+		// 4. Audit changes
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		System.out.println("M_EPR Changes Length = " + (changes != null ? changes.length() : 0));
 
-                    // ==========================================
-                    // UPDATE EXISTING OBJECT FOR AUDIT
-                    // ==========================================
+		// 5. Set Maker-Checker Flags
+		modRecord.setEntity_flg("Y");
+		modRecord.setModify_flg("Y");
+		modRecord.setDel_flg("N");
 
-                    Method setter =
-                            M_EPR_Summary_Entity.class.getMethod(
-                                    setterName,
-                                    getter.getReturnType());
+		// 6. Save into MOD Table ONLY
+		saveM_EPR_ModSummaryEntity(modRecord);
+		System.out.println("✔ Record saved into BRRS_M_EPR_MOD_SUMMARYTABLE for Checker Approval");
 
-                    setter.invoke(existingSummary, value);
+		// 7. Audit Log
+		if (changes != null && !changes.isEmpty()) {
+			if (changes.length() <= 2000) {
+				auditService.compareEntitiesmanual(oldcopy, modRecord, updatedEntity.getReport_date().toString(),
+						"M EPR Summary Screen", "BRRS_M_EPR_MOD_SUMMARYTABLE");
+			} else {
+				System.out.println("Audit skipped because changes exceed 2000 characters. Length = " + changes.length());
+			}
+		}
 
-                    // ==========================================
-                    // UPDATE SUMMARY TABLE
-                    // ==========================================
+		System.out.println("M_EPR Update Completed Successfully");
+	}
+	public void saveM_EPR_ModSummaryEntity(M_EPR_Summary_Entity entity) {
+		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
 
-                    String summarySql =
-                            "UPDATE BRRS_M_EPR_SUMMARYTABLE " +
-                            "SET " + columnName + " = ? " +
-                            "WHERE REPORT_DATE = ?";
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_EPR_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+		MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", entity.getReport_date());
+		Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
 
-                    jdbcTemplate.update(
-                            summarySql,
-                            value,
-                            updatedEntity.getReport_date()
-                    );
+		MapSqlParameterSource params = new MapSqlParameterSource()
+				.addValue("reportDate", entity.getReport_date())
+				.addValue("entity_flg", entity.getEntity_flg())
+				.addValue("modify_flg", entity.getModify_flg())
+				.addValue("del_flg", entity.getDel_flg());
 
-                    // ==========================================
-                    // UPDATE DETAIL TABLE
-                    // ==========================================
+		String[] fields = {
+				"market",
+				"gpfsr_nom_amt",
+				"gpfsr_pos_att8_per_spe_ris",
+				"gpfsr_chrg",
+				"gpfsr_nom_amt1",
+				"gpfsr_pos_att4_per_spe_ris",
+				"gpfsr_chrg1",
+				"gpfsr_nom_amt2",
+				"gpfsr_pos_att2_per_spe_ris",
+				"gpfsr_chrg2",
+				"tot_spe_ris_chrg",
+				"net_pos_gen_mar_ris",
+				"gen_mar_ris_chrg_8per",
+				"2per_gen_mar_ris_chrg_div_port",
+				"tot_gen_mar_risk_chrg",
+				"tot_mar_ris_chrg"
+		};
 
-                    String detailSql =
-                            "UPDATE BRRS_M_EPR_DETAILTABLE " +
-                            "SET " + columnName + " = ? " +
-                            "WHERE REPORT_DATE = ?";
+		StringBuilder updateSetSql = new StringBuilder("MODIFY_FLG = :modify_flg, ENTITY_FLG = :entity_flg, DEL_FLG = :del_flg");
+		List<String> insertColumns = new ArrayList<>();
+		List<String> insertValues = new ArrayList<>();
 
-                    jdbcTemplate.update(
-                            detailSql,
-                            value,
-                            updatedEntity.getReport_date()
-                    );
+		insertColumns.add("REPORT_DATE"); insertValues.add(":reportDate");
+		insertColumns.add("ENTITY_FLG"); insertValues.add(":entity_flg");
+		insertColumns.add("MODIFY_FLG"); insertValues.add(":modify_flg");
+		insertColumns.add("DEL_FLG"); insertValues.add(":del_flg");
 
-                } catch (NoSuchMethodException e) {
-                    continue;
-                }
-            }
-        }
+		for (int i = 11; i <= 23; i++) {
+			for (String field : fields) {
+				String getterName = "getR" + i + "_" + field;
+				String paramName = "r" + i + "_" + field.toLowerCase();
+				String columnName = "R" + i + "_" + field;
 
-        // ==========================================
-        // AUDIT ONLY IF CHANGES FOUND
-        // ==========================================
+				try {
+					Method getter = M_EPR_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(entity);
 
-        String changes =
-                auditService.getChanges(
-                        oldcopy,
-                        existingSummary);
+					boolean isStringField = field.equals("market");
+					if (value instanceof String) {
+						String valStr = ((String) value).trim();
+						if (valStr.isEmpty()) {
+							value = null;
+						} else if (!isStringField) {
+							try {
+								value = new java.math.BigDecimal(valStr);
+							} catch (NumberFormatException e) {
+								value = null;
+							}
+						}
+					}
 
-        if (!changes.isEmpty()) {
+					params.addValue(paramName, value);
+					updateSetSql.append(", ").append(columnName).append(" = :").append(paramName);
+					insertColumns.add(columnName);
+					insertValues.add(":" + paramName);
 
-            auditService.compareEntitiesmanual(
-                    oldcopy,
-                    existingSummary,
-                    updatedEntity.getReport_date().toString(),
-                    "M EPR Summary Screen",
-                    "BRRS_M_EPR_SUMMARYTABLE"
-            );
-        }
+				} catch (NoSuchMethodException e) {
+					// Skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error mapping column for M_EPR MOD table: " + columnName, e);
+				}
+			}
+		}
 
-        System.out.println(
-                "M_EPR Summary & Detail Update Completed");
+		if (count != null && count > 0) {
+			String updateSql = "UPDATE BRRS_M_EPR_MOD_SUMMARYTABLE SET " + updateSetSql.toString()
+					+ " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+			namedParamJdbc.update(updateSql, params);
+		} else {
+			String insertSql = "INSERT INTO BRRS_M_EPR_MOD_SUMMARYTABLE (" + String.join(", ", insertColumns)
+					+ ") VALUES (" + String.join(", ", insertValues) + ")";
+			namedParamJdbc.update(insertSql, params);
+		}
+	}
+	@Transactional
+	public void approveReport(Date reportDate) {
+		// 1. Fetch pending modification record from M_EPR MOD table
+		M_EPR_Summary_Entity modRecord = jdbcTemplate.queryForObject(
+				"SELECT * FROM BRRS_M_EPR_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				new BeanPropertyRowMapper<>(M_EPR_Summary_Entity.class), reportDate);
 
-    } catch (Exception e) {
+		if (modRecord == null) {
+			throw new RuntimeException("No pending modification found for approval on date: " + reportDate);
+		}
 
-        throw new RuntimeException(
-                "Error while updating M_EPR fields", e);
-    }
-}
+		// 2. TRANSFER MOD VALUES TO LIVE SUMMARY AND DETAIL TABLES (Happens ONLY on approval)
+		transferM_EPRData(null);
 
+		// 3. Mark modified flag as 'N' (Approved) in the MOD table
+		jdbcTemplate.update(
+				"UPDATE BRRS_M_EPR_MOD_SUMMARYTABLE SET MODIFY_FLG = 'N', ENTITY_FLG = 'Y' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+
+		System.out.println(
+				"✔ M_EPR Checker Approved Successfully: MOD values successfully transferred to Summary & Detail live tables.");
+	}
+
+	private void transferM_EPRData(AuditServicesEntity auditRecord) {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_EPR_MOD_SUMMARYTABLE";
+		java.sql.Date reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified M_EPR record available for verification.");
+		}
+
+		System.out.println("M_EPR Report Date : " + reportDate);
+
+		// Build column lists dynamically for rows 11 to 23
+		StringBuilder setColumns = new StringBuilder();
+		StringBuilder selectColumns = new StringBuilder();
+		String[] fields = {
+				"market",
+				"gpfsr_nom_amt",
+				"gpfsr_pos_att8_per_spe_ris",
+				"gpfsr_chrg",
+				"gpfsr_nom_amt1",
+				"gpfsr_pos_att4_per_spe_ris",
+				"gpfsr_chrg1",
+				"gpfsr_nom_amt2",
+				"gpfsr_pos_att2_per_spe_ris",
+				"gpfsr_chrg2",
+				"tot_spe_ris_chrg",
+				"net_pos_gen_mar_ris",
+				"gen_mar_ris_chrg_8per",
+				"2per_gen_mar_ris_chrg_div_port",
+				"tot_gen_mar_risk_chrg",
+				"tot_mar_ris_chrg"
+		};
+
+		for (int i = 11; i <= 23; i++) {
+			for (String field : fields) {
+				String col = "R" + i + "_" + field;
+				setColumns.append(col).append(", ");
+				selectColumns.append("S.").append(col).append(", ");
+			}
+		}
+		setColumns.append("ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+		selectColumns.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+
+		// 1. Update BRRS_M_EPR_SUMMARYTABLE from MOD table
+		String updateSummarySql = "UPDATE BRRS_M_EPR_SUMMARYTABLE M SET (" + setColumns.toString() + ") = ("
+				+ "    SELECT " + selectColumns.toString() + " FROM BRRS_M_EPR_MOD_SUMMARYTABLE S "
+				+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" + ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+
+		if (summaryUpdated == 0) {
+			throw new IllegalStateException("M_EPR modification record not found for date : " + reportDate);
+		}
+
+		System.out.println("M_EPR Summary Table Updated : " + summaryUpdated);
+
+		// 2. Update BRRS_M_EPR_DETAILTABLE from MOD table
+		String updateDetailSql = updateSummarySql.replace("BRRS_M_EPR_SUMMARYTABLE", "BRRS_M_EPR_DETAILTABLE");
+		int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+
+		System.out.println("M_EPR Detail Table Updated : " + detailUpdated);
+
+		// 3. Mark MOD record status as approved (MODIFY_FLG = 'N')
+		String updateModSql = "UPDATE BRRS_M_EPR_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+		int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+
+		System.out.println("M_EPR MOD Updated : " + modUpdated);
+		System.out.println("M_EPR Verification and Transfer Completed Successfully");
+	}
 //=====================================================
 // VIEW AND EDIT
 //=====================================================

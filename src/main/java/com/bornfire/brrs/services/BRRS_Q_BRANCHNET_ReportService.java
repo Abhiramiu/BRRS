@@ -43,8 +43,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -260,6 +263,22 @@ public class BRRS_Q_BRANCHNET_ReportService {
 				+ "ORDER BY REPORT_VERSION ASC " + "FETCH FIRST 1 ROWS ONLY";
 
 		return jdbcTemplate.queryForObject(sql, new Q_BRANCHNET_RESUB_Detail_RowMapper());
+	}
+
+	// Helper method to fetch existing live summary record with date truncation
+	public Q_BRANCHNET_Summary_Entity findQBranchnetByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_Q_BRANCHNET_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<Q_BRANCHNET_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(Q_BRANCHNET_Summary_Entity.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	// Helper method to fetch existing mod record if any modifications exist
+	public Q_BRANCHNET_Summary_Entity findQBranchnetModRecordByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_Q_BRANCHNET_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<Q_BRANCHNET_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(Q_BRANCHNET_Summary_Entity.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
 	}
 
 // =====================================================
@@ -575,7 +594,7 @@ public class BRRS_Q_BRANCHNET_ReportService {
 		}
 	}
 
-	public class Q_BRANCHNET_Summary_Entity {
+	public static class Q_BRANCHNET_Summary_Entity {
 		private String r10_bran_sub_bran_district;
 		private BigDecimal r10_no1_of_branches;
 		private BigDecimal r10_no1_of_sub_branches;
@@ -827,6 +846,11 @@ public class BRRS_Q_BRANCHNET_ReportService {
 		private String entity_flg;
 		private String modify_flg;
 		private String del_flg;
+
+		public Q_BRANCHNET_Summary_Entity() {
+			super();
+
+		}
 
 		public String getR10_bran_sub_bran_district() {
 			return r10_bran_sub_bran_district;
@@ -13760,314 +13784,276 @@ public class BRRS_Q_BRANCHNET_ReportService {
 	}
 
 	@Transactional
-	public void QBranchnetUpdate1(Q_BRANCHNET_Summary_Entity updatedEntity) {
-
-		System.out.println("Came to Q_BRANCHNET Update");
+	public void updateQBranchnetReport(Q_BRANCHNET_Summary_Entity updatedEntity) {
+		System.out.println("Came to Q_BRANCHNET Unified Update");
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		// Fetch existing summary record for audit
-		Q_BRANCHNET_Summary_Entity existingSummary = findByReportDate(updatedEntity.getReport_date());
-
-		if (existingSummary == null) {
-			throw new RuntimeException("Record not found for REPORT_DATE : " + updatedEntity.getReport_date());
+		// 1. Fetch live summary record as baseline
+		Q_BRANCHNET_Summary_Entity liveSummary = findQBranchnetByReportDate(updatedEntity.getReport_date());
+		if (liveSummary == null) {
+			throw new RuntimeException(
+					"Record not found in live summary table for REPORT_DATE : " + updatedEntity.getReport_date());
 		}
 
-		// Audit old copy
-		Q_BRANCHNET_Summary_Entity oldcopy = new Q_BRANCHNET_Summary_Entity();
-		BeanUtils.copyProperties(existingSummary, oldcopy);
+		// 2. Fetch or create mod record copy
+		Q_BRANCHNET_Summary_Entity modRecord = findQBranchnetModRecordByReportDate(updatedEntity.getReport_date());
+		if (modRecord == null) {
+			modRecord = new Q_BRANCHNET_Summary_Entity();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
 
-		String[] fields = { "bran_sub_bran_district", "no1_of_branches", "no1_of_sub_branches", "no1_of_agencies" };
+		// 3. Old copy for audit comparison
+		Q_BRANCHNET_Summary_Entity oldcopy = new Q_BRANCHNET_Summary_Entity();
+		BeanUtils.copyProperties(modRecord, oldcopy);
 
 		try {
+			// ✅ Section 1: Rows 10 to 20
+			String[] fields1 = { "bran_sub_bran_district", "no1_of_branches", "no1_of_sub_branches",
+					"no1_of_agencies" };
+			applyQBranchnetChanges(10, 20, fields1, updatedEntity, modRecord);
 
-			for (int i = 10; i <= 20; i++) {
+			// ✅ Section 2: Rows 25 to 35
+			String[] fields2 = { "atm_mini_atm_district", "no_of_atms", "no_of_mini_atms", "encashment_points" };
+			applyQBranchnetChanges(25, 35, fields2, updatedEntity, modRecord);
 
+			// ✅ Section 3: Rows 40 to 50
+			String[] fields3 = { "debit_district", "opening_no_of_cards", "no_of_cards_issued", "no_cards_of_closed",
+					"closing_bal_of_active_cards" };
+			applyQBranchnetChanges(40, 50, fields3, updatedEntity, modRecord);
+
+			// ✅ Section 4: Rows 55 to 65
+			String[] fields4 = { "credit_district", "opening_no_of_cards", "no_of_cards_issued", "no_cards_of_closed",
+					"closing_bal_of_active_cards" };
+			applyQBranchnetChanges(55, 65, fields4, updatedEntity, modRecord);
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating Q_BRANCHNET fields", e);
+		}
+
+		// 4. Audit changes
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		System.out.println("Q_BRANCHNET Changes Length = " + (changes != null ? changes.length() : 0));
+
+		// 5. Set Maker-Checker Flags
+		modRecord.setEntity_flg("Y");
+		modRecord.setModify_flg("Y");
+		modRecord.setDel_flg("N");
+
+		// 6. Save into MOD Table ONLY (Live tables remain untouched until verification)
+		saveQBranchnetModSummaryEntity(modRecord);
+		System.out.println("✔ Record saved into BRRS_Q_BRANCHNET_MOD_SUMMARYTABLE for Checker Approval");
+
+		// 7. Audit Log
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, modRecord, updatedEntity.getReport_date().toString(),
+					"Q_BRANCHNET Summary Screen", "BRRS_Q_BRANCHNET_MOD_SUMMARYTABLE");
+		}
+	}
+
+	private void applyQBranchnetChanges(int startRow, int endRow, String[] fields,
+			Q_BRANCHNET_Summary_Entity updatedEntity, Q_BRANCHNET_Summary_Entity targetEntity) {
+		for (int i = startRow; i <= endRow; i++) {
+			String prefix = "R" + i + "_";
+			for (String field : fields) {
+				String getterName = "get" + prefix + field;
+				String setterName = "set" + prefix + field;
+
+				try {
+					Method getter = Q_BRANCHNET_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(updatedEntity);
+
+					boolean isStringField = field.contains("district");
+
+					if (value instanceof String) {
+						String valStr = ((String) value).trim();
+						if (valStr.isEmpty()) {
+							value = null;
+						} else if (!isStringField) {
+							try {
+								value = new java.math.BigDecimal(valStr);
+							} catch (NumberFormatException e) {
+								value = null;
+							}
+						}
+					}
+
+					if (value == null && !isStringField) {
+						continue;
+					}
+
+					Method setter = Q_BRANCHNET_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+					setter.invoke(targetEntity, value);
+
+				} catch (NoSuchMethodException e) {
+					// Skip gracefully
+				} catch (Exception e) {
+					throw new RuntimeException("Error applying field: " + getterName, e);
+				}
+			}
+		}
+	}
+
+	public void saveQBranchnetModSummaryEntity(Q_BRANCHNET_Summary_Entity entity) {
+		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
+
+		String checkSql = "SELECT COUNT(*) FROM BRRS_Q_BRANCHNET_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+		MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", entity.getReport_date());
+		Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
+
+		MapSqlParameterSource params = new MapSqlParameterSource().addValue("reportDate", entity.getReport_date())
+				.addValue("entity_flg", entity.getEntity_flg()).addValue("modify_flg", entity.getModify_flg())
+				.addValue("del_flg", entity.getDel_flg());
+
+		int[][] ranges = { { 10, 20 }, { 25, 35 }, { 40, 50 }, { 55, 65 } };
+		String[][] fieldGroups = {
+				{ "bran_sub_bran_district", "no1_of_branches", "no1_of_sub_branches", "no1_of_agencies" },
+				{ "atm_mini_atm_district", "no_of_atms", "no_of_mini_atms", "encashment_points" },
+				{ "debit_district", "opening_no_of_cards", "no_of_cards_issued", "no_cards_of_closed",
+						"closing_bal_of_active_cards" },
+				{ "credit_district", "opening_no_of_cards", "no_of_cards_issued", "no_cards_of_closed",
+						"closing_bal_of_active_cards" } };
+
+		StringBuilder updateSetSql = new StringBuilder(
+				"MODIFY_FLG = :modify_flg, ENTITY_FLG = :entity_flg, DEL_FLG = :del_flg");
+		List<String> insertColumns = new ArrayList<>();
+		List<String> insertValues = new ArrayList<>();
+
+		insertColumns.add("REPORT_DATE");
+		insertValues.add(":reportDate");
+		insertColumns.add("ENTITY_FLG");
+		insertValues.add(":entity_flg");
+		insertColumns.add("MODIFY_FLG");
+		insertValues.add(":modify_flg");
+		insertColumns.add("DEL_FLG");
+		insertValues.add(":del_flg");
+
+		for (int idx = 0; idx < ranges.length; idx++) {
+			int start = ranges[idx][0];
+			int end = ranges[idx][1];
+			String[] fields = fieldGroups[idx];
+
+			for (int i = start; i <= end; i++) {
+				String prefix = "R" + i + "_";
 				for (String field : fields) {
-
-					String getterName = "getR" + i + "_" + field;
-					String setterName = "setR" + i + "_" + field;
-					String columnName = "R" + i + "_" + field;
+					String getterName = "get" + prefix + field;
+					String paramName = "r" + i + "_" + field.toLowerCase();
+					String columnName = prefix + field;
 
 					try {
 						Method getter = Q_BRANCHNET_Summary_Entity.class.getMethod(getterName);
-						Object value = getter.invoke(updatedEntity);
+						Object value = getter.invoke(entity);
 
-						// Identify if the field is a String (VARCHAR2) or a Number (BigDecimal)
 						boolean isStringField = field.contains("district");
+						if (value instanceof String) {
+							String valStr = ((String) value).trim();
+							if (valStr.isEmpty()) {
+								value = null;
+							} else if (!isStringField) {
+								try {
+									value = new java.math.BigDecimal(valStr);
+								} catch (NumberFormatException e) {
+									value = null;
+								}
+							}
+						}
 
-						// If it's a number and null, we can skip updating it.
-						// If it's a string, we allow null/empty updates so clearing text works in DB.
-						if (value == null && !isStringField) {
+						params.addValue(paramName, value);
+
+						updateSetSql.append(", ").append(columnName).append(" = :").append(paramName);
+						insertColumns.add(columnName);
+						insertValues.add(":" + paramName);
+
+					} catch (NoSuchMethodException e) {
+						// Skip
+					} catch (Exception e) {
+						throw new RuntimeException("Error mapping column for Q_BRANCHNET MOD table: " + columnName, e);
+					}
+				}
+			}
+		}
+
+		if (count != null && count > 0) {
+			String updateSql = "UPDATE BRRS_Q_BRANCHNET_MOD_SUMMARYTABLE SET " + updateSetSql.toString()
+					+ " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+			namedParamJdbc.update(updateSql, params);
+		} else {
+			String insertSql = "INSERT INTO BRRS_Q_BRANCHNET_MOD_SUMMARYTABLE (" + String.join(", ", insertColumns)
+					+ ") VALUES (" + String.join(", ", insertValues) + ")";
+			namedParamJdbc.update(insertSql, params);
+		}
+	}
+
+	@Transactional
+	public void approveQBranchnetReport(Date reportDate) {
+		// 1. Fetch pending modification record from Q_BRANCHNET MOD table
+		Q_BRANCHNET_Summary_Entity modRecord = jdbcTemplate.queryForObject(
+				"SELECT * FROM BRRS_Q_BRANCHNET_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				new BeanPropertyRowMapper<>(Q_BRANCHNET_Summary_Entity.class), reportDate);
+
+		if (modRecord == null) {
+			throw new RuntimeException("No pending modification found for approval on date: " + reportDate);
+		}
+
+		// 2. TRANSFER MOD VALUES TO LIVE SUMMARY AND DETAIL TABLES (Happens ONLY on
+		// approval)
+		transferQBranchnetModValuesToLiveTables(modRecord, reportDate);
+
+		// 3. Mark modified flag as 'N' (Approved) in the MOD table
+		jdbcTemplate.update(
+				"UPDATE BRRS_Q_BRANCHNET_MOD_SUMMARYTABLE SET MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+
+		System.out.println(
+				"✔ Q_BRANCHNET Checker Approved Successfully: MOD values successfully transferred to Summary & Detail live tables.");
+	}
+
+	private void transferQBranchnetModValuesToLiveTables(Q_BRANCHNET_Summary_Entity modRecord, Date reportDate) {
+		int[][] ranges = { { 10, 20 }, { 25, 35 }, { 40, 50 }, { 55, 65 } };
+
+		String[][] fieldGroups = {
+				{ "bran_sub_bran_district", "no1_of_branches", "no1_of_sub_branches", "no1_of_agencies" },
+				{ "atm_mini_atm_district", "no_of_atms", "no_of_mini_atms", "encashment_points" },
+				{ "debit_district", "opening_no_of_cards", "no_of_cards_issued", "no_cards_of_closed",
+						"closing_bal_of_active_cards" },
+				{ "credit_district", "opening_no_of_cards", "no_of_cards_issued", "no_cards_of_closed",
+						"closing_bal_of_active_cards" } };
+
+		for (int idx = 0; idx < ranges.length; idx++) {
+			int start = ranges[idx][0];
+			int end = ranges[idx][1];
+			String[] fields = fieldGroups[idx];
+
+			for (int i = start; i <= end; i++) {
+				String prefix = "R" + i + "_";
+				for (String field : fields) {
+					String getterName = "get" + prefix + field;
+					String columnName = prefix + field;
+
+					try {
+						Method getter = Q_BRANCHNET_Summary_Entity.class.getMethod(getterName);
+						Object value = getter.invoke(modRecord);
+
+						if (value == null) {
 							continue;
 						}
 
-						// Update existing object in-memory for audit purposes
-						Method setter = Q_BRANCHNET_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						setter.invoke(existingSummary, value);
-
-						// Update Summary Table
+						// Update Live Summary Table
 						String summarySql = "UPDATE BRRS_Q_BRANCHNET_SUMMARYTABLE SET " + columnName
-								+ " = ? WHERE REPORT_DATE = ?";
-						jdbcTemplate.update(summarySql, value, updatedEntity.getReport_date());
+								+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+						jdbcTemplate.update(summarySql, value, reportDate);
 
-						// Update Detail Table
+						// Update Live Detail Table
 						String detailSql = "UPDATE BRRS_Q_BRANCHNET_DETAILTABLE SET " + columnName
-								+ " = ? WHERE REPORT_DATE = ?";
-						jdbcTemplate.update(detailSql, value, updatedEntity.getReport_date());
+								+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+						jdbcTemplate.update(detailSql, value, reportDate);
 
 					} catch (NoSuchMethodException e) {
-						// Method doesn't exist for this specific row, safely skip
-						continue;
+						// Skip if method doesn't exist for this row
+					} catch (Exception e) {
+						throw new RuntimeException("Error transferring column to live tables: " + columnName, e);
 					}
 				}
 			}
-
-			// Audit only if changes found
-			String changes = auditService.getChanges(oldcopy, existingSummary);
-
-			if (!changes.isEmpty()) {
-				auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReport_date().toString(),
-						"Q_BRANCHNET Summary Screen", "BRRS_Q_BRANCHNET_SUMMARY");
-			}
-
-			System.out.println("Q_BRANCHNET Summary & Detail Update Completed");
-
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating Q_BRANCHNET fields", e);
-		}
-	}
-
-	@Transactional
-	public void QBranchnetUpdate2(Q_BRANCHNET_Summary_Entity updatedEntity) {
-
-		System.out.println("Came to Q_BRANCHNET Update");
-		System.out.println("Report Date: " + updatedEntity.getReport_date());
-
-		// Fetch existing summary record for audit
-		Q_BRANCHNET_Summary_Entity existingSummary = findByReportDate(updatedEntity.getReport_date());
-
-		if (existingSummary == null) {
-			throw new RuntimeException("Record not found for REPORT_DATE : " + updatedEntity.getReport_date());
-		}
-
-		// Audit old copy
-		Q_BRANCHNET_Summary_Entity oldcopy = new Q_BRANCHNET_Summary_Entity();
-
-		BeanUtils.copyProperties(existingSummary, oldcopy);
-
-		String[] fields = { "atm_mini_atm_district", "no_of_atms", "no_of_mini_atms", "encashment_points" };
-
-		try {
-
-			for (int i = 25; i <= 35; i++) {
-
-				for (String field : fields) {
-
-					String getterName = "getR" + i + "_" + field;
-					String setterName = "setR" + i + "_" + field;
-					String columnName = "R" + i + "_" + field;
-
-					try {
-
-						Method getter = Q_BRANCHNET_Summary_Entity.class.getMethod(getterName);
-
-						Object value = getter.invoke(updatedEntity);
-
-						if (value == null) {
-							continue;
-						}
-
-						// Update existing object for audit
-						Method setter = Q_BRANCHNET_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						setter.invoke(existingSummary, value);
-
-						String summarySql = "UPDATE BRRS_Q_BRANCHNET_SUMMARYTABLE " + "SET " + columnName + " = ? "
-								+ "WHERE REPORT_DATE = ?";
-
-						jdbcTemplate.update(summarySql, value, updatedEntity.getReport_date());
-
-						String detailSql = "UPDATE BRRS_Q_BRANCHNET_DETAILTABLE " + "SET " + columnName + " = ? "
-								+ "WHERE REPORT_DATE = ?";
-
-						jdbcTemplate.update(detailSql, value, updatedEntity.getReport_date());
-
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
-
-			// Audit only if changes found
-			String changes = auditService.getChanges(oldcopy, existingSummary);
-
-			if (!changes.isEmpty()) {
-
-				auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReport_date().toString(),
-						"Q_BRANCHNET Summary Screen", "BRRS_Q_BRANCHNET_SUMMARY");
-			}
-
-			System.out.println("Q_BRANCHNET Summary & Detail Update Completed");
-
-		} catch (Exception e) {
-
-			throw new RuntimeException("Error while updating Q_BRANCHNET fields", e);
-		}
-	}
-
-	@Transactional
-	public void QBranchnetUpdate3(Q_BRANCHNET_Summary_Entity updatedEntity) {
-
-		System.out.println("Came to Q_BRANCHNET Update");
-		System.out.println("Report Date: " + updatedEntity.getReport_date());
-
-		// Fetch existing summary record for audit
-		Q_BRANCHNET_Summary_Entity existingSummary = findByReportDate(updatedEntity.getReport_date());
-
-		if (existingSummary == null) {
-			throw new RuntimeException("Record not found for REPORT_DATE : " + updatedEntity.getReport_date());
-		}
-
-		// Audit old copy
-		Q_BRANCHNET_Summary_Entity oldcopy = new Q_BRANCHNET_Summary_Entity();
-
-		BeanUtils.copyProperties(existingSummary, oldcopy);
-
-		String[] fields = { "debit_district", "opening_no_of_cards", "no_of_cards_issued", "no_cards_of_closed",
-				"closing_bal_of_active_cards" };
-		try {
-
-			for (int i = 40; i <= 50; i++) {
-
-				for (String field : fields) {
-
-					String getterName = "getR" + i + "_" + field;
-					String setterName = "setR" + i + "_" + field;
-					String columnName = "R" + i + "_" + field;
-
-					try {
-
-						Method getter = Q_BRANCHNET_Summary_Entity.class.getMethod(getterName);
-
-						Object value = getter.invoke(updatedEntity);
-
-						if (value == null) {
-							continue;
-						}
-
-						// Update existing object for audit
-						Method setter = Q_BRANCHNET_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						setter.invoke(existingSummary, value);
-
-						String summarySql = "UPDATE BRRS_Q_BRANCHNET_SUMMARYTABLE " + "SET " + columnName + " = ? "
-								+ "WHERE REPORT_DATE = ?";
-
-						jdbcTemplate.update(summarySql, value, updatedEntity.getReport_date());
-
-						String detailSql = "UPDATE BRRS_Q_BRANCHNET_DETAILTABLE " + "SET " + columnName + " = ? "
-								+ "WHERE REPORT_DATE = ?";
-
-						jdbcTemplate.update(detailSql, value, updatedEntity.getReport_date());
-
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
-
-			// Audit only if changes found
-			String changes = auditService.getChanges(oldcopy, existingSummary);
-
-			if (!changes.isEmpty()) {
-
-				auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReport_date().toString(),
-						"Q_BRANCHNET Summary Screen", "BRRS_Q_BRANCHNET_SUMMARY");
-			}
-
-			System.out.println("Q_BRANCHNET Summary & Detail Update Completed");
-
-		} catch (Exception e) {
-
-			throw new RuntimeException("Error while updating Q_BRANCHNET fields", e);
-		}
-	}
-
-	@Transactional
-	public void QBranchnetUpdate4(Q_BRANCHNET_Summary_Entity updatedEntity) {
-
-		System.out.println("Came to Q_BRANCHNET Update");
-		System.out.println("Report Date: " + updatedEntity.getReport_date());
-
-		// Fetch existing summary record for audit
-		Q_BRANCHNET_Summary_Entity existingSummary = findByReportDate(updatedEntity.getReport_date());
-
-		if (existingSummary == null) {
-			throw new RuntimeException("Record not found for REPORT_DATE : " + updatedEntity.getReport_date());
-		}
-
-		// Audit old copy
-		Q_BRANCHNET_Summary_Entity oldcopy = new Q_BRANCHNET_Summary_Entity();
-
-		BeanUtils.copyProperties(existingSummary, oldcopy);
-
-		String[] fields = { "credit_district", "opening_no_of_cards", "no_of_cards_issued", "no_cards_of_closed",
-				"closing_bal_of_active_cards" };
-		try {
-
-			for (int i = 55; i <= 65; i++) {
-
-				for (String field : fields) {
-
-					String getterName = "getR" + i + "_" + field;
-					String setterName = "setR" + i + "_" + field;
-					String columnName = "R" + i + "_" + field;
-
-					try {
-
-						Method getter = Q_BRANCHNET_Summary_Entity.class.getMethod(getterName);
-
-						Object value = getter.invoke(updatedEntity);
-
-						if (value == null) {
-							continue;
-						}
-
-						// Update existing object for audit
-						Method setter = Q_BRANCHNET_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						setter.invoke(existingSummary, value);
-
-						String summarySql = "UPDATE BRRS_Q_BRANCHNET_SUMMARYTABLE " + "SET " + columnName + " = ? "
-								+ "WHERE REPORT_DATE = ?";
-
-						jdbcTemplate.update(summarySql, value, updatedEntity.getReport_date());
-
-						String detailSql = "UPDATE BRRS_Q_BRANCHNET_DETAILTABLE " + "SET " + columnName + " = ? "
-								+ "WHERE REPORT_DATE = ?";
-
-						jdbcTemplate.update(detailSql, value, updatedEntity.getReport_date());
-
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
-
-			// Audit only if changes found
-			String changes = auditService.getChanges(oldcopy, existingSummary);
-
-			if (!changes.isEmpty()) {
-
-				auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReport_date().toString(),
-						"Q_BRANCHNET Summary Screen", "BRRS_Q_BRANCHNET_SUMMARY");
-			}
-
-			System.out.println("Q_BRANCHNET Summary & Detail Update Completed");
-
-		} catch (Exception e) {
-
-			throw new RuntimeException("Error while updating Q_BRANCHNET fields", e);
 		}
 	}
 

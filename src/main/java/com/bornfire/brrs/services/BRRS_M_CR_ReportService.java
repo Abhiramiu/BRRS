@@ -3,7 +3,9 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,17 +13,10 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.Collections;
 import java.util.Optional;
-
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -42,12 +37,19 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.AuditServicesEntity;
 import com.bornfire.brrs.entities.UserProfileRep;
 
 @Service
@@ -292,82 +294,292 @@ public class BRRS_M_CR_ReportService {
 		return mv;
 	}
 
-	public void updateReport(M_CR_Summary_Entity updatedEntity) {
+	public List<M_CR_Summary_Entity> getSummaryByDate(Date reportDate) {
+		String selectSql = "SELECT * FROM " + TBL_SUMMARY + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		return jdbcTemplate.query(selectSql, new BeanPropertyRowMapper<>(M_CR_Summary_Entity.class), reportDate);
+	}
 
-		System.out.println("Came to services");
+	public M_CR_Summary_Entity findM_CR_ModRecordByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_CR_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<M_CR_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(M_CR_Summary_Entity.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	@Transactional
+	public void updateReport(M_CR_Summary_Entity updatedEntity) {
+		System.out.println("Came to M_CR Unified Update");
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		// Fetch existing SUMMARY
-		M_CR_Summary_Entity existingSummary = getOneByDate(TBL_SUMMARY, updatedEntity.getReport_date(),
-				M_CR_Summary_Entity.class)
-				.orElseThrow(() -> new RuntimeException(
-						"Summary record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+		// 1. Fetch live summary record as baseline reference
+		List<M_CR_Summary_Entity> summaryList = getSummaryByDate(updatedEntity.getReport_date());
+		if (summaryList.isEmpty()) {
+			throw new RuntimeException("Summary record not found for REPORT_DATE: " + updatedEntity.getReport_date());
+		}
+		M_CR_Summary_Entity liveSummary = summaryList.get(0);
 
-		// Audit old copy
+		// 2. Fetch or create mod record copy
+		final M_CR_Summary_Entity modRecord = findM_CR_ModRecordByReportDate(updatedEntity.getReport_date()) != null
+				? findM_CR_ModRecordByReportDate(updatedEntity.getReport_date())
+				: new M_CR_Summary_Entity();
+
+		if (findM_CR_ModRecordByReportDate(updatedEntity.getReport_date()) == null) {
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
+
+		// 3. Old copy for audit comparison
 		M_CR_Summary_Entity oldcopy = new M_CR_Summary_Entity();
-		BeanUtils.copyProperties(existingSummary, oldcopy);
+		BeanUtils.copyProperties(modRecord, oldcopy);
 
-		// Fetch existing DETAIL
-		M_CR_Detail_Entity existingDetail = getOneByDate(TBL_DETAIL, updatedEntity.getReport_date(),
-				M_CR_Detail_Entity.class).orElseGet(() -> {
-					M_CR_Detail_Entity d = new M_CR_Detail_Entity();
-					d.setReport_date(updatedEntity.getReport_date());
-					return d;
-				});
+		// Fields matching your uppercase entity properties
+		String[] fields = { "PRODUCT", "TOTAL_LONG_POS", "TOTAL_SHORT_POS", "GROSS_OPEN_POS", "CHARGE_BASIS_RISK",
+				"CAPITAL_CHARGE_BASIS_RISK", "NET_OPEN_POS", "CHARGE_DIR_RISK", "CAPITAL_CHARGE_DIR_RISK",
+				"TOTAL_CAPITAL_CHARGE" };
 
 		try {
-
-			// Loop R10 → R17
 			for (int i = 10; i <= 17; i++) {
-
 				String prefix = "R" + i + "_";
 
-				String[] fields = { "PRODUCT", "TOTAL_LONG_POS", "TOTAL_SHORT_POS", "GROSS_OPEN_POS",
-						"CHARGE_BASIS_RISK", "CAPITAL_CHARGE_BASIS_RISK", "NET_OPEN_POS", "CHARGE_DIR_RISK",
-						"CAPITAL_CHARGE_DIR_RISK", "TOTAL_CAPITAL_CHARGE" };
-
 				for (String field : fields) {
-
 					String getterName = "get" + prefix + field;
 					String setterName = "set" + prefix + field;
 
 					try {
-
 						Method getter = M_CR_Summary_Entity.class.getMethod(getterName);
+						Object value = getter.invoke(updatedEntity);
 
-						Method summarySetter = M_CR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+						boolean isStringField = field.equals("PRODUCT");
+						if (value instanceof String) {
+							String valStr = ((String) value).trim();
+							if (valStr.isEmpty()) {
+								value = null;
+							} else if (!isStringField) {
+								try {
+									value = new java.math.BigDecimal(valStr);
+								} catch (NumberFormatException e) {
+									value = null;
+								}
+							}
+						}
 
-						Method detailSetter = M_CR_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+						if (value == null) {
+							continue;
+						}
 
-						Object newValue = getter.invoke(updatedEntity);
+						Method setter = null;
+						for (Method m : M_CR_Summary_Entity.class.getMethods()) {
+							if (m.getName().equals(setterName) && m.getParameterCount() == 1) {
+								setter = m;
+								break;
+							}
+						}
 
-						// Update SUMMARY
-						summarySetter.invoke(existingSummary, newValue);
-
-						// Update DETAIL
-						detailSetter.invoke(existingDetail, newValue);
+						if (setter != null) {
+							Class<?> paramType = setter.getParameterTypes()[0];
+							if (value != null && !paramType.isAssignableFrom(value.getClass())) {
+								if (paramType.equals(String.class)) {
+									value = value.toString();
+								} else if (paramType.equals(java.math.BigDecimal.class) && value instanceof String) {
+									value = new java.math.BigDecimal((String) value);
+								}
+							}
+							setter.invoke(modRecord, value);
+						}
 
 					} catch (NoSuchMethodException e) {
 						continue;
 					}
 				}
 			}
-
 		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
+			throw new RuntimeException("Error while updating M_CR report fields", e);
 		}
 
-		// Audit comparison
-		String changes = auditService.getChanges(oldcopy, existingSummary);
+		// 4. Audit changes
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		System.out.println("M_CR Changes Length = " + (changes != null ? changes.length() : 0));
+		System.out.println("M_CR Changes Content: " + changes); // <--- Add this
 
-		if (!changes.isEmpty()) {
+		// 5. Set Maker-Checker Flags
+		modRecord.setENTITY_FLG("Y");
+		modRecord.setMODIFY_FLG("Y");
+		modRecord.setDEL_FLG("N");
 
-			saveEntity(TBL_SUMMARY, existingSummary, "report_date");
-			saveEntity(TBL_DETAIL, existingDetail, "report_date");
+		// 6. Save into MOD Table ONLY
+		saveM_CR_ModSummaryEntity(modRecord);
+		System.out.println("✔ Record saved into BRRS_M_CR_MOD_SUMMARYTABLE for Checker Approval");
 
-			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReport_date().toString(),
-					"M CR Summary Screen", "BRRS_M_CR_SUMMARY");
+		// 7. Audit Log (Remove the 2000 character restriction temporarily)
+		if (changes != null && !changes.isEmpty()) {
+			try {
+				auditService.compareEntitiesmanual(oldcopy, modRecord, updatedEntity.getReport_date().toString(),
+						"M CR Summary Screen", "BRRS_M_CR_MOD_SUMMARYTABLE");
+				System.out.println("✔ Audit record saved successfully!");
+			} catch (Exception e) {
+				System.err.println("❌ Audit failed to save: " + e.getMessage());
+				e.printStackTrace();
+			}
 		}
+	}
+
+	public void saveM_CR_ModSummaryEntity(M_CR_Summary_Entity entity) {
+		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
+
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_CR_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+		MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", entity.getReport_date());
+		Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
+
+		MapSqlParameterSource params = new MapSqlParameterSource().addValue("reportDate", entity.getReport_date())
+				.addValue("entity_flg", entity.getENTITY_FLG()).addValue("modify_flg", entity.getMODIFY_FLG())
+				.addValue("del_flg", entity.getDEL_FLG());
+
+		String[] fields = { "PRODUCT", "TOTAL_LONG_POS", "TOTAL_SHORT_POS", "GROSS_OPEN_POS", "CHARGE_BASIS_RISK",
+				"CAPITAL_CHARGE_BASIS_RISK", "NET_OPEN_POS", "CHARGE_DIR_RISK", "CAPITAL_CHARGE_DIR_RISK",
+				"TOTAL_CAPITAL_CHARGE" };
+
+		StringBuilder updateSetSql = new StringBuilder(
+				"MODIFY_FLG = :modify_flg, ENTITY_FLG = :entity_flg, DEL_FLG = :del_flg");
+		List<String> insertColumns = new ArrayList<>();
+		List<String> insertValues = new ArrayList<>();
+
+		insertColumns.add("REPORT_DATE");
+		insertValues.add(":reportDate");
+		insertColumns.add("ENTITY_FLG");
+		insertValues.add(":entity_flg");
+		insertColumns.add("MODIFY_FLG");
+		insertValues.add(":modify_flg");
+		insertColumns.add("DEL_FLG");
+		insertValues.add(":del_flg");
+
+		for (int i = 10; i <= 17; i++) {
+			for (String field : fields) {
+				String getterName = "get" + "R" + i + "_" + field;
+				String paramName = "r" + i + "_" + field.toLowerCase();
+				String columnName = "R" + i + "_" + field.toUpperCase();
+
+				try {
+					Method getter = M_CR_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(entity);
+
+					boolean isStringField = field.equals("product");
+					if (value instanceof String) {
+						String valStr = ((String) value).trim();
+						if (valStr.isEmpty()) {
+							value = null;
+						} else if (!isStringField) {
+							try {
+								value = new java.math.BigDecimal(valStr);
+							} catch (NumberFormatException e) {
+								value = null;
+							}
+						}
+					}
+
+					params.addValue(paramName, value);
+					updateSetSql.append(", ").append(columnName).append(" = :").append(paramName);
+					insertColumns.add(columnName);
+					insertValues.add(":" + paramName);
+
+				} catch (NoSuchMethodException e) {
+					// Skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error mapping column for M_CR MOD table: " + columnName, e);
+				}
+			}
+		}
+
+		if (count != null && count > 0) {
+			String updateSql = "UPDATE BRRS_M_CR_MOD_SUMMARYTABLE SET " + updateSetSql.toString()
+					+ " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+			namedParamJdbc.update(updateSql, params);
+		} else {
+			String insertSql = "INSERT INTO BRRS_M_CR_MOD_SUMMARYTABLE (" + String.join(", ", insertColumns)
+					+ ") VALUES (" + String.join(", ", insertValues) + ")";
+			namedParamJdbc.update(insertSql, params);
+		}
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		M_CR_Summary_Entity modRecord = jdbcTemplate.queryForObject(
+				"SELECT * FROM BRRS_M_CR_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				new BeanPropertyRowMapper<>(M_CR_Summary_Entity.class), reportDate);
+
+		if (modRecord == null) {
+			throw new RuntimeException("No pending modification found for approval on date: " + reportDate);
+		}
+
+		transferM_CR_Data(null);
+
+		jdbcTemplate.update(
+				"UPDATE BRRS_M_CR_MOD_SUMMARYTABLE SET MODIFY_FLG = 'N', ENTITY_FLG = 'Y' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+
+		System.out.println(
+				"✔ M_CR Checker Approved Successfully: MOD values transferred to Summary & Detail live tables.");
+	}
+
+	private void transferM_CR_Data(AuditServicesEntity auditRecord) {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_CR_MOD_SUMMARYTABLE";
+		java.sql.Date reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified M_CR record available for transfer.");
+		}
+
+		System.out.println("M_CR Report Date : " + reportDate);
+
+		StringBuilder setColumns = new StringBuilder();
+		StringBuilder selectColumns = new StringBuilder();
+		String[] fields = { "PRODUCT", "TOTAL_LONG_POS", "TOTAL_SHORT_POS", "GROSS_OPEN_POS", "CHARGE_BASIS_RISK",
+				"CAPITAL_CHARGE_BASIS_RISK", "NET_OPEN_POS", "CHARGE_DIR_RISK", "CAPITAL_CHARGE_DIR_RISK",
+				"TOTAL_CAPITAL_CHARGE" };
+
+		for (int i = 10; i <= 17; i++) {
+			for (String field : fields) {
+				String col = "R" + i + "_" + field.toUpperCase();
+				setColumns.append(col).append(", ");
+				selectColumns.append("S.").append(col).append(", ");
+			}
+		}
+		setColumns.append("ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+		selectColumns.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+
+		// Base query template referencing MOD table to Live tables
+		String selectSubquery = " SELECT " + selectColumns.toString() + " FROM BRRS_M_CR_MOD_SUMMARYTABLE S "
+				+ " WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)";
+
+		// ==========================================
+		// 1. UPDATE LIVE SUMMARY TABLE
+		// ==========================================
+		String updateSummarySql = "UPDATE " + TBL_SUMMARY + " M SET (" + setColumns.toString() + ") = ("
+				+ selectSubquery + ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+
+		if (summaryUpdated == 0) {
+			throw new IllegalStateException(
+					"M_CR modification record not found in live summary table for date : " + reportDate);
+		}
+		System.out.println("M_CR Summary Table Updated (" + TBL_SUMMARY + ") : " + summaryUpdated);
+
+		// ==========================================
+		// 2. UPDATE LIVE DETAIL TABLE
+		// ==========================================
+		String updateDetailSql = "UPDATE " + TBL_DETAIL + " M SET (" + setColumns.toString() + ") = (" + selectSubquery
+				+ ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+		System.out.println("M_CR Detail Table Updated (" + TBL_DETAIL + ") : " + detailUpdated);
+
+		// ==========================================
+		// 3. MARK MOD RECORD AS APPROVED (MODIFY_FLG = 'N')
+		// ==========================================
+		String updateModSql = "UPDATE BRRS_M_CR_MOD_SUMMARYTABLE SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+
+		System.out.println("M_CR MOD Record Updated : " + modUpdated);
+		System.out.println("✔ M_CR Verification and Transfer Completed Successfully across Summary & Detail tables!");
 	}
 
 	public void updateResubReport(M_CR_Resub_Summary_Entity updatedEntity) {
@@ -2941,7 +3153,7 @@ public class BRRS_M_CR_ReportService {
 		}
 	}
 
-	// M_CR entity classes 
+	// M_CR entity classes
 
 	public static class M_CR_Summary_Entity {
 

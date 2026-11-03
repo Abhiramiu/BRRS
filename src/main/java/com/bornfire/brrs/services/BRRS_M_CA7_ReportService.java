@@ -36,14 +36,18 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.AuditServicesEntity;
 import com.bornfire.brrs.entities.UserProfileRep;
 
 @Service
@@ -66,10 +70,10 @@ public class BRRS_M_CA7_ReportService {
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public List<M_CA7_Summary_Entity> getSummaryByDate(Date reportDate) {
-		String sql = "SELECT * FROM BRRS_M_CA7_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-		return jdbcTemplate.query(sql, new Object[] { reportDate }, new M_CA7SummaryRowMapper());
-	}
+//	public List<M_CA7_Summary_Entity> getSummaryByDate(Date reportDate) {
+//		String sql = "SELECT * FROM BRRS_M_CA7_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+//		return jdbcTemplate.query(sql, new Object[] { reportDate }, new M_CA7SummaryRowMapper());
+//	}
 
 	public List<M_CA7_Archival_Summary_Entity> getArchivalSummaryByDateAndVersion(Date reportDate, BigDecimal version) {
 		String sql = "SELECT * FROM BRRS_M_CA7_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
@@ -223,17 +227,46 @@ public class BRRS_M_CA7_ReportService {
 		return mv;
 	}
 
-	public void updateReport(M_CA7_Summary_Entity Entity) {
-		System.out.println("Report Date: " + Entity.getReportDate());
-		List<M_CA7_Summary_Entity> results = getSummaryByDate(Entity.getReportDate());
-		if (results.isEmpty()) {
-			throw new RuntimeException("Record not found for REPORT_DATE: " + Entity.getReportDate());
+	public List<M_CA7_Summary_Entity> getSummaryByDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_CA7_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		return jdbcTemplate.query(selectSql, new BeanPropertyRowMapper<>(M_CA7_Summary_Entity.class), reportDate);
+	}
+
+	public M_CA7_Summary_Entity findM_CA7_ModRecordByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_CA7_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<M_CA7_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(M_CA7_Summary_Entity.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	@Transactional
+	public void updateReport(M_CA7_Summary_Entity updatedEntity) {
+		System.out.println("Came to M_CA7 Unified Update");
+		System.out.println("Report Date: " + updatedEntity.getReportDate());
+
+		// 1. Fetch live summary record as baseline reference
+		List<M_CA7_Summary_Entity> summaryList = getSummaryByDate(updatedEntity.getReportDate());
+		if (summaryList.isEmpty()) {
+			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate());
 		}
-		M_CA7_Summary_Entity existing = results.get(0);
+		M_CA7_Summary_Entity liveSummary = summaryList.get(0);
+
+		// 2. Fetch or create mod record copy
+		final M_CA7_Summary_Entity modRecord = findM_CA7_ModRecordByReportDate(updatedEntity.getReportDate()) != null
+				? findM_CA7_ModRecordByReportDate(updatedEntity.getReportDate())
+				: new M_CA7_Summary_Entity();
+
+		if (findM_CA7_ModRecordByReportDate(updatedEntity.getReportDate()) == null) {
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
+
+		// 3. Old copy for audit comparison
+		M_CA7_Summary_Entity oldcopy = new M_CA7_Summary_Entity();
+		BeanUtils.copyProperties(modRecord, oldcopy);
 
 		try {
+			// R12 fields
 			String[] fields = { "pre_ifrs_pro", "post_ifrs9_pro", "trans_amt" };
-
 			String prefix = "R12_";
 
 			for (String field : fields) {
@@ -242,20 +275,53 @@ public class BRRS_M_CA7_ReportService {
 
 				try {
 					Method getter = M_CA7_Summary_Entity.class.getMethod(getterName);
-					Method setter = M_CA7_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+					Object value = getter.invoke(updatedEntity);
 
-					Object newValue = getter.invoke(Entity);
-					setter.invoke(existing, newValue);
+					if (value instanceof String) {
+						String valStr = ((String) value).trim();
+						if (valStr.isEmpty()) {
+							value = null;
+						} else {
+							try {
+								value = new java.math.BigDecimal(valStr);
+							} catch (NumberFormatException e) {
+								value = null;
+							}
+						}
+					}
 
+					if (value == null) {
+						continue;
+					}
+
+					Method setter = null;
+					for (Method m : M_CA7_Summary_Entity.class.getMethods()) {
+						if (m.getName().equals(setterName) && m.getParameterCount() == 1) {
+							setter = m;
+							break;
+						}
+					}
+
+					if (setter != null) {
+						Class<?> paramType = setter.getParameterTypes()[0];
+						if (value != null && !paramType.isAssignableFrom(value.getClass())) {
+							if (paramType.equals(String.class)) {
+								value = value.toString();
+							} else if (paramType.equals(java.math.BigDecimal.class) && value instanceof String) {
+								value = new java.math.BigDecimal((String) value);
+							}
+						}
+						setter.invoke(modRecord, value);
+					}
 				} catch (NoSuchMethodException e) {
-					// Skip missing fields
 					continue;
 				}
 			}
+
+			// R19 to R22 fields (Product, Cap Year, Amt Add Year)
 			for (int i = 19; i <= 22; i++) {
 				String prefix1 = "R" + i + "_";
-				String[] fields1 = { "amt_add_year" + (i - 18) };
-				// R19 -> amt_add_year1, R20 -> amt_add_year2, etc.
+				String[] fields1 = { "product", "cap_year" + (i - 18), "amt_add_year" + (i - 18) };
 
 				for (String field : fields1) {
 					String getterName = "get" + prefix1 + field;
@@ -263,11 +329,45 @@ public class BRRS_M_CA7_ReportService {
 
 					try {
 						Method getter = M_CA7_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_CA7_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+						Object value = getter.invoke(updatedEntity);
 
-						Object newValue = getter.invoke(Entity);
-						setter.invoke(existing, newValue);
+						boolean isStringField = field.equals("product") || field.equals("cap_year" + (i - 18));
+						if (value instanceof String) {
+							String valStr = ((String) value).trim();
+							if (valStr.isEmpty()) {
+								value = null;
+							} else if (!isStringField) {
+								try {
+									value = new java.math.BigDecimal(valStr);
+								} catch (NumberFormatException e) {
+									value = null;
+								}
+							}
+						}
 
+						if (value == null) {
+							continue;
+						}
+
+						Method setter = null;
+						for (Method m : M_CA7_Summary_Entity.class.getMethods()) {
+							if (m.getName().equals(setterName) && m.getParameterCount() == 1) {
+								setter = m;
+								break;
+							}
+						}
+
+						if (setter != null) {
+							Class<?> paramType = setter.getParameterTypes()[0];
+							if (value != null && !paramType.isAssignableFrom(value.getClass())) {
+								if (paramType.equals(String.class)) {
+									value = value.toString();
+								} else if (paramType.equals(java.math.BigDecimal.class) && value instanceof String) {
+									value = new java.math.BigDecimal((String) value);
+								}
+							}
+							setter.invoke(modRecord, value);
+						}
 					} catch (NoSuchMethodException e) {
 						continue;
 					}
@@ -275,25 +375,152 @@ public class BRRS_M_CA7_ReportService {
 			}
 
 		} catch (Exception e) {
-			throw new RuntimeException("Error while updating R35 fields", e);
+			throw new RuntimeException("Error while updating M_CA7 report fields", e);
 		}
 
+		// 4. Audit changes
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		System.out.println("M_CA7 Changes Length = " + (changes != null ? changes.length() : 0));
+
+		// 5. Set Maker-Checker Flags
+		modRecord.setEntity_flg("Y");
+		modRecord.setModify_flg("Y");
+		modRecord.setDel_flg("N");
+
+		// 6. Save into MOD Table ONLY
+		saveM_CA7_ModSummaryEntity(modRecord);
+		System.out.println("✔ Record saved into BRRS_M_CA7_MOD_SUMMARYTABLE for Checker Approval");
+
+		// 7. Audit Log
+		if (changes != null && !changes.isEmpty()) {
+			if (changes.length() <= 2000) {
+				auditService.compareEntitiesmanual(oldcopy, modRecord, updatedEntity.getReportDate().toString(),
+						"M_CA7 Summary Screen", "BRRS_M_CA7_MOD_SUMMARYTABLE");
+			}
+		}
+
+		System.out.println("M_CA7 Update Completed Successfully");
+	}
+
+	public void saveM_CA7_ModSummaryEntity(M_CA7_Summary_Entity entity) {
+		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
+
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_CA7_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+		MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", entity.getReportDate());
+		Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
+
+		MapSqlParameterSource params = new MapSqlParameterSource().addValue("reportDate", entity.getReportDate())
+				.addValue("entity_flg", entity.getEntity_flg()).addValue("modify_flg", entity.getModify_flg())
+				.addValue("del_flg", entity.getDel_flg()).addValue("reportVersion", entity.getReportVersion())
+				.addValue("reportFrequency", entity.getReport_frequency())
+				.addValue("reportCode", entity.getReport_code()).addValue("reportDesc", entity.getReport_desc())
+				.addValue("r12_pre_ifrs_pro", entity.getR12_pre_ifrs_pro())
+				.addValue("r12_post_ifrs9_pro", entity.getR12_post_ifrs9_pro())
+				.addValue("r12_trans_amt", entity.getR12_trans_amt()).addValue("r19_product", entity.getR19_product())
+				.addValue("r19_cap_year1", entity.getR19_cap_year1())
+				.addValue("r19_amt_add_year1", entity.getR19_amt_add_year1())
+				.addValue("r20_product", entity.getR20_product()).addValue("r20_cap_year2", entity.getR20_cap_year2())
+				.addValue("r20_amt_add_year2", entity.getR20_amt_add_year2())
+				.addValue("r21_product", entity.getR21_product()).addValue("r21_cap_year3", entity.getR21_cap_year3())
+				.addValue("r21_amt_add_year3", entity.getR21_amt_add_year3())
+				.addValue("r22_product", entity.getR22_product()).addValue("r22_cap_year4", entity.getR22_cap_year4())
+				.addValue("r22_amt_add_year4", entity.getR22_amt_add_year4());
+
+		if (count != null && count > 0) {
+			String updateSql = "UPDATE BRRS_M_CA7_MOD_SUMMARYTABLE SET "
+					+ "R12_PRE_IFRS_PRO = :r12_pre_ifrs_pro, R12_POST_IFRS9_PRO = :r12_post_ifrs9_pro, R12_TRANS_AMT = :r12_trans_amt, "
+					+ "R19_PRODUCT = :r19_product, R19_CAP_YEAR1 = :r19_cap_year1, R19_AMT_ADD_YEAR1 = :r19_amt_add_year1, "
+					+ "R20_PRODUCT = :r20_product, R20_CAP_YEAR2 = :r20_cap_year2, R20_AMT_ADD_YEAR2 = :r20_amt_add_year2, "
+					+ "R21_PRODUCT = :r21_product, R21_CAP_YEAR3 = :r21_cap_year3, R21_AMT_ADD_YEAR3 = :r21_amt_add_year3, "
+					+ "R22_PRODUCT = :r22_product, R22_CAP_YEAR4 = :r22_cap_year4, R22_AMT_ADD_YEAR4 = :r22_amt_add_year4, "
+					+ "REPORT_VERSION = :reportVersion, REPORT_FREQUENCY = :reportFrequency, REPORT_CODE = :reportCode, REPORT_DESC = :reportDesc, "
+					+ "ENTITY_FLG = :entity_flg, MODIFY_FLG = :modify_flg, DEL_FLG = :del_flg "
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+			namedParamJdbc.update(updateSql, params);
+		} else {
+			String insertSql = "INSERT INTO BRRS_M_CA7_MOD_SUMMARYTABLE ("
+					+ "REPORT_DATE, R12_PRE_IFRS_PRO, R12_POST_IFRS9_PRO, R12_TRANS_AMT, "
+					+ "R19_PRODUCT, R19_CAP_YEAR1, R19_AMT_ADD_YEAR1, "
+					+ "R20_PRODUCT, R20_CAP_YEAR2, R20_AMT_ADD_YEAR2, "
+					+ "R21_PRODUCT, R21_CAP_YEAR3, R21_AMT_ADD_YEAR3, "
+					+ "R22_PRODUCT, R22_CAP_YEAR4, R22_AMT_ADD_YEAR4, "
+					+ "REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+					+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG) VALUES ("
+					+ ":reportDate, :r12_pre_ifrs_pro, :r12_post_ifrs9_pro, :r12_trans_amt, "
+					+ ":r19_product, :r19_cap_year1, :r19_amt_add_year1, "
+					+ ":r20_product, :r20_cap_year2, :r20_amt_add_year2, "
+					+ ":r21_product, :r21_cap_year3, :r21_amt_add_year3, "
+					+ ":r22_product, :r22_cap_year4, :r22_amt_add_year4, "
+					+ ":reportVersion, :reportFrequency, :reportCode, :reportDesc, "
+					+ ":entity_flg, :modify_flg, :del_flg)";
+			namedParamJdbc.update(insertSql, params);
+		}
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		M_CA7_Summary_Entity modRecord = jdbcTemplate.queryForObject(
+				"SELECT * FROM BRRS_M_CA7_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				new BeanPropertyRowMapper<>(M_CA7_Summary_Entity.class), reportDate);
+
+		if (modRecord == null) {
+			throw new RuntimeException("No pending modification found for approval on date: " + reportDate);
+		}
+
+		transferM_CA7_Data(null);
+
 		jdbcTemplate.update(
-				"UPDATE BRRS_M_CA7_SUMMARYTABLE SET " + "R12_PRE_IFRS_PRO=?, R12_POST_IFRS9_PRO=?, R12_TRANS_AMT=?, "
-						+ "R19_PRODUCT=?, R19_CAP_YEAR1=?, R19_AMT_ADD_YEAR1=?, "
-						+ "R20_PRODUCT=?, R20_CAP_YEAR2=?, R20_AMT_ADD_YEAR2=?, "
-						+ "R21_PRODUCT=?, R21_CAP_YEAR3=?, R21_AMT_ADD_YEAR3=?, "
-						+ "R22_PRODUCT=?, R22_CAP_YEAR4=?, R22_AMT_ADD_YEAR4=?, "
-						+ "REPORT_VERSION=?, REPORT_FREQUENCY=?, REPORT_CODE=?, REPORT_DESC=?, "
-						+ "ENTITY_FLG=?, MODIFY_FLG=?, DEL_FLG=? " + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
-				existing.getR12_pre_ifrs_pro(), existing.getR12_post_ifrs9_pro(), existing.getR12_trans_amt(),
-				existing.getR19_product(), existing.getR19_cap_year1(), existing.getR19_amt_add_year1(),
-				existing.getR20_product(), existing.getR20_cap_year2(), existing.getR20_amt_add_year2(),
-				existing.getR21_product(), existing.getR21_cap_year3(), existing.getR21_amt_add_year3(),
-				existing.getR22_product(), existing.getR22_cap_year4(), existing.getR22_amt_add_year4(),
-				existing.getReportVersion(), existing.getReport_frequency(), existing.getReport_code(),
-				existing.getReport_desc(), existing.getEntity_flg(), existing.getModify_flg(), existing.getDel_flg(),
-				existing.getReportDate());
+				"UPDATE BRRS_M_CA7_MOD_SUMMARYTABLE SET MODIFY_FLG = 'N', ENTITY_FLG = 'Y' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+
+		System.out.println(
+				"✔ M_CA7 Checker Approved Successfully: MOD values successfully transferred to Summary live table.");
+	}
+
+	private void transferM_CA7_Data(AuditServicesEntity auditRecord) {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_CA7_MOD_SUMMARYTABLE";
+		java.sql.Date reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified M_CA7 record available for transfer.");
+		}
+
+		System.out.println("M_CA7 Report Date : " + reportDate);
+
+		String updateSummarySql = "UPDATE BRRS_M_CA7_SUMMARYTABLE M SET ("
+				+ "R12_PRE_IFRS_PRO, R12_POST_IFRS9_PRO, R12_TRANS_AMT, "
+				+ "R19_PRODUCT, R19_CAP_YEAR1, R19_AMT_ADD_YEAR1, " + "R20_PRODUCT, R20_CAP_YEAR2, R20_AMT_ADD_YEAR2, "
+				+ "R21_PRODUCT, R21_CAP_YEAR3, R21_AMT_ADD_YEAR3, " + "R22_PRODUCT, R22_CAP_YEAR4, R22_AMT_ADD_YEAR4, "
+				+ "REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+				+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG) = ("
+				+ "    SELECT S.R12_PRE_IFRS_PRO, S.R12_POST_IFRS9_PRO, S.R12_TRANS_AMT, "
+				+ "    S.R19_PRODUCT, S.R19_CAP_YEAR1, S.R19_AMT_ADD_YEAR1, "
+				+ "    S.R20_PRODUCT, S.R20_CAP_YEAR2, S.R20_AMT_ADD_YEAR2, "
+				+ "    S.R21_PRODUCT, S.R21_CAP_YEAR3, S.R21_AMT_ADD_YEAR3, "
+				+ "    S.R22_PRODUCT, S.R22_CAP_YEAR4, S.R22_AMT_ADD_YEAR4, "
+				+ "    S.REPORT_VERSION, S.REPORT_FREQUENCY, S.REPORT_CODE, S.REPORT_DESC, "
+				+ "    S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG " + "    FROM BRRS_M_CA7_MOD_SUMMARYTABLE S "
+				+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" + ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		// 1. Update live Summary table
+		int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+
+		if (summaryUpdated == 0) {
+			throw new IllegalStateException("M_CA7 modification record not found for date : " + reportDate);
+		}
+		System.out.println("M_CA7 Summary Table Updated : " + summaryUpdated);
+
+		// 2. Update live Detail table (mirrors summary table update logic)
+		String updateDetailSql = updateSummarySql.replace("BRRS_M_CA7_SUMMARYTABLE", "BRRS_M_CA7_DETAILTABLE");
+		int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+		System.out.println("M_CA7 Detail Table Updated : " + detailUpdated);
+
+		// 3. Mark MOD record status as approved
+		String updateModSql = "UPDATE BRRS_M_CA7_MOD_SUMMARYTABLE SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+
+		System.out.println("M_CA7 MOD Updated : " + modUpdated);
+		System.out.println("✔ M_CA7 Verification and Transfer Completed Successfully (Summary & Detail updated)");
 	}
 
 	public void updateDetail(M_CA7_Detail_Entity Entity) {

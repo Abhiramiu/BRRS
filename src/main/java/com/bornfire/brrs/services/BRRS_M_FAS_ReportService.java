@@ -857,7 +857,7 @@ public class BRRS_M_FAS_ReportService {
 		// 🔹 Log Audit Trail if changes exist
 		if (changes != null && !changes.isEmpty()) {
 			auditService.compareEntitiesmanual(oldcopy, existing, updatedEntity.getReportDate().toString(),
-					"M_FAS", "BRRS_M_FAS_SUMMARYTABLE");
+					"M_FAS", "BRRS_M_FAS_MOD_SUMMARYTABLE");
 		}
 
 		// 🔹 Post-Commit Transaction Synchronization to execute Stored Procedure

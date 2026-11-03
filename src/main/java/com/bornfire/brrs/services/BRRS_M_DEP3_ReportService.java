@@ -389,7 +389,7 @@ public class BRRS_M_DEP3_ReportService {
 		// 🔹 Log Audit Trail if changes exist
 		if (changes != null && !changes.isEmpty()) {
 			auditService.compareEntitiesmanual(oldcopy, existing, updatedEntity.getReportDate().toString(),
-					"M_DEP3 Summary Screen", "BRRS_M_DEP3_SUMMARYTABLE");
+					"M_DEP3 Summary Screen", "BRRS_M_DEP3_MOD_SUMMARYTABLE");
 		}
 
 		// 🔹 Post-Commit Transaction Synchronization to execute Stored Procedure

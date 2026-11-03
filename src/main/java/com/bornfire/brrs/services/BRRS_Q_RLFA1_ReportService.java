@@ -43,8 +43,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -258,6 +261,21 @@ public class BRRS_Q_RLFA1_ReportService {
 		return jdbcTemplate.queryForObject(sql, new Q_RLFA1_RESUB_Detail_RowMapper());
 	}
 
+	// Helper method to fetch existing live summary record with date truncation
+	public Q_RLFA1_Summary_Entity findQRlfa1ByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_Q_RLFA1_SUMMARY_TABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<Q_RLFA1_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(Q_RLFA1_Summary_Entity.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	// Helper method to fetch existing mod record if modifications exist
+	public Q_RLFA1_Summary_Entity findQRlfa1ModRecordByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_Q_RLFA1_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<Q_RLFA1_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(Q_RLFA1_Summary_Entity.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
 // =====================================================
 // SUMAMRY ENTITY & ROW MAPPER 
 // =====================================================
@@ -571,7 +589,7 @@ public class BRRS_Q_RLFA1_ReportService {
 		}
 	}
 
-	public class Q_RLFA1_Summary_Entity {
+	public static class Q_RLFA1_Summary_Entity {
 
 		private String r10_rene_loans;
 		private BigDecimal r10_collateral_amount;
@@ -15157,79 +15175,225 @@ public class BRRS_Q_RLFA1_ReportService {
 
 	@Transactional
 	public void updateReport(Q_RLFA1_Summary_Entity updatedEntity) {
-
-		System.out.println("Came to Q_RLFA1 Update");
+		System.out.println("Came to Q_RLFA1 Unified Update");
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		// Fetch existing summary record for audit
-		Q_RLFA1_Summary_Entity existingSummary = findByReportDate(updatedEntity.getReport_date());
-
-		if (existingSummary == null) {
-			throw new RuntimeException("Record not found for REPORT_DATE : " + updatedEntity.getReport_date());
+		// 1. Fetch live summary record as baseline reference
+		Q_RLFA1_Summary_Entity liveSummary = findQRlfa1ByReportDate(updatedEntity.getReport_date());
+		if (liveSummary == null) {
+			throw new RuntimeException(
+					"Record not found in live summary table for REPORT_DATE : " + updatedEntity.getReport_date());
 		}
 
-		// Audit old copy
-		Q_RLFA1_Summary_Entity oldcopy = new Q_RLFA1_Summary_Entity();
+		// 2. Fetch or create mod record copy
+		Q_RLFA1_Summary_Entity modRecord = findQRlfa1ModRecordByReportDate(updatedEntity.getReport_date());
+		if (modRecord == null) {
+			modRecord = new Q_RLFA1_Summary_Entity();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
 
-		BeanUtils.copyProperties(existingSummary, oldcopy);
+		// 3. Old copy for audit comparison
+		Q_RLFA1_Summary_Entity oldcopy = new Q_RLFA1_Summary_Entity();
+		BeanUtils.copyProperties(modRecord, oldcopy);
 
 		String[] fields = { "rene_loans", "collateral_amount", "carrying_amount", "no_of_accts" };
 
 		try {
-
 			for (int i = 10; i <= 63; i++) {
-
 				for (String field : fields) {
-
 					String getterName = "getR" + i + "_" + field;
 					String setterName = "setR" + i + "_" + field;
-					String columnName = "R" + i + "_" + field;
 
 					try {
-
 						Method getter = Q_RLFA1_Summary_Entity.class.getMethod(getterName);
-
 						Object value = getter.invoke(updatedEntity);
+
+						// Clean and sanitize string numbers to BigDecimal or null
+						if (value instanceof String) {
+							String valStr = ((String) value).trim();
+							if (valStr.isEmpty()) {
+								value = null;
+							} else {
+								try {
+									value = new java.math.BigDecimal(valStr);
+								} catch (NumberFormatException e) {
+									value = null;
+								}
+							}
+						}
 
 						if (value == null) {
 							continue;
 						}
 
-						// Update existing object for audit
 						Method setter = Q_RLFA1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						setter.invoke(existingSummary, value);
-
-						String summarySql = "UPDATE BRRS_Q_RLFA1_SUMMARY_TABLE " + "SET " + columnName + " = ? "
-								+ "WHERE REPORT_DATE = ?";
-
-						jdbcTemplate.update(summarySql, value, updatedEntity.getReport_date());
-
-						String detailSql = "UPDATE BRRS_Q_RLFA1_DETAIL_TABLE " + "SET " + columnName + " = ? "
-								+ "WHERE REPORT_DATE = ?";
-
-						jdbcTemplate.update(detailSql, value, updatedEntity.getReport_date());
+						setter.invoke(modRecord, value);
 
 					} catch (NoSuchMethodException e) {
+						// Skip fields that do not exist
 						continue;
 					}
 				}
 			}
 
-			// Audit only if changes found
-			String changes = auditService.getChanges(oldcopy, existingSummary);
-
-			if (!changes.isEmpty()) {
-
-				auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReport_date().toString(),
-						"Q_RLFA1 Summary Screen", "BRRS_Q_RLFA1_SUMMARY");
-			}
-
-			System.out.println("Q_RLFA1 Summary & Detail Update Completed");
-
 		} catch (Exception e) {
-
 			throw new RuntimeException("Error while updating Q_RLFA1 fields", e);
+		}
+
+		// 4. Audit changes
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		System.out.println("Q_RLFA1 Changes Length = " + (changes != null ? changes.length() : 0));
+
+		// 5. Set Maker-Checker Flags
+		modRecord.setEntity_flg("Y");
+		modRecord.setModify_flg("Y");
+		modRecord.setDel_flg("N");
+
+		// 6. Save into MOD Table ONLY (Live tables remain untouched until verification)
+		saveQRlfa1ModSummaryEntity(modRecord);
+		System.out.println("✔ Record saved into BRRS_Q_RLFA1_MOD_SUMMARYTABLE for Checker Approval");
+
+		// 7. Audit Log
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, modRecord, updatedEntity.getReport_date().toString(),
+					"Q_RLFA1 Summary Screen", "BRRS_Q_RLFA1_MOD_SUMMARYTABLE");
+		}
+	}
+
+	public void saveQRlfa1ModSummaryEntity(Q_RLFA1_Summary_Entity entity) {
+		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
+
+		String checkSql = "SELECT COUNT(*) FROM BRRS_Q_RLFA1_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+		MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", entity.getReport_date());
+		Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
+
+		MapSqlParameterSource params = new MapSqlParameterSource().addValue("reportDate", entity.getReport_date())
+				.addValue("entity_flg", entity.getEntity_flg()).addValue("modify_flg", entity.getModify_flg())
+				.addValue("del_flg", entity.getDel_flg());
+
+		String[] fields = { "rene_loans", "collateral_amount", "carrying_amount", "no_of_accts" };
+
+		StringBuilder updateSetSql = new StringBuilder(
+				"MODIFY_FLG = :modify_flg, ENTITY_FLG = :entity_flg, DEL_FLG = :del_flg");
+		List<String> insertColumns = new ArrayList<>();
+		List<String> insertValues = new ArrayList<>();
+
+		insertColumns.add("REPORT_DATE");
+		insertValues.add(":reportDate");
+		insertColumns.add("ENTITY_FLG");
+		insertValues.add(":entity_flg");
+		insertColumns.add("MODIFY_FLG");
+		insertValues.add(":modify_flg");
+		insertColumns.add("DEL_FLG");
+		insertValues.add(":del_flg");
+
+		for (int i = 10; i <= 63; i++) {
+			for (String field : fields) {
+				String getterName = "getR" + i + "_" + field;
+				String paramName = "r" + i + "_" + field.toLowerCase();
+				String columnName = "R" + i + "_" + field;
+
+				try {
+					Method getter = Q_RLFA1_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(entity);
+
+					if (value instanceof String) {
+						String valStr = ((String) value).trim();
+						if (valStr.isEmpty()) {
+							value = null;
+						} else {
+							try {
+								value = new java.math.BigDecimal(valStr);
+							} catch (NumberFormatException e) {
+								value = null;
+							}
+						}
+					}
+
+					params.addValue(paramName, value);
+
+					updateSetSql.append(", ").append(columnName).append(" = :").append(paramName);
+					insertColumns.add(columnName);
+					insertValues.add(":" + paramName);
+
+				} catch (NoSuchMethodException e) {
+					// Skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error mapping column for Q_RLFA1 MOD table: " + columnName, e);
+				}
+			}
+		}
+
+		if (count != null && count > 0) {
+			String updateSql = "UPDATE BRRS_Q_RLFA1_MOD_SUMMARYTABLE SET " + updateSetSql.toString()
+					+ " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+			namedParamJdbc.update(updateSql, params);
+		} else {
+			String insertSql = "INSERT INTO BRRS_Q_RLFA1_MOD_SUMMARYTABLE (" + String.join(", ", insertColumns)
+					+ ") VALUES (" + String.join(", ", insertValues) + ")";
+			namedParamJdbc.update(insertSql, params);
+		}
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		// 1. Fetch pending modification record from Q_RLFA1 MOD table
+		Q_RLFA1_Summary_Entity modRecord = jdbcTemplate.queryForObject(
+				"SELECT * FROM BRRS_Q_RLFA1_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				new BeanPropertyRowMapper<>(Q_RLFA1_Summary_Entity.class), reportDate);
+
+		if (modRecord == null) {
+			throw new RuntimeException("No pending modification found for approval on date: " + reportDate);
+		}
+
+		// 2. TRANSFER MOD VALUES TO LIVE SUMMARY AND DETAIL TABLES (Happens ONLY on
+		// approval)
+		transferModValuesToLiveTables(modRecord, reportDate);
+
+		// 3. Mark modified flag as 'N' (Approved) in the MOD table
+		jdbcTemplate.update(
+				"UPDATE BRRS_Q_RLFA1_MOD_SUMMARYTABLE SET MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+
+		System.out.println(
+				"✔ Q_RLFA1 Checker Approved Successfully: MOD values successfully transferred to Summary & Detail live tables.");
+	}
+
+	// Helper to push all modified fields from MOD table to Live Summary & Detail
+	// tables upon approval for Q_RLFA1
+	private void transferModValuesToLiveTables(Q_RLFA1_Summary_Entity modRecord, Date reportDate) {
+		String[] fields = { "rene_loans", "collateral_amount", "carrying_amount", "no_of_accts" };
+
+		for (int i = 10; i <= 63; i++) {
+			for (String field : fields) {
+				String prefix = "R" + i + "_";
+				String getterName = "get" + prefix + field;
+				String columnName = prefix + field;
+
+				try {
+					Method getter = Q_RLFA1_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(modRecord);
+
+					if (value == null) {
+						continue;
+					}
+
+					// Update Live Summary Table
+					String summarySql = "UPDATE BRRS_Q_RLFA1_SUMMARY_TABLE SET " + columnName
+							+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					jdbcTemplate.update(summarySql, value, reportDate);
+
+					// Update Live Detail Table
+					String detailSql = "UPDATE BRRS_Q_RLFA1_DETAIL_TABLE SET " + columnName
+							+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					jdbcTemplate.update(detailSql, value, reportDate);
+
+				} catch (NoSuchMethodException e) {
+					// Skip if method doesn't exist for this row
+				} catch (Exception e) {
+					throw new RuntimeException("Error transferring column to live tables: " + columnName, e);
+				}
+			}
 		}
 	}
 

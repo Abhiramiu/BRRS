@@ -42,8 +42,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -52,7 +55,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.AuditServicesEntity;
 import com.bornfire.brrs.entities.UserProfileRep;
+import org.springframework.beans.BeanUtils;
 
 @Service
 @Transactional
@@ -71,7 +76,6 @@ public class BRRS_M_MRC_ReportService {
 	@Autowired
 	UserProfileRep userProfileRep;
 
-
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	// =====================================================================
@@ -80,12 +84,12 @@ public class BRRS_M_MRC_ReportService {
 
 	public List<M_MRC_Summary_Entity> getSummaryByDate(Date reportDate) {
 		String sql = "SELECT * FROM BRRS_M_MRC_SUMMARYTABLE WHERE REPORT_DATE = ?";
-		return jdbcTemplate.query(sql, new Object[]{reportDate}, new M_MRCSummaryRowMapper());
+		return jdbcTemplate.query(sql, new Object[] { reportDate }, new M_MRCSummaryRowMapper());
 	}
 
 	public List<M_MRC_Archival_Summary_Entity> getArchivalSummaryByDateAndVersion(Date reportDate, BigDecimal version) {
 		String sql = "SELECT * FROM BRRS_M_MRC_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
-		return jdbcTemplate.query(sql, new Object[]{reportDate, version}, new M_MRCArchivalSummaryRowMapper());
+		return jdbcTemplate.query(sql, new Object[] { reportDate, version }, new M_MRCArchivalSummaryRowMapper());
 	}
 
 	public List<M_MRC_Archival_Summary_Entity> getArchivalSummaryWithVersion() {
@@ -95,40 +99,44 @@ public class BRRS_M_MRC_ReportService {
 
 	public List<M_MRC_Detail_Entity> getDetailByDate(Date reportDate) {
 		String sql = "SELECT * FROM BRRS_M_MRC_DETAILTABLE WHERE REPORT_DATE = ?";
-		return jdbcTemplate.query(sql, new Object[]{reportDate}, new M_MRCDetailRowMapper());
+		return jdbcTemplate.query(sql, new Object[] { reportDate }, new M_MRCDetailRowMapper());
 	}
 
 	public int getDetailCount(Date reportDate) {
 		String sql = "SELECT COUNT(*) FROM BRRS_M_MRC_DETAILTABLE WHERE REPORT_DATE = ?";
-		return jdbcTemplate.queryForObject(sql, new Object[]{reportDate}, Integer.class);
+		return jdbcTemplate.queryForObject(sql, new Object[] { reportDate }, Integer.class);
 	}
 
-	public List<M_MRC_Detail_Entity> getDetailByRowIdAndColumnId(String reportLabel, String reportAddlCriteria1, Date reportDate) {
+	public List<M_MRC_Detail_Entity> getDetailByRowIdAndColumnId(String reportLabel, String reportAddlCriteria1,
+			Date reportDate) {
 		String sql = "SELECT * FROM BRRS_M_MRC_DETAILTABLE WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
-		return jdbcTemplate.query(sql, new Object[]{reportLabel, reportAddlCriteria1, reportDate}, new M_MRCDetailRowMapper());
+		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportDate },
+				new M_MRCDetailRowMapper());
 	}
 
 	public M_MRC_Detail_Entity findDetailByAcctNumber(String acctNumber) {
 		String sql = "SELECT * FROM BRRS_M_MRC_DETAILTABLE WHERE ACCT_NUMBER = ?";
-		List<M_MRC_Detail_Entity> list = jdbcTemplate.query(sql, new Object[]{acctNumber}, new M_MRCDetailRowMapper());
+		List<M_MRC_Detail_Entity> list = jdbcTemplate.query(sql, new Object[] { acctNumber },
+				new M_MRCDetailRowMapper());
 		return list.isEmpty() ? null : list.get(0);
 	}
 
 	public List<M_MRC_Archival_Detail_Entity> getArchivalDetailByDateAndVersion(Date reportDate, String version) {
 		String sql = "SELECT * FROM BRRS_M_MRC_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
-		return jdbcTemplate.query(sql, new Object[]{reportDate, version}, new M_MRCArchivalDetailRowMapper());
+		return jdbcTemplate.query(sql, new Object[] { reportDate, version }, new M_MRCArchivalDetailRowMapper());
 	}
 
-	public List<M_MRC_Archival_Detail_Entity> getArchivalDetailByRowIdAndColumnId(
-			String reportLabel, String reportAddlCriteria1, Date reportDate, String version) {
+	public List<M_MRC_Archival_Detail_Entity> getArchivalDetailByRowIdAndColumnId(String reportLabel,
+			String reportAddlCriteria1, Date reportDate, String version) {
 		String sql = "SELECT * FROM BRRS_M_MRC_ARCHIVALTABLE_DETAIL "
 				+ "WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
-		return jdbcTemplate.query(sql, new Object[]{reportLabel, reportAddlCriteria1, reportDate, version}, new M_MRCArchivalDetailRowMapper());
+		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportDate, version },
+				new M_MRCArchivalDetailRowMapper());
 	}
 
 	public int getArchivalDetailCount(Date reportDate, String version) {
 		String sql = "SELECT COUNT(*) FROM BRRS_M_MRC_ARCHIVALTABLE_DETAIL WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND DATA_ENTRY_VERSION = ?";
-		return jdbcTemplate.queryForObject(sql, new Object[]{reportDate, version}, Integer.class);
+		return jdbcTemplate.queryForObject(sql, new Object[] { reportDate, version }, Integer.class);
 	}
 
 	// =====================================================================
@@ -149,9 +157,8 @@ public class BRRS_M_MRC_ReportService {
 	}
 
 	public ModelAndView getM_MRCview(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
+			Pageable pageable, String type, BigDecimal version, HttpServletRequest req1, Model md) {
 		ModelAndView mv = new ModelAndView();
-		
 
 		String userid = (String) req1.getSession().getAttribute("USERID");
 		System.out.println("User Id Maker and Checker: " + userid);
@@ -200,30 +207,48 @@ public class BRRS_M_MRC_ReportService {
 		return mv;
 	}
 
-	public void updateReport(M_MRC_Summary_Entity updatedEntity) {
+	// Fetch existing mod record if any pending modifications exist for M_MRC
+	public M_MRC_Summary_Entity findModRecordByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_MRC_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<M_MRC_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(M_MRC_Summary_Entity.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
 
-		System.out.println("Came to services1");
+	@Transactional
+	public void updateReport(M_MRC_Summary_Entity updatedEntity) {
+		System.out.println("Came to services1 (M_MRC Mod Update)");
 		System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-		// Fetch existing record
+		// 1. Fetch live summary record as baseline reference
 		List<M_MRC_Summary_Entity> existingRows = getSummaryByDate(updatedEntity.getReportDate());
 		if (existingRows.isEmpty()) {
-			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate());
+			throw new RuntimeException(
+					"Record not found in live summary table for REPORT_DATE: " + updatedEntity.getReportDate());
 		}
-		M_MRC_Summary_Entity existing = existingRows.get(0);
+		M_MRC_Summary_Entity liveSummary = existingRows.get(0);
+
+		// 2. Check if a mod record already exists. If not, copy from live summary
+		// baseline.
+		M_MRC_Summary_Entity modRecord = findModRecordByReportDate(updatedEntity.getReportDate());
+		if (modRecord == null) {
+			modRecord = new M_MRC_Summary_Entity();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
+
+		// 3. Keep old copy for audit comparison
+		M_MRC_Summary_Entity oldcopy = new M_MRC_Summary_Entity();
+		BeanUtils.copyProperties(modRecord, oldcopy);
 
 		try {
-
 			// ===== UPDATE R-CODE FIELDS USING REFLECTION =====
-			int[] rowCodes = { 33 ,34 }; // Add more codes if needed
-			String[] fields = { "TOTAL" }; // Add more fields if required
+			int[] rowCodes = { 33, 34 }; // Row codes as per your specification
+			String[] fields = { "TOTAL" }; // Fields to update
 
 			for (int code : rowCodes) {
-
 				String prefix = "R" + code + "_";
 
 				for (String field : fields) {
-
 					String getterName = "get" + prefix + field;
 					String setterName = "set" + prefix + field;
 
@@ -233,8 +258,22 @@ public class BRRS_M_MRC_ReportService {
 
 						Object newValue = getter.invoke(updatedEntity);
 
+						// Clean and convert string numbers to BigDecimal if necessary
+						if (newValue instanceof String) {
+							String valStr = ((String) newValue).trim();
+							if (valStr.isEmpty()) {
+								newValue = null;
+							} else {
+								try {
+									newValue = new java.math.BigDecimal(valStr);
+								} catch (NumberFormatException e) {
+									newValue = null;
+								}
+							}
+						}
+
 						if (newValue != null) {
-							setter.invoke(existing, newValue);
+							setter.invoke(modRecord, newValue);
 						}
 
 					} catch (NoSuchMethodException ignore) {
@@ -244,39 +283,219 @@ public class BRRS_M_MRC_ReportService {
 			}
 
 			// ===== UPDATE METADATA FIELDS =====
-			existing.setReportVersion(updatedEntity.getReportVersion());
-			existing.setREPORT_CODE(updatedEntity.getREPORT_CODE());
-			existing.setREPORT_DESC(updatedEntity.getREPORT_DESC());
-			existing.setENTITY_FLG(updatedEntity.getENTITY_FLG());
-			existing.setMODIFY_FLG(updatedEntity.getMODIFY_FLG());
-			existing.setDEL_FLG(updatedEntity.getDEL_FLG());
+			modRecord.setReportVersion(updatedEntity.getReportVersion());
+			modRecord.setREPORT_CODE(updatedEntity.getREPORT_CODE());
+			modRecord.setREPORT_DESC(updatedEntity.getREPORT_DESC());
 
 		} catch (Exception e) {
-			throw new RuntimeException("❌ Error while updating MRC Summary fields", e);
+			throw new RuntimeException("❌ Error while updating M_MRC Mod fields", e);
 		}
 
-		// ===== SAVE CHANGES =====
-		updateSummaryTotals(existing);
+		// 4. Evaluate audit changes against the mod baseline
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		System.out.println("M_MRC Changes Length = " + (changes != null ? changes.length() : 0));
 
-		System.out.println("✅ MRC Summary updated successfully");
+		// 5. Set Maker-Checker Flags
+		modRecord.setENTITY_FLG("Y");
+		modRecord.setMODIFY_FLG("Y");
+		modRecord.setDEL_FLG("N");
+
+		// 6. Save/Update into MOD Summary Table ONLY (Live tables remain intact)
+		saveM_MRC_ModSummaryEntity(modRecord);
+		System.out.println("✔ Record saved into BRRS_M_MRC_MOD_SUMMARYTABLE for Checker Approval");
+
+		// 7. Log Audit Trail if changes exist
+		if (changes != null && !changes.isEmpty()) {
+			if (changes.length() > 2000) {
+				changes = changes.substring(0, 2000);
+			}
+			auditService.compareEntitiesmanual(oldcopy, modRecord, updatedEntity.getReportDate().toString(),
+					"M_MRC Summary Screen", "BRRS_M_MRC_MOD_SUMMARYTABLE");
+		}
+	}
+
+	public void saveM_MRC_ModSummaryEntity(M_MRC_Summary_Entity entity) {
+		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
+
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_MRC_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+		MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", entity.getReportDate());
+		Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
+
+		MapSqlParameterSource params = new MapSqlParameterSource().addValue("reportDate", entity.getReportDate())
+				.addValue("reportVersion", entity.getReportVersion()).addValue("reportCode", entity.getREPORT_CODE())
+				.addValue("reportDesc", entity.getREPORT_DESC()).addValue("entityFlg", entity.getENTITY_FLG())
+				.addValue("modifyFlg", entity.getMODIFY_FLG()).addValue("delFlg", entity.getDEL_FLG());
+
+		int[] rowCodes = { 33, 34 };
+		String[] fields = { "TOTAL" };
+
+		StringBuilder updateSetSql = new StringBuilder(
+				"REPORT_VERSION = :reportVersion, REPORT_CODE = :reportCode, REPORT_DESC = :reportDesc, MODIFY_FLG = :modifyFlg, ENTITY_FLG = :entityFlg, DEL_FLG = :delFlg");
+
+		List<String> insertColumns = new ArrayList<>();
+		List<String> insertValues = new ArrayList<>();
+
+		insertColumns.add("REPORT_DATE");
+		insertValues.add(":reportDate");
+		insertColumns.add("REPORT_VERSION");
+		insertValues.add(":reportVersion");
+		insertColumns.add("REPORT_CODE");
+		insertValues.add(":reportCode");
+		insertColumns.add("REPORT_DESC");
+		insertValues.add(":reportDesc");
+		insertColumns.add("ENTITY_FLG");
+		insertValues.add(":entityFlg");
+		insertColumns.add("MODIFY_FLG");
+		insertValues.add(":modifyFlg");
+		insertColumns.add("DEL_FLG");
+		insertValues.add(":delFlg");
+
+		for (int code : rowCodes) {
+			String prefix = "R" + code + "_";
+			for (String field : fields) {
+				String getterName = "get" + prefix + field;
+				String paramName = "r" + code + "_" + field.toLowerCase();
+				String columnName = prefix + field;
+
+				try {
+					Method getter = M_MRC_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(entity);
+
+					if (value instanceof String) {
+						String valStr = ((String) value).trim();
+						value = valStr.isEmpty() ? null : new java.math.BigDecimal(valStr);
+					}
+
+					params.addValue(paramName, value);
+					updateSetSql.append(", ").append(columnName).append(" = :").append(paramName);
+					insertColumns.add(columnName);
+					insertValues.add(":" + paramName);
+
+				} catch (NoSuchMethodException e) {
+					// Skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error mapping column for M_MRC MOD table: " + columnName, e);
+				}
+			}
+		}
+
+		if (count != null && count > 0) {
+			String updateSql = "UPDATE BRRS_M_MRC_MOD_SUMMARYTABLE SET " + updateSetSql.toString()
+					+ " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+			namedParamJdbc.update(updateSql, params);
+			System.out.println("✔ BRRS_M_MRC_MOD_SUMMARYTABLE updated successfully.");
+		} else {
+			String insertSql = "INSERT INTO BRRS_M_MRC_MOD_SUMMARYTABLE (" + String.join(", ", insertColumns)
+					+ ") VALUES (" + String.join(", ", insertValues) + ")";
+			namedParamJdbc.update(insertSql, params);
+			System.out.println("✔ BRRS_M_MRC_MOD_SUMMARYTABLE inserted successfully.");
+		}
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		// 1. Fetch pending modification record from M_MRC MOD table
+		M_MRC_Summary_Entity modRecord = jdbcTemplate.queryForObject(
+				"SELECT * FROM BRRS_M_MRC_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				new BeanPropertyRowMapper<>(M_MRC_Summary_Entity.class), reportDate);
+
+		if (modRecord == null) {
+			throw new RuntimeException("No pending modification found for approval on date: " + reportDate);
+		}
+
+		// 2. TRANSFER MOD VALUES TO LIVE SUMMARY AND DETAIL TABLES (Happens ONLY on
+		// approval)
+		transferM_MRCData(null);
+
+		// 3. Mark modified flag as 'N' (Approved) in the MOD table
+		jdbcTemplate.update(
+				"UPDATE BRRS_M_MRC_MOD_SUMMARYTABLE SET MODIFY_FLG = 'N', ENTITY_FLG = 'Y' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+
+		System.out.println(
+				"✔ M_MRC Checker Approved Successfully: MOD values successfully transferred to Summary & Detail live tables.");
+	}
+
+	private void transferM_MRCData(AuditServicesEntity auditRecord) {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_MRC_MOD_SUMMARYTABLE";
+		java.sql.Date reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified M_MRC record available for verification.");
+		}
+
+		System.out.println("M_MRC Report Date : " + reportDate);
+
+		// Build column lists dynamically for M_MRC rows/fields (R33, R34 totals +
+		// metadata)
+		StringBuilder setColumns = new StringBuilder();
+		StringBuilder selectColumns = new StringBuilder();
+
+		// Rows 33 and 34 total fields
+		int[] rowCodes = { 33, 34 };
+		String[] fields = { "TOTAL" };
+
+		for (int code : rowCodes) {
+			for (String field : fields) {
+				String col = "R" + code + "_" + field;
+				setColumns.append(col).append(", ");
+				selectColumns.append("S.").append(col).append(", ");
+			}
+		}
+
+		// Metadata fields
+		setColumns.append("REPORT_VERSION, REPORT_CODE, REPORT_DESC, ");
+		selectColumns.append("S.REPORT_VERSION, S.REPORT_CODE, S.REPORT_DESC, ");
+
+		// Common Audit/Status flags
+		setColumns.append("ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+		selectColumns.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+
+		// 1. Update BRRS_M_MRC_SUMMARYTABLE from MOD table
+		String updateSummarySql = "UPDATE BRRS_M_MRC_SUMMARYTABLE M SET (" + setColumns.toString() + ") = ("
+				+ "    SELECT " + selectColumns.toString() + " FROM BRRS_M_MRC_MOD_SUMMARYTABLE S "
+				+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" + ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+
+		if (summaryUpdated == 0) {
+			throw new IllegalStateException("M_MRC modification record not found for date : " + reportDate);
+		}
+
+		System.out.println("M_MRC Summary Table Updated : " + summaryUpdated);
+
+		// 2. Update BRRS_M_MRC_DETAILTABLE from MOD table
+		String updateDetailSql = updateSummarySql.replace("BRRS_M_MRC_SUMMARYTABLE", "BRRS_M_MRC_DETAILTABLE");
+		try {
+			int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+			System.out.println("M_MRC Detail Table Updated : " + detailUpdated);
+		} catch (Exception e) {
+			System.out.println("ℹ Detail table update skipped or not applicable for M_MRC.");
+		}
+
+		// 3. Mark MOD record status as approved (MODIFY_FLG = 'N')
+		String updateModSql = "UPDATE BRRS_M_MRC_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+		int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+
+		System.out.println("M_MRC MOD Updated : " + modUpdated);
+		System.out.println("M_MRC Verification and Transfer Completed Successfully");
 	}
 
 	public ModelAndView getM_MRCcurrentDtl(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String filter, String type, String version,HttpServletRequest req1,Model md) {
+			String dtltype, Pageable pageable, String filter, String type, String version, HttpServletRequest req1,
+			Model md) {
 
 		int pageSize = pageable != null ? pageable.getPageSize() : 10;
 		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
 		int totalPages = 0;
 
 		ModelAndView mv = new ModelAndView();
-		
 
 		String userid = (String) req1.getSession().getAttribute("USERID");
 		System.out.println("User Id Maker and Checker: " + userid);
 		String role = userProfileRep.getUserRole(userid);
 		md.addAttribute("role", role);
 		System.out.println("Role: " + role);
-
 
 		// Session hs = sessionFactory.getCurrentSession();
 
@@ -304,8 +523,7 @@ public class BRRS_M_MRC_ReportService {
 				List<M_MRC_Archival_Detail_Entity> T1Dt1;
 
 				if (reportLable != null && reportAddlCriteria_1 != null) {
-					T1Dt1 = getArchivalDetailByRowIdAndColumnId(reportLable, reportAddlCriteria_1,
-							parsedDate, version);
+					T1Dt1 = getArchivalDetailByRowIdAndColumnId(reportLable, reportAddlCriteria_1, parsedDate, version);
 				} else {
 					T1Dt1 = getArchivalDetailByDateAndVersion(parsedDate, version);
 
@@ -711,8 +929,7 @@ public class BRRS_M_MRC_ReportService {
 
 //Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<M_MRC_Archival_Detail_Entity> reportData = getArchivalDetailByDateAndVersion(parsedToDate,
-					version);
+			List<M_MRC_Archival_Detail_Entity> reportData = getArchivalDetailByDateAndVersion(parsedToDate, version);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
@@ -793,22 +1010,22 @@ public class BRRS_M_MRC_ReportService {
 
 	public ModelAndView updateDetailEdit(String acctNo, String formMode) {
 
-	    ModelAndView mv = new ModelAndView("BRRS/M_MRC");
+		ModelAndView mv = new ModelAndView("BRRS/M_MRC");
 
-	    M_MRC_Detail_Entity mrcEntity;
+		M_MRC_Detail_Entity mrcEntity;
 
-	    if (acctNo != null) {
-	        mrcEntity = findDetailByAcctNumber(acctNo);
-	    } else {
-	        mrcEntity = new M_MRC_Detail_Entity(); // empty object
-	    }
+		if (acctNo != null) {
+			mrcEntity = findDetailByAcctNumber(acctNo);
+		} else {
+			mrcEntity = new M_MRC_Detail_Entity(); // empty object
+		}
 
-	    mv.addObject("Data", mrcEntity);
+		mv.addObject("Data", mrcEntity);
 
-	    mv.addObject("displaymode", "edit");
-	    mv.addObject("formmode", formMode != null ? formMode : "edit");
+		mv.addObject("displaymode", "edit");
+		mv.addObject("formmode", formMode != null ? formMode : "edit");
 
-	    return mv;
+		return mv;
 	}
 
 	@Transactional
@@ -1220,11 +1437,13 @@ public class BRRS_M_MRC_ReportService {
 					workbook.write(out);
 
 					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder
+							.getRequestAttributes();
 					if (attrs != null) {
 						HttpServletRequest request = attrs.getRequest();
 						String userid = (String) request.getSession().getAttribute("USERID");
-						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_MRC SUMMARY", null, "M_MRC_SUMMARYTABLE");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_MRC SUMMARY", null,
+								"M_MRC_SUMMARYTABLE");
 					}
 					return out.toByteArray();
 				}
@@ -1555,7 +1774,8 @@ public class BRRS_M_MRC_ReportService {
 				if (attrs != null) {
 					HttpServletRequest request = attrs.getRequest();
 					String userid = (String) request.getSession().getAttribute("USERID");
-					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_MRC EMAIL SUMMARY", null, "M_MRC_SUMMARYTABLE");
+					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_MRC EMAIL SUMMARY", null,
+							"M_MRC_SUMMARYTABLE");
 				}
 				return out.toByteArray();
 			}
@@ -1579,7 +1799,8 @@ public class BRRS_M_MRC_ReportService {
 			}
 		}
 
-		List<M_MRC_Archival_Summary_Entity> dataList = getArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
+		List<M_MRC_Archival_Summary_Entity> dataList = getArchivalSummaryByDateAndVersion(dateformat.parse(todate),
+				version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_MRC report. Returning empty result.");
@@ -1875,7 +2096,8 @@ public class BRRS_M_MRC_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_MRC ARCHIVAL SUMMARY", null, "M_MRC_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_MRC ARCHIVAL SUMMARY", null,
+						"M_MRC_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
 		}
@@ -1888,7 +2110,8 @@ public class BRRS_M_MRC_ReportService {
 
 		logger.info("Service: Starting Archival Email Excel generation process in memory.");
 
-		List<M_MRC_Archival_Summary_Entity> dataList = getArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
+		List<M_MRC_Archival_Summary_Entity> dataList = getArchivalSummaryByDateAndVersion(dateformat.parse(todate),
+				version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for BRRS_M_MRC report. Returning empty result.");
@@ -2183,7 +2406,8 @@ public class BRRS_M_MRC_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_MRC EMAIL ARCHIVAL SUMMARY", null, "M_MRC_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_MRC EMAIL ARCHIVAL SUMMARY", null,
+						"M_MRC_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
 		}
@@ -2992,190 +3216,741 @@ public class BRRS_M_MRC_ReportService {
 		private String MODIFY_FLG;
 		private String DEL_FLG;
 
-		public Date getReportDate() { return reportDate; }
-		public void setReportDate(Date v) { reportDate = v; }
-		public BigDecimal getReportVersion() { return reportVersion; }
-		public void setReportVersion(BigDecimal v) { reportVersion = v; }
-		public BigDecimal getR9_LINE() { return R9_LINE; }
-		public void setR9_LINE(BigDecimal v) { R9_LINE = v; }
-		public String getR9_PRODUCT() { return R9_PRODUCT; }
-		public void setR9_PRODUCT(String v) { R9_PRODUCT = v; }
-		public BigDecimal getR9_TOTAL() { return R9_TOTAL; }
-		public void setR9_TOTAL(BigDecimal v) { R9_TOTAL = v; }
-		public BigDecimal getR10_LINE() { return R10_LINE; }
-		public void setR10_LINE(BigDecimal v) { R10_LINE = v; }
-		public String getR10_PRODUCT() { return R10_PRODUCT; }
-		public void setR10_PRODUCT(String v) { R10_PRODUCT = v; }
-		public BigDecimal getR10_TOTAL() { return R10_TOTAL; }
-		public void setR10_TOTAL(BigDecimal v) { R10_TOTAL = v; }
-		public BigDecimal getR11_LINE() { return R11_LINE; }
-		public void setR11_LINE(BigDecimal v) { R11_LINE = v; }
-		public String getR11_PRODUCT() { return R11_PRODUCT; }
-		public void setR11_PRODUCT(String v) { R11_PRODUCT = v; }
-		public BigDecimal getR11_TOTAL() { return R11_TOTAL; }
-		public void setR11_TOTAL(BigDecimal v) { R11_TOTAL = v; }
-		public BigDecimal getR12_LINE() { return R12_LINE; }
-		public void setR12_LINE(BigDecimal v) { R12_LINE = v; }
-		public String getR12_PRODUCT() { return R12_PRODUCT; }
-		public void setR12_PRODUCT(String v) { R12_PRODUCT = v; }
-		public BigDecimal getR12_TOTAL() { return R12_TOTAL; }
-		public void setR12_TOTAL(BigDecimal v) { R12_TOTAL = v; }
-		public BigDecimal getR13_LINE() { return R13_LINE; }
-		public void setR13_LINE(BigDecimal v) { R13_LINE = v; }
-		public String getR13_PRODUCT() { return R13_PRODUCT; }
-		public void setR13_PRODUCT(String v) { R13_PRODUCT = v; }
-		public BigDecimal getR13_TOTAL() { return R13_TOTAL; }
-		public void setR13_TOTAL(BigDecimal v) { R13_TOTAL = v; }
-		public BigDecimal getR14_LINE() { return R14_LINE; }
-		public void setR14_LINE(BigDecimal v) { R14_LINE = v; }
-		public String getR14_PRODUCT() { return R14_PRODUCT; }
-		public void setR14_PRODUCT(String v) { R14_PRODUCT = v; }
-		public BigDecimal getR14_TOTAL() { return R14_TOTAL; }
-		public void setR14_TOTAL(BigDecimal v) { R14_TOTAL = v; }
-		public BigDecimal getR15_LINE() { return R15_LINE; }
-		public void setR15_LINE(BigDecimal v) { R15_LINE = v; }
-		public String getR15_PRODUCT() { return R15_PRODUCT; }
-		public void setR15_PRODUCT(String v) { R15_PRODUCT = v; }
-		public BigDecimal getR15_TOTAL() { return R15_TOTAL; }
-		public void setR15_TOTAL(BigDecimal v) { R15_TOTAL = v; }
-		public BigDecimal getR16_LINE() { return R16_LINE; }
-		public void setR16_LINE(BigDecimal v) { R16_LINE = v; }
-		public String getR16_PRODUCT() { return R16_PRODUCT; }
-		public void setR16_PRODUCT(String v) { R16_PRODUCT = v; }
-		public BigDecimal getR16_TOTAL() { return R16_TOTAL; }
-		public void setR16_TOTAL(BigDecimal v) { R16_TOTAL = v; }
-		public BigDecimal getR17_LINE() { return R17_LINE; }
-		public void setR17_LINE(BigDecimal v) { R17_LINE = v; }
-		public String getR17_PRODUCT() { return R17_PRODUCT; }
-		public void setR17_PRODUCT(String v) { R17_PRODUCT = v; }
-		public BigDecimal getR17_TOTAL() { return R17_TOTAL; }
-		public void setR17_TOTAL(BigDecimal v) { R17_TOTAL = v; }
-		public BigDecimal getR18_LINE() { return R18_LINE; }
-		public void setR18_LINE(BigDecimal v) { R18_LINE = v; }
-		public String getR18_PRODUCT() { return R18_PRODUCT; }
-		public void setR18_PRODUCT(String v) { R18_PRODUCT = v; }
-		public BigDecimal getR18_TOTAL() { return R18_TOTAL; }
-		public void setR18_TOTAL(BigDecimal v) { R18_TOTAL = v; }
-		public BigDecimal getR19_LINE() { return R19_LINE; }
-		public void setR19_LINE(BigDecimal v) { R19_LINE = v; }
-		public String getR19_PRODUCT() { return R19_PRODUCT; }
-		public void setR19_PRODUCT(String v) { R19_PRODUCT = v; }
-		public BigDecimal getR19_TOTAL() { return R19_TOTAL; }
-		public void setR19_TOTAL(BigDecimal v) { R19_TOTAL = v; }
-		public BigDecimal getR20_LINE() { return R20_LINE; }
-		public void setR20_LINE(BigDecimal v) { R20_LINE = v; }
-		public String getR20_PRODUCT() { return R20_PRODUCT; }
-		public void setR20_PRODUCT(String v) { R20_PRODUCT = v; }
-		public BigDecimal getR20_TOTAL() { return R20_TOTAL; }
-		public void setR20_TOTAL(BigDecimal v) { R20_TOTAL = v; }
-		public BigDecimal getR21_LINE() { return R21_LINE; }
-		public void setR21_LINE(BigDecimal v) { R21_LINE = v; }
-		public String getR21_PRODUCT() { return R21_PRODUCT; }
-		public void setR21_PRODUCT(String v) { R21_PRODUCT = v; }
-		public BigDecimal getR21_TOTAL() { return R21_TOTAL; }
-		public void setR21_TOTAL(BigDecimal v) { R21_TOTAL = v; }
-		public BigDecimal getR22_LINE() { return R22_LINE; }
-		public void setR22_LINE(BigDecimal v) { R22_LINE = v; }
-		public String getR22_PRODUCT() { return R22_PRODUCT; }
-		public void setR22_PRODUCT(String v) { R22_PRODUCT = v; }
-		public BigDecimal getR22_TOTAL() { return R22_TOTAL; }
-		public void setR22_TOTAL(BigDecimal v) { R22_TOTAL = v; }
-		public BigDecimal getR23_LINE() { return R23_LINE; }
-		public void setR23_LINE(BigDecimal v) { R23_LINE = v; }
-		public String getR23_PRODUCT() { return R23_PRODUCT; }
-		public void setR23_PRODUCT(String v) { R23_PRODUCT = v; }
-		public BigDecimal getR23_TOTAL() { return R23_TOTAL; }
-		public void setR23_TOTAL(BigDecimal v) { R23_TOTAL = v; }
-		public BigDecimal getR24_LINE() { return R24_LINE; }
-		public void setR24_LINE(BigDecimal v) { R24_LINE = v; }
-		public String getR24_PRODUCT() { return R24_PRODUCT; }
-		public void setR24_PRODUCT(String v) { R24_PRODUCT = v; }
-		public BigDecimal getR24_TOTAL() { return R24_TOTAL; }
-		public void setR24_TOTAL(BigDecimal v) { R24_TOTAL = v; }
-		public BigDecimal getR25_LINE() { return R25_LINE; }
-		public void setR25_LINE(BigDecimal v) { R25_LINE = v; }
-		public String getR25_PRODUCT() { return R25_PRODUCT; }
-		public void setR25_PRODUCT(String v) { R25_PRODUCT = v; }
-		public BigDecimal getR25_TOTAL() { return R25_TOTAL; }
-		public void setR25_TOTAL(BigDecimal v) { R25_TOTAL = v; }
-		public BigDecimal getR26_LINE() { return R26_LINE; }
-		public void setR26_LINE(BigDecimal v) { R26_LINE = v; }
-		public String getR26_PRODUCT() { return R26_PRODUCT; }
-		public void setR26_PRODUCT(String v) { R26_PRODUCT = v; }
-		public BigDecimal getR26_TOTAL() { return R26_TOTAL; }
-		public void setR26_TOTAL(BigDecimal v) { R26_TOTAL = v; }
-		public BigDecimal getR27_LINE() { return R27_LINE; }
-		public void setR27_LINE(BigDecimal v) { R27_LINE = v; }
-		public String getR27_PRODUCT() { return R27_PRODUCT; }
-		public void setR27_PRODUCT(String v) { R27_PRODUCT = v; }
-		public BigDecimal getR27_TOTAL() { return R27_TOTAL; }
-		public void setR27_TOTAL(BigDecimal v) { R27_TOTAL = v; }
-		public BigDecimal getR28_LINE() { return R28_LINE; }
-		public void setR28_LINE(BigDecimal v) { R28_LINE = v; }
-		public String getR28_PRODUCT() { return R28_PRODUCT; }
-		public void setR28_PRODUCT(String v) { R28_PRODUCT = v; }
-		public BigDecimal getR28_TOTAL() { return R28_TOTAL; }
-		public void setR28_TOTAL(BigDecimal v) { R28_TOTAL = v; }
-		public BigDecimal getR29_LINE() { return R29_LINE; }
-		public void setR29_LINE(BigDecimal v) { R29_LINE = v; }
-		public String getR29_PRODUCT() { return R29_PRODUCT; }
-		public void setR29_PRODUCT(String v) { R29_PRODUCT = v; }
-		public BigDecimal getR29_TOTAL() { return R29_TOTAL; }
-		public void setR29_TOTAL(BigDecimal v) { R29_TOTAL = v; }
-		public BigDecimal getR30_LINE() { return R30_LINE; }
-		public void setR30_LINE(BigDecimal v) { R30_LINE = v; }
-		public String getR30_PRODUCT() { return R30_PRODUCT; }
-		public void setR30_PRODUCT(String v) { R30_PRODUCT = v; }
-		public BigDecimal getR30_TOTAL() { return R30_TOTAL; }
-		public void setR30_TOTAL(BigDecimal v) { R30_TOTAL = v; }
-		public BigDecimal getR31_LINE() { return R31_LINE; }
-		public void setR31_LINE(BigDecimal v) { R31_LINE = v; }
-		public String getR31_PRODUCT() { return R31_PRODUCT; }
-		public void setR31_PRODUCT(String v) { R31_PRODUCT = v; }
-		public BigDecimal getR31_TOTAL() { return R31_TOTAL; }
-		public void setR31_TOTAL(BigDecimal v) { R31_TOTAL = v; }
-		public BigDecimal getR32_LINE() { return R32_LINE; }
-		public void setR32_LINE(BigDecimal v) { R32_LINE = v; }
-		public String getR32_PRODUCT() { return R32_PRODUCT; }
-		public void setR32_PRODUCT(String v) { R32_PRODUCT = v; }
-		public BigDecimal getR32_TOTAL() { return R32_TOTAL; }
-		public void setR32_TOTAL(BigDecimal v) { R32_TOTAL = v; }
-		public BigDecimal getR33_LINE() { return R33_LINE; }
-		public void setR33_LINE(BigDecimal v) { R33_LINE = v; }
-		public String getR33_PRODUCT() { return R33_PRODUCT; }
-		public void setR33_PRODUCT(String v) { R33_PRODUCT = v; }
-		public BigDecimal getR33_TOTAL() { return R33_TOTAL; }
-		public void setR33_TOTAL(BigDecimal v) { R33_TOTAL = v; }
-		public BigDecimal getR34_LINE() { return R34_LINE; }
-		public void setR34_LINE(BigDecimal v) { R34_LINE = v; }
-		public String getR34_PRODUCT() { return R34_PRODUCT; }
-		public void setR34_PRODUCT(String v) { R34_PRODUCT = v; }
-		public BigDecimal getR34_TOTAL() { return R34_TOTAL; }
-		public void setR34_TOTAL(BigDecimal v) { R34_TOTAL = v; }
-		public BigDecimal getR35_LINE() { return R35_LINE; }
-		public void setR35_LINE(BigDecimal v) { R35_LINE = v; }
-		public String getR35_PRODUCT() { return R35_PRODUCT; }
-		public void setR35_PRODUCT(String v) { R35_PRODUCT = v; }
-		public BigDecimal getR35_TOTAL() { return R35_TOTAL; }
-		public void setR35_TOTAL(BigDecimal v) { R35_TOTAL = v; }
-		public BigDecimal getR36_LINE() { return R36_LINE; }
-		public void setR36_LINE(BigDecimal v) { R36_LINE = v; }
-		public String getR36_PRODUCT() { return R36_PRODUCT; }
-		public void setR36_PRODUCT(String v) { R36_PRODUCT = v; }
-		public BigDecimal getR36_TOTAL() { return R36_TOTAL; }
-		public void setR36_TOTAL(BigDecimal v) { R36_TOTAL = v; }
-		public String getREPORT_FREQUENCY() { return REPORT_FREQUENCY; }
-		public void setREPORT_FREQUENCY(String v) { REPORT_FREQUENCY = v; }
-		public String getREPORT_CODE() { return REPORT_CODE; }
-		public void setREPORT_CODE(String v) { REPORT_CODE = v; }
-		public String getREPORT_DESC() { return REPORT_DESC; }
-		public void setREPORT_DESC(String v) { REPORT_DESC = v; }
-		public String getENTITY_FLG() { return ENTITY_FLG; }
-		public void setENTITY_FLG(String v) { ENTITY_FLG = v; }
-		public String getMODIFY_FLG() { return MODIFY_FLG; }
-		public void setMODIFY_FLG(String v) { MODIFY_FLG = v; }
-		public String getDEL_FLG() { return DEL_FLG; }
-		public void setDEL_FLG(String v) { DEL_FLG = v; }
+		public Date getReportDate() {
+			return reportDate;
+		}
+
+		public void setReportDate(Date v) {
+			reportDate = v;
+		}
+
+		public BigDecimal getReportVersion() {
+			return reportVersion;
+		}
+
+		public void setReportVersion(BigDecimal v) {
+			reportVersion = v;
+		}
+
+		public BigDecimal getR9_LINE() {
+			return R9_LINE;
+		}
+
+		public void setR9_LINE(BigDecimal v) {
+			R9_LINE = v;
+		}
+
+		public String getR9_PRODUCT() {
+			return R9_PRODUCT;
+		}
+
+		public void setR9_PRODUCT(String v) {
+			R9_PRODUCT = v;
+		}
+
+		public BigDecimal getR9_TOTAL() {
+			return R9_TOTAL;
+		}
+
+		public void setR9_TOTAL(BigDecimal v) {
+			R9_TOTAL = v;
+		}
+
+		public BigDecimal getR10_LINE() {
+			return R10_LINE;
+		}
+
+		public void setR10_LINE(BigDecimal v) {
+			R10_LINE = v;
+		}
+
+		public String getR10_PRODUCT() {
+			return R10_PRODUCT;
+		}
+
+		public void setR10_PRODUCT(String v) {
+			R10_PRODUCT = v;
+		}
+
+		public BigDecimal getR10_TOTAL() {
+			return R10_TOTAL;
+		}
+
+		public void setR10_TOTAL(BigDecimal v) {
+			R10_TOTAL = v;
+		}
+
+		public BigDecimal getR11_LINE() {
+			return R11_LINE;
+		}
+
+		public void setR11_LINE(BigDecimal v) {
+			R11_LINE = v;
+		}
+
+		public String getR11_PRODUCT() {
+			return R11_PRODUCT;
+		}
+
+		public void setR11_PRODUCT(String v) {
+			R11_PRODUCT = v;
+		}
+
+		public BigDecimal getR11_TOTAL() {
+			return R11_TOTAL;
+		}
+
+		public void setR11_TOTAL(BigDecimal v) {
+			R11_TOTAL = v;
+		}
+
+		public BigDecimal getR12_LINE() {
+			return R12_LINE;
+		}
+
+		public void setR12_LINE(BigDecimal v) {
+			R12_LINE = v;
+		}
+
+		public String getR12_PRODUCT() {
+			return R12_PRODUCT;
+		}
+
+		public void setR12_PRODUCT(String v) {
+			R12_PRODUCT = v;
+		}
+
+		public BigDecimal getR12_TOTAL() {
+			return R12_TOTAL;
+		}
+
+		public void setR12_TOTAL(BigDecimal v) {
+			R12_TOTAL = v;
+		}
+
+		public BigDecimal getR13_LINE() {
+			return R13_LINE;
+		}
+
+		public void setR13_LINE(BigDecimal v) {
+			R13_LINE = v;
+		}
+
+		public String getR13_PRODUCT() {
+			return R13_PRODUCT;
+		}
+
+		public void setR13_PRODUCT(String v) {
+			R13_PRODUCT = v;
+		}
+
+		public BigDecimal getR13_TOTAL() {
+			return R13_TOTAL;
+		}
+
+		public void setR13_TOTAL(BigDecimal v) {
+			R13_TOTAL = v;
+		}
+
+		public BigDecimal getR14_LINE() {
+			return R14_LINE;
+		}
+
+		public void setR14_LINE(BigDecimal v) {
+			R14_LINE = v;
+		}
+
+		public String getR14_PRODUCT() {
+			return R14_PRODUCT;
+		}
+
+		public void setR14_PRODUCT(String v) {
+			R14_PRODUCT = v;
+		}
+
+		public BigDecimal getR14_TOTAL() {
+			return R14_TOTAL;
+		}
+
+		public void setR14_TOTAL(BigDecimal v) {
+			R14_TOTAL = v;
+		}
+
+		public BigDecimal getR15_LINE() {
+			return R15_LINE;
+		}
+
+		public void setR15_LINE(BigDecimal v) {
+			R15_LINE = v;
+		}
+
+		public String getR15_PRODUCT() {
+			return R15_PRODUCT;
+		}
+
+		public void setR15_PRODUCT(String v) {
+			R15_PRODUCT = v;
+		}
+
+		public BigDecimal getR15_TOTAL() {
+			return R15_TOTAL;
+		}
+
+		public void setR15_TOTAL(BigDecimal v) {
+			R15_TOTAL = v;
+		}
+
+		public BigDecimal getR16_LINE() {
+			return R16_LINE;
+		}
+
+		public void setR16_LINE(BigDecimal v) {
+			R16_LINE = v;
+		}
+
+		public String getR16_PRODUCT() {
+			return R16_PRODUCT;
+		}
+
+		public void setR16_PRODUCT(String v) {
+			R16_PRODUCT = v;
+		}
+
+		public BigDecimal getR16_TOTAL() {
+			return R16_TOTAL;
+		}
+
+		public void setR16_TOTAL(BigDecimal v) {
+			R16_TOTAL = v;
+		}
+
+		public BigDecimal getR17_LINE() {
+			return R17_LINE;
+		}
+
+		public void setR17_LINE(BigDecimal v) {
+			R17_LINE = v;
+		}
+
+		public String getR17_PRODUCT() {
+			return R17_PRODUCT;
+		}
+
+		public void setR17_PRODUCT(String v) {
+			R17_PRODUCT = v;
+		}
+
+		public BigDecimal getR17_TOTAL() {
+			return R17_TOTAL;
+		}
+
+		public void setR17_TOTAL(BigDecimal v) {
+			R17_TOTAL = v;
+		}
+
+		public BigDecimal getR18_LINE() {
+			return R18_LINE;
+		}
+
+		public void setR18_LINE(BigDecimal v) {
+			R18_LINE = v;
+		}
+
+		public String getR18_PRODUCT() {
+			return R18_PRODUCT;
+		}
+
+		public void setR18_PRODUCT(String v) {
+			R18_PRODUCT = v;
+		}
+
+		public BigDecimal getR18_TOTAL() {
+			return R18_TOTAL;
+		}
+
+		public void setR18_TOTAL(BigDecimal v) {
+			R18_TOTAL = v;
+		}
+
+		public BigDecimal getR19_LINE() {
+			return R19_LINE;
+		}
+
+		public void setR19_LINE(BigDecimal v) {
+			R19_LINE = v;
+		}
+
+		public String getR19_PRODUCT() {
+			return R19_PRODUCT;
+		}
+
+		public void setR19_PRODUCT(String v) {
+			R19_PRODUCT = v;
+		}
+
+		public BigDecimal getR19_TOTAL() {
+			return R19_TOTAL;
+		}
+
+		public void setR19_TOTAL(BigDecimal v) {
+			R19_TOTAL = v;
+		}
+
+		public BigDecimal getR20_LINE() {
+			return R20_LINE;
+		}
+
+		public void setR20_LINE(BigDecimal v) {
+			R20_LINE = v;
+		}
+
+		public String getR20_PRODUCT() {
+			return R20_PRODUCT;
+		}
+
+		public void setR20_PRODUCT(String v) {
+			R20_PRODUCT = v;
+		}
+
+		public BigDecimal getR20_TOTAL() {
+			return R20_TOTAL;
+		}
+
+		public void setR20_TOTAL(BigDecimal v) {
+			R20_TOTAL = v;
+		}
+
+		public BigDecimal getR21_LINE() {
+			return R21_LINE;
+		}
+
+		public void setR21_LINE(BigDecimal v) {
+			R21_LINE = v;
+		}
+
+		public String getR21_PRODUCT() {
+			return R21_PRODUCT;
+		}
+
+		public void setR21_PRODUCT(String v) {
+			R21_PRODUCT = v;
+		}
+
+		public BigDecimal getR21_TOTAL() {
+			return R21_TOTAL;
+		}
+
+		public void setR21_TOTAL(BigDecimal v) {
+			R21_TOTAL = v;
+		}
+
+		public BigDecimal getR22_LINE() {
+			return R22_LINE;
+		}
+
+		public void setR22_LINE(BigDecimal v) {
+			R22_LINE = v;
+		}
+
+		public String getR22_PRODUCT() {
+			return R22_PRODUCT;
+		}
+
+		public void setR22_PRODUCT(String v) {
+			R22_PRODUCT = v;
+		}
+
+		public BigDecimal getR22_TOTAL() {
+			return R22_TOTAL;
+		}
+
+		public void setR22_TOTAL(BigDecimal v) {
+			R22_TOTAL = v;
+		}
+
+		public BigDecimal getR23_LINE() {
+			return R23_LINE;
+		}
+
+		public void setR23_LINE(BigDecimal v) {
+			R23_LINE = v;
+		}
+
+		public String getR23_PRODUCT() {
+			return R23_PRODUCT;
+		}
+
+		public void setR23_PRODUCT(String v) {
+			R23_PRODUCT = v;
+		}
+
+		public BigDecimal getR23_TOTAL() {
+			return R23_TOTAL;
+		}
+
+		public void setR23_TOTAL(BigDecimal v) {
+			R23_TOTAL = v;
+		}
+
+		public BigDecimal getR24_LINE() {
+			return R24_LINE;
+		}
+
+		public void setR24_LINE(BigDecimal v) {
+			R24_LINE = v;
+		}
+
+		public String getR24_PRODUCT() {
+			return R24_PRODUCT;
+		}
+
+		public void setR24_PRODUCT(String v) {
+			R24_PRODUCT = v;
+		}
+
+		public BigDecimal getR24_TOTAL() {
+			return R24_TOTAL;
+		}
+
+		public void setR24_TOTAL(BigDecimal v) {
+			R24_TOTAL = v;
+		}
+
+		public BigDecimal getR25_LINE() {
+			return R25_LINE;
+		}
+
+		public void setR25_LINE(BigDecimal v) {
+			R25_LINE = v;
+		}
+
+		public String getR25_PRODUCT() {
+			return R25_PRODUCT;
+		}
+
+		public void setR25_PRODUCT(String v) {
+			R25_PRODUCT = v;
+		}
+
+		public BigDecimal getR25_TOTAL() {
+			return R25_TOTAL;
+		}
+
+		public void setR25_TOTAL(BigDecimal v) {
+			R25_TOTAL = v;
+		}
+
+		public BigDecimal getR26_LINE() {
+			return R26_LINE;
+		}
+
+		public void setR26_LINE(BigDecimal v) {
+			R26_LINE = v;
+		}
+
+		public String getR26_PRODUCT() {
+			return R26_PRODUCT;
+		}
+
+		public void setR26_PRODUCT(String v) {
+			R26_PRODUCT = v;
+		}
+
+		public BigDecimal getR26_TOTAL() {
+			return R26_TOTAL;
+		}
+
+		public void setR26_TOTAL(BigDecimal v) {
+			R26_TOTAL = v;
+		}
+
+		public BigDecimal getR27_LINE() {
+			return R27_LINE;
+		}
+
+		public void setR27_LINE(BigDecimal v) {
+			R27_LINE = v;
+		}
+
+		public String getR27_PRODUCT() {
+			return R27_PRODUCT;
+		}
+
+		public void setR27_PRODUCT(String v) {
+			R27_PRODUCT = v;
+		}
+
+		public BigDecimal getR27_TOTAL() {
+			return R27_TOTAL;
+		}
+
+		public void setR27_TOTAL(BigDecimal v) {
+			R27_TOTAL = v;
+		}
+
+		public BigDecimal getR28_LINE() {
+			return R28_LINE;
+		}
+
+		public void setR28_LINE(BigDecimal v) {
+			R28_LINE = v;
+		}
+
+		public String getR28_PRODUCT() {
+			return R28_PRODUCT;
+		}
+
+		public void setR28_PRODUCT(String v) {
+			R28_PRODUCT = v;
+		}
+
+		public BigDecimal getR28_TOTAL() {
+			return R28_TOTAL;
+		}
+
+		public void setR28_TOTAL(BigDecimal v) {
+			R28_TOTAL = v;
+		}
+
+		public BigDecimal getR29_LINE() {
+			return R29_LINE;
+		}
+
+		public void setR29_LINE(BigDecimal v) {
+			R29_LINE = v;
+		}
+
+		public String getR29_PRODUCT() {
+			return R29_PRODUCT;
+		}
+
+		public void setR29_PRODUCT(String v) {
+			R29_PRODUCT = v;
+		}
+
+		public BigDecimal getR29_TOTAL() {
+			return R29_TOTAL;
+		}
+
+		public void setR29_TOTAL(BigDecimal v) {
+			R29_TOTAL = v;
+		}
+
+		public BigDecimal getR30_LINE() {
+			return R30_LINE;
+		}
+
+		public void setR30_LINE(BigDecimal v) {
+			R30_LINE = v;
+		}
+
+		public String getR30_PRODUCT() {
+			return R30_PRODUCT;
+		}
+
+		public void setR30_PRODUCT(String v) {
+			R30_PRODUCT = v;
+		}
+
+		public BigDecimal getR30_TOTAL() {
+			return R30_TOTAL;
+		}
+
+		public void setR30_TOTAL(BigDecimal v) {
+			R30_TOTAL = v;
+		}
+
+		public BigDecimal getR31_LINE() {
+			return R31_LINE;
+		}
+
+		public void setR31_LINE(BigDecimal v) {
+			R31_LINE = v;
+		}
+
+		public String getR31_PRODUCT() {
+			return R31_PRODUCT;
+		}
+
+		public void setR31_PRODUCT(String v) {
+			R31_PRODUCT = v;
+		}
+
+		public BigDecimal getR31_TOTAL() {
+			return R31_TOTAL;
+		}
+
+		public void setR31_TOTAL(BigDecimal v) {
+			R31_TOTAL = v;
+		}
+
+		public BigDecimal getR32_LINE() {
+			return R32_LINE;
+		}
+
+		public void setR32_LINE(BigDecimal v) {
+			R32_LINE = v;
+		}
+
+		public String getR32_PRODUCT() {
+			return R32_PRODUCT;
+		}
+
+		public void setR32_PRODUCT(String v) {
+			R32_PRODUCT = v;
+		}
+
+		public BigDecimal getR32_TOTAL() {
+			return R32_TOTAL;
+		}
+
+		public void setR32_TOTAL(BigDecimal v) {
+			R32_TOTAL = v;
+		}
+
+		public BigDecimal getR33_LINE() {
+			return R33_LINE;
+		}
+
+		public void setR33_LINE(BigDecimal v) {
+			R33_LINE = v;
+		}
+
+		public String getR33_PRODUCT() {
+			return R33_PRODUCT;
+		}
+
+		public void setR33_PRODUCT(String v) {
+			R33_PRODUCT = v;
+		}
+
+		public BigDecimal getR33_TOTAL() {
+			return R33_TOTAL;
+		}
+
+		public void setR33_TOTAL(BigDecimal v) {
+			R33_TOTAL = v;
+		}
+
+		public BigDecimal getR34_LINE() {
+			return R34_LINE;
+		}
+
+		public void setR34_LINE(BigDecimal v) {
+			R34_LINE = v;
+		}
+
+		public String getR34_PRODUCT() {
+			return R34_PRODUCT;
+		}
+
+		public void setR34_PRODUCT(String v) {
+			R34_PRODUCT = v;
+		}
+
+		public BigDecimal getR34_TOTAL() {
+			return R34_TOTAL;
+		}
+
+		public void setR34_TOTAL(BigDecimal v) {
+			R34_TOTAL = v;
+		}
+
+		public BigDecimal getR35_LINE() {
+			return R35_LINE;
+		}
+
+		public void setR35_LINE(BigDecimal v) {
+			R35_LINE = v;
+		}
+
+		public String getR35_PRODUCT() {
+			return R35_PRODUCT;
+		}
+
+		public void setR35_PRODUCT(String v) {
+			R35_PRODUCT = v;
+		}
+
+		public BigDecimal getR35_TOTAL() {
+			return R35_TOTAL;
+		}
+
+		public void setR35_TOTAL(BigDecimal v) {
+			R35_TOTAL = v;
+		}
+
+		public BigDecimal getR36_LINE() {
+			return R36_LINE;
+		}
+
+		public void setR36_LINE(BigDecimal v) {
+			R36_LINE = v;
+		}
+
+		public String getR36_PRODUCT() {
+			return R36_PRODUCT;
+		}
+
+		public void setR36_PRODUCT(String v) {
+			R36_PRODUCT = v;
+		}
+
+		public BigDecimal getR36_TOTAL() {
+			return R36_TOTAL;
+		}
+
+		public void setR36_TOTAL(BigDecimal v) {
+			R36_TOTAL = v;
+		}
+
+		public String getREPORT_FREQUENCY() {
+			return REPORT_FREQUENCY;
+		}
+
+		public void setREPORT_FREQUENCY(String v) {
+			REPORT_FREQUENCY = v;
+		}
+
+		public String getREPORT_CODE() {
+			return REPORT_CODE;
+		}
+
+		public void setREPORT_CODE(String v) {
+			REPORT_CODE = v;
+		}
+
+		public String getREPORT_DESC() {
+			return REPORT_DESC;
+		}
+
+		public void setREPORT_DESC(String v) {
+			REPORT_DESC = v;
+		}
+
+		public String getENTITY_FLG() {
+			return ENTITY_FLG;
+		}
+
+		public void setENTITY_FLG(String v) {
+			ENTITY_FLG = v;
+		}
+
+		public String getMODIFY_FLG() {
+			return MODIFY_FLG;
+		}
+
+		public void setMODIFY_FLG(String v) {
+			MODIFY_FLG = v;
+		}
+
+		public String getDEL_FLG() {
+			return DEL_FLG;
+		}
+
+		public void setDEL_FLG(String v) {
+			DEL_FLG = v;
+		}
 	}
 
 	// =====================================================================
@@ -3380,192 +4155,749 @@ public class BRRS_M_MRC_ReportService {
 		private String MODIFY_FLG;
 		private String DEL_FLG;
 
-		public Date getReportDate() { return reportDate; }
-		public void setReportDate(Date v) { reportDate = v; }
-		public BigDecimal getReportVersion() { return reportVersion; }
-		public void setReportVersion(BigDecimal v) { reportVersion = v; }
-		public Date getReportResubDate() { return reportResubDate; }
-		public void setReportResubDate(Date v) { reportResubDate = v; }
-		public BigDecimal getR9_LINE() { return R9_LINE; }
-		public void setR9_LINE(BigDecimal v) { R9_LINE = v; }
-		public String getR9_PRODUCT() { return R9_PRODUCT; }
-		public void setR9_PRODUCT(String v) { R9_PRODUCT = v; }
-		public BigDecimal getR9_TOTAL() { return R9_TOTAL; }
-		public void setR9_TOTAL(BigDecimal v) { R9_TOTAL = v; }
-		public BigDecimal getR10_LINE() { return R10_LINE; }
-		public void setR10_LINE(BigDecimal v) { R10_LINE = v; }
-		public String getR10_PRODUCT() { return R10_PRODUCT; }
-		public void setR10_PRODUCT(String v) { R10_PRODUCT = v; }
-		public BigDecimal getR10_TOTAL() { return R10_TOTAL; }
-		public void setR10_TOTAL(BigDecimal v) { R10_TOTAL = v; }
-		public BigDecimal getR11_LINE() { return R11_LINE; }
-		public void setR11_LINE(BigDecimal v) { R11_LINE = v; }
-		public String getR11_PRODUCT() { return R11_PRODUCT; }
-		public void setR11_PRODUCT(String v) { R11_PRODUCT = v; }
-		public BigDecimal getR11_TOTAL() { return R11_TOTAL; }
-		public void setR11_TOTAL(BigDecimal v) { R11_TOTAL = v; }
-		public BigDecimal getR12_LINE() { return R12_LINE; }
-		public void setR12_LINE(BigDecimal v) { R12_LINE = v; }
-		public String getR12_PRODUCT() { return R12_PRODUCT; }
-		public void setR12_PRODUCT(String v) { R12_PRODUCT = v; }
-		public BigDecimal getR12_TOTAL() { return R12_TOTAL; }
-		public void setR12_TOTAL(BigDecimal v) { R12_TOTAL = v; }
-		public BigDecimal getR13_LINE() { return R13_LINE; }
-		public void setR13_LINE(BigDecimal v) { R13_LINE = v; }
-		public String getR13_PRODUCT() { return R13_PRODUCT; }
-		public void setR13_PRODUCT(String v) { R13_PRODUCT = v; }
-		public BigDecimal getR13_TOTAL() { return R13_TOTAL; }
-		public void setR13_TOTAL(BigDecimal v) { R13_TOTAL = v; }
-		public BigDecimal getR14_LINE() { return R14_LINE; }
-		public void setR14_LINE(BigDecimal v) { R14_LINE = v; }
-		public String getR14_PRODUCT() { return R14_PRODUCT; }
-		public void setR14_PRODUCT(String v) { R14_PRODUCT = v; }
-		public BigDecimal getR14_TOTAL() { return R14_TOTAL; }
-		public void setR14_TOTAL(BigDecimal v) { R14_TOTAL = v; }
-		public BigDecimal getR15_LINE() { return R15_LINE; }
-		public void setR15_LINE(BigDecimal v) { R15_LINE = v; }
-		public String getR15_PRODUCT() { return R15_PRODUCT; }
-		public void setR15_PRODUCT(String v) { R15_PRODUCT = v; }
-		public BigDecimal getR15_TOTAL() { return R15_TOTAL; }
-		public void setR15_TOTAL(BigDecimal v) { R15_TOTAL = v; }
-		public BigDecimal getR16_LINE() { return R16_LINE; }
-		public void setR16_LINE(BigDecimal v) { R16_LINE = v; }
-		public String getR16_PRODUCT() { return R16_PRODUCT; }
-		public void setR16_PRODUCT(String v) { R16_PRODUCT = v; }
-		public BigDecimal getR16_TOTAL() { return R16_TOTAL; }
-		public void setR16_TOTAL(BigDecimal v) { R16_TOTAL = v; }
-		public BigDecimal getR17_LINE() { return R17_LINE; }
-		public void setR17_LINE(BigDecimal v) { R17_LINE = v; }
-		public String getR17_PRODUCT() { return R17_PRODUCT; }
-		public void setR17_PRODUCT(String v) { R17_PRODUCT = v; }
-		public BigDecimal getR17_TOTAL() { return R17_TOTAL; }
-		public void setR17_TOTAL(BigDecimal v) { R17_TOTAL = v; }
-		public BigDecimal getR18_LINE() { return R18_LINE; }
-		public void setR18_LINE(BigDecimal v) { R18_LINE = v; }
-		public String getR18_PRODUCT() { return R18_PRODUCT; }
-		public void setR18_PRODUCT(String v) { R18_PRODUCT = v; }
-		public BigDecimal getR18_TOTAL() { return R18_TOTAL; }
-		public void setR18_TOTAL(BigDecimal v) { R18_TOTAL = v; }
-		public BigDecimal getR19_LINE() { return R19_LINE; }
-		public void setR19_LINE(BigDecimal v) { R19_LINE = v; }
-		public String getR19_PRODUCT() { return R19_PRODUCT; }
-		public void setR19_PRODUCT(String v) { R19_PRODUCT = v; }
-		public BigDecimal getR19_TOTAL() { return R19_TOTAL; }
-		public void setR19_TOTAL(BigDecimal v) { R19_TOTAL = v; }
-		public BigDecimal getR20_LINE() { return R20_LINE; }
-		public void setR20_LINE(BigDecimal v) { R20_LINE = v; }
-		public String getR20_PRODUCT() { return R20_PRODUCT; }
-		public void setR20_PRODUCT(String v) { R20_PRODUCT = v; }
-		public BigDecimal getR20_TOTAL() { return R20_TOTAL; }
-		public void setR20_TOTAL(BigDecimal v) { R20_TOTAL = v; }
-		public BigDecimal getR21_LINE() { return R21_LINE; }
-		public void setR21_LINE(BigDecimal v) { R21_LINE = v; }
-		public String getR21_PRODUCT() { return R21_PRODUCT; }
-		public void setR21_PRODUCT(String v) { R21_PRODUCT = v; }
-		public BigDecimal getR21_TOTAL() { return R21_TOTAL; }
-		public void setR21_TOTAL(BigDecimal v) { R21_TOTAL = v; }
-		public BigDecimal getR22_LINE() { return R22_LINE; }
-		public void setR22_LINE(BigDecimal v) { R22_LINE = v; }
-		public String getR22_PRODUCT() { return R22_PRODUCT; }
-		public void setR22_PRODUCT(String v) { R22_PRODUCT = v; }
-		public BigDecimal getR22_TOTAL() { return R22_TOTAL; }
-		public void setR22_TOTAL(BigDecimal v) { R22_TOTAL = v; }
-		public BigDecimal getR23_LINE() { return R23_LINE; }
-		public void setR23_LINE(BigDecimal v) { R23_LINE = v; }
-		public String getR23_PRODUCT() { return R23_PRODUCT; }
-		public void setR23_PRODUCT(String v) { R23_PRODUCT = v; }
-		public BigDecimal getR23_TOTAL() { return R23_TOTAL; }
-		public void setR23_TOTAL(BigDecimal v) { R23_TOTAL = v; }
-		public BigDecimal getR24_LINE() { return R24_LINE; }
-		public void setR24_LINE(BigDecimal v) { R24_LINE = v; }
-		public String getR24_PRODUCT() { return R24_PRODUCT; }
-		public void setR24_PRODUCT(String v) { R24_PRODUCT = v; }
-		public BigDecimal getR24_TOTAL() { return R24_TOTAL; }
-		public void setR24_TOTAL(BigDecimal v) { R24_TOTAL = v; }
-		public BigDecimal getR25_LINE() { return R25_LINE; }
-		public void setR25_LINE(BigDecimal v) { R25_LINE = v; }
-		public String getR25_PRODUCT() { return R25_PRODUCT; }
-		public void setR25_PRODUCT(String v) { R25_PRODUCT = v; }
-		public BigDecimal getR25_TOTAL() { return R25_TOTAL; }
-		public void setR25_TOTAL(BigDecimal v) { R25_TOTAL = v; }
-		public BigDecimal getR26_LINE() { return R26_LINE; }
-		public void setR26_LINE(BigDecimal v) { R26_LINE = v; }
-		public String getR26_PRODUCT() { return R26_PRODUCT; }
-		public void setR26_PRODUCT(String v) { R26_PRODUCT = v; }
-		public BigDecimal getR26_TOTAL() { return R26_TOTAL; }
-		public void setR26_TOTAL(BigDecimal v) { R26_TOTAL = v; }
-		public BigDecimal getR27_LINE() { return R27_LINE; }
-		public void setR27_LINE(BigDecimal v) { R27_LINE = v; }
-		public String getR27_PRODUCT() { return R27_PRODUCT; }
-		public void setR27_PRODUCT(String v) { R27_PRODUCT = v; }
-		public BigDecimal getR27_TOTAL() { return R27_TOTAL; }
-		public void setR27_TOTAL(BigDecimal v) { R27_TOTAL = v; }
-		public BigDecimal getR28_LINE() { return R28_LINE; }
-		public void setR28_LINE(BigDecimal v) { R28_LINE = v; }
-		public String getR28_PRODUCT() { return R28_PRODUCT; }
-		public void setR28_PRODUCT(String v) { R28_PRODUCT = v; }
-		public BigDecimal getR28_TOTAL() { return R28_TOTAL; }
-		public void setR28_TOTAL(BigDecimal v) { R28_TOTAL = v; }
-		public BigDecimal getR29_LINE() { return R29_LINE; }
-		public void setR29_LINE(BigDecimal v) { R29_LINE = v; }
-		public String getR29_PRODUCT() { return R29_PRODUCT; }
-		public void setR29_PRODUCT(String v) { R29_PRODUCT = v; }
-		public BigDecimal getR29_TOTAL() { return R29_TOTAL; }
-		public void setR29_TOTAL(BigDecimal v) { R29_TOTAL = v; }
-		public BigDecimal getR30_LINE() { return R30_LINE; }
-		public void setR30_LINE(BigDecimal v) { R30_LINE = v; }
-		public String getR30_PRODUCT() { return R30_PRODUCT; }
-		public void setR30_PRODUCT(String v) { R30_PRODUCT = v; }
-		public BigDecimal getR30_TOTAL() { return R30_TOTAL; }
-		public void setR30_TOTAL(BigDecimal v) { R30_TOTAL = v; }
-		public BigDecimal getR31_LINE() { return R31_LINE; }
-		public void setR31_LINE(BigDecimal v) { R31_LINE = v; }
-		public String getR31_PRODUCT() { return R31_PRODUCT; }
-		public void setR31_PRODUCT(String v) { R31_PRODUCT = v; }
-		public BigDecimal getR31_TOTAL() { return R31_TOTAL; }
-		public void setR31_TOTAL(BigDecimal v) { R31_TOTAL = v; }
-		public BigDecimal getR32_LINE() { return R32_LINE; }
-		public void setR32_LINE(BigDecimal v) { R32_LINE = v; }
-		public String getR32_PRODUCT() { return R32_PRODUCT; }
-		public void setR32_PRODUCT(String v) { R32_PRODUCT = v; }
-		public BigDecimal getR32_TOTAL() { return R32_TOTAL; }
-		public void setR32_TOTAL(BigDecimal v) { R32_TOTAL = v; }
-		public BigDecimal getR33_LINE() { return R33_LINE; }
-		public void setR33_LINE(BigDecimal v) { R33_LINE = v; }
-		public String getR33_PRODUCT() { return R33_PRODUCT; }
-		public void setR33_PRODUCT(String v) { R33_PRODUCT = v; }
-		public BigDecimal getR33_TOTAL() { return R33_TOTAL; }
-		public void setR33_TOTAL(BigDecimal v) { R33_TOTAL = v; }
-		public BigDecimal getR34_LINE() { return R34_LINE; }
-		public void setR34_LINE(BigDecimal v) { R34_LINE = v; }
-		public String getR34_PRODUCT() { return R34_PRODUCT; }
-		public void setR34_PRODUCT(String v) { R34_PRODUCT = v; }
-		public BigDecimal getR34_TOTAL() { return R34_TOTAL; }
-		public void setR34_TOTAL(BigDecimal v) { R34_TOTAL = v; }
-		public BigDecimal getR35_LINE() { return R35_LINE; }
-		public void setR35_LINE(BigDecimal v) { R35_LINE = v; }
-		public String getR35_PRODUCT() { return R35_PRODUCT; }
-		public void setR35_PRODUCT(String v) { R35_PRODUCT = v; }
-		public BigDecimal getR35_TOTAL() { return R35_TOTAL; }
-		public void setR35_TOTAL(BigDecimal v) { R35_TOTAL = v; }
-		public BigDecimal getR36_LINE() { return R36_LINE; }
-		public void setR36_LINE(BigDecimal v) { R36_LINE = v; }
-		public String getR36_PRODUCT() { return R36_PRODUCT; }
-		public void setR36_PRODUCT(String v) { R36_PRODUCT = v; }
-		public BigDecimal getR36_TOTAL() { return R36_TOTAL; }
-		public void setR36_TOTAL(BigDecimal v) { R36_TOTAL = v; }
-		public String getREPORT_FREQUENCY() { return REPORT_FREQUENCY; }
-		public void setREPORT_FREQUENCY(String v) { REPORT_FREQUENCY = v; }
-		public String getREPORT_CODE() { return REPORT_CODE; }
-		public void setREPORT_CODE(String v) { REPORT_CODE = v; }
-		public String getREPORT_DESC() { return REPORT_DESC; }
-		public void setREPORT_DESC(String v) { REPORT_DESC = v; }
-		public String getENTITY_FLG() { return ENTITY_FLG; }
-		public void setENTITY_FLG(String v) { ENTITY_FLG = v; }
-		public String getMODIFY_FLG() { return MODIFY_FLG; }
-		public void setMODIFY_FLG(String v) { MODIFY_FLG = v; }
-		public String getDEL_FLG() { return DEL_FLG; }
-		public void setDEL_FLG(String v) { DEL_FLG = v; }
+		public Date getReportDate() {
+			return reportDate;
+		}
+
+		public void setReportDate(Date v) {
+			reportDate = v;
+		}
+
+		public BigDecimal getReportVersion() {
+			return reportVersion;
+		}
+
+		public void setReportVersion(BigDecimal v) {
+			reportVersion = v;
+		}
+
+		public Date getReportResubDate() {
+			return reportResubDate;
+		}
+
+		public void setReportResubDate(Date v) {
+			reportResubDate = v;
+		}
+
+		public BigDecimal getR9_LINE() {
+			return R9_LINE;
+		}
+
+		public void setR9_LINE(BigDecimal v) {
+			R9_LINE = v;
+		}
+
+		public String getR9_PRODUCT() {
+			return R9_PRODUCT;
+		}
+
+		public void setR9_PRODUCT(String v) {
+			R9_PRODUCT = v;
+		}
+
+		public BigDecimal getR9_TOTAL() {
+			return R9_TOTAL;
+		}
+
+		public void setR9_TOTAL(BigDecimal v) {
+			R9_TOTAL = v;
+		}
+
+		public BigDecimal getR10_LINE() {
+			return R10_LINE;
+		}
+
+		public void setR10_LINE(BigDecimal v) {
+			R10_LINE = v;
+		}
+
+		public String getR10_PRODUCT() {
+			return R10_PRODUCT;
+		}
+
+		public void setR10_PRODUCT(String v) {
+			R10_PRODUCT = v;
+		}
+
+		public BigDecimal getR10_TOTAL() {
+			return R10_TOTAL;
+		}
+
+		public void setR10_TOTAL(BigDecimal v) {
+			R10_TOTAL = v;
+		}
+
+		public BigDecimal getR11_LINE() {
+			return R11_LINE;
+		}
+
+		public void setR11_LINE(BigDecimal v) {
+			R11_LINE = v;
+		}
+
+		public String getR11_PRODUCT() {
+			return R11_PRODUCT;
+		}
+
+		public void setR11_PRODUCT(String v) {
+			R11_PRODUCT = v;
+		}
+
+		public BigDecimal getR11_TOTAL() {
+			return R11_TOTAL;
+		}
+
+		public void setR11_TOTAL(BigDecimal v) {
+			R11_TOTAL = v;
+		}
+
+		public BigDecimal getR12_LINE() {
+			return R12_LINE;
+		}
+
+		public void setR12_LINE(BigDecimal v) {
+			R12_LINE = v;
+		}
+
+		public String getR12_PRODUCT() {
+			return R12_PRODUCT;
+		}
+
+		public void setR12_PRODUCT(String v) {
+			R12_PRODUCT = v;
+		}
+
+		public BigDecimal getR12_TOTAL() {
+			return R12_TOTAL;
+		}
+
+		public void setR12_TOTAL(BigDecimal v) {
+			R12_TOTAL = v;
+		}
+
+		public BigDecimal getR13_LINE() {
+			return R13_LINE;
+		}
+
+		public void setR13_LINE(BigDecimal v) {
+			R13_LINE = v;
+		}
+
+		public String getR13_PRODUCT() {
+			return R13_PRODUCT;
+		}
+
+		public void setR13_PRODUCT(String v) {
+			R13_PRODUCT = v;
+		}
+
+		public BigDecimal getR13_TOTAL() {
+			return R13_TOTAL;
+		}
+
+		public void setR13_TOTAL(BigDecimal v) {
+			R13_TOTAL = v;
+		}
+
+		public BigDecimal getR14_LINE() {
+			return R14_LINE;
+		}
+
+		public void setR14_LINE(BigDecimal v) {
+			R14_LINE = v;
+		}
+
+		public String getR14_PRODUCT() {
+			return R14_PRODUCT;
+		}
+
+		public void setR14_PRODUCT(String v) {
+			R14_PRODUCT = v;
+		}
+
+		public BigDecimal getR14_TOTAL() {
+			return R14_TOTAL;
+		}
+
+		public void setR14_TOTAL(BigDecimal v) {
+			R14_TOTAL = v;
+		}
+
+		public BigDecimal getR15_LINE() {
+			return R15_LINE;
+		}
+
+		public void setR15_LINE(BigDecimal v) {
+			R15_LINE = v;
+		}
+
+		public String getR15_PRODUCT() {
+			return R15_PRODUCT;
+		}
+
+		public void setR15_PRODUCT(String v) {
+			R15_PRODUCT = v;
+		}
+
+		public BigDecimal getR15_TOTAL() {
+			return R15_TOTAL;
+		}
+
+		public void setR15_TOTAL(BigDecimal v) {
+			R15_TOTAL = v;
+		}
+
+		public BigDecimal getR16_LINE() {
+			return R16_LINE;
+		}
+
+		public void setR16_LINE(BigDecimal v) {
+			R16_LINE = v;
+		}
+
+		public String getR16_PRODUCT() {
+			return R16_PRODUCT;
+		}
+
+		public void setR16_PRODUCT(String v) {
+			R16_PRODUCT = v;
+		}
+
+		public BigDecimal getR16_TOTAL() {
+			return R16_TOTAL;
+		}
+
+		public void setR16_TOTAL(BigDecimal v) {
+			R16_TOTAL = v;
+		}
+
+		public BigDecimal getR17_LINE() {
+			return R17_LINE;
+		}
+
+		public void setR17_LINE(BigDecimal v) {
+			R17_LINE = v;
+		}
+
+		public String getR17_PRODUCT() {
+			return R17_PRODUCT;
+		}
+
+		public void setR17_PRODUCT(String v) {
+			R17_PRODUCT = v;
+		}
+
+		public BigDecimal getR17_TOTAL() {
+			return R17_TOTAL;
+		}
+
+		public void setR17_TOTAL(BigDecimal v) {
+			R17_TOTAL = v;
+		}
+
+		public BigDecimal getR18_LINE() {
+			return R18_LINE;
+		}
+
+		public void setR18_LINE(BigDecimal v) {
+			R18_LINE = v;
+		}
+
+		public String getR18_PRODUCT() {
+			return R18_PRODUCT;
+		}
+
+		public void setR18_PRODUCT(String v) {
+			R18_PRODUCT = v;
+		}
+
+		public BigDecimal getR18_TOTAL() {
+			return R18_TOTAL;
+		}
+
+		public void setR18_TOTAL(BigDecimal v) {
+			R18_TOTAL = v;
+		}
+
+		public BigDecimal getR19_LINE() {
+			return R19_LINE;
+		}
+
+		public void setR19_LINE(BigDecimal v) {
+			R19_LINE = v;
+		}
+
+		public String getR19_PRODUCT() {
+			return R19_PRODUCT;
+		}
+
+		public void setR19_PRODUCT(String v) {
+			R19_PRODUCT = v;
+		}
+
+		public BigDecimal getR19_TOTAL() {
+			return R19_TOTAL;
+		}
+
+		public void setR19_TOTAL(BigDecimal v) {
+			R19_TOTAL = v;
+		}
+
+		public BigDecimal getR20_LINE() {
+			return R20_LINE;
+		}
+
+		public void setR20_LINE(BigDecimal v) {
+			R20_LINE = v;
+		}
+
+		public String getR20_PRODUCT() {
+			return R20_PRODUCT;
+		}
+
+		public void setR20_PRODUCT(String v) {
+			R20_PRODUCT = v;
+		}
+
+		public BigDecimal getR20_TOTAL() {
+			return R20_TOTAL;
+		}
+
+		public void setR20_TOTAL(BigDecimal v) {
+			R20_TOTAL = v;
+		}
+
+		public BigDecimal getR21_LINE() {
+			return R21_LINE;
+		}
+
+		public void setR21_LINE(BigDecimal v) {
+			R21_LINE = v;
+		}
+
+		public String getR21_PRODUCT() {
+			return R21_PRODUCT;
+		}
+
+		public void setR21_PRODUCT(String v) {
+			R21_PRODUCT = v;
+		}
+
+		public BigDecimal getR21_TOTAL() {
+			return R21_TOTAL;
+		}
+
+		public void setR21_TOTAL(BigDecimal v) {
+			R21_TOTAL = v;
+		}
+
+		public BigDecimal getR22_LINE() {
+			return R22_LINE;
+		}
+
+		public void setR22_LINE(BigDecimal v) {
+			R22_LINE = v;
+		}
+
+		public String getR22_PRODUCT() {
+			return R22_PRODUCT;
+		}
+
+		public void setR22_PRODUCT(String v) {
+			R22_PRODUCT = v;
+		}
+
+		public BigDecimal getR22_TOTAL() {
+			return R22_TOTAL;
+		}
+
+		public void setR22_TOTAL(BigDecimal v) {
+			R22_TOTAL = v;
+		}
+
+		public BigDecimal getR23_LINE() {
+			return R23_LINE;
+		}
+
+		public void setR23_LINE(BigDecimal v) {
+			R23_LINE = v;
+		}
+
+		public String getR23_PRODUCT() {
+			return R23_PRODUCT;
+		}
+
+		public void setR23_PRODUCT(String v) {
+			R23_PRODUCT = v;
+		}
+
+		public BigDecimal getR23_TOTAL() {
+			return R23_TOTAL;
+		}
+
+		public void setR23_TOTAL(BigDecimal v) {
+			R23_TOTAL = v;
+		}
+
+		public BigDecimal getR24_LINE() {
+			return R24_LINE;
+		}
+
+		public void setR24_LINE(BigDecimal v) {
+			R24_LINE = v;
+		}
+
+		public String getR24_PRODUCT() {
+			return R24_PRODUCT;
+		}
+
+		public void setR24_PRODUCT(String v) {
+			R24_PRODUCT = v;
+		}
+
+		public BigDecimal getR24_TOTAL() {
+			return R24_TOTAL;
+		}
+
+		public void setR24_TOTAL(BigDecimal v) {
+			R24_TOTAL = v;
+		}
+
+		public BigDecimal getR25_LINE() {
+			return R25_LINE;
+		}
+
+		public void setR25_LINE(BigDecimal v) {
+			R25_LINE = v;
+		}
+
+		public String getR25_PRODUCT() {
+			return R25_PRODUCT;
+		}
+
+		public void setR25_PRODUCT(String v) {
+			R25_PRODUCT = v;
+		}
+
+		public BigDecimal getR25_TOTAL() {
+			return R25_TOTAL;
+		}
+
+		public void setR25_TOTAL(BigDecimal v) {
+			R25_TOTAL = v;
+		}
+
+		public BigDecimal getR26_LINE() {
+			return R26_LINE;
+		}
+
+		public void setR26_LINE(BigDecimal v) {
+			R26_LINE = v;
+		}
+
+		public String getR26_PRODUCT() {
+			return R26_PRODUCT;
+		}
+
+		public void setR26_PRODUCT(String v) {
+			R26_PRODUCT = v;
+		}
+
+		public BigDecimal getR26_TOTAL() {
+			return R26_TOTAL;
+		}
+
+		public void setR26_TOTAL(BigDecimal v) {
+			R26_TOTAL = v;
+		}
+
+		public BigDecimal getR27_LINE() {
+			return R27_LINE;
+		}
+
+		public void setR27_LINE(BigDecimal v) {
+			R27_LINE = v;
+		}
+
+		public String getR27_PRODUCT() {
+			return R27_PRODUCT;
+		}
+
+		public void setR27_PRODUCT(String v) {
+			R27_PRODUCT = v;
+		}
+
+		public BigDecimal getR27_TOTAL() {
+			return R27_TOTAL;
+		}
+
+		public void setR27_TOTAL(BigDecimal v) {
+			R27_TOTAL = v;
+		}
+
+		public BigDecimal getR28_LINE() {
+			return R28_LINE;
+		}
+
+		public void setR28_LINE(BigDecimal v) {
+			R28_LINE = v;
+		}
+
+		public String getR28_PRODUCT() {
+			return R28_PRODUCT;
+		}
+
+		public void setR28_PRODUCT(String v) {
+			R28_PRODUCT = v;
+		}
+
+		public BigDecimal getR28_TOTAL() {
+			return R28_TOTAL;
+		}
+
+		public void setR28_TOTAL(BigDecimal v) {
+			R28_TOTAL = v;
+		}
+
+		public BigDecimal getR29_LINE() {
+			return R29_LINE;
+		}
+
+		public void setR29_LINE(BigDecimal v) {
+			R29_LINE = v;
+		}
+
+		public String getR29_PRODUCT() {
+			return R29_PRODUCT;
+		}
+
+		public void setR29_PRODUCT(String v) {
+			R29_PRODUCT = v;
+		}
+
+		public BigDecimal getR29_TOTAL() {
+			return R29_TOTAL;
+		}
+
+		public void setR29_TOTAL(BigDecimal v) {
+			R29_TOTAL = v;
+		}
+
+		public BigDecimal getR30_LINE() {
+			return R30_LINE;
+		}
+
+		public void setR30_LINE(BigDecimal v) {
+			R30_LINE = v;
+		}
+
+		public String getR30_PRODUCT() {
+			return R30_PRODUCT;
+		}
+
+		public void setR30_PRODUCT(String v) {
+			R30_PRODUCT = v;
+		}
+
+		public BigDecimal getR30_TOTAL() {
+			return R30_TOTAL;
+		}
+
+		public void setR30_TOTAL(BigDecimal v) {
+			R30_TOTAL = v;
+		}
+
+		public BigDecimal getR31_LINE() {
+			return R31_LINE;
+		}
+
+		public void setR31_LINE(BigDecimal v) {
+			R31_LINE = v;
+		}
+
+		public String getR31_PRODUCT() {
+			return R31_PRODUCT;
+		}
+
+		public void setR31_PRODUCT(String v) {
+			R31_PRODUCT = v;
+		}
+
+		public BigDecimal getR31_TOTAL() {
+			return R31_TOTAL;
+		}
+
+		public void setR31_TOTAL(BigDecimal v) {
+			R31_TOTAL = v;
+		}
+
+		public BigDecimal getR32_LINE() {
+			return R32_LINE;
+		}
+
+		public void setR32_LINE(BigDecimal v) {
+			R32_LINE = v;
+		}
+
+		public String getR32_PRODUCT() {
+			return R32_PRODUCT;
+		}
+
+		public void setR32_PRODUCT(String v) {
+			R32_PRODUCT = v;
+		}
+
+		public BigDecimal getR32_TOTAL() {
+			return R32_TOTAL;
+		}
+
+		public void setR32_TOTAL(BigDecimal v) {
+			R32_TOTAL = v;
+		}
+
+		public BigDecimal getR33_LINE() {
+			return R33_LINE;
+		}
+
+		public void setR33_LINE(BigDecimal v) {
+			R33_LINE = v;
+		}
+
+		public String getR33_PRODUCT() {
+			return R33_PRODUCT;
+		}
+
+		public void setR33_PRODUCT(String v) {
+			R33_PRODUCT = v;
+		}
+
+		public BigDecimal getR33_TOTAL() {
+			return R33_TOTAL;
+		}
+
+		public void setR33_TOTAL(BigDecimal v) {
+			R33_TOTAL = v;
+		}
+
+		public BigDecimal getR34_LINE() {
+			return R34_LINE;
+		}
+
+		public void setR34_LINE(BigDecimal v) {
+			R34_LINE = v;
+		}
+
+		public String getR34_PRODUCT() {
+			return R34_PRODUCT;
+		}
+
+		public void setR34_PRODUCT(String v) {
+			R34_PRODUCT = v;
+		}
+
+		public BigDecimal getR34_TOTAL() {
+			return R34_TOTAL;
+		}
+
+		public void setR34_TOTAL(BigDecimal v) {
+			R34_TOTAL = v;
+		}
+
+		public BigDecimal getR35_LINE() {
+			return R35_LINE;
+		}
+
+		public void setR35_LINE(BigDecimal v) {
+			R35_LINE = v;
+		}
+
+		public String getR35_PRODUCT() {
+			return R35_PRODUCT;
+		}
+
+		public void setR35_PRODUCT(String v) {
+			R35_PRODUCT = v;
+		}
+
+		public BigDecimal getR35_TOTAL() {
+			return R35_TOTAL;
+		}
+
+		public void setR35_TOTAL(BigDecimal v) {
+			R35_TOTAL = v;
+		}
+
+		public BigDecimal getR36_LINE() {
+			return R36_LINE;
+		}
+
+		public void setR36_LINE(BigDecimal v) {
+			R36_LINE = v;
+		}
+
+		public String getR36_PRODUCT() {
+			return R36_PRODUCT;
+		}
+
+		public void setR36_PRODUCT(String v) {
+			R36_PRODUCT = v;
+		}
+
+		public BigDecimal getR36_TOTAL() {
+			return R36_TOTAL;
+		}
+
+		public void setR36_TOTAL(BigDecimal v) {
+			R36_TOTAL = v;
+		}
+
+		public String getREPORT_FREQUENCY() {
+			return REPORT_FREQUENCY;
+		}
+
+		public void setREPORT_FREQUENCY(String v) {
+			REPORT_FREQUENCY = v;
+		}
+
+		public String getREPORT_CODE() {
+			return REPORT_CODE;
+		}
+
+		public void setREPORT_CODE(String v) {
+			REPORT_CODE = v;
+		}
+
+		public String getREPORT_DESC() {
+			return REPORT_DESC;
+		}
+
+		public void setREPORT_DESC(String v) {
+			REPORT_DESC = v;
+		}
+
+		public String getENTITY_FLG() {
+			return ENTITY_FLG;
+		}
+
+		public void setENTITY_FLG(String v) {
+			ENTITY_FLG = v;
+		}
+
+		public String getMODIFY_FLG() {
+			return MODIFY_FLG;
+		}
+
+		public void setMODIFY_FLG(String v) {
+			MODIFY_FLG = v;
+		}
+
+		public String getDEL_FLG() {
+			return DEL_FLG;
+		}
+
+		public void setDEL_FLG(String v) {
+			DEL_FLG = v;
+		}
 	}
 
 	// =====================================================================
@@ -3629,48 +4961,173 @@ public class BRRS_M_MRC_ReportService {
 		private char modifyFlg;
 		private char delFlg;
 
-		public String getCustId() { return custId; }
-		public void setCustId(String v) { custId = v; }
-		public String getAcctNumber() { return acctNumber; }
-		public void setAcctNumber(String v) { acctNumber = v; }
-		public String getAcctName() { return acctName; }
-		public void setAcctName(String v) { acctName = v; }
-		public String getDataType() { return dataType; }
-		public void setDataType(String v) { dataType = v; }
-		public String getReportLabel() { return reportLabel; }
-		public void setReportLabel(String v) { reportLabel = v; }
-		public String getReportAddlCriteria1() { return reportAddlCriteria1; }
-		public void setReportAddlCriteria1(String v) { reportAddlCriteria1 = v; }
-		public String getReportRemarks() { return reportRemarks; }
-		public void setReportRemarks(String v) { reportRemarks = v; }
-		public String getModificationRemarks() { return modificationRemarks; }
-		public void setModificationRemarks(String v) { modificationRemarks = v; }
-		public String getDataEntryVersion() { return dataEntryVersion; }
-		public void setDataEntryVersion(String v) { dataEntryVersion = v; }
-		public BigDecimal getAcctBalanceInpula() { return acctBalanceInpula; }
-		public void setAcctBalanceInpula(BigDecimal v) { acctBalanceInpula = v; }
-		public Date getReportDate() { return reportDate; }
-		public void setReportDate(Date v) { reportDate = v; }
-		public String getReportName() { return reportName; }
-		public void setReportName(String v) { reportName = v; }
-		public String getCreateUser() { return createUser; }
-		public void setCreateUser(String v) { createUser = v; }
-		public Date getCreateTime() { return createTime; }
-		public void setCreateTime(Date v) { createTime = v; }
-		public String getModifyUser() { return modifyUser; }
-		public void setModifyUser(String v) { modifyUser = v; }
-		public Date getModifyTime() { return modifyTime; }
-		public void setModifyTime(Date v) { modifyTime = v; }
-		public String getVerifyUser() { return verifyUser; }
-		public void setVerifyUser(String v) { verifyUser = v; }
-		public Date getVerifyTime() { return verifyTime; }
-		public void setVerifyTime(Date v) { verifyTime = v; }
-		public char getEntityFlg() { return entityFlg; }
-		public void setEntityFlg(char v) { entityFlg = v; }
-		public char getModifyFlg() { return modifyFlg; }
-		public void setModifyFlg(char v) { modifyFlg = v; }
-		public char getDelFlg() { return delFlg; }
-		public void setDelFlg(char v) { delFlg = v; }
+		public String getCustId() {
+			return custId;
+		}
+
+		public void setCustId(String v) {
+			custId = v;
+		}
+
+		public String getAcctNumber() {
+			return acctNumber;
+		}
+
+		public void setAcctNumber(String v) {
+			acctNumber = v;
+		}
+
+		public String getAcctName() {
+			return acctName;
+		}
+
+		public void setAcctName(String v) {
+			acctName = v;
+		}
+
+		public String getDataType() {
+			return dataType;
+		}
+
+		public void setDataType(String v) {
+			dataType = v;
+		}
+
+		public String getReportLabel() {
+			return reportLabel;
+		}
+
+		public void setReportLabel(String v) {
+			reportLabel = v;
+		}
+
+		public String getReportAddlCriteria1() {
+			return reportAddlCriteria1;
+		}
+
+		public void setReportAddlCriteria1(String v) {
+			reportAddlCriteria1 = v;
+		}
+
+		public String getReportRemarks() {
+			return reportRemarks;
+		}
+
+		public void setReportRemarks(String v) {
+			reportRemarks = v;
+		}
+
+		public String getModificationRemarks() {
+			return modificationRemarks;
+		}
+
+		public void setModificationRemarks(String v) {
+			modificationRemarks = v;
+		}
+
+		public String getDataEntryVersion() {
+			return dataEntryVersion;
+		}
+
+		public void setDataEntryVersion(String v) {
+			dataEntryVersion = v;
+		}
+
+		public BigDecimal getAcctBalanceInpula() {
+			return acctBalanceInpula;
+		}
+
+		public void setAcctBalanceInpula(BigDecimal v) {
+			acctBalanceInpula = v;
+		}
+
+		public Date getReportDate() {
+			return reportDate;
+		}
+
+		public void setReportDate(Date v) {
+			reportDate = v;
+		}
+
+		public String getReportName() {
+			return reportName;
+		}
+
+		public void setReportName(String v) {
+			reportName = v;
+		}
+
+		public String getCreateUser() {
+			return createUser;
+		}
+
+		public void setCreateUser(String v) {
+			createUser = v;
+		}
+
+		public Date getCreateTime() {
+			return createTime;
+		}
+
+		public void setCreateTime(Date v) {
+			createTime = v;
+		}
+
+		public String getModifyUser() {
+			return modifyUser;
+		}
+
+		public void setModifyUser(String v) {
+			modifyUser = v;
+		}
+
+		public Date getModifyTime() {
+			return modifyTime;
+		}
+
+		public void setModifyTime(Date v) {
+			modifyTime = v;
+		}
+
+		public String getVerifyUser() {
+			return verifyUser;
+		}
+
+		public void setVerifyUser(String v) {
+			verifyUser = v;
+		}
+
+		public Date getVerifyTime() {
+			return verifyTime;
+		}
+
+		public void setVerifyTime(Date v) {
+			verifyTime = v;
+		}
+
+		public char getEntityFlg() {
+			return entityFlg;
+		}
+
+		public void setEntityFlg(char v) {
+			entityFlg = v;
+		}
+
+		public char getModifyFlg() {
+			return modifyFlg;
+		}
+
+		public void setModifyFlg(char v) {
+			modifyFlg = v;
+		}
+
+		public char getDelFlg() {
+			return delFlg;
+		}
+
+		public void setDelFlg(char v) {
+			delFlg = v;
+		}
 	}
 
 	// =====================================================================
@@ -3734,48 +5191,173 @@ public class BRRS_M_MRC_ReportService {
 		private char modifyFlg;
 		private char delFlg;
 
-		public String getCustId() { return custId; }
-		public void setCustId(String v) { custId = v; }
-		public String getAcctNumber() { return acctNumber; }
-		public void setAcctNumber(String v) { acctNumber = v; }
-		public String getAcctName() { return acctName; }
-		public void setAcctName(String v) { acctName = v; }
-		public String getDataType() { return dataType; }
-		public void setDataType(String v) { dataType = v; }
-		public String getReportLabel() { return reportLabel; }
-		public void setReportLabel(String v) { reportLabel = v; }
-		public String getReportAddlCriteria1() { return reportAddlCriteria1; }
-		public void setReportAddlCriteria1(String v) { reportAddlCriteria1 = v; }
-		public String getReportRemarks() { return reportRemarks; }
-		public void setReportRemarks(String v) { reportRemarks = v; }
-		public String getModificationRemarks() { return modificationRemarks; }
-		public void setModificationRemarks(String v) { modificationRemarks = v; }
-		public String getDataEntryVersion() { return dataEntryVersion; }
-		public void setDataEntryVersion(String v) { dataEntryVersion = v; }
-		public BigDecimal getAcctBalanceInpula() { return acctBalanceInpula; }
-		public void setAcctBalanceInpula(BigDecimal v) { acctBalanceInpula = v; }
-		public Date getReportDate() { return reportDate; }
-		public void setReportDate(Date v) { reportDate = v; }
-		public String getReportName() { return reportName; }
-		public void setReportName(String v) { reportName = v; }
-		public String getCreateUser() { return createUser; }
-		public void setCreateUser(String v) { createUser = v; }
-		public Date getCreateTime() { return createTime; }
-		public void setCreateTime(Date v) { createTime = v; }
-		public String getModifyUser() { return modifyUser; }
-		public void setModifyUser(String v) { modifyUser = v; }
-		public Date getModifyTime() { return modifyTime; }
-		public void setModifyTime(Date v) { modifyTime = v; }
-		public String getVerifyUser() { return verifyUser; }
-		public void setVerifyUser(String v) { verifyUser = v; }
-		public Date getVerifyTime() { return verifyTime; }
-		public void setVerifyTime(Date v) { verifyTime = v; }
-		public char getEntityFlg() { return entityFlg; }
-		public void setEntityFlg(char v) { entityFlg = v; }
-		public char getModifyFlg() { return modifyFlg; }
-		public void setModifyFlg(char v) { modifyFlg = v; }
-		public char getDelFlg() { return delFlg; }
-		public void setDelFlg(char v) { delFlg = v; }
+		public String getCustId() {
+			return custId;
+		}
+
+		public void setCustId(String v) {
+			custId = v;
+		}
+
+		public String getAcctNumber() {
+			return acctNumber;
+		}
+
+		public void setAcctNumber(String v) {
+			acctNumber = v;
+		}
+
+		public String getAcctName() {
+			return acctName;
+		}
+
+		public void setAcctName(String v) {
+			acctName = v;
+		}
+
+		public String getDataType() {
+			return dataType;
+		}
+
+		public void setDataType(String v) {
+			dataType = v;
+		}
+
+		public String getReportLabel() {
+			return reportLabel;
+		}
+
+		public void setReportLabel(String v) {
+			reportLabel = v;
+		}
+
+		public String getReportAddlCriteria1() {
+			return reportAddlCriteria1;
+		}
+
+		public void setReportAddlCriteria1(String v) {
+			reportAddlCriteria1 = v;
+		}
+
+		public String getReportRemarks() {
+			return reportRemarks;
+		}
+
+		public void setReportRemarks(String v) {
+			reportRemarks = v;
+		}
+
+		public String getModificationRemarks() {
+			return modificationRemarks;
+		}
+
+		public void setModificationRemarks(String v) {
+			modificationRemarks = v;
+		}
+
+		public String getDataEntryVersion() {
+			return dataEntryVersion;
+		}
+
+		public void setDataEntryVersion(String v) {
+			dataEntryVersion = v;
+		}
+
+		public BigDecimal getAcctBalanceInpula() {
+			return acctBalanceInpula;
+		}
+
+		public void setAcctBalanceInpula(BigDecimal v) {
+			acctBalanceInpula = v;
+		}
+
+		public Date getReportDate() {
+			return reportDate;
+		}
+
+		public void setReportDate(Date v) {
+			reportDate = v;
+		}
+
+		public String getReportName() {
+			return reportName;
+		}
+
+		public void setReportName(String v) {
+			reportName = v;
+		}
+
+		public String getCreateUser() {
+			return createUser;
+		}
+
+		public void setCreateUser(String v) {
+			createUser = v;
+		}
+
+		public Date getCreateTime() {
+			return createTime;
+		}
+
+		public void setCreateTime(Date v) {
+			createTime = v;
+		}
+
+		public String getModifyUser() {
+			return modifyUser;
+		}
+
+		public void setModifyUser(String v) {
+			modifyUser = v;
+		}
+
+		public Date getModifyTime() {
+			return modifyTime;
+		}
+
+		public void setModifyTime(Date v) {
+			modifyTime = v;
+		}
+
+		public String getVerifyUser() {
+			return verifyUser;
+		}
+
+		public void setVerifyUser(String v) {
+			verifyUser = v;
+		}
+
+		public Date getVerifyTime() {
+			return verifyTime;
+		}
+
+		public void setVerifyTime(Date v) {
+			verifyTime = v;
+		}
+
+		public char getEntityFlg() {
+			return entityFlg;
+		}
+
+		public void setEntityFlg(char v) {
+			entityFlg = v;
+		}
+
+		public char getModifyFlg() {
+			return modifyFlg;
+		}
+
+		public void setModifyFlg(char v) {
+			modifyFlg = v;
+		}
+
+		public char getDelFlg() {
+			return delFlg;
+		}
+
+		public void setDelFlg(char v) {
+			delFlg = v;
+		}
 	}
 
 }

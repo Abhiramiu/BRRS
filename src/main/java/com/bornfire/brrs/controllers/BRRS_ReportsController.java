@@ -8,10 +8,10 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +34,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -63,99 +63,38 @@ import com.bornfire.brrs.entities.M_LARADV_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LARADV_Summary_Entity3;
 import com.bornfire.brrs.entities.M_LARADV_Summary_Entity4;
 import com.bornfire.brrs.entities.M_LARADV_Summary_Entity5;
-import com.bornfire.brrs.services.BRRS_ADISB1_ReportService;
-import com.bornfire.brrs.services.BRRS_AS_11_ReportService;
+import com.bornfire.brrs.entities.UserProfileRep;
+//import com.bornfire.brrs.services.BRRS_M_SRWA_12A_New_ReportService;
+import com.bornfire.brrs.services.*;
 import com.bornfire.brrs.services.BRRS_AS_11_ReportService.AS_11_Summary_Entity1;
-import com.bornfire.brrs.services.BRRS_BASEL_III_COM_EQUITY_DISC_ReportService;
-import com.bornfire.brrs.services.BRRS_BDISB1_ReportService;
-import com.bornfire.brrs.services.BRRS_BDISB2_ReportService;
-import com.bornfire.brrs.services.BRRS_BDISB3_ReportService;
-import com.bornfire.brrs.services.BRRS_CAP_RATIO_BUFFER_ReportService;
-import com.bornfire.brrs.services.BRRS_CASH_FLOW_ReportService;
-import com.bornfire.brrs.services.BRRS_DBS10_FINCON_III_1C_ReportService;
-import com.bornfire.brrs.services.BRRS_DBS10_FINCON_II_1A_ReportService;
-import com.bornfire.brrs.services.BRRS_EXPOSURES_ReportService;
 import com.bornfire.brrs.services.BRRS_EXPOSURES_ReportService.EXPOSURES_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_FORMAT_II_ReportService;
-import com.bornfire.brrs.services.BRRS_FORMAT_NEW_CPR_ReportService;
 import com.bornfire.brrs.services.BRRS_FORMAT_NEW_CPR_ReportService.FORMAT_NEW_CPR_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_FSI_ReportService;
 import com.bornfire.brrs.services.BRRS_FSI_ReportService.FSI_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_GL_SCH_ReportService;
-import com.bornfire.brrs.services.BRRS_IRRBB_ADVANCES_ReportService;
-import com.bornfire.brrs.services.BRRS_IRRBB_BORROWINGS_ReportService;
-import com.bornfire.brrs.services.BRRS_IRRBB_DEPOSITS_ReportService;
-import com.bornfire.brrs.services.BRRS_IRRBB_PLACEMENTS_ReportService;
-import com.bornfire.brrs.services.BRRS_MDISB1_ReportService;
-import com.bornfire.brrs.services.BRRS_MDISB2_ReportService;
-import com.bornfire.brrs.services.BRRS_MDISB3_ReportService;
-import com.bornfire.brrs.services.BRRS_MDISB5_ReportService;
-import com.bornfire.brrs.services.BRRS_M_AIDP_ReportService;
-import com.bornfire.brrs.services.BRRS_M_BOP_ReportService;
-import com.bornfire.brrs.services.BRRS_M_CA2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA2_ReportService.M_CA2_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_CA3_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA3_ReportService.M_CA3_Resub_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_CA3_ReportService.M_CA3_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_CA4_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA4_ReportService.M_CA4_Resub_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_CA4_ReportService.M_CA4_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_CA5_ReportService;
-import com.bornfire.brrs.services.BRRS_M_CA6_ReportService;
-import com.bornfire.brrs.services.BRRS_M_CA7_ReportService;
-import com.bornfire.brrs.services.BRRS_M_CR_ReportService;
-import com.bornfire.brrs.services.BRRS_M_DEP3_ReportService;
 import com.bornfire.brrs.services.BRRS_M_DEP3_ReportService.M_DEP3_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_DEP4_ReportService;
 import com.bornfire.brrs.services.BRRS_M_DEP4_ReportService.M_DEP4_Summary_Entity1;
 import com.bornfire.brrs.services.BRRS_M_DEP4_ReportService.M_DEP4_Summary_Entity2;
 import com.bornfire.brrs.services.BRRS_M_DEP4_ReportService.M_DEP4_Summary_Entity3;
-import com.bornfire.brrs.services.BRRS_M_EPR_ReportService;
-import com.bornfire.brrs.services.BRRS_M_FAS_ReportService;
 import com.bornfire.brrs.services.BRRS_M_FAS_ReportService.M_FAS_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_FXR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_FXR_ReportService.M_FXR_Resub_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_FXR_ReportService.M_FXR_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_GALOR_ReportService;
-import com.bornfire.brrs.services.BRRS_M_GMIRT_ReportService;
 import com.bornfire.brrs.services.BRRS_M_GMIRT_ReportService.M_GMIRT_Detail_Entity;
 import com.bornfire.brrs.services.BRRS_M_GMIRT_ReportService.M_GMIRT_RESUB_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_GMIRT_ReportService.M_GMIRT_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_GP_ReportService;
-import com.bornfire.brrs.services.BRRS_M_INT_RATES_FCA_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_FCA_ReportService.M_INT_RATES_FCA_RESUB_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_FCA_ReportService.M_INT_RATES_FCA_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_INT_RATES_NEW_ReportService;
-import com.bornfire.brrs.services.BRRS_M_INT_RATES_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_ReportService.M_INT_RATES_RESUB_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_ReportService.M_INT_RATES_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_IRB_ReportService;
 import com.bornfire.brrs.services.BRRS_M_IRB_ReportService.M_IRB_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_IS_ReportService;
-import com.bornfire.brrs.services.BRRS_M_I_S_CA_ReportService;
 import com.bornfire.brrs.services.BRRS_M_I_S_CA_ReportService.M_I_S_CA_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_LA1_ReportService;
-import com.bornfire.brrs.services.BRRS_M_LA2_ReportService;
-import com.bornfire.brrs.services.BRRS_M_LA3_ReportService;
-import com.bornfire.brrs.services.BRRS_M_LCR_ReportService;
-import com.bornfire.brrs.services.BRRS_NSFR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA3_ReportService.M_LA3_Summary_Entity2;
-import com.bornfire.brrs.services.BRRS_M_LA4_ReportService;
-import com.bornfire.brrs.services.BRRS_M_LARADV_ReportService;
-import com.bornfire.brrs.services.BRRS_M_LIQGAP_ReportService;
-import com.bornfire.brrs.services.BRRS_M_LIQ_ReportService;
-import com.bornfire.brrs.services.BRRS_M_MRC_ReportService;
-import com.bornfire.brrs.services.BRRS_M_NOSVOS_ReportService;
-import com.bornfire.brrs.services.BRRS_M_OB_ReportService;
-import com.bornfire.brrs.services.BRRS_M_OPTR_ReportService;
-import com.bornfire.brrs.services.BRRS_M_OR1_ReportService;
+import com.bornfire.brrs.services.BRRS_M_LA4_ReportService.M_LA4_Summary_Entity2;
 import com.bornfire.brrs.services.BRRS_M_OR1_ReportService.M_OR1_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_OR2_ReportService;
-import com.bornfire.brrs.services.BRRS_M_PD_ReportService;
 import com.bornfire.brrs.services.BRRS_M_PD_ReportService.M_PD_Manual_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_PI_ReportService;
-import com.bornfire.brrs.services.BRRS_M_PLL_ReportService;
-import com.bornfire.brrs.services.BRRS_M_RPD_ReportService;
 import com.bornfire.brrs.services.BRRS_M_RPD_ReportService.M_RPD_Summary_Entity1;
 import com.bornfire.brrs.services.BRRS_M_RPD_ReportService.M_RPD_Summary_Entity2;
 import com.bornfire.brrs.services.BRRS_M_RPD_ReportService.M_RPD_Summary_Entity3;
@@ -165,27 +104,15 @@ import com.bornfire.brrs.services.BRRS_M_RPD_ReportService.M_RPD_Summary_Entity6
 import com.bornfire.brrs.services.BRRS_M_RPD_ReportService.M_RPD_Summary_Entity7;
 import com.bornfire.brrs.services.BRRS_M_RPD_ReportService.M_RPD_Summary_Entity8;
 import com.bornfire.brrs.services.BRRS_M_RPD_ReportService.M_RPD_Summary_Entity9;
-import com.bornfire.brrs.services.BRRS_M_SCI_E_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SCI_E_ReportService.M_SCI_E_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_SECA_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SECA_ReportService.M_SECA_Resub_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SECA_ReportService.M_SECA_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_SECL_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SECL_ReportService.M_SECL_Resub_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SECL_ReportService.M_SECL_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_SEC_ReportService;
-import com.bornfire.brrs.services.BRRS_M_SFINP1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SFINP1_ReportService.M_SFINP1_Summary_Manual_Entity;
-import com.bornfire.brrs.services.BRRS_SLS_INPUT_SHT_ReportService;
-import com.bornfire.brrs.services.BRRS_SLS_INPUT_SHT_ReportService.SLS_INPUT_SHT_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_SFINP2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SFINP2_ReportService.M_SFINP2_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_SIR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SIR_ReportService.M_SIR_Resub_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SIR_ReportService.M_SIR_Summary_Entity;
-//import com.bornfire.brrs.services.BRRS_M_SRWA_12A_New_ReportService;
-import com.bornfire.brrs.services.BRRS_M_SRWA_12A_ReportService;
-import com.bornfire.brrs.services.BRRS_M_SRWA_12B_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12B_ReportService.M_SRWA_12B_Summary_Entity1;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12B_ReportService.M_SRWA_12B_Summary_Entity2;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12B_ReportService.M_SRWA_12B_Summary_Entity3;
@@ -194,46 +121,20 @@ import com.bornfire.brrs.services.BRRS_M_SRWA_12B_ReportService.M_SRWA_12B_Summa
 import com.bornfire.brrs.services.BRRS_M_SRWA_12B_ReportService.M_SRWA_12B_Summary_Entity6;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12B_ReportService.M_SRWA_12B_Summary_Entity7;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12B_ReportService.M_SRWA_12B_Summary_Entity8;
-import com.bornfire.brrs.services.BRRS_M_SRWA_12C_ReportService;
-import com.bornfire.brrs.services.BRRS_M_SRWA_12D_ReportService;
-import com.bornfire.brrs.services.BRRS_M_SRWA_12E_ReportService;
-import com.bornfire.brrs.services.BRRS_M_SRWA_12F_ReportService;
-import com.bornfire.brrs.services.BRRS_M_SRWA_12G_ReportService;
-import com.bornfire.brrs.services.BRRS_M_SRWA_12H_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12H_ReportService.M_SRWA_12H_Resub_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12H_ReportService.M_SRWA_12H_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_TBS_ReportService;
 import com.bornfire.brrs.services.BRRS_M_TBS_ReportService.M_TBS_Resub_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_TBS_ReportService.M_TBS_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_TOP_100_BORROWER_ReportService;
 import com.bornfire.brrs.services.BRRS_M_TOP_100_BORROWER_ReportService.M_TOP_100_BORROWER_Manual_Summary_Entity1;
 import com.bornfire.brrs.services.BRRS_M_TOP_100_BORROWER_ReportService.M_TOP_100_BORROWER_Manual_Summary_Entity2;
-import com.bornfire.brrs.services.BRRS_M_UNCONS_INVEST_ReportService;
 import com.bornfire.brrs.services.BRRS_M_UNCONS_INVEST_ReportService.M_UNCONS_INVEST_Resub_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_UNCONS_INVEST_ReportService.M_UNCONS_INVEST_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_PL_SCHS_ReportService;
 import com.bornfire.brrs.services.BRRS_PL_SCHS_ReportService.PL_SCHS_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_Q_BRANCHNET_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_BRANCHNET_ReportService.Q_BRANCHNET_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_Q_LARADV_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_LARADV_ReportService.Q_LARADV_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_Q_RLFA1_ReportService;
-import com.bornfire.brrs.services.BRRS_Q_RLFA2_ReportService;
-import com.bornfire.brrs.services.BRRS_Q_SMME_DEP_ReportService;
-import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service;
 import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service.Q_STAFF_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_SCH_17_New_Service;
 import com.bornfire.brrs.services.BRRS_SCH_17_New_Service.SCH_17_Manual_Summary_Entity1;
-import com.bornfire.brrs.services.BRRS_SCH_17_ReportService;
-import com.bornfire.brrs.services.BRRS_UFCE_ANNEXURE_ReportService;
-import com.bornfire.brrs.services.BRRS_UFCE_CALCULATION_ReportService;
-import com.bornfire.brrs.services.BorrowingFileUploadService;
-import com.bornfire.brrs.services.Exceltopdfservice;
-import com.bornfire.brrs.services.RegulatoryReportServices;
-import com.bornfire.brrs.services.ReportCodeMappingService;
-import com.bornfire.brrs.services.SlsHistoricalDataUploadService;
-import com.bornfire.brrs.entities.UserProfileRep;
-import com.bornfire.brrs.services.AuditService;
+import com.bornfire.brrs.services.BRRS_SLS_INPUT_SHT_ReportService.SLS_INPUT_SHT_Summary_Entity;
 
 @Controller
 @ConfigurationProperties("default")
@@ -688,33 +589,29 @@ public class BRRS_ReportsController {
 	@PostMapping("/updateReport")
 	public ResponseEntity<String> updateReportM_LA4(
 			@RequestParam("asondate") @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@RequestParam("type") String type, HttpServletRequest request) {
+			HttpServletRequest request) {
 
 		try {
 
-			System.out.println("Came to single controller. Type : " + type + " Date : " + asondate);
+			System.out.println("Came to single controller. Date : " + asondate);
 
-			boolean isResub = "RESUB".equalsIgnoreCase(type);
-
-			Object entityInstance = isResub ? new BRRS_M_LA4_ReportService.M_LA4_Archival_Summary_Entity2()
-					: new BRRS_M_LA4_ReportService.M_LA4_Summary_Entity2();
+			// Fixed entity instance (RESUB archival routing removed)
+			M_LA4_Summary_Entity2 entityInstance = new M_LA4_Summary_Entity2();
 
 			// Bind all request parameters to entity
 			ServletRequestDataBinder binder = new ServletRequestDataBinder(entityInstance);
 			binder.bind(request);
 
 			// Set REPORT_DATE dynamically
-			Method setDateMethod = entityInstance.getClass().getMethod("setREPORT_DATE", Date.class);
-
-			setDateMethod.invoke(entityInstance, asondate);
+			entityInstance.setREPORT_DATE(asondate);
 
 			System.out.println("Entity Created : " + entityInstance.getClass().getSimpleName());
 			System.out.println("REPORT_DATE Set : " + asondate);
 
-			// Call service
-			BRRS_M_LA4_ReportService.updateReport(entityInstance, type);
+			// Call service method
+			BRRS_M_LA4_ReportService.updateReport(entityInstance);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 
 		} catch (Exception e) {
 
@@ -730,7 +627,6 @@ public class BRRS_ReportsController {
 
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + root.getMessage());
 		}
-
 	}
 
 	@RequestMapping(value = "/M_IRBupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
@@ -748,7 +644,7 @@ public class BRRS_ReportsController {
 			// call services
 			M_IRB_Service.MIRBUpdate(request1);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -772,8 +668,9 @@ public class BRRS_ReportsController {
 	 * 
 	 * // call services BRRS_MDISB1_ReportService.updateReport(request1);
 	 * 
-	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
-	 * e.printStackTrace(); return
+	 * return
+	 * ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval."
+	 * ); } catch (Exception e) { e.printStackTrace(); return
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
 	 * body("Update Failed: " + e.getMessage()); } }
 	 */
@@ -798,7 +695,7 @@ public class BRRS_ReportsController {
 			UNCreportService.updateReport3(request1);
 			UNCreportService.updateReport4(request1);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -897,7 +794,7 @@ public class BRRS_ReportsController {
 			M_TOP_100_BORROWER_ReportService.updateReport(request1);
 			M_TOP_100_BORROWER_ReportService.updateReport1(request2);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -924,7 +821,7 @@ public class BRRS_ReportsController {
 			// call services
 			brrs_m_mrc_reportservice.updateReport(request1);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -948,7 +845,7 @@ public class BRRS_ReportsController {
 			// call services
 			brrs_m_liqgap_reportservice.updateReport(request1);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -974,7 +871,7 @@ public class BRRS_ReportsController {
 			// call services
 			SRWA12DreportService.updateReport(request1);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -1044,7 +941,7 @@ public class BRRS_ReportsController {
 			// call services
 			BRRS_M_SRWA_12C_reportservice.updateReport(request);
 
-			return ResponseEntity.ok(" Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -1105,8 +1002,9 @@ public class BRRS_ReportsController {
 	 * CA3reportService.updateReport5(request1);
 	 * CA3reportService.updateReport6(request1);
 	 * 
-	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
-	 * e.printStackTrace(); return
+	 * return
+	 * ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval."
+	 * ); } catch (Exception e) { e.printStackTrace(); return
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
 	 * body("Update Failed: " + e.getMessage()); } }
 	 */
@@ -1307,7 +1205,7 @@ public class BRRS_ReportsController {
 			// call services
 			brrs_m_i_s_ca_reportservice.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -1330,7 +1228,7 @@ public class BRRS_ReportsController {
 			// call services
 			cap_ratio_buffer_reportservice.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -1430,7 +1328,7 @@ public class BRRS_ReportsController {
 
 			b_III_cetd_ReportService.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -1586,7 +1484,7 @@ public class BRRS_ReportsController {
 			// ✅ directly update summary report
 			LA3reportService.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -1657,7 +1555,7 @@ public class BRRS_ReportsController {
 
 			brrs_m_liq_reportservice.updateReport(entityInstance, type);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 
 		} catch (Exception e) {
 
@@ -1693,7 +1591,7 @@ public class BRRS_ReportsController {
 //			/* brrs_m_liq_reportservice.updateReport(request1); */
 //			brrs_m_liq_reportservice.updateReport1(request2);
 //
-//			return ResponseEntity.ok("Modified Successfully.");
+//			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 //		} catch (Exception e) {
 //			e.printStackTrace();
 //			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -1718,10 +1616,10 @@ public class BRRS_ReportsController {
 			request2.setReportDate(asondate);
 
 			// call services
-			CA5reportService.updateReport(request1);
+			CA5reportService.updateReport1(request1);
 			CA5reportService.updateReport2(request2);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -1802,7 +1700,7 @@ public class BRRS_ReportsController {
 
 			BDISB1reportService.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 
 		} catch (Exception e) {
 
@@ -1859,8 +1757,9 @@ public class BRRS_ReportsController {
 	 * 
 	 * INT_RATES_FCAreportService.updateDetailFromForm(asondate, allParams);
 	 * 
-	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
-	 * e.printStackTrace(); return ResponseEntity
+	 * return
+	 * ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval."
+	 * ); } catch (Exception e) { e.printStackTrace(); return ResponseEntity
 	 * .status(HttpStatus.INTERNAL_SERVER_ERROR) .body("Update Failed: " +
 	 * e.getMessage()); } }
 	 */
@@ -1999,8 +1898,9 @@ public class BRRS_ReportsController {
 	 * 
 	 * INT_RATES_reportService.updateDetailFromForm(asondate, allParams);
 	 * 
-	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
-	 * e.printStackTrace(); return ResponseEntity
+	 * return
+	 * ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval."
+	 * ); } catch (Exception e) { e.printStackTrace(); return ResponseEntity
 	 * .status(HttpStatus.INTERNAL_SERVER_ERROR) .body("Update Failed: " +
 	 * e.getMessage()); } }
 	 */
@@ -2047,8 +1947,9 @@ public class BRRS_ReportsController {
 	 * 
 	 * M_OPTRreportService.updateDetailFromForm(asondate, allParams);
 	 * 
-	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
-	 * e.printStackTrace(); return ResponseEntity
+	 * return
+	 * ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval."
+	 * ); } catch (Exception e) { e.printStackTrace(); return ResponseEntity
 	 * .status(HttpStatus.INTERNAL_SERVER_ERROR) .body("Update Failed: " +
 	 * e.getMessage()); } }
 	 */
@@ -2072,7 +1973,7 @@ public class BRRS_ReportsController {
 
 			BRRS_M_OPTR_reportservice.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 
 		} catch (Exception e) {
 
@@ -2134,7 +2035,7 @@ public class BRRS_ReportsController {
 
 			BDISB3reportService.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 
 		} catch (Exception e) {
 
@@ -2196,7 +2097,7 @@ public class BRRS_ReportsController {
 			MDISB5reportService.updateReport(request1);
 			MDISB5reportService.updateReport2(request2);
 			MDISB5reportService.updateReport3(request3);
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + e.getMessage());
@@ -2304,8 +2205,9 @@ public class BRRS_ReportsController {
 	 * brrs_MDISB5_ReportService.updateReport2(request2);
 	 * brrs_MDISB5_ReportService.updateReport3(request3);
 	 * 
-	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
-	 * e.printStackTrace(); return
+	 * return
+	 * ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval."
+	 * ); } catch (Exception e) { e.printStackTrace(); return
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
 	 * body("Update Failed: " + e.getMessage()); } }
 	 * 
@@ -2352,7 +2254,7 @@ public class BRRS_ReportsController {
 			request1.setReport_date(asondate);
 			// call services
 			BRRS_M_CR_ReportService.updateReport(request1);
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -2681,7 +2583,7 @@ public class BRRS_ReportsController {
 			// call services
 			INTRATESreportService.updateReport(request1);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -2706,7 +2608,7 @@ public class BRRS_ReportsController {
 			// call services
 			brrs_m_int_new_rates_reportservice.updateReport(request1);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -2771,7 +2673,7 @@ public class BRRS_ReportsController {
 				M_CA7_ReportService.updateDetail(detail);
 			}
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2796,7 +2698,7 @@ public class BRRS_ReportsController {
 
 			M_SFINP1_ReportService.updateReport(request1);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -2838,7 +2740,7 @@ public class BRRS_ReportsController {
 
 			BRRS_SLS_INPUT_SHT_reportservice.updateReport(request1);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -2901,7 +2803,7 @@ public class BRRS_ReportsController {
 			SECreportService.updateReport2(request3);
 			SECreportService.updateReport3(request4);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -3030,8 +2932,9 @@ public class BRRS_ReportsController {
 	 * 
 	 * // call services INTRATESFCACreportService.updateReport(request1);
 	 * 
-	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
-	 * e.printStackTrace(); return
+	 * return
+	 * ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval."
+	 * ); } catch (Exception e) { e.printStackTrace(); return
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	 * .body("Update Failed: " + e.getMessage()); } }
 	 */
@@ -3220,7 +3123,7 @@ public class BRRS_ReportsController {
 			// call services
 			brrs_m_epr_reportservice.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -3412,8 +3315,9 @@ public class BRRS_ReportsController {
 	 * BRRS_M_CA3_reportservice.updateReport5(request);
 	 * BRRS_M_CA3_reportservice.updateReport6(request);
 	 * 
-	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
-	 * e.printStackTrace(); return
+	 * return
+	 * ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval."
+	 * ); } catch (Exception e) { e.printStackTrace(); return
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
 	 * body("Update Failed: " + e.getMessage()); } }
 	 */
@@ -3491,7 +3395,7 @@ public class BRRS_ReportsController {
 
 			BRRS_M_CR_reportservice.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -3593,7 +3497,7 @@ public class BRRS_ReportsController {
 			brrs_m_srwa_12a_reportservice.updateReport7(request7);
 			brrs_m_srwa_12a_reportservice.updateReport8(request8);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -3639,7 +3543,7 @@ public class BRRS_ReportsController {
 //			brrs_M_SRWA_12A_New_reportservice.updateReport7(request7);
 //			brrs_M_SRWA_12A_New_reportservice.updateReport8(request8);
 //
-//			return ResponseEntity.ok("Modified Successfully.");
+//			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 //		} catch (Exception e) {
 //			e.printStackTrace();
 //			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -3703,7 +3607,7 @@ public class BRRS_ReportsController {
 			brrs_m_srwa_12b_reportservice.updateReport7(request7);
 			brrs_m_srwa_12b_reportservice.updateReport8(request8);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -3786,7 +3690,7 @@ public class BRRS_ReportsController {
 			// call services
 			q_rlfa2_reportService.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -3885,7 +3789,7 @@ public class BRRS_ReportsController {
 			// call services
 			brrs_q_rlfa1_reportservice.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -3958,7 +3862,7 @@ public class BRRS_ReportsController {
 			BRRS_M_RPD_ReportService.updateReport8(request8);
 			BRRS_M_RPD_ReportService.updateReport9(request9);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -3982,8 +3886,9 @@ public class BRRS_ReportsController {
 	 * 
 	 * // call services BRRS_MDISB1_ReportService.updateReport(request1);
 	 * 
-	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
-	 * e.printStackTrace(); return
+	 * return
+	 * ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval."
+	 * ); } catch (Exception e) { e.printStackTrace(); return
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
 	 * body("Update Failed: " + e.getMessage()); } }
 	 */
@@ -3998,7 +3903,7 @@ public class BRRS_ReportsController {
 
 			BRRS_MDISB1_ReportService.updateDetailFromForm(asondate, allParams);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + e.getMessage());
@@ -4043,8 +3948,9 @@ public class BRRS_ReportsController {
 	 * 
 	 * // call services BRRS_MDISB2_ReportService.updateReport(request1);
 	 * 
-	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
-	 * e.printStackTrace(); return
+	 * return
+	 * ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval."
+	 * ); } catch (Exception e) { e.printStackTrace(); return
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
 	 * body("Update Failed: " + e.getMessage()); } }
 	 */
@@ -4059,7 +3965,7 @@ public class BRRS_ReportsController {
 
 			BRRS_MDISB2_ReportService.updateDetailFromForm(asondate, allParams);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + e.getMessage());
@@ -4083,8 +3989,9 @@ public class BRRS_ReportsController {
 	 * 
 	 * // call services BRRS_MDISB3_ReportService.updateReport(request1);
 	 * 
-	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
-	 * e.printStackTrace(); return
+	 * return
+	 * ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval."
+	 * ); } catch (Exception e) { e.printStackTrace(); return
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
 	 * body("Update Failed: " + e.getMessage()); } }
 	 */
@@ -4099,7 +4006,7 @@ public class BRRS_ReportsController {
 
 			BRRS_MDISB3_ReportService.updateDetailFromForm(asondate, allParams);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + e.getMessage());
@@ -4124,7 +4031,7 @@ public class BRRS_ReportsController {
 			// call services
 			BRRS_SCH_17_New_Service.updateSCH17NewReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -4151,8 +4058,9 @@ public class BRRS_ReportsController {
 	 * 
 	 * // call services brrs_sch_17_reportservice.updateReport(request);
 	 * 
-	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
-	 * e.printStackTrace(); return
+	 * return
+	 * ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval."
+	 * ); } catch (Exception e) { e.printStackTrace(); return
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	 * .body("Update Failed: " + e.getMessage()); } }
 	 */
@@ -4167,7 +4075,7 @@ public class BRRS_ReportsController {
 
 			brrs_sch_17_reportservice.updateDetailFromForm(asondate, allParams);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + e.getMessage());
@@ -4214,30 +4122,28 @@ public class BRRS_ReportsController {
 	@Autowired
 	BRRS_Q_SMME_DEP_ReportService BRRS_Q_SMME_DEP_ReportService;
 
-	/*
-	 * @RequestMapping(value = "/Q_SMME_DEPupdate", method = { RequestMethod.GET,
-	 * RequestMethod.POST })
-	 * 
-	 * @ResponseBody public ResponseEntity<String> updateReport(
-	 * 
-	 * @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date
-	 * asondate,
-	 * 
-	 * @ModelAttribute BRRS_Q_SMME_DEP_ReportService.Q_SMME_DEP_Summary_Entity
-	 * request) {
-	 * 
-	 * try { System.out.println("came to single controller");
-	 * 
-	 * // ? set the asondate into entity request.setReport_date(asondate);
-	 * 
-	 * // call services BRRS_Q_SMME_DEP_ReportService.updateQSmmeDepReport(request);
-	 * 
-	 * return
-	 * ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval."
-	 * ); } catch (Exception e) { e.printStackTrace(); return
-	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
-	 * body("Update Failed: " + e.getMessage()); } }
-	 */
+	@RequestMapping(value = "/Q_SMME_DEPupdate", method = { RequestMethod.GET, RequestMethod.POST })
+
+	@ResponseBody
+	public ResponseEntity<String> updateReport(
+
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+			@ModelAttribute BRRS_Q_SMME_DEP_ReportService.Q_SMME_DEP_Summary_Entity request) {
+
+		try {
+			System.out.println("came to single controller");
+
+			// ? set the asondate into entity request.setReport_date(asondate);
+
+			BRRS_Q_SMME_DEP_ReportService.updateQSmmeDepReport(request);
+
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
 
 	@RequestMapping(value = "/UpdateQ_SMME_DEP_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
@@ -4295,7 +4201,7 @@ public class BRRS_ReportsController {
 
 			BRRS_M_LCR_ReportService.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -4318,7 +4224,7 @@ public class BRRS_ReportsController {
 
 			BRRS_NSFR_ReportService.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -4476,7 +4382,7 @@ public class BRRS_ReportsController {
 			System.out.println("came to M_SECA resub controller");
 			request.setReportDate(asondate);
 			BRRS_M_SECA_reportservice.updateReportResub(request);
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -4559,7 +4465,7 @@ public class BRRS_ReportsController {
 			request.setReport_date(asondate);
 
 			M_SRWA_12Eservice.updateReport(request);
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -4753,31 +4659,30 @@ public class BRRS_ReportsController {
 	@Autowired
 	BRRS_Q_BRANCHNET_ReportService QBRANCHNET_service;
 
-	/*
-	 * @RequestMapping(value = "/Q_BRANCHNETupdateAll", method = {
-	 * RequestMethod.GET, RequestMethod.POST })
-	 * 
-	 * @ResponseBody public ResponseEntity<String> updateAllReports(
-	 * 
-	 * @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date
-	 * asondate,
-	 * 
-	 * @ModelAttribute Q_BRANCHNET_Summary_Entity request1) { try {
-	 * System.out.println("Came to single controller");
-	 * 
-	 * // set date into all 3 entities request1.setReport_date(asondate);
-	 * 
-	 * // call services QBRANCHNET_service.updateQBranchnetReport(request1); //
-	 * QBRANCHNET_service.QBranchnetUpdate2(request1); //
-	 * QBRANCHNET_service.QBranchnetUpdate3(request1); //
-	 * QBRANCHNET_service.QBranchnetUpdate4(request1);
-	 * 
-	 * return
-	 * ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval."
-	 * ); } catch (Exception e) { e.printStackTrace(); return
-	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
-	 * body("Update Failed: " + e.getMessage()); } }
-	 */
+	@RequestMapping(value = "/Q_BRANCHNETupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+
+	@ResponseBody
+	public ResponseEntity<String> updateAllReports(
+
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+			@ModelAttribute Q_BRANCHNET_Summary_Entity request1) {
+		try {
+			System.out.println("Came to single controller");
+
+			// set date into all 3 entities request1.setReport_date(asondate);
+
+			QBRANCHNET_service.updateQBranchnetReport(request1); //
+//			  QBRANCHNET_service.QBranchnetUpdate2(request1); //
+//			  QBRANCHNET_service.QBranchnetUpdate3(request1); //
+//			  QBRANCHNET_service.QBranchnetUpdate4(request1);
+
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
 
 	@RequestMapping(value = "/UpdateQ_BRANCHNETReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
@@ -4918,7 +4823,7 @@ public class BRRS_ReportsController {
 
 			BRRS_M_TBS_reportservice.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -4999,7 +4904,7 @@ public class BRRS_ReportsController {
 
 			BRRS_M_GP_ReportService.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -5108,7 +5013,7 @@ public class BRRS_ReportsController {
 			LARADVreportService.updateReport4(request4);
 			LARADVreportService.updateReport5(request5);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -5451,7 +5356,7 @@ public class BRRS_ReportsController {
 			// call services
 			BRRS_M_DEP3_reportservice.updateReport(request1);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -5478,7 +5383,7 @@ public class BRRS_ReportsController {
 			// call services
 			BRRS_M_PD_reportservice.updateReport(request1);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -5505,7 +5410,7 @@ public class BRRS_ReportsController {
 			// call services
 			BRRS_M_PI_reportservice.updateReport(request1);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -5746,8 +5651,9 @@ public class BRRS_ReportsController {
 	 * 
 	 * // call services BRRS_BDISB2_ReportService.updateReport(request);
 	 * 
-	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
-	 * e.printStackTrace(); return
+	 * return
+	 * ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval."
+	 * ); } catch (Exception e) { e.printStackTrace(); return
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
 	 * body("Update Failed: " + e.getMessage()); } }
 	 */
@@ -5770,7 +5676,7 @@ public class BRRS_ReportsController {
 
 			BDISB2reportService.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 
 		} catch (Exception e) {
 
@@ -5843,7 +5749,7 @@ public class BRRS_ReportsController {
 
 			BRRS_ADISB1_ReportService.updateReport(entityInstance, type);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 
 		} catch (Exception e) {
 
@@ -5881,7 +5787,7 @@ public class BRRS_ReportsController {
 			// Call service
 			BRRS_PL_SCHS_ReportService.updateReport(request, type);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 
 		} catch (Exception e) {
 
@@ -5909,7 +5815,7 @@ public class BRRS_ReportsController {
 			// call services
 			brrs_gl_sch_reportservice.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -6048,7 +5954,7 @@ public class BRRS_ReportsController {
 
 			BRRS_M_SIR_ReportService.updateReport(request1);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -6176,7 +6082,7 @@ public class BRRS_ReportsController {
 			M_FXR_service.updateReport2(request1);
 			M_FXR_service.updateReport3(request1);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -6248,7 +6154,7 @@ public class BRRS_ReportsController {
 			AIDPreportService.updateReport7(request3);
 			AIDPreportService.updateReport8(request4);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -6285,7 +6191,7 @@ public class BRRS_ReportsController {
 			SRWA12DreportService.updateReport3(request3);
 			SRWA12DreportService.updateReport4(request4);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -6311,7 +6217,7 @@ public class BRRS_ReportsController {
 			// call services
 			BRRS_AS_11_ReportService.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -7221,7 +7127,7 @@ public class BRRS_ReportsController {
 
 			BRRS_CASH_FLOW_ReportService.updateReport(entityInstance, type);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 
 		} catch (Exception e) {
 
@@ -7244,7 +7150,7 @@ public class BRRS_ReportsController {
 			@RequestParam(value = "type", required = false) String type) {
 		try {
 			BRRS_IRRBB_ADVANCES_reportservice.updateAllIrradvRows(rows, type);
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -7259,7 +7165,7 @@ public class BRRS_ReportsController {
 			@RequestParam(value = "type", required = false) String type) {
 		try {
 			BRRS_IRRBB_DEPOSITS_reportservice.updateAllIrrdepRows(rows, type);
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -7274,7 +7180,7 @@ public class BRRS_ReportsController {
 			@RequestParam(value = "type", required = false) String type) {
 		try {
 			BRRS_UFCE_ANNEXURE_reportservice.updateAllUfceAnnexureRows(rows, type);
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -7312,7 +7218,7 @@ public class BRRS_ReportsController {
 
 			BRRS_DBS10_FINCON_II_1A_ReportService.updateReport(entityInstance, type);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 
 		} catch (Exception e) {
 
@@ -7473,7 +7379,7 @@ public class BRRS_ReportsController {
 
 			BRRS_DBS10_FINCON_III_1C_ReportService.updateReport(entityInstance, type);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 
 		} catch (Exception e) {
 
