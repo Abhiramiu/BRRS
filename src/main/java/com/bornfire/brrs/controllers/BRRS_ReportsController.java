@@ -5136,17 +5136,78 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/M_GMIRTupdate", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_GMIRT_Summary_Entity summary, @ModelAttribute M_GMIRT_Detail_Entity detail) {
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @ModelAttribute M_GMIRT_Summary_Entity summary,
+	        @ModelAttribute M_GMIRT_Detail_Entity detail,
+	        HttpServletRequest req) {
 
-		summary.setReport_date(asondate);
-		detail.setReport_date(asondate);
+	    try {
+	        String userid = (String) req.getSession().getAttribute("USERID");
+	        String role   = userProfileRep.getUserRole(userid);
 
-		System.out.println("came to GMIRT MODIFY CONTROLLER");
-		brrs_m_gmirt_reportservice.updateReport(summary);
-		brrs_m_gmirt_reportservice.updateDetail(detail);
+	        // ✅ MAKER gate — MAN/ADMIN allowed (dual-role, same policy as M-FAS/M-SIR/etc.)
+	        if (!isMaker(role)) {
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+	                    .body("Only Maker (or MAN/ADMIN) can submit M_GMIRT modifications. Current role: " + role);
+	        }
+	        if (asondate == null) {
+	            return ResponseEntity.badRequest().body("asondate is required.");
+	        }
 
-		return ResponseEntity.ok("Modified Successfully");
+	        System.out.println("M_GMIRT MAKER controller — date=" + asondate + ", role=" + role);
+
+	        summary.setReport_date(asondate);
+	        detail.setReport_date(asondate);
+
+	        // Maker writes to MOD (BRRS_M_GMIRT_MOD_SUMMARYTABLE) only.
+	        // Live summary is untouched until the Checker verifies.
+	        brrs_m_gmirt_reportservice.updateReport(summary);
+
+	        // Detail remains a direct mirror (no Maker–Checker on detail for GMIRT).
+	        brrs_m_gmirt_reportservice.updateDetail(detail);
+
+	        return ResponseEntity.ok("Modification saved. Pending Checker verification.");
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed: " + e.getMessage());
+	    }
+	}
+
+	// ─────────────────────────────────────────────────────────
+	// M_GMIRT — CHECKER: verify a pending maker submission
+	// Routed through AuditService → transferGMIRTData
+	// ─────────────────────────────────────────────────────────
+	@RequestMapping(value = "/verifyAuditM_GMIRT", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> verifyAuditM_GMIRT(
+	        @RequestParam("auditId") Long auditId,
+	        HttpServletRequest req) {
+
+	    try {
+	        String userid = (String) req.getSession().getAttribute("USERID");
+	        String role   = userProfileRep.getUserRole(userid);
+
+	        // ✅ CHECKER gate — MAN/ADMIN allowed (dual-role, same policy)
+	        if (!isChecker(role)) {
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+	                    .body("Only Checker (or MAN/ADMIN) can verify M_GMIRT. Current role: " + role);
+	        }
+
+	        System.out.println("M_GMIRT CHECKER verify — auditId=" + auditId + ", role=" + role);
+
+	        // Dispatches to AuditService.transferGMIRTData(auditRecord):
+	        //   MOD → live summary, flip MOD flags, run procedure (or inline recompute)
+	        auditService.verifyAndTransferReport(auditId);
+
+	        return ResponseEntity.ok("Verified and transferred successfully.");
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Verify Failed: " + e.getMessage());
+	    }
 	}
 
 	@RequestMapping(value = "/UpdateM_GMIRT_ReSub", method = { RequestMethod.GET, RequestMethod.POST })

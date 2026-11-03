@@ -3,59 +3,72 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Column;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
-/*import org.apache.poi.ss.usermodel.FillPatternType;*/
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
-/*import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;*/
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-/*import org.apache.poi.xssf.usermodel.XSSFRow;
+
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;*/
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.io.Serializable;
-import java.util.Objects;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Column;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import com.bornfire.brrs.entities.UserProfileRep;
 
@@ -133,18 +146,26 @@ public class BRRS_M_GMIRT_ReportService {
 				mv.addObject("displaymode", "resubSummary");
 				mv.addObject("reportsummary", T1Master);
 			}
+			
+			// ---------- CASE 3: NORMAL ----------
 			// ---------- CASE 3: NORMAL ----------
 			else {
 
-				String sql = "SELECT * FROM BRRS_M_GMIRT_SUMMARYTABLE WHERE REPORT_DATE = ?";
-				List<M_GMIRT_Summary_Entity> T1Master = jdbcTemplate.query(sql,
-						new BeanPropertyRowMapper<>(M_GMIRT_Summary_Entity.class), dateformat.parse(todate));
+			    String sql = "SELECT * FROM BRRS_M_GMIRT_SUMMARYTABLE WHERE REPORT_DATE = ?";
+			    List<M_GMIRT_Summary_Entity> T1Master = jdbcTemplate.query(sql,
+			            new BeanPropertyRowMapper<>(M_GMIRT_Summary_Entity.class), dateformat.parse(todate));
 
-				mv.addObject("reportsummary", T1Master);
-				mv.addObject("displaymode", "summary");
+			    mv.addObject("reportsummary", T1Master);
+			    mv.addObject("displaymode", "summary");
 
+			    if (T1Master != null && !T1Master.isEmpty()) {
+			        BigDecimal effectiveVersion = (version != null) ? version : BigDecimal.ONE;
+			        M_GMIRT_Summary_Entity mod = findModRow(dateformat.parse(todate), effectiveVersion);
+			        boolean pending = (mod != null && "Y".equalsIgnoreCase(mod.getModify_flg()));
+			        mv.addObject("pendingMod", pending);
+			    }
 			}
-
+			
 			// ---------- CASE 4: DETAIL (NEW, ONLY ADDITION) ----------
 			if ("detail".equalsIgnoreCase(dtltype)) {
 
@@ -206,77 +227,173 @@ public class BRRS_M_GMIRT_ReportService {
 	// ------------------------------
 	// Method to update summary report fields
 	// ------------------------------
+
+	@Transactional
 	public void updateReport(M_GMIRT_Summary_Entity updatedEntity) {
 
-		System.out.println("Came to services");
-		System.out.println("Report Date : " + updatedEntity.getReport_date());
+	    Date reportDate = updatedEntity.getReport_date();
+	    BigDecimal version = updatedEntity.getReport_version() != null
+	            ? updatedEntity.getReport_version() : BigDecimal.ONE;
 
-		M_GMIRT_Summary_Entity existing = findSummaryById(updatedEntity.getReport_date());
+	    System.out.println("Came to M_GMIRT MAKER service, date=" + reportDate + ", version=" + version);
 
-		if (existing == null) {
-			throw new RuntimeException("Record not found for REPORT_DATE : " + updatedEntity.getReport_date());
-		}
+	    // 1. Fetch live row — needed only to build the audit diff. Never modified.
+	    M_GMIRT_Summary_Entity live = findSummaryById(reportDate);
+	    if (live == null) {
+	        throw new RuntimeException("Live summary row missing for date " + reportDate
+	                + " — run BRRS_M_GMIRT_SUMMARY_PROCEDURE or seed the row first.");
+	    }
 
-		try {
+	    // 2. Clone for audit diff
+	    M_GMIRT_Summary_Entity oldcopy = new M_GMIRT_Summary_Entity();
+	    BeanUtils.copyProperties(live, oldcopy);
 
-			for (int i = 9; i <= 12; i++) {
+	    // 3. Copy ONLY the 29 Maker-editable columns from UI entity into the staging copy
+	    try {
+	        String[] perRow = { "pula", "usd", "zar", "gbp", "euro", "jpy", "rupee", "renminbi", "other" };
+	        for (int r : new int[]{9, 10, 11}) {
+	            for (String f : perRow) {
+	                copyFieldIfChanged(M_GMIRT_Summary_Entity.class, updatedEntity, live, "R" + r + "_" + f);
+	            }
+	        }
+	        copyFieldIfChanged(M_GMIRT_Summary_Entity.class, updatedEntity, live, "R10_tot_cap_req");
+	        copyFieldIfChanged(M_GMIRT_Summary_Entity.class, updatedEntity, live, "R11_tot_cap_req");
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error copying Maker-editable fields into MOD staging entity", e);
+	    }
 
-				String prefix = "R" + i + "_";
+	    // 4. Audit the diff
+	    String changes = auditService.getChanges(oldcopy, live);
 
-				String[] fields = { "currency", "pula", "usd", "zar", "gbp", "euro", "jpy", "rupee", "renminbi",
-						"other", "tot_cap_req" };
+	    // 5. Set Maker flags
+	    live.setEntity_flg("Y");
+	    live.setModify_flg("Y");
+	    live.setDel_flg("N");
 
-				for (String field : fields) {
+	    // 6. MERGE into MOD table — NOT into the live table
+	    saveModSummaryEntity(live, version);
+	    System.out.println("✔ M_GMIRT saved into BRRS_M_GMIRT_MOD_SUMMARYTABLE — pending Checker");
 
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	    // 7. Create audit ticket (this is the Checker's workflow key)
+	    if (changes != null && !changes.isEmpty()) {
+	        auditService.compareEntitiesmanual(oldcopy, live, reportDate.toString(),
+	                "M_GMIRT Maker Screen", "BRRS_M_GMIRT_MOD_SUMMARYTABLE");
+	    }
 
-					try {
-
-						Method getter = M_GMIRT_Summary_Entity.class.getMethod(getterName);
-
-						Method setter = M_GMIRT_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(updatedEntity);
-
-						setter.invoke(existing, newValue);
-
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
-
-			// Fetch R9 value from DB (this stays externally sourced from FXR, unchanged)
-			BigDecimal r9Value = getR9TotCapReq(updatedEntity.getReport_date());
-
-			// set the value
-			existing.setR9_tot_cap_req(r9Value);
-
-			// R12 (TOTAL CAPITAL REQUIRED) must be R9 + R10 + R11, not just a copy of R9.
-			// R10/R11 tot_cap_req were already copied from the submitted form above via
-			// reflection.
-			BigDecimal r10Value = existing.getR10_tot_cap_req() != null ? existing.getR10_tot_cap_req()
-					: BigDecimal.ZERO;
-			BigDecimal r11Value = existing.getR11_tot_cap_req() != null ? existing.getR11_tot_cap_req()
-					: BigDecimal.ZERO;
-
-			BigDecimal r12Value = r9Value.add(r10Value).add(r11Value);
-			existing.setR12_tot_cap_req(r12Value);
-
-			System.out.println("R9 Value = " + r9Value + ", R10 Value = " + r10Value + ", R11 Value = " + r11Value
-					+ ", R12 Total = " + r12Value);
-
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
-
-		saveEntity(existing, "BRRS_M_GMIRT_SUMMARYTABLE");
+	    // 8. afterCommit: refresh R9/R12 on live via procedure (does NOT touch manual cols)
+	    if (TransactionSynchronizationManager.isSynchronizationActive()) {
+	        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+	            @Override public void afterCommit() {
+	                try {
+	                    jdbcTemplate.update("BEGIN BRRS_M_GMIRT_SUMMARY_PROCEDURE(?); END;",
+	                            new SimpleDateFormat("dd-MMM-yyyy").format(reportDate));
+	                } catch (Exception e) {
+	                    logger.error("M_GMIRT procedure afterCommit failed", e);
+	                }
+	            }
+	        });
+	    }
 	}
 
-	// ------------------------------
-	// Method to update detail report fields
-	// ------------------------------
+	private static void copyFieldIfChanged(Class<?> clazz, Object from, Object to, String fieldName)
+	        throws Exception {
+
+	    String getter = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+	    Method g = clazz.getMethod(getter);
+	    Method s = clazz.getMethod("set" + getter.substring(3), g.getReturnType());
+	    Object v = g.invoke(from);
+	    Object cur = g.invoke(to);
+	    String vs = v == null ? "" : v.toString().trim();
+	    String cs = cur == null ? "" : cur.toString().trim();
+	    if (!vs.equals(cs)) {
+	        s.invoke(to, v);
+	    }
+	}
+	
+	
+	public void saveModSummaryEntity(M_GMIRT_Summary_Entity entity, BigDecimal version) {
+
+	    String sql =
+	        "MERGE INTO BRRS_M_GMIRT_MOD_SUMMARYTABLE dest " +
+	        "USING (SELECT ? AS rd, ? AS rv FROM dual) src " +
+	        "ON (TRUNC(dest.REPORT_DATE) = TRUNC(src.rd) AND dest.REPORT_VERSION = src.rv) " +
+	        "WHEN MATCHED THEN UPDATE SET " +
+	        "  R9_PULA=?, R9_USD=?, R9_ZAR=?, R9_GBP=?, R9_EURO=?, R9_JPY=?, R9_RUPEE=?, R9_RENMINBI=?, R9_OTHER=?, " +
+	        "  R10_PULA=?, R10_USD=?, R10_ZAR=?, R10_GBP=?, R10_EURO=?, R10_JPY=?, R10_RUPEE=?, R10_RENMINBI=?, R10_OTHER=?, R10_TOT_CAP_REQ=?, " +
+	        "  R11_PULA=?, R11_USD=?, R11_ZAR=?, R11_GBP=?, R11_EURO=?, R11_JPY=?, R11_RUPEE=?, R11_RENMINBI=?, R11_OTHER=?, R11_TOT_CAP_REQ=?, " +
+	        "  ENTITY_FLG=?, MODIFY_FLG=?, DEL_FLG=? " +
+	        "WHEN NOT MATCHED THEN INSERT (" +
+	        "  REPORT_DATE, REPORT_VERSION, " +
+	        "  R9_PULA, R9_USD, R9_ZAR, R9_GBP, R9_EURO, R9_JPY, R9_RUPEE, R9_RENMINBI, R9_OTHER, " +
+	        "  R10_PULA, R10_USD, R10_ZAR, R10_GBP, R10_EURO, R10_JPY, R10_RUPEE, R10_RENMINBI, R10_OTHER, R10_TOT_CAP_REQ, " +
+	        "  R11_PULA, R11_USD, R11_ZAR, R11_GBP, R11_EURO, R11_JPY, R11_RUPEE, R11_RENMINBI, R11_OTHER, R11_TOT_CAP_REQ, " +
+	        "  ENTITY_FLG, MODIFY_FLG, DEL_FLG) " +
+	        "VALUES (?, ?, " +
+	        "  ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
+	        "  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
+	        "  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
+	        "  ?, ?, ?)";
+
+	    Object[] p = {
+	        entity.getReport_date(), version,
+	        // UPDATE R9
+	        entity.getR9_pula(),  entity.getR9_usd(),  entity.getR9_zar(), entity.getR9_gbp(),
+	        entity.getR9_euro(),  entity.getR9_jpy(),  entity.getR9_rupee(), entity.getR9_renminbi(), entity.getR9_other(),
+	        // UPDATE R10
+	        entity.getR10_pula(), entity.getR10_usd(), entity.getR10_zar(), entity.getR10_gbp(),
+	        entity.getR10_euro(), entity.getR10_jpy(), entity.getR10_rupee(), entity.getR10_renminbi(),
+	        entity.getR10_other(), entity.getR10_tot_cap_req(),
+	        // UPDATE R11
+	        entity.getR11_pula(), entity.getR11_usd(), entity.getR11_zar(), entity.getR11_gbp(),
+	        entity.getR11_euro(), entity.getR11_jpy(), entity.getR11_rupee(), entity.getR11_renminbi(),
+	        entity.getR11_other(), entity.getR11_tot_cap_req(),
+	        // UPDATE flags
+	        "Y", "Y", "N",
+	        // INSERT key
+	        entity.getReport_date(), version,
+	        // INSERT R9..R11
+	        entity.getR9_pula(),  entity.getR9_usd(),  entity.getR9_zar(), entity.getR9_gbp(),
+	        entity.getR9_euro(),  entity.getR9_jpy(),  entity.getR9_rupee(), entity.getR9_renminbi(), entity.getR9_other(),
+	        entity.getR10_pula(), entity.getR10_usd(), entity.getR10_zar(), entity.getR10_gbp(),
+	        entity.getR10_euro(), entity.getR10_jpy(), entity.getR10_rupee(), entity.getR10_renminbi(),
+	        entity.getR10_other(), entity.getR10_tot_cap_req(),
+	        entity.getR11_pula(), entity.getR11_usd(), entity.getR11_zar(), entity.getR11_gbp(),
+	        entity.getR11_euro(), entity.getR11_jpy(), entity.getR11_rupee(), entity.getR11_renminbi(),
+	        entity.getR11_other(), entity.getR11_tot_cap_req(),
+	        // INSERT flags
+	        "Y", "Y", "N"
+	    };
+	    jdbcTemplate.update(sql, p);
+	}
+	
+
+	private void overlayPendingModIfAny(List<M_GMIRT_Summary_Entity> liveList, Date reportDate, BigDecimal version) {
+	    if (liveList == null || liveList.isEmpty()) return;
+	    M_GMIRT_Summary_Entity mod = findModRow(reportDate, version);
+	    if (mod == null || !"Y".equalsIgnoreCase(mod.getModify_flg())) return;
+	    M_GMIRT_Summary_Entity live = liveList.get(0);
+	    BeanUtils.copyProperties(mod, live,
+	            "report_date", "report_version", "report_frequency", "report_code", "report_desc",
+	            "r9_currency", "r10_currency", "r11_currency", "r12_currency",
+	            "r9_tot_cap_req", "r12_pula", "r12_usd", "r12_zar", "r12_gbp", "r12_euro",
+	            "r12_jpy", "r12_rupee", "r12_renminbi", "r12_other", "r12_tot_cap_req");
+	}
+	
+	public BigDecimal findHighestPendingModVersion(Date reportDate) {
+	    String sql = "SELECT MAX(REPORT_VERSION) FROM BRRS_M_GMIRT_MOD_SUMMARYTABLE " +
+	                 "WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND MODIFY_FLG='Y'";
+	    return jdbcTemplate.queryForObject(sql, BigDecimal.class, reportDate);
+	}
+
+	private M_GMIRT_Summary_Entity findModRow(Date reportDate, BigDecimal version) {
+	    String sql = "SELECT * FROM BRRS_M_GMIRT_MOD_SUMMARYTABLE " +
+	                 "WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND REPORT_VERSION=?";
+	    List<M_GMIRT_Summary_Entity> list = jdbcTemplate.query(sql,
+	            new BeanPropertyRowMapper<>(M_GMIRT_Summary_Entity.class), reportDate, version);
+	    return list.isEmpty() ? null : list.get(0);
+	}
+	
+	
 	public void updateDetail(M_GMIRT_Detail_Entity updatedEntity) {
 		System.out.println("Came to services");
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
@@ -287,7 +404,7 @@ public class BRRS_M_GMIRT_ReportService {
 		}
 
 		try {
-			// 1️⃣ Loop from R11 to R23 and copy fields
+			
 
 			for (int i = 9; i <= 12; i++) {
 
@@ -309,7 +426,7 @@ public class BRRS_M_GMIRT_ReportService {
 						setter.invoke(existing, newValue);
 
 					} catch (NoSuchMethodException e) {
-						continue; // skip field that does not exist
+						continue; 
 					}
 				}
 			}
@@ -318,7 +435,7 @@ public class BRRS_M_GMIRT_ReportService {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
-		// 3️⃣ Save updated entity
+	
 		saveEntity(existing, "BRRS_M_GMIRT_DETAILTABLE");
 	}
 

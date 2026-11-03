@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.UUID;
+import java.math.BigDecimal;
+import java.util.Locale;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -1538,7 +1540,9 @@ public class AuditService {
 			transferM_SRWA_12CData(auditRecord);
 		} else if (upperTable.contains("M_SRWA_12D") || upperTable.contains("SRWA_12D")) {
 			transferM_SRWA_12DData(auditRecord);
-		} else {
+		} else if (upperTable.contains("M_GMIRT")) {
+	        transferGMIRTData(auditRecord);
+	    } else {
 			throw new IllegalArgumentException("Verification not configured for table: " + auditTable);
 		}
 		try {
@@ -5445,6 +5449,126 @@ public class AuditService {
 	    System.out.println("M_SIR Verification and Transfer Completed Successfully");
 	}
 
+	private void transferGMIRTData(AuditServicesEntity auditRecord) {
+
+	    System.out.println("================ M_GMIRT TRANSFER START ================");
+	    System.out.println("Audit ID     : " + auditRecord.getSno());
+	    System.out.println("Audit Table  : " + auditRecord.getAudit_table());
+
+	    try {
+	        java.sql.Date reportDate = jdbcTemplate.queryForObject(
+	                "SELECT MAX(REPORT_DATE) FROM BRRS_M_GMIRT_MOD_SUMMARYTABLE WHERE MODIFY_FLG='Y'",
+	                java.sql.Date.class);
+
+	        if (reportDate == null) {
+	            throw new IllegalStateException("No modified M_GMIRT record available for verification.");
+	        }
+
+	        BigDecimal version = jdbcTemplate.queryForObject(
+	                "SELECT MAX(REPORT_VERSION) FROM BRRS_M_GMIRT_MOD_SUMMARYTABLE " +
+	                "WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND MODIFY_FLG='Y'",
+	                BigDecimal.class, reportDate);
+
+	        if (version == null) {
+	            throw new IllegalStateException("No pending MOD version for M_GMIRT date " + reportDate);
+	        }
+
+	        System.out.println("M_GMIRT Verify — date=" + reportDate + ", version=" + version);
+
+	        String updateLive =
+	                "UPDATE BRRS_M_GMIRT_SUMMARYTABLE M SET (" +
+	                "  R9_PULA, R9_USD, R9_ZAR, R9_GBP, R9_EURO, R9_JPY, R9_RUPEE, R9_RENMINBI, R9_OTHER, " +
+	                "  R10_PULA, R10_USD, R10_ZAR, R10_GBP, R10_EURO, R10_JPY, R10_RUPEE, R10_RENMINBI, R10_OTHER, R10_TOT_CAP_REQ, " +
+	                "  R11_PULA, R11_USD, R11_ZAR, R11_GBP, R11_EURO, R11_JPY, R11_RUPEE, R11_RENMINBI, R11_OTHER, R11_TOT_CAP_REQ, " +
+	                "  ENTITY_FLG, MODIFY_FLG, DEL_FLG) = (SELECT " +
+	                "  S.R9_PULA, S.R9_USD, S.R9_ZAR, S.R9_GBP, S.R9_EURO, S.R9_JPY, S.R9_RUPEE, S.R9_RENMINBI, S.R9_OTHER, " +
+	                "  S.R10_PULA, S.R10_USD, S.R10_ZAR, S.R10_GBP, S.R10_EURO, S.R10_JPY, S.R10_RUPEE, S.R10_RENMINBI, S.R10_OTHER, S.R10_TOT_CAP_REQ, " +
+	                "  S.R11_PULA, S.R11_USD, S.R11_ZAR, S.R11_GBP, S.R11_EURO, S.R11_JPY, S.R11_RUPEE, S.R11_RENMINBI, S.R11_OTHER, S.R11_TOT_CAP_REQ, " +
+	                "  S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG " +
+	                "  FROM BRRS_M_GMIRT_MOD_SUMMARYTABLE S " +
+	                "  WHERE TRUNC(S.REPORT_DATE)=TRUNC(M.REPORT_DATE) AND S.REPORT_VERSION=?) " +
+	                "WHERE TRUNC(M.REPORT_DATE)=TRUNC(?)";
+
+	            System.out.println("M_GMIRT about to execute UPDATE SUMMARYTABLE...");
+	            int updated = jdbcTemplate.update(updateLive, version, reportDate);
+	            if (updated == 0) {
+	                throw new IllegalStateException(
+	                        "M_GMIRT live row (SUMMARYTABLE) missing for date " + reportDate);
+	            }
+	        System.out.println("M_GMIRT Live Summary Updated : " + updated);
+
+	        int modUpdated = jdbcTemplate.update(
+	                "UPDATE BRRS_M_GMIRT_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' " +
+	                "WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND REPORT_VERSION=?",
+	                reportDate, version);
+	        System.out.println("M_GMIRT MOD Updated : " + modUpdated);
+
+	        try {
+	            String formattedDate = new SimpleDateFormat("dd-MMM-yyyy").format(reportDate);
+	            jdbcTemplate.update("BEGIN BRRS_M_GMIRT_SUMMARY_PROCEDURE(?); END;", formattedDate);
+	            System.out.println("M_GMIRT procedure executed for " + formattedDate);
+	        } catch (org.springframework.jdbc.BadSqlGrammarException ex) {
+	            System.out.println("M_GMIRT procedure not found — falling back to inline recompute");
+	            recomputeGMIRTComputedFields(reportDate);
+	        }
+
+	        System.out.println("M_GMIRT Verify + Transfer completed for " + reportDate);
+
+	    } catch (Exception ex) {
+	        System.err.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+	        System.err.println("M_GMIRT transfer FAILED");
+	        System.err.println("Exception class : " + ex.getClass().getName());
+	        System.err.println("Exception msg   : " + ex.getMessage());
+	        if (ex.getCause() != null) {
+	            System.err.println("Cause           : " + ex.getCause().getClass().getName()
+	                    + " — " + ex.getCause().getMessage());
+	        }
+	        System.err.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+	        ex.printStackTrace();
+	        throw ex;
+	    }
+
+	    System.out.println("================ M_GMIRT TRANSFER END ==================");
+	}
+	
+	private void recomputeGMIRTComputedFields(java.sql.Date reportDate) {
+	    try {
+
+	        // R9_TOT_CAP_REQ comes from M_FXR (MCBL — sum of all R29_CAPITAL_CHARGE for the date)
+	        BigDecimal r9Tot = jdbcTemplate.queryForObject(
+	                "SELECT NVL(SUM(R29_CAPITAL_CHARGE),0) FROM BRRS_M_FXR_SUMMARYTABLE " +
+	                "WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+	                BigDecimal.class, reportDate);
+
+	        // Recompute:
+	        //   - R12_<CCY>       = R9_<CCY> + R10_<CCY> + R11_<CCY>       (per currency)
+	        //   - R12_TOT_CAP_REQ = R9_TOT_CAP_REQ + R10_TOT_CAP_REQ + R11_TOT_CAP_REQ
+	        //                      (R9_TOT is the FXR-derived value above; R10/R11 come from the row)
+	        jdbcTemplate.update(
+	                "UPDATE BRRS_M_GMIRT_SUMMARYTABLE SET " +
+	                "  R9_TOT_CAP_REQ  = ?, " +
+	                "  R12_PULA        = NVL(R9_PULA,0)     + NVL(R10_PULA,0)     + NVL(R11_PULA,0), " +
+	                "  R12_USD         = NVL(R9_USD,0)      + NVL(R10_USD,0)      + NVL(R11_USD,0), " +
+	                "  R12_ZAR         = NVL(R9_ZAR,0)      + NVL(R10_ZAR,0)      + NVL(R11_ZAR,0), " +
+	                "  R12_GBP         = NVL(R9_GBP,0)      + NVL(R10_GBP,0)      + NVL(R11_GBP,0), " +
+	                "  R12_EURO        = NVL(R9_EURO,0)     + NVL(R10_EURO,0)     + NVL(R11_EURO,0), " +
+	                "  R12_JPY         = NVL(R9_JPY,0)      + NVL(R10_JPY,0)      + NVL(R11_JPY,0), " +
+	                "  R12_RUPEE       = NVL(R9_RUPEE,0)    + NVL(R10_RUPEE,0)    + NVL(R11_RUPEE,0), " +
+	                "  R12_RENMINBI    = NVL(R9_RENMINBI,0) + NVL(R10_RENMINBI,0) + NVL(R11_RENMINBI,0), " +
+	                "  R12_OTHER       = NVL(R9_OTHER,0)    + NVL(R10_OTHER,0)    + NVL(R11_OTHER,0), " +
+	                "  R12_TOT_CAP_REQ = ? + NVL(R10_TOT_CAP_REQ,0) + NVL(R11_TOT_CAP_REQ,0) " +
+	                "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+	                r9Tot, r9Tot, reportDate);
+
+	        System.out.println("M_GMIRT inline recompute — R9_TOT=" + r9Tot);
+
+	    } catch (Exception e) {
+	        // Loud failure — this is a data-integrity concern, not an optional feature.
+	        System.err.println("M_GMIRT inline recompute FAILED for " + reportDate + ": " + e.getMessage());
+	        e.printStackTrace();
+	    }
+	}
+	
 	private static Object[] appendArgs(Object[] base, Object extra) {
 	    Object[] out = java.util.Arrays.copyOf(base, base.length + 1);
 	    out[base.length] = extra;
