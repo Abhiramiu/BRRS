@@ -1500,13 +1500,11 @@ public class AuditService {
 			transferM_MRCData(auditRecord);
 		} else if (upperTable.contains("M_OPTR")) {
 			transferM_OPTR_Data(auditRecord);
-		} else if (upperTable.contains("M_SRWA_12F")) {
-			transferM_SRWA_12F_Data(auditRecord);
-		} else if (upperTable.contains("M_UNCONS_INVEST")) {
+		}  else if (upperTable.contains("M_UNCONS_INVEST")) {
 			transferM_UNCONS_INVEST_Data(auditRecord);
 		} else if (upperTable.contains("M_LA4")) {
 			transferLA4Data(auditRecord);
-		} else if (upperTable.contains("LA3")) {
+		} else if (upperTable.contains("M_LA3")) {
 			transferLA3Data(auditRecord);
 		} else if (upperTable.contains("M_IS")) {
 			transferISData(auditRecord);
@@ -4499,60 +4497,6 @@ public class AuditService {
 
 		System.out.println("M_OPTR MOD Record Updated : " + modUpdated);
 		System.out.println("✔ M_OPTR Verification and Transfer Completed Successfully across Summary & Detail tables!");
-	}
-
-	private void transferM_SRWA_12F_Data(AuditServicesEntity auditRecord) {
-		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_SRWA_12F_MOD_SUMMARYTABLE";
-		java.sql.Date reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
-
-		if (reportDate == null) {
-			throw new IllegalStateException("No modified M_SRWA_12F record available for transfer.");
-		}
-
-		System.out.println("M_SRWA_12F Report Date : " + reportDate);
-
-		StringBuilder setColumns = new StringBuilder();
-		StringBuilder selectColumns = new StringBuilder();
-		String[] fields = { "NAME_OF_CORPORATE", "CREDIT_RATING", "RATING_AGENCY", "EXPOSURE_AMT", "RISK_WEIGHT",
-				"RISK_WEIGHTED_AMT" };
-
-		for (int i = 11; i <= 37; i++) {
-			for (String field : fields) {
-				String col = "R" + i + "_" + field;
-				setColumns.append(col).append(", ");
-				selectColumns.append("S.").append(col).append(", ");
-			}
-		}
-		setColumns.append("ENTITY_FLG, MODIFY_FLG, DEL_FLG");
-		selectColumns.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
-
-		String selectSubquery = " SELECT " + selectColumns.toString() + " FROM BRRS_M_SRWA_12F_MOD_SUMMARYTABLE S "
-				+ " WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)";
-
-		// 1. Update live Summary table
-		String updateSummarySql = "UPDATE BRRS_M_SRWA_12F_SUMMARYTABLE M SET (" + setColumns.toString() + ") = ("
-				+ selectSubquery + ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
-
-		int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
-		if (summaryUpdated == 0) {
-			throw new IllegalStateException(
-					"M_SRWA_12F modification record not found in live summary table for date : " + reportDate);
-		}
-		System.out.println("M_SRWA_12F Summary Table Updated : " + summaryUpdated);
-
-		// 2. Update live Detail table
-		String updateDetailSql = "UPDATE BRRS_M_SRWA_12F_DETAILTABLE M SET (" + setColumns.toString() + ") = ("
-				+ selectSubquery + ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
-
-		int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
-		System.out.println("M_SRWA_12F Detail Table Updated : " + detailUpdated);
-
-		// 3. Mark MOD record status as approved
-		String updateModSql = "UPDATE BRRS_M_SRWA_12F_MOD_SUMMARYTABLE SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-		jdbcTemplate.update(updateModSql, reportDate);
-
-		System.out.println(
-				"✔ M_SRWA_12F Verification and Transfer Completed Successfully across Summary & Detail tables!");
 	}
 
 	private void transferM_UNCONS_INVEST_Data(AuditServicesEntity auditRecord) {
