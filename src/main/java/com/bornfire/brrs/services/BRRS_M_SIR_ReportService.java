@@ -13,6 +13,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Collections;
+
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -46,6 +49,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 import com.bornfire.brrs.entities.UserProfileRep;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import java.io.Serializable;
 import javax.persistence.Temporal;
@@ -188,578 +193,456 @@ public class BRRS_M_SIR_ReportService {
 	// ------------------------------
 	// Updates the normal summary and detail records for a given report date
 	// ------------------------------
+	
 	@Transactional
 	public void updateReport(M_SIR_Summary_Entity updatedEntity) {
 
-		System.out.println("Came to services 1");
-		System.out.println("Report Date: " + updatedEntity.getReportDate());
-
-		// 🔹 Fetch existing SUMMARY
-		String sumSql = "SELECT * FROM BRRS_M_SIR_SUMMARYTABLE WHERE REPORT_DATE = ?";
-		List<M_SIR_Summary_Entity> sumList = jdbcTemplate.query(sumSql, new Object[]{updatedEntity.getReportDate()}, new BeanPropertyRowMapper<>(M_SIR_Summary_Entity.class));
-		if (sumList.isEmpty()) {
-			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate());
-		}
-		M_SIR_Summary_Entity existingSummary = sumList.get(0);
-		
-		// 🔹 Create Audit Copy before editing
-		M_SIR_Summary_Entity oldcopy = new M_SIR_Summary_Entity();
-		BeanUtils.copyProperties(existingSummary, oldcopy);
-		
-		// 🔹 Fetch or create DETAIL
-		String dtlSql = "SELECT * FROM BRRS_M_SIR_DETAILTABLE WHERE REPORT_DATE = ?";
-		List<M_SIR_Detail_Entity> dtlList = jdbcTemplate.query(dtlSql, new Object[]{updatedEntity.getReportDate()}, new BeanPropertyRowMapper<>(M_SIR_Detail_Entity.class));
-		M_SIR_Detail_Entity detailEntity;
-		boolean isNewDetail = false;
-		if (dtlList.isEmpty()) {
-			detailEntity = new M_SIR_Detail_Entity();
-			detailEntity.setReportDate(updatedEntity.getReportDate());
-			isNewDetail = true;
-		} else {
-			detailEntity = dtlList.get(0);
-		}
-
-		try {
-			// 1️⃣ Loop from R13 to R17
-			for (int i = 13; i <= 17; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m", "risk_6to24m", "capital_6to24m",
-						"amt_gt24m", "risk_gt24m", "capital_gt24m" };
-
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
-						Object newValue = getter.invoke(updatedEntity);
-						Object existingValue = getter.invoke(existingSummary);
-
-						// --- FIX: Normalize nulls vs empty strings to prevent audit bloat ---
-						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
-						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
-
-						if (currentValStr.equals(newValStr)) {
-							continue;
-						}
-
-						Method summarySetter = M_SIR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						summarySetter.invoke(existingSummary, newValue);
-
-						Method detailSetter = M_SIR_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-						detailSetter.invoke(detailEntity, newValue);
-
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
-
-			// 2️⃣ Loop for R12 Fields
-			String[] totalFields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m", "risk_6to24m", "capital_6to24m",
-					"amt_gt24m", "risk_gt24m", "capital_gt24m" };
-			for (String field : totalFields) {
-				String getterName = "getR12_" + field;
-				String setterName = "setR12_" + field;
-
-				try {
-					Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
-					Object newValue = getter.invoke(updatedEntity);
-					Object existingValue = getter.invoke(existingSummary);
-
-					// --- FIX: Normalize nulls vs empty strings ---
-					String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
-					String newValStr = (newValue == null) ? "" : newValue.toString().trim();
-
-					if (currentValStr.equals(newValStr)) {
-						continue;
-					}
-
-					Method summarySetter = M_SIR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-					summarySetter.invoke(existingSummary, newValue);
-
-					Method detailSetter = M_SIR_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-					detailSetter.invoke(detailEntity, newValue);
-
-				} catch (NoSuchMethodException e) {
-					continue;
-				}
-			}
-
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
-
-		try {
-			// 3️⃣ Loop from R19 to R23
-			for (int i = 19; i <= 23; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m", "risk_6to24m", "capital_6to24m",
-						"amt_gt24m", "risk_gt24m", "capital_gt24m" };
-
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
-						Object newValue = getter.invoke(updatedEntity);
-						Object existingValue = getter.invoke(existingSummary);
-
-						// --- FIX: Normalize nulls vs empty strings ---
-						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
-						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
-
-						if (currentValStr.equals(newValStr)) {
-							continue;
-						}
-
-						Method summarySetter = M_SIR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						summarySetter.invoke(existingSummary, newValue);
-
-						Method detailSetter = M_SIR_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-						detailSetter.invoke(detailEntity, newValue);
-
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
-
-			// 4️⃣ Loop for R18 Fields
-			String[] totalFields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m", "risk_6to24m", "capital_6to24m",
-					"amt_gt24m", "risk_gt24m", "capital_gt24m" };
-			for (String field : totalFields) {
-				String getterName = "getR18_" + field;
-				String setterName = "setR18_" + field;
-
-				try {
-					Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
-					Object newValue = getter.invoke(updatedEntity);
-					Object existingValue = getter.invoke(existingSummary);
-
-					// --- FIX: Normalize nulls vs empty strings ---
-					String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
-					String newValStr = (newValue == null) ? "" : newValue.toString().trim();
-
-					if (currentValStr.equals(newValStr)) {
-						continue;
-					}
-
-					Method summarySetter = M_SIR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-					summarySetter.invoke(existingSummary, newValue);
-
-					Method detailSetter = M_SIR_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-					detailSetter.invoke(detailEntity, newValue);
-
-				} catch (NoSuchMethodException e) {
-					continue;
-				}
-			}
-
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
-
-		try {
-			// 5️⃣ Loop from R24 to R26
-			for (int i = 24; i <= 26; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m", "risk_6to24m", "capital_6to24m",
-						"amt_gt24m", "risk_gt24m", "capital_gt24m" };
-
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
-						Object newValue = getter.invoke(updatedEntity);
-						Object existingValue = getter.invoke(existingSummary);
-
-						// --- FIX: Normalize nulls vs empty strings ---
-						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
-						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
-
-						if (currentValStr.equals(newValStr)) {
-							continue;
-						}
-
-						Method summarySetter = M_SIR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						summarySetter.invoke(existingSummary, newValue);
-
-						Method detailSetter = M_SIR_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-						detailSetter.invoke(detailEntity, newValue);
-
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
-
-		try {
-			// 6️⃣ Loop from R28 to R32
-			for (int i = 28; i <= 32; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m", "risk_6to24m", "capital_6to24m",
-						"amt_gt24m", "risk_gt24m", "capital_gt24m" };
-
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
-						Object newValue = getter.invoke(updatedEntity);
-						Object existingValue = getter.invoke(existingSummary);
-
-						// --- FIX: Normalize nulls vs empty strings ---
-						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
-						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
-
-						if (currentValStr.equals(newValStr)) {
-							continue;
-						}
-
-						Method summarySetter = M_SIR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						summarySetter.invoke(existingSummary, newValue);
-
-						Method detailSetter = M_SIR_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-						detailSetter.invoke(detailEntity, newValue);
-
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
-
-			// 7️⃣ Loop for R27 Fields
-			String[] totalFields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m", "risk_6to24m", "capital_6to24m",
-					"amt_gt24m", "risk_gt24m", "capital_gt24m" };
-			for (String field : totalFields) {
-				String getterName = "getR27_" + field;
-				String setterName = "setR27_" + field;
-
-				try {
-					Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
-					Object newValue = getter.invoke(updatedEntity);
-					Object existingValue = getter.invoke(existingSummary);
-
-					// --- FIX: Normalize nulls vs empty strings ---
-					String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
-					String newValStr = (newValue == null) ? "" : newValue.toString().trim();
-
-					if (currentValStr.equals(newValStr)) {
-						continue;
-					}
-
-					Method summarySetter = M_SIR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-					summarySetter.invoke(existingSummary, newValue);
-
-					Method detailSetter = M_SIR_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-					detailSetter.invoke(detailEntity, newValue);
-
-				} catch (NoSuchMethodException e) {
-					continue;
-				}
-			}
-
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
-
-		try {
-			// 8️⃣ Loop for R33 Fields
-			String[] fields = { "capital_6m", "capital_6to24m", "capital_gt24m" };
-			String prefix = "R33_";
-
-			for (String field : fields) {
-				String getterName = "get" + prefix + field;
-				String setterName = "set" + prefix + field;
-
-				try {
-					Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
-					Object newValue = getter.invoke(updatedEntity);
-					Object existingValue = getter.invoke(existingSummary);
-
-					// --- FIX: Normalize nulls vs empty strings ---
-					String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
-					String newValStr = (newValue == null) ? "" : newValue.toString().trim();
-
-					if (currentValStr.equals(newValStr)) {
-						continue;
-					}
-
-					Method summarySetter = M_SIR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-					summarySetter.invoke(existingSummary, newValue);
-
-					Method detailSetter = M_SIR_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-					detailSetter.invoke(detailEntity, newValue);
-
-				} catch (NoSuchMethodException e) {
-					continue;
-				}
-			}
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating R33 fields", e);
-		}
-
-		try {
-			// 9️⃣ Loop for R35 Fields
-			String[] fields = { "tot_spec_risk_ch" };
-			String prefix = "R35_";
-
-			for (String field : fields) {
-				String getterName = "get" + prefix + field;
-				String setterName = "set" + prefix + field;
-
-				try {
-					Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
-					Object newValue = getter.invoke(updatedEntity);
-					Object existingValue = getter.invoke(existingSummary);
-
-					// --- FIX: Normalize nulls vs empty strings ---
-					String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
-					String newValStr = (newValue == null) ? "" : newValue.toString().trim();
-
-					if (currentValStr.equals(newValStr)) {
-						continue;
-					}
-
-					Method summarySetter = M_SIR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-					summarySetter.invoke(existingSummary, newValue);
-
-					Method detailSetter = M_SIR_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-					detailSetter.invoke(detailEntity, newValue);
-
-				} catch (NoSuchMethodException e) {
-					continue;
-				}
-			}
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating R35 fields", e);
-		}
-
-		String changes = auditService.getChanges(oldcopy, existingSummary);
-
-		System.out.println("M_SIR Changes Length = "
-		+ (changes == null ? 0 : changes.length()));
-
-		System.out.println("Saving Summary & Detail tables");
-
-		// Save Summary & Detail first
-		java.util.Map<String, Object> sumKeys = new java.util.HashMap<>();
-		sumKeys.put("REPORT_DATE", existingSummary.getReportDate());
-		saveEntityToTable(existingSummary, "BRRS_M_SIR_SUMMARYTABLE", sumKeys);
-
-		if (isNewDetail) {
-			insertEntityToTable(detailEntity, "BRRS_M_SIR_DETAILTABLE");
-		} else {
-			java.util.Map<String, Object> dtlKeys = new java.util.HashMap<>();
-			dtlKeys.put("REPORT_DATE", detailEntity.getReportDate());
-			saveEntityToTable(detailEntity, "BRRS_M_SIR_DETAILTABLE", dtlKeys);
-		}
-
-		// Audit only if within DB limit
-		try {
-
-		
-		if (changes != null && !changes.isEmpty()) {
-
-		    if (changes.length() <= 2000) {
-
-		        auditService.compareEntitiesmanual(
-		                oldcopy,
-		                existingSummary,
-		                updatedEntity.getReportDate().toString(),
-		                "M_SIR Summary Screen",
-		                "BRRS_M_SIR_SUMMARY");
-
-		    } else {
-
-		        System.out.println(
-		                "Audit skipped because MODI_DETAILS exceeds 2000 characters. Length = "
-		                        + changes.length());
-		    }
-		}
-		} catch (Exception ex) {
-
-		System.out.println("Audit Error : " + ex.getMessage());
-		ex.printStackTrace();
-
-
-		}
-
-		System.out.println("Update completed successfully");
-
+	    Date reportDate = updatedEntity.getReportDate();
+
+	    // 1. Live summary as baseline
+	    M_SIR_Summary_Entity liveSummary = findByReportDate(reportDate);
+	    if (liveSummary == null) {
+	        throw new RuntimeException(
+	            "Record not found in live summary table for REPORT_DATE: " + reportDate);
+	    }
+
+	    // 2. Existing MOD row (re-edit) or seed from live
+	    M_SIR_Summary_Entity modRecord = findModRecordByReportDate(reportDate);
+	    if (modRecord == null) {
+	        modRecord = new M_SIR_Summary_Entity();
+	        BeanUtils.copyProperties(liveSummary, modRecord);
+	    }
+
+	    // 3. "Before" snapshot (pre-edit values and flags)
+	    M_SIR_Summary_Entity oldcopy = new M_SIR_Summary_Entity();
+	    BeanUtils.copyProperties(modRecord, oldcopy);
+
+	    // 4. Apply maker edits to MOD (in memory only)
+	    applyChangesToEntity(updatedEntity, modRecord);
+
+	    // 5. Maker-Checker flags BEFORE the diff, so the flag transition is captured
+	    modRecord.setEntity_flg("Y");
+	    modRecord.setModify_flg("Y");
+	    modRecord.setDel_flg("N");
+
+	    // 6. Diff
+	    String changes = auditService.getChanges(oldcopy, modRecord);
+	    System.out.println("M_SIR MOD Changes Length = " + (changes == null ? 0 : changes.length()));
+
+	    // 7. Persist MOD only (live untouched until Checker)
+	    saveModSummaryEntity(modRecord);
+	    System.out.println("✔ M_SIR MOD record saved for Checker approval. Date=" + reportDate);
+
+	    // 8. Audit row, which is what Modify Status reads
+	    if (changes != null && !changes.isEmpty()) {
+	        auditService.compareEntitiesmanual(
+	            oldcopy,
+	            modRecord,
+	            reportDate.toString(),
+	            "M_SIR Summary Screen",
+	            "BRRS_M_SIR_MOD_SUMMARYTABLE");
+	    }
 	}
+	
+	// =====================================================
+	// MAKE–CHECKER: HELPERS
+	// =====================================================
+
+	public M_SIR_Summary_Entity findByReportDate(Date reportDate) {
+	    String sql = "SELECT * FROM BRRS_M_SIR_SUMMARYTABLE "
+	               + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+	    List<M_SIR_Summary_Entity> list = jdbcTemplate.query(
+	            sql, new Object[]{reportDate},
+	            new BeanPropertyRowMapper<>(M_SIR_Summary_Entity.class));
+	    return list.isEmpty() ? null : list.get(0);
+	}
+
+	public M_SIR_Summary_Entity findModRecordByReportDate(Date reportDate) {
+	    String sql = "SELECT * FROM BRRS_M_SIR_MOD_SUMMARYTABLE "
+	               + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+	    List<M_SIR_Summary_Entity> list = jdbcTemplate.query(
+	            sql, new Object[]{reportDate},
+	            new BeanPropertyRowMapper<>(M_SIR_Summary_Entity.class));
+	    return list.isEmpty() ? null : list.get(0);
+	}
+
+	private void applyChangesToEntity(M_SIR_Summary_Entity updatedEntity,
+            M_SIR_Summary_Entity targetEntity) {
+int[] productRows = {12,13,14,15,16,17,18,19,20,21,22,23,
+   24,25,26,27,28,29,30,31,32,33};
+String[] numericFields = {
+"amt_6m","risk_6m","capital_6m",
+"amt_6to24m","risk_6to24m","capital_6to24m",
+"amt_gt24m","risk_gt24m","capital_gt24m"
+};
+for (int row : productRows) {
+copyField(updatedEntity, targetEntity,
+"getR" + row + "_product",
+"setR" + row + "_product");
+for (String f : numericFields) {
+    copyField(updatedEntity, targetEntity,
+              "getR" + row + "_" + f,
+              "setR" + row + "_" + f);
+}
+}
+copyField(updatedEntity, targetEntity,
+"getR35_tot_spec_risk_ch", "setR35_tot_spec_risk_ch");
+}
+
+	private void copyField(Object src, Object dest, String getterName, String setterName) {
+	    try {
+	        Method getter = src.getClass().getMethod(getterName);
+	        Object value = getter.invoke(src);
+	        if (value == null) return;
+
+	        // Support string-typed payloads coming from the JSP
+	        if (value instanceof String) {
+	            String s = ((String) value).trim();
+	            if (s.isEmpty()) return;
+	            value = s;
+	        }
+
+	        // Locate a matching setter (single arg)
+	        Method setter = null;
+	        for (Method m : dest.getClass().getMethods()) {
+	            if (m.getName().equals(setterName) && m.getParameterCount() == 1) {
+	                setter = m; break;
+	            }
+	        }
+	        if (setter == null) return;
+
+	        Class<?> targetType = setter.getParameterTypes()[0];
+	        if (targetType == BigDecimal.class && !(value instanceof BigDecimal)) {
+	            try { value = new BigDecimal(value.toString()); }
+	            catch (NumberFormatException e) { return; }
+	        }
+	        if (targetType == String.class && !(value instanceof String)) {
+	            value = value.toString();
+	        }
+	        setter.invoke(dest, value);
+	    } catch (NoSuchMethodException ignore) {
+	        // Field not present on entity — skip
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error copying " + getterName, e);
+	    }
+	}
+
+	// =====================================================
+	// MAKE–CHECKER: MOD persistence
+	// =====================================================
+
+	public void saveModSummaryEntity(M_SIR_Summary_Entity entity) {
+	    NamedParameterJdbcTemplate named = new NamedParameterJdbcTemplate(jdbcTemplate);
+
+	    Integer count = named.queryForObject(
+	        "SELECT COUNT(*) FROM BRRS_M_SIR_MOD_SUMMARYTABLE "
+	      + "WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)",
+	        new MapSqlParameterSource("reportDate", entity.getReportDate()),
+	        Integer.class);
+
+	    MapSqlParameterSource p = new MapSqlParameterSource()
+	        .addValue("reportDate",    entity.getReportDate())
+	        .addValue("entity_flg",    entity.getEntity_flg())
+	        .addValue("modify_flg",    entity.getModify_flg())
+	        .addValue("del_flg",       entity.getDel_flg())
+	        .addValue("report_frequency", entity.getReport_frequency())
+	        .addValue("report_code",      entity.getReport_code())
+	        .addValue("report_desc",      entity.getReport_desc());
+
+	    StringBuilder set = new StringBuilder(
+	        "MODIFY_FLG=:modify_flg, ENTITY_FLG=:entity_flg, DEL_FLG=:del_flg,"
+	      + " REPORT_FREQUENCY=:report_frequency, REPORT_CODE=:report_code,"
+	      + " REPORT_DESC=:report_desc");
+
+	    List<String> insCols = new ArrayList<>();
+	    List<String> insVals = new ArrayList<>();
+	    Collections.addAll(insCols, "REPORT_DATE","ENTITY_FLG","MODIFY_FLG","DEL_FLG",
+	                                 "REPORT_FREQUENCY","REPORT_CODE","REPORT_DESC");
+	    Collections.addAll(insVals, ":reportDate",":entity_flg",":modify_flg",":del_flg",
+	                                 ":report_frequency",":report_code",":report_desc");
+
+	    int[] productRows = {12,13,14,15,16,17,18,19,20,21,22,23,
+	                         24,25,26,27,28,29,30,31,32,33};
+	    String[] numericFields = {
+	        "amt_6m","risk_6m","capital_6m",
+	        "amt_6to24m","risk_6to24m","capital_6to24m",
+	        "amt_gt24m","risk_gt24m","capital_gt24m"
+	    };
+
+	    for (int row : productRows) {
+	        appendModColumn(p, set, insCols, insVals,
+	            "R"+row+"_PRODUCT", "r"+row+"_product",
+	            reflectGet(entity, "getR"+row+"_product"));
+	        for (String f : numericFields) {
+	            appendModColumn(p, set, insCols, insVals,
+	                "R" + row + "_" + f.toUpperCase(), "r" + row + "_" + f,
+	                reflectGet(entity, "getR" + row + "_" + f));
+	        }
+	    }
+	    appendModColumn(p, set, insCols, insVals,
+	        "R35_TOT_SPEC_RISK_CH", "r35_tot_spec_risk_ch",
+	        reflectGet(entity, "getR35_tot_spec_risk_ch"));
+
+	    if (count != null && count > 0) {
+	        named.update("UPDATE BRRS_M_SIR_MOD_SUMMARYTABLE SET " + set
+	            + " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)", p);
+	        System.out.println("✔ M_SIR MOD row updated");
+	    } else {
+	        named.update("INSERT INTO BRRS_M_SIR_MOD_SUMMARYTABLE ("
+	            + String.join(",", insCols) + ") VALUES ("
+	            + String.join(",", insVals) + ")", p);
+	        System.out.println("✔ M_SIR MOD row inserted");
+	    }
+	}
+
+	private void appendModColumn(MapSqlParameterSource p, StringBuilder set,
+	                             List<String> cols, List<String> vals,
+	                             String col, String param, Object value) {
+	    p.addValue(param, value);
+	    set.append(", ").append(col).append(" = :").append(param);
+	    cols.add(col);
+	    vals.add(":" + param);
+	}
+
+	private Object reflectGet(Object bean, String getter) {
+	    try {
+	        return bean.getClass().getMethod(getter).invoke(bean);
+	    } catch (NoSuchMethodException e) {
+	        throw new RuntimeException("Getter not found: " + getter, e);
+	    } catch (Exception e) {
+	        throw new RuntimeException(e);
+	    }
+	}
+	
+	// =====================================================
+	// MAKE–CHECKER: Approve
+	// =====================================================
 
 	@Transactional
-	public void updateResubReport(M_SIR_Resub_Summary_Entity updatedEntity) {
+	public void approveReport(Date reportDate) {
+	    M_SIR_Summary_Entity modRecord = jdbcTemplate.query(
+	        "SELECT * FROM BRRS_M_SIR_MOD_SUMMARYTABLE "
+	      + "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+	        new Object[]{reportDate},
+	        new BeanPropertyRowMapper<>(M_SIR_Summary_Entity.class))
+	        .stream().findFirst()
+	        .orElseThrow(() -> new RuntimeException(
+	            "No pending modification found for approval on date: " + reportDate));
 
-		Date reportDate = updatedEntity.getReportDate();
+	    transferModValuesToLiveTables(modRecord, reportDate);
 
-		// ----------------------------------------------------
-		// 1️⃣ GET CURRENT VERSION FROM RESUB TABLE
-		// ----------------------------------------------------
-		String sqlMax = "SELECT MAX(REPORT_VERSION) FROM BRRS_M_SIR_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ?";
-		BigDecimal maxResubVer = null;
-		try {
-			maxResubVer = jdbcTemplate.queryForObject(sqlMax, new Object[]{reportDate}, BigDecimal.class);
-		} catch (Exception e) {
-			// ignore or handle if null
-		}
+	    jdbcTemplate.update(
+	        "UPDATE BRRS_M_SIR_MOD_SUMMARYTABLE SET MODIFY_FLG = 'N' "
+	      + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate);
 
-		if (maxResubVer == null) {
-			throw new RuntimeException("No record for: " + reportDate);
-		}
-
-		// 🔹 Fetch the existing active record for auditing before incrementing the
-		// version
-		String sqlOld = "SELECT * FROM BRRS_M_SIR_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
-		List<M_SIR_Resub_Summary_Entity> oldList = jdbcTemplate.query(sqlOld, new Object[]{reportDate, maxResubVer}, new BeanPropertyRowMapper<>(M_SIR_Resub_Summary_Entity.class));
-		if (oldList.isEmpty()) {
-			throw new RuntimeException("Could not fetch current maximum version record for auditing.");
-		}
-		M_SIR_Resub_Summary_Entity oldcopy = oldList.get(0);
-
-		BigDecimal newVersion = maxResubVer.add(BigDecimal.ONE);
-		Date now = new Date();
-
-		// ====================================================
-		// 2️⃣ RESUB SUMMARY – FROM UPDATED VALUES
-		// ====================================================
-		M_SIR_Resub_Summary_Entity resubSummary = new M_SIR_Resub_Summary_Entity();
-		BeanUtils.copyProperties(updatedEntity, resubSummary, "reportDate", "reportVersion", "reportResubDate");
-
-		resubSummary.setReportDate(reportDate);
-		resubSummary.setReportVersion(newVersion);
-		resubSummary.setReportResubDate(now);
-
-		// ====================================================
-		// 3️⃣ RESUB DETAIL – SAME UPDATED VALUES
-		// ====================================================
-		M_SIR_Resub_Detail_Entity resubDetail = new M_SIR_Resub_Detail_Entity();
-		BeanUtils.copyProperties(updatedEntity, resubDetail, "reportDate", "reportVersion", "reportResubDate");
-
-		resubDetail.setReportDate(reportDate);
-		resubDetail.setReportVersion(newVersion);
-		resubDetail.setReportResubDate(now);
-
-		// ====================================================
-		// 4️⃣ ARCHIVAL SUMMARY – SAME VALUES + SAME VERSION
-		// ====================================================
-		M_SIR_Archival_Summary_Entity archSummary = new M_SIR_Archival_Summary_Entity();
-		BeanUtils.copyProperties(updatedEntity, archSummary, "reportDate", "reportVersion", "reportResubDate");
-
-		archSummary.setReportDate(reportDate);
-		archSummary.setReportVersion(newVersion); // SAME VERSION
-		archSummary.setReportResubDate(now);
-
-		// ====================================================
-		// 5️⃣ ARCHIVAL DETAIL – SAME VALUES + SAME VERSION
-		// ====================================================
-		M_SIR_Archival_Detail_Entity archDetail = new M_SIR_Archival_Detail_Entity();
-		BeanUtils.copyProperties(updatedEntity, archDetail, "reportDate", "reportVersion", "reportResubDate");
-
-		archDetail.setReportDate(reportDate);
-		archDetail.setReportVersion(newVersion); // SAME VERSION
-		archDetail.setReportResubDate(now);
-
-		// ====================================================
-		// 6️⃣ AUDIT EVALUATION (EXCLUDE ADMIN ATTRIBUTE DELTAS)
-		// ====================================================
-		M_SIR_Resub_Summary_Entity populatedSummaryForAudit = new M_SIR_Resub_Summary_Entity();
-		BeanUtils.copyProperties(updatedEntity, populatedSummaryForAudit, "reportDate", "reportVersion",
-				"reportResubDate");
-
-		// Align administrative keys with oldcopy so they do not trigger false audit
-		// changes
-		populatedSummaryForAudit.setReportDate(oldcopy.getReportDate());
-		populatedSummaryForAudit.setReportVersion(oldcopy.getReportVersion());
-		populatedSummaryForAudit.setReportResubDate(oldcopy.getReportResubDate());
-
-		String changes = auditService.getChanges(oldcopy, populatedSummaryForAudit);
-		System.out.println("M_SIR Resub Changes Length = " + (changes != null ? changes.length() : 0));
-
-		// ====================================================
-		// 7️⃣ SAVE ALL WITH SAME DATA
-		// ====================================================
-		System.out.println("Saving Resub & Archival tables");
-		insertEntityToTable(resubSummary, "BRRS_M_SIR_RESUB_SUMMARYTABLE");
-		insertEntityToTable(resubDetail, "BRRS_M_SIR_RESUB_DETAILTABLE");
-		insertEntityToTable(archSummary, "BRRS_M_SIR_ARCHIVALTABLE_SUMMARY");
-		insertEntityToTable(archDetail, "BRRS_M_SIR_ARCHIVALTABLE_DETAIL");
-
-		// Only invoke audit logger if real physical modifications exist
-		if (changes != null && !changes.isEmpty()) {
-			auditService.compareEntitiesmanual(oldcopy, populatedSummaryForAudit,
-					updatedEntity.getReportDate().toString(), "M_SIR Resub Screen", "BRRS_M_SIR_RESUB_SUMMARY");
-		}
-
-		System.out.println("Resubmission update completed successfully");
+	    System.out.println("✔ M_SIR approved — MOD values transferred to live tables.");
 	}
 
-	// ------------------------------
-	// Retrieves a list of report dates, versions, and resubmission dates
-	// ------------------------------
-	public List<Object[]> getM_SIRResub() {
-		List<Object[]> resubList = new ArrayList<>();
-		try {
-			String sql = "SELECT * FROM BRRS_M_SIR_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC";
-			List<M_SIR_Archival_Summary_Entity> latestArchivalList = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_SIR_Archival_Summary_Entity.class));
+	private void transferModValuesToLiveTables(M_SIR_Summary_Entity modRecord, Date reportDate) {
+	    int[] productRows = {12,13,14,15,16,17,18,19,20,21,22,23,
+	                         24,25,26,27,28,29,30,31,32,33};
+	    String[] numericFields = {
+	        "amt_6m","risk_6m","capital_6m",
+	        "amt_6to24m","risk_6to24m","capital_6to24m",
+	        "amt_gt24m","risk_gt24m","capital_gt24m"
+	    };
 
-			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
-				for (M_SIR_Archival_Summary_Entity entity : latestArchivalList) {
-					resubList.add(new Object[] { entity.getReportDate(), entity.getReportVersion(),
-							entity.getReportResubDate() });
-				}
-				System.out.println("Fetched " + resubList.size() + " record(s)");
-			} else {
-				System.out.println("No archival data found.");
+	    StringBuilder setSummary = new StringBuilder();
+	    List<Object> params = new ArrayList<>();
+
+	    for (int row : productRows) {
+	        appendLiveCol(setSummary, params, "R"+row+"_PRODUCT",
+	                      reflectGet(modRecord, "getR"+row+"_product"));
+	        for (String f : numericFields) {
+	            appendLiveCol(setSummary, params,
+	                "R" + row + "_" + f.toUpperCase(),
+	                reflectGet(modRecord, "getR" + row + "_" + f));
+	        }
+	    }
+	    appendLiveCol(setSummary, params, "R35_TOT_SPEC_RISK_CH",
+	                  reflectGet(modRecord, "getR35_tot_spec_risk_ch"));
+
+	    String body = setSummary.substring(2); // strip leading ", "
+	    params.add(reportDate);
+	    Object[] args = params.toArray();
+
+	    jdbcTemplate.update("UPDATE BRRS_M_SIR_SUMMARYTABLE SET " + body
+	        + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", args);
+	    jdbcTemplate.update("UPDATE BRRS_M_SIR_DETAILTABLE SET " + body
+	        + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", args);
+
+	    System.out.println("✔ Live M_SIR SUMMARY + DETAIL updated from MOD.");
+	}
+
+	private void appendLiveCol(StringBuilder set, List<Object> params,
+	                           String column, Object value) {
+	    set.append(", ").append(column).append(" = ?");
+	    params.add(value);
+	}
+
+@Transactional
+public void updateResubReport(M_SIR_Resub_Summary_Entity updatedEntity) {
+
+	Date reportDate = updatedEntity.getReportDate();
+
+	// ----------------------------------------------------
+	// 1️⃣ GET CURRENT VERSION FROM RESUB TABLE
+	// ----------------------------------------------------
+	String sqlMax = "SELECT MAX(REPORT_VERSION) FROM BRRS_M_SIR_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ?";
+	BigDecimal maxResubVer = null;
+	try {
+		maxResubVer = jdbcTemplate.queryForObject(sqlMax, new Object[]{reportDate}, BigDecimal.class);
+	} catch (Exception e) {
+		// ignore or handle if null
+	}
+
+	if (maxResubVer == null) {
+		throw new RuntimeException("No record for: " + reportDate);
+	}
+
+	// 🔹 Fetch the existing active record for auditing before incrementing the
+	// version
+	String sqlOld = "SELECT * FROM BRRS_M_SIR_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+	List<M_SIR_Resub_Summary_Entity> oldList = jdbcTemplate.query(sqlOld, new Object[]{reportDate, maxResubVer}, new BeanPropertyRowMapper<>(M_SIR_Resub_Summary_Entity.class));
+	if (oldList.isEmpty()) {
+		throw new RuntimeException("Could not fetch current maximum version record for auditing.");
+	}
+	M_SIR_Resub_Summary_Entity oldcopy = oldList.get(0);
+
+	BigDecimal newVersion = maxResubVer.add(BigDecimal.ONE);
+	Date now = new Date();
+
+	// ====================================================
+	// 2️⃣ RESUB SUMMARY – FROM UPDATED VALUES
+	// ====================================================
+	M_SIR_Resub_Summary_Entity resubSummary = new M_SIR_Resub_Summary_Entity();
+	BeanUtils.copyProperties(updatedEntity, resubSummary, "reportDate", "reportVersion", "reportResubDate");
+
+	resubSummary.setReportDate(reportDate);
+	resubSummary.setReportVersion(newVersion);
+	resubSummary.setReportResubDate(now);
+
+	// ====================================================
+	// 3️⃣ RESUB DETAIL – SAME UPDATED VALUES
+	// ====================================================
+	M_SIR_Resub_Detail_Entity resubDetail = new M_SIR_Resub_Detail_Entity();
+	BeanUtils.copyProperties(updatedEntity, resubDetail, "reportDate", "reportVersion", "reportResubDate");
+
+	resubDetail.setReportDate(reportDate);
+	resubDetail.setReportVersion(newVersion);
+	resubDetail.setReportResubDate(now);
+
+	// ====================================================
+	// 4️⃣ ARCHIVAL SUMMARY – SAME VALUES + SAME VERSION
+	// ====================================================
+	M_SIR_Archival_Summary_Entity archSummary = new M_SIR_Archival_Summary_Entity();
+	BeanUtils.copyProperties(updatedEntity, archSummary, "reportDate", "reportVersion", "reportResubDate");
+
+	archSummary.setReportDate(reportDate);
+	archSummary.setReportVersion(newVersion); // SAME VERSION
+	archSummary.setReportResubDate(now);
+
+	// ====================================================
+	// 5️⃣ ARCHIVAL DETAIL – SAME VALUES + SAME VERSION
+	// ====================================================
+	M_SIR_Archival_Detail_Entity archDetail = new M_SIR_Archival_Detail_Entity();
+	BeanUtils.copyProperties(updatedEntity, archDetail, "reportDate", "reportVersion", "reportResubDate");
+
+	archDetail.setReportDate(reportDate);
+	archDetail.setReportVersion(newVersion); // SAME VERSION
+	archDetail.setReportResubDate(now);
+
+	// ====================================================
+	// 6️⃣ AUDIT EVALUATION (EXCLUDE ADMIN ATTRIBUTE DELTAS)
+	// ====================================================
+	M_SIR_Resub_Summary_Entity populatedSummaryForAudit = new M_SIR_Resub_Summary_Entity();
+	BeanUtils.copyProperties(updatedEntity, populatedSummaryForAudit, "reportDate", "reportVersion",
+			"reportResubDate");
+
+	// Align administrative keys with oldcopy so they do not trigger false audit
+	// changes
+	populatedSummaryForAudit.setReportDate(oldcopy.getReportDate());
+	populatedSummaryForAudit.setReportVersion(oldcopy.getReportVersion());
+	populatedSummaryForAudit.setReportResubDate(oldcopy.getReportResubDate());
+
+	String changes = auditService.getChanges(oldcopy, populatedSummaryForAudit);
+	System.out.println("M_SIR Resub Changes Length = " + (changes != null ? changes.length() : 0));
+
+	// ====================================================
+	// 7️⃣ SAVE ALL WITH SAME DATA
+	// ====================================================
+	System.out.println("Saving Resub & Archival tables");
+	insertEntityToTable(resubSummary, "BRRS_M_SIR_RESUB_SUMMARYTABLE");
+	insertEntityToTable(resubDetail, "BRRS_M_SIR_RESUB_DETAILTABLE");
+	insertEntityToTable(archSummary, "BRRS_M_SIR_ARCHIVALTABLE_SUMMARY");
+	insertEntityToTable(archDetail, "BRRS_M_SIR_ARCHIVALTABLE_DETAIL");
+
+	// Only invoke audit logger if real physical modifications exist
+	if (changes != null && !changes.isEmpty()) {
+		auditService.compareEntitiesmanual(oldcopy, populatedSummaryForAudit,
+				updatedEntity.getReportDate().toString(), "M_SIR Resub Screen", "BRRS_M_SIR_RESUB_SUMMARY");
+	}
+
+	System.out.println("Resubmission update completed successfully");
+}
+
+// ------------------------------
+// Retrieves a list of report dates, versions, and resubmission dates
+// ------------------------------
+public List<Object[]> getM_SIRResub() {
+	List<Object[]> resubList = new ArrayList<>();
+	try {
+		String sql = "SELECT * FROM BRRS_M_SIR_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC";
+		List<M_SIR_Archival_Summary_Entity> latestArchivalList = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_SIR_Archival_Summary_Entity.class));
+
+		if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+			for (M_SIR_Archival_Summary_Entity entity : latestArchivalList) {
+				resubList.add(new Object[] { entity.getReportDate(), entity.getReportVersion(),
+						entity.getReportResubDate() });
+			}
+			System.out.println("Fetched " + resubList.size() + " record(s)");
+		} else {
+			System.out.println("No archival data found.");
+		}
+
+	} catch (Exception e) {
+		System.err.println("Error fetching M_SIR Resub data: " + e.getMessage());
+		e.printStackTrace();
+	}
+	return resubList;
+}
+
+// ------------------------------
+// Retrieves a list of report dates, versions, and archival dates
+// ------------------------------
+public List<Object[]> getM_SIRArchival() {
+	List<Object[]> archivalList = new ArrayList<>();
+
+	try {
+		String sql = "SELECT * FROM BRRS_M_SIR_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC";
+		List<M_SIR_Archival_Summary_Entity> repoData = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_SIR_Archival_Summary_Entity.class));
+
+		if (repoData != null && !repoData.isEmpty()) {
+			for (M_SIR_Archival_Summary_Entity entity : repoData) {
+				Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion(),
+						entity.getReportResubDate() };
+				archivalList.add(row);
 			}
 
-		} catch (Exception e) {
-			System.err.println("Error fetching M_SIR Resub data: " + e.getMessage());
-			e.printStackTrace();
-		}
-		return resubList;
-	}
-
-	// ------------------------------
-	// Retrieves a list of report dates, versions, and archival dates
-	// ------------------------------
-	public List<Object[]> getM_SIRArchival() {
-		List<Object[]> archivalList = new ArrayList<>();
-
-		try {
-			String sql = "SELECT * FROM BRRS_M_SIR_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC";
-			List<M_SIR_Archival_Summary_Entity> repoData = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_SIR_Archival_Summary_Entity.class));
-
-			if (repoData != null && !repoData.isEmpty()) {
-				for (M_SIR_Archival_Summary_Entity entity : repoData) {
-					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion(),
-							entity.getReportResubDate() };
-					archivalList.add(row);
-				}
-
-				System.out.println("Fetched " + archivalList.size() + " archival records");
-				M_SIR_Archival_Summary_Entity first = repoData.get(0);
-				System.out.println("Latest archival version: " + first.getReportVersion());
-			} else {
-				System.out.println("No archival data found.");
-			}
-
-		} catch (Exception e) {
-			System.err.println("Error fetching M_SIR Archival data: " + e.getMessage());
-			e.printStackTrace();
+			System.out.println("Fetched " + archivalList.size() + " archival records");
+			M_SIR_Archival_Summary_Entity first = repoData.get(0);
+			System.out.println("Latest archival version: " + first.getReportVersion());
+		} else {
+			System.out.println("No archival data found.");
 		}
 
-		return archivalList;
+	} catch (Exception e) {
+		System.err.println("Error fetching M_SIR Archival data: " + e.getMessage());
+		e.printStackTrace();
 	}
+
+	return archivalList;
+}
 
 	// ------------------------------
 	// Generates the normal Excel spreadsheet byte array for M_SIR

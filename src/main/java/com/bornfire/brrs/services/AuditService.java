@@ -1059,10 +1059,10 @@ public class AuditService {
 
 		System.out.println("ID values : " + formattedIdString);
 
-		// Compare entities and build changes string
 		StringBuilder changes = new StringBuilder();
+		
 		Class<?> clazz = oldEntity.getClass();
-		Field[] fields = clazz.getDeclaredFields();
+		List<Field> fields = getAllFields(clazz);
 
 		for (Field field : fields) {
 			// Skip if field is in ignore list (case-insensitive)
@@ -1074,7 +1074,7 @@ public class AuditService {
 			try {
 				Object oldValue = field.get(oldEntity);
 				Object newValue = field.get(newEntity);
-
+				
 				if (!areEqual(oldValue, newValue)) {
 					if (changes.length() > 0) {
 						changes.append("|||");
@@ -1142,10 +1142,9 @@ public class AuditService {
 			}
 		}
 
-		// Compare entities and build changes string
 		StringBuilder changes = new StringBuilder();
 		Class<?> clazz = oldEntity.getClass();
-		Field[] fields = clazz.getDeclaredFields();
+		List<Field> fields = getAllFields(clazz);
 
 		for (Field field : fields) {
 			// Skip if field is in ignore list (case-insensitive)
@@ -1201,6 +1200,19 @@ public class AuditService {
 		auditServicesRep.save(audit);
 
 	}
+	
+	private List<Field> getAllFields(Class<?> clazz) {
+	    List<Field> result = new ArrayList<>();
+	    for (Class<?> c = clazz; c != null && c != Object.class; c = c.getSuperclass()) {
+	        for (Field f : c.getDeclaredFields()) {
+	            if (java.lang.reflect.Modifier.isStatic(f.getModifiers()) || f.isSynthetic()) {
+	                continue;
+	            }
+	            result.add(f);
+	        }
+	    }
+	    return result;
+	}
 
 	private boolean areEqual(Object obj1, Object obj2) {
 		if (obj1 == null && obj2 == null)
@@ -1215,7 +1227,7 @@ public class AuditService {
 		StringBuilder changes = new StringBuilder();
 
 		Class<?> clazz = oldEntity.getClass();
-		Field[] fields = clazz.getDeclaredFields();
+		List<Field> fields = getAllFields(clazz);
 
 		for (Field field : fields) {
 
@@ -1520,6 +1532,8 @@ public class AuditService {
 			transferLIQData(auditRecord);
 		} else if (upperTable.contains("M_GALOR")) {
 			transferGALORData(auditRecord);
+		} else if (upperTable.contains("M_SIR")) {       
+		    transferMSirData(auditRecord);                    
 		} else {
 			throw new IllegalArgumentException("Verification not configured for table: " + auditTable);
 		}
@@ -5079,4 +5093,109 @@ public class AuditService {
 		System.out.println("M_GALOR MOD Updated : " + updatedMod);
 		System.out.println("M_GALOR Verification Completed Successfully");
 	}
+	
+	private void transferMSirData(AuditServicesEntity auditRecord) {
+
+	    // ── 1. Find the pending MOD row (prefer MODIFY_FLG='Y', fallback to MAX) ──
+	    java.sql.Date reportDate = null;
+	    try {
+	        reportDate = jdbcTemplate.queryForObject(
+	            "SELECT MAX(REPORT_DATE) FROM BRRS_M_SIR_MOD_SUMMARYTABLE WHERE MODIFY_FLG = 'Y'",
+	            java.sql.Date.class);
+	    } catch (Exception ignored) {
+	        // fall through to MAX(REPORT_DATE)
+	    }
+	    if (reportDate == null) {
+	        reportDate = jdbcTemplate.queryForObject(
+	            "SELECT MAX(REPORT_DATE) FROM BRRS_M_SIR_MOD_SUMMARYTABLE",
+	            java.sql.Date.class);
+	    }
+	    if (reportDate == null) {
+	        throw new IllegalStateException(
+	            "No modified M_SIR record available for verification.");
+	    }
+
+	    System.out.println("M_SIR Report Date : " + reportDate);
+
+	    // ── 2. Load MOD row ──
+	    List<Map<String, Object>> rows = jdbcTemplate.queryForList(
+	        "SELECT * FROM BRRS_M_SIR_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+	        reportDate);
+	    if (rows.isEmpty()) {
+	        throw new IllegalStateException("M_SIR MOD row not found for date : " + reportDate);
+	    }
+	    Map<String, Object> mod = rows.get(0);
+
+	    // ── 3. Guard: refuse to transfer unless MODIFY_FLG='Y' ──
+	    Object modifyFlag = mod.get("MODIFY_FLG");
+	    if (modifyFlag == null || !"Y".equalsIgnoreCase(modifyFlag.toString())) {
+	        throw new IllegalStateException(
+	            "M_SIR MOD row is not pending (MODIFY_FLG != 'Y') for date : " + reportDate);
+	    }
+
+	    // ── 4. Build SET clause — exclude identifier and metadata columns ──
+	    StringBuilder setClause = new StringBuilder();
+	    List<Object> params = new ArrayList<>();
+	    for (Map.Entry<String, Object> entry : mod.entrySet()) {
+	        String col = entry.getKey();
+
+	        // Skip identifier + metadata + resub-only columns
+	        if (col.equalsIgnoreCase("REPORT_DATE")
+	         || col.equalsIgnoreCase("REPORT_VERSION")
+	         || col.equalsIgnoreCase("REPORT_FREQUENCY")
+	         || col.equalsIgnoreCase("REPORT_CODE")
+	         || col.equalsIgnoreCase("REPORT_DESC")
+	         || col.equalsIgnoreCase("REPORT_RESUBDATE")   // ← IMPORTANT: added
+	         || col.equalsIgnoreCase("ENTITY_FLG")
+	         || col.equalsIgnoreCase("MODIFY_FLG")
+	         || col.equalsIgnoreCase("DEL_FLG")) {
+	            continue;
+	        }
+	        setClause.append(", ").append(col).append(" = ?");
+	        params.add(entry.getValue());
+	    }
+	    if (setClause.length() == 0) {
+	        throw new IllegalStateException(
+	            "M_SIR MOD row has no transferable columns for date : " + reportDate);
+	    }
+	    String body = setClause.substring(2);   // strip leading ", "
+	    Object[] args = appendArgs(params.toArray(), reportDate);
+
+	    // ── 5. Transfer MOD → LIVE Summary ──
+	    int summaryUpdated = jdbcTemplate.update(
+	        "UPDATE BRRS_M_SIR_SUMMARYTABLE SET " + body
+	      + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", args);
+	    if (summaryUpdated == 0) {
+	        throw new IllegalStateException(
+	            "M_SIR live summary row not found for date : " + reportDate);
+	    }
+	    System.out.println("M_SIR Summary Table Updated : " + summaryUpdated);
+
+	    // ── 6. Transfer MOD → LIVE Detail (guarded — warn if 0 rows but don't fail) ──
+	    int detailUpdated = jdbcTemplate.update(
+	        "UPDATE BRRS_M_SIR_DETAILTABLE SET " + body
+	      + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", args);
+	    if (detailUpdated == 0) {
+	        System.out.println(
+	            "M_SIR Detail Table has no row for date : " + reportDate + " — summary-only transfer");
+	    } else {
+	        System.out.println("M_SIR Detail Table Updated : " + detailUpdated);
+	    }
+
+	    // ── 7. Flip MOD flag to approved ──
+	    int modUpdated = jdbcTemplate.update(
+	        "UPDATE BRRS_M_SIR_MOD_SUMMARYTABLE "
+	      + "SET ENTITY_FLG='Y', MODIFY_FLG='N' "
+	      + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate);
+
+	    System.out.println("M_SIR MOD Updated : " + modUpdated);
+	    System.out.println("M_SIR Verification and Transfer Completed Successfully");
+	}
+
+	private static Object[] appendArgs(Object[] base, Object extra) {
+	    Object[] out = java.util.Arrays.copyOf(base, base.length + 1);
+	    out[base.length] = extra;
+	    return out;
+	}
+
 }

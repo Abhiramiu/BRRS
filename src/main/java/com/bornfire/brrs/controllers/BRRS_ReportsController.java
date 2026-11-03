@@ -5945,20 +5945,103 @@ public class BRRS_ReportsController {
 
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			@ModelAttribute M_SIR_Summary_Entity request1) {
+			@ModelAttribute M_SIR_Summary_Entity request1,
+
+			HttpServletRequest req) {
 
 		try {
-			System.out.println("Came to single controller");
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
+
+			// MAKER gate — MAN/ADMIN allowed as dual-role
+			if (!isMaker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Maker (or MAN/ADMIN) can submit M_SIR modifications. Current role: " + role);
+			}
+
+			if (asondate == null) {
+				return ResponseEntity.badRequest().body("asondate is required.");
+			}
+
+			System.out.println("Came to M_SIR MAKER controller — date=" + asondate + ", role=" + role);
 
 			request1.setReportDate(asondate);
 
+			// ⚠️ Writes ONLY to BRRS_M_SIR_MOD_SUMMARYTABLE.
+			// Live tables remain unchanged until Checker approval.
 			BRRS_M_SIR_ReportService.updateReport(request1);
 
-			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
+			return ResponseEntity.ok("Modification saved. Pending Checker verification.");
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+	
+	@RequestMapping(value = "/approveM_SIR", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> approveM_SIR(
+
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+			HttpServletRequest req) {
+
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
+
+			if (!isChecker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Checker (or MAN/ADMIN) can approve M_SIR. Current role: " + role);
+			}
+
+			if (asondate == null) {
+				return ResponseEntity.badRequest().body("asondate is required.");
+			}
+
+			System.out.println("Came to approveM_SIR (CHECKER) for date: " + asondate + ", role=" + role);
+
+			// Reads BRRS_M_SIR_MOD_SUMMARYTABLE WHERE MODIFY_FLG='Y',
+			// copies MOD → LIVE Summary + Detail, sets MODIFY_FLG='N'
+			BRRS_M_SIR_ReportService.approveReport(asondate);
+
+			return ResponseEntity.ok("Approved successfully — MOD values transferred to live tables.");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Approval Failed: " + e.getMessage());
+		}
+	}
+	
+	@RequestMapping(value = "/verifyAuditM_SIR", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> verifyAuditM_SIR(
+
+			@RequestParam("auditId") Long auditId,
+
+			HttpServletRequest req) {
+
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
+
+			if (!isChecker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Checker (or MAN/ADMIN) can verify M_SIR. Current role: " + role);
+			}
+
+			System.out.println("Came to verifyAuditM_SIR (CHECKER) for auditId=" + auditId + ", role=" + role);
+
+			// Dispatches to AuditService.transferMSirData(auditRecord)
+			// — see AuditService change: `else if (upperTable.contains("M_SIR"))`
+			auditService.verifyAndTransferReport(auditId);
+
+			return ResponseEntity.ok("Verified and transferred successfully.");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Verify Failed: " + e.getMessage());
 		}
 	}
 
