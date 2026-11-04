@@ -1542,6 +1542,8 @@ public class AuditService {
 			transferM_SRWA_12DData(auditRecord);
 		} else if (upperTable.contains("M_GMIRT")) {
 	        transferGMIRTData(auditRecord);
+	    } else if (upperTable.contains("M_IRB")) {
+	        transferMIrbData(auditRecord);
 	    } else {
 			throw new IllegalArgumentException("Verification not configured for table: " + auditTable);
 		}
@@ -5567,6 +5569,51 @@ public class AuditService {
 	        System.err.println("M_GMIRT inline recompute FAILED for " + reportDate + ": " + e.getMessage());
 	        e.printStackTrace();
 	    }
+	}
+	
+	private void transferMIrbData(AuditServicesEntity auditRecord) {
+	    String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_IRB_MOD_SUMMARYTABLE WHERE MODIFY_FLG = 'Y'";
+	    java.sql.Date reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+
+	    if (reportDate == null) {
+	        throw new IllegalStateException("No modified M_IRB record available for verification.");
+	    }
+
+	    System.out.println("M_IRB Report Date : " + reportDate);
+
+	    int[] rows = { 96, 100, 101, 102, 103, 104 };
+	    String[] suffix = { "PRODUCT", "UP_TO_1_MONTH", "MORE_THAN_1_MONTH_TO_3_MONTHS",
+	            "MORE_THAN_3_MONTH_TO_6_MONTHS", "MORE_THAN_6_MONTH_TO_12_MONTHS", "MORE_THAN_12_MONTH_TO_3_YEARS",
+	            "MORE_THAN_3_YEARS_TO_5_YEARS", "MORE_THAN_5_YEARS_TO_10_YEARS", "MORE_THAN_10_YEARS",
+	            "NON_RATIO_SENSATIVE_ITEMS", "TOTAL" };
+
+	    StringBuilder setCols = new StringBuilder();
+	    StringBuilder selCols = new StringBuilder();
+	    for (int row : rows) {
+	        for (String s : suffix) {
+	            setCols.append("R").append(row).append("_").append(s).append(", ");
+	            selCols.append("S.R").append(row).append("_").append(s).append(", ");
+	        }
+	    }
+
+	    String updateSql = "UPDATE BRRS_M_IRB_SUMMARYTABLE M SET (" + setCols + "ENTITY_FLG, MODIFY_FLG, DEL_FLG) = ("
+	            + "SELECT " + selCols + "S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG "
+	            + "FROM BRRS_M_IRB_MOD_SUMMARYTABLE S "
+	            + "WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) "
+	            + "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+	    int updated = jdbcTemplate.update(updateSql, reportDate);
+
+	    if (updated == 0) {
+	        throw new IllegalStateException("M_IRB modification record not found for date : " + reportDate);
+	    }
+
+	    System.out.println("M_IRB Main Updated : " + updated);
+
+	    String updateModSql = "UPDATE BRRS_M_IRB_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+	    int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+
+	    System.out.println("M_IRB MOD Updated : " + modUpdated);
 	}
 	
 	private static Object[] appendArgs(Object[] base, Object extra) {

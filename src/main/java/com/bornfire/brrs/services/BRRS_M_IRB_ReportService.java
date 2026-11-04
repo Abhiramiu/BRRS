@@ -1,7 +1,6 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -16,9 +15,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -37,12 +37,18 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -1034,49 +1040,164 @@ public class BRRS_M_IRB_ReportService {
 		}
 	}
 
+	// ===================== MAKER-CHECKER (M_IRB) =====================
+
+	// Manual-entry rows (Excel rows 96, 100-104). Same rows as BRRS_M_IRB_MOD_SUMMARYTABLE.
+	private static final int[] IRB_MANUAL_ROWS = { 96, 100, 101, 102, 103, 104 };
+
+	// 9 manual columns (Excel C..K) + TOTAL (Excel L = SUM(C:K), computed). Same order as IRB_COLS.
+	private static final String[] IRB_PROPS = { "upTo1Month", "moreThan1MonthTo3Months", "moreThan3MonthTo6Months",
+	        "moreThan6MonthTo12Months", "moreThan12MonthTo3Years", "moreThan3YearsTo5Years",
+	        "moreThan5YearsTo10Years", "moreThan10Years", "nonRatioSensativeItems", "total" };
+
+	private static final String[] IRB_COLS = { "UP_TO_1_MONTH", "MORE_THAN_1_MONTH_TO_3_MONTHS",
+	        "MORE_THAN_3_MONTH_TO_6_MONTHS", "MORE_THAN_6_MONTH_TO_12_MONTHS", "MORE_THAN_12_MONTH_TO_3_YEARS",
+	        "MORE_THAN_3_YEARS_TO_5_YEARS", "MORE_THAN_5_YEARS_TO_10_YEARS", "MORE_THAN_10_YEARS",
+	        "NON_RATIO_SENSATIVE_ITEMS", "TOTAL" };
+
 	public void MIRBUpdate(M_IRB_Summary_Entity updatedEntity) {
-		System.out.println("Came to MIS UPDATE services");
-		System.out.println("Report Date: " + updatedEntity.getReportDate());
+	    System.out.println("Came to M_IRB maker service, Report Date: " + updatedEntity.getReportDate());
 
-		List<M_IRB_Summary_Entity> existingList = getSummaryByDate(updatedEntity.getReportDate());
-		if (existingList == null || existingList.isEmpty()) {
-			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate());
-		}
-		M_IRB_Summary_Entity existing = existingList.get(0);
+	    Date reportDate = updatedEntity.getReportDate();
+	    if (reportDate == null) {
+	        throw new IllegalArgumentException("Report Date is required.");
+	    }
 
-		try {
-			// 1️⃣ Loop from R10 to R16 and copy fields
-			for (int i = 96; i <= 106; i++) {
-				String prefix = "R" + i + "_";
+	    // Live row = baseline
+	    List<M_IRB_Summary_Entity> existingList = getSummaryByDate(reportDate);
+	    if (existingList == null || existingList.isEmpty()) {
+	        throw new RuntimeException("Record not found for REPORT_DATE: " + reportDate);
+	    }
+	    M_IRB_Summary_Entity existing = existingList.get(0);
 
-				String[] fields = { "upTo1Month", "moreThan1MonthTo3Months", "moreThan3MonthTo6Months",
-						"moreThan6MonthTo12Months", "moreThan12MonthTo3Years", "moreThan13YearsTo5Years",
-						"moreThan5YearsTo10Years", "moreThan10Years", "nonRatioSensativeItems", "total" };
+	    // Audit copy: state before any change
+	    M_IRB_Summary_Entity oldcopy = new M_IRB_Summary_Entity();
+	    BeanUtils.copyProperties(existing, oldcopy);
 
-				for (String field : fields) {
-					String getterName = "getR" + i + "_" + field;
-					String setterName = "setR" + i + "_" + field;
+	    // 1) Apply only the manual cells that actually changed
+	    for (int row : IRB_MANUAL_ROWS) {
+	        boolean rowChanged = false;
 
-					try {
-						Method getter = M_IRB_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_IRB_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+	        for (int i = 0; i < IRB_PROPS.length - 1; i++) {          // last entry = TOTAL, handled below
+	            String name = "R" + row + "_" + IRB_PROPS[i];
+	            Object newVal = irbGet(updatedEntity, name);
+	            Object curVal = irbGet(existing, name);
 
-						Object newValue = getter.invoke(updatedEntity);
-						setter.invoke(existing, newValue);
+	            if (irbSameValue(curVal, newVal)) {
+	                continue;
+	            }
+	            irbSet(existing, name, BigDecimal.class, newVal);
+	            rowChanged = true;
+	        }
 
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
-			}
+	        // TOTAL = SUM of the 9 manual cells (Excel column L)
+	        if (rowChanged) {
+	            BigDecimal total = BigDecimal.ZERO;
+	            for (int i = 0; i < IRB_PROPS.length - 1; i++) {
+	                Object v = irbGet(existing, "R" + row + "_" + IRB_PROPS[i]);
+	                if (v != null) {
+	                    total = total.add((BigDecimal) v);
+	                }
+	            }
+	            irbSet(existing, "R" + row + "_total", BigDecimal.class, total);
+	        }
+	    }
 
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
+	    // 2) Evaluate audit changes
+	    String changes = auditService.getChanges(oldcopy, existing);
+	    System.out.println("M_IRB Changes Length = " + (changes != null ? changes.length() : 0));
 
-		// 3️⃣ Save updated entity
-		updateSummary(existing);
+	    // 3) Set Maker-Checker flags
+	    existing.setEntityFlg("Y");
+	    existing.setModifyFlg("Y");
+	    existing.setDelFlg("N");
+
+	    // 4) Save into MOD table for Checker approval (live table is NOT touched)
+	    saveModSummaryEntity(existing);
+	    System.out.println("Record saved into BRRS_M_IRB_MOD_SUMMARYTABLE for Checker Approval");
+
+	    // 5) Audit trail if changes exist (this is what Modify Status reads)
+	    if (changes != null && !changes.isEmpty()) {
+	        auditService.compareEntitiesmanual(oldcopy, existing, reportDate.toString(), "M_IRB",
+	                "BRRS_M_IRB_MOD_SUMMARYTABLE");
+	    }
+	}
+
+	// MERGE into MOD: update if the report date exists, otherwise insert
+	public void saveModSummaryEntity(M_IRB_Summary_Entity entity) {
+	    List<String> cols = new ArrayList<>();
+	    List<Object> vals = new ArrayList<>();
+	    for (int row : IRB_MANUAL_ROWS) {
+	        cols.add("R" + row + "_PRODUCT");
+	        vals.add(irbGet(entity, "R" + row + "product"));
+	        for (int i = 0; i < IRB_PROPS.length; i++) {
+	            cols.add("R" + row + "_" + IRB_COLS[i]);
+	            vals.add(irbGet(entity, "R" + row + "_" + IRB_PROPS[i]));
+	        }
+	    }
+
+	    StringBuilder upd = new StringBuilder();
+	    StringBuilder insCols = new StringBuilder("REPORT_DATE");
+	    StringBuilder insVals = new StringBuilder("?");
+	    for (String c : cols) {
+	        upd.append(c).append(" = ?, ");
+	        insCols.append(", ").append(c);
+	        insVals.append(", ?");
+	    }
+	    upd.append("ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ?");
+	    insCols.append(", ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+	    insVals.append(", ?, ?, ?");
+
+	    String sql = "MERGE INTO BRRS_M_IRB_MOD_SUMMARYTABLE dest "
+	            + "USING (SELECT ? AS report_date FROM dual) src "
+	            + "ON (TRUNC(dest.REPORT_DATE) = TRUNC(src.report_date)) "
+	            + "WHEN MATCHED THEN UPDATE SET " + upd + " "
+	            + "WHEN NOT MATCHED THEN INSERT (" + insCols + ") VALUES (" + insVals + ")";
+
+	    List<Object> params = new ArrayList<>();
+	    params.add(entity.getReportDate());                 // USING
+	    params.addAll(vals);                                // UPDATE values
+	    params.add(entity.getEntityFlg());
+	    params.add(entity.getModifyFlg());
+	    params.add(entity.getDelFlg());
+	    params.add(entity.getReportDate());                 // INSERT values
+	    params.addAll(vals);
+	    params.add(entity.getEntityFlg());
+	    params.add(entity.getModifyFlg());
+	    params.add(entity.getDelFlg());
+
+	    jdbcTemplate.update(sql, params.toArray());
+	}
+
+	// Numeric-aware compare: 100 equals 100.00, null equals null
+	private boolean irbSameValue(Object a, Object b) {
+	    if (a == null && b == null) {
+	        return true;
+	    }
+	    if (a == null || b == null) {
+	        return false;
+	    }
+	    if (a instanceof BigDecimal && b instanceof BigDecimal) {
+	        return ((BigDecimal) a).compareTo((BigDecimal) b) == 0;
+	    }
+	    return a.toString().trim().equals(b.toString().trim());
+	}
+
+	// Reflection helpers: a wrong name fails loudly instead of being skipped silently
+	private Object irbGet(Object bean, String name) {
+	    try {
+	        return bean.getClass().getMethod("get" + name).invoke(bean);
+	    } catch (Exception e) {
+	        throw new RuntimeException("M_IRB getter failed: get" + name, e);
+	    }
+	}
+
+	private void irbSet(Object bean, String name, Class<?> type, Object value) {
+	    try {
+	        bean.getClass().getMethod("set" + name, type).invoke(bean, value);
+	    } catch (Exception e) {
+	        throw new RuntimeException("M_IRB setter failed: set" + name, e);
+	    }
 	}
 
 	// SUMMARY FORMAT EXCEL
