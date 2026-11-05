@@ -2792,20 +2792,21 @@ public class BRRS_ReportsController {
 			@ModelAttribute BRRS_M_SEC_ReportService.BRRS_M_SEC_Summary_Entity2 request2,
 			@ModelAttribute BRRS_M_SEC_ReportService.BRRS_M_SEC_Summary_Entity3 request3,
 			@ModelAttribute BRRS_M_SEC_ReportService.BRRS_M_SEC_Summary_Entity4 request4) {
-		try {
-			// set date into all 4 entities
-			request1.setReport_date(asondate); // Note: Use setReport_date() not setReportDate()
-			request2.setReport_date(asondate);
-			request3.setReport_date(asondate);
-			request4.setReport_date(asondate);
 
-			// call services
-			SECreportService.updateReport(request1);
-			SECreportService.updateReport1(request2);
-			SECreportService.updateReport2(request3);
-			SECreportService.updateReport3(request4);
+		try {
+			System.out.println("Came to single controller");
+
+			if (asondate != null) {
+				request1.setReport_date(asondate);
+				request2.setReport_date(asondate);
+				request3.setReport_date(asondate);
+				request4.setReport_date(asondate);
+			}
+
+			SECreportService.updateReport(request1, request2, request3, request4);
 
 			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -3589,25 +3590,20 @@ public class BRRS_ReportsController {
 		try {
 			System.out.println("Came to single controller");
 
-			// set date into all 7 entities
-			request1.setReportDate(asondate);
-			request2.setReportDate(asondate);
-			request3.setReportDate(asondate);
-			request4.setReportDate(asondate);
-			request5.setReportDate(asondate);
-			request6.setReportDate(asondate);
-			request7.setReportDate(asondate);
-			request8.setReportDate(asondate);
+			if (asondate != null) {
+				request1.setReportDate(asondate);
+				request2.setReportDate(asondate);
+				request3.setReportDate(asondate);
+				request4.setReportDate(asondate);
+				request5.setReportDate(asondate);
+				request6.setReportDate(asondate);
+				request7.setReportDate(asondate);
+				request8.setReportDate(asondate);
+			}
 
-			// call services
-			brrs_m_srwa_12b_reportservice.updateReport1(request1);
-			brrs_m_srwa_12b_reportservice.updateReport2(request2);
-			brrs_m_srwa_12b_reportservice.updateReport3(request3);
-			brrs_m_srwa_12b_reportservice.updateReport4(request4);
-			brrs_m_srwa_12b_reportservice.updateReport5(request5);
-			brrs_m_srwa_12b_reportservice.updateReport6(request6);
-			brrs_m_srwa_12b_reportservice.updateReport7(request7);
-			brrs_m_srwa_12b_reportservice.updateReport8(request8);
+			// call service
+			brrs_m_srwa_12b_reportservice.updateReport(request1, request2, request3, request4, request5, request6,
+					request7, request8);
 
 			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
@@ -4460,11 +4456,11 @@ public class BRRS_ReportsController {
 			HttpServletRequest req) {
 
 		try {
-			System.out.println("came to First controller");
-			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			System.out.println("Came to M_SRWA_12E update controller");
 
-			// ✅ set the asondate into entity
-			request.setReport_date(asondate);
+			if (asondate != null) {
+				request.setReport_date(asondate);
+			}
 
 			M_SRWA_12Eservice.updateReport(request);
 			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");

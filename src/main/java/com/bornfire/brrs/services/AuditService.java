@@ -1544,6 +1544,12 @@ public class AuditService {
 	        transferGMIRTData(auditRecord);
 	    } else if (upperTable.contains("M_IRB")) {
 	        transferMIrbData(auditRecord);
+		} else if (upperTable.contains("M_SRWA_12E") || upperTable.contains("SRWA_12E")) {
+			transferMSRWA12EData(auditRecord);
+		} else if (upperTable.contains("M_SRWA_12B") || upperTable.contains("SRWA_12B")) {
+			transferMSRWA12BData(auditRecord);
+		} else if (upperTable.contains("M_SEC_MOD_SUMMARYTABLE") || upperTable.startsWith("BRRS_M_SEC")) {
+			transferMSecData(auditRecord);
 	    } else {
 			throw new IllegalArgumentException("Verification not configured for table: " + auditTable);
 		}
@@ -5569,6 +5575,371 @@ public class AuditService {
 	        System.err.println("M_GMIRT inline recompute FAILED for " + reportDate + ": " + e.getMessage());
 	        e.printStackTrace();
 	    }
+	}
+	
+	// =========================================================
+	// M_SRWA_12E – Checker transfer (MOD -> LIVE Summary + Detail)
+	// =========================================================
+	private void transferMSRWA12EData(AuditServicesEntity auditRecord) {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_SRWA_12E_MOD_SUMMARYTABLE";
+		java.sql.Date reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified M_SRWA_12E record available for verification.");
+		}
+
+		System.out.println("M_SRWA_12E Report Date : " + reportDate);
+
+		// 1. Update BRRS_M_SRWA_12E_SUMMARYTABLE from MOD table
+		String updateSummarySql = "UPDATE BRRS_M_SRWA_12E_SUMMARYTABLE M " + "SET ("
+				+ "    R13_PRODUCT, R13_PERFORMING_EXPOSURE, R13_NON_PERFORMING, R13_SPECIFIC_PROV, R13_UNSECURED_PORTION_NPL, R13_TOTAL, "
+				+ "    R14_PRODUCT, R14_PERFORMING_EXPOSURE, R14_NON_PERFORMING, R14_SPECIFIC_PROV, R14_UNSECURED_PORTION_NPL, R14_TOTAL, "
+				+ "    R15_PRODUCT, R15_PERFORMING_EXPOSURE, R15_NON_PERFORMING, R15_SPECIFIC_PROV, R15_UNSECURED_PORTION_NPL, R15_TOTAL, "
+				+ "    R16_PRODUCT, R16_PERFORMING_EXPOSURE, R16_NON_PERFORMING, R16_SPECIFIC_PROV, R16_UNSECURED_PORTION_NPL, R16_TOTAL, "
+				+ "    R17_PRODUCT, R17_PERFORMING_EXPOSURE, R17_NON_PERFORMING, R17_SPECIFIC_PROV, R17_UNSECURED_PORTION_NPL, R17_TOTAL, "
+				+ "    R18_PRODUCT, R18_PERFORMING_EXPOSURE, R18_NON_PERFORMING, R18_SPECIFIC_PROV, R18_UNSECURED_PORTION_NPL, R18_TOTAL, "
+				+ "    R19_PRODUCT, R19_PERFORMING_EXPOSURE, R19_NON_PERFORMING, R19_SPECIFIC_PROV, R19_UNSECURED_PORTION_NPL, R19_TOTAL, "
+				+ "    ENTITY_FLG, MODIFY_FLG, DEL_FLG" + ") = (" + "    SELECT "
+				+ "        S.R13_PRODUCT, S.R13_PERFORMING_EXPOSURE, S.R13_NON_PERFORMING, S.R13_SPECIFIC_PROV, S.R13_UNSECURED_PORTION_NPL, S.R13_TOTAL, "
+				+ "        S.R14_PRODUCT, S.R14_PERFORMING_EXPOSURE, S.R14_NON_PERFORMING, S.R14_SPECIFIC_PROV, S.R14_UNSECURED_PORTION_NPL, S.R14_TOTAL, "
+				+ "        S.R15_PRODUCT, S.R15_PERFORMING_EXPOSURE, S.R15_NON_PERFORMING, S.R15_SPECIFIC_PROV, S.R15_UNSECURED_PORTION_NPL, S.R15_TOTAL, "
+				+ "        S.R16_PRODUCT, S.R16_PERFORMING_EXPOSURE, S.R16_NON_PERFORMING, S.R16_SPECIFIC_PROV, S.R16_UNSECURED_PORTION_NPL, S.R16_TOTAL, "
+				+ "        S.R17_PRODUCT, S.R17_PERFORMING_EXPOSURE, S.R17_NON_PERFORMING, S.R17_SPECIFIC_PROV, S.R17_UNSECURED_PORTION_NPL, S.R17_TOTAL, "
+				+ "        S.R18_PRODUCT, S.R18_PERFORMING_EXPOSURE, S.R18_NON_PERFORMING, S.R18_SPECIFIC_PROV, S.R18_UNSECURED_PORTION_NPL, S.R18_TOTAL, "
+				+ "        S.R19_PRODUCT, S.R19_PERFORMING_EXPOSURE, S.R19_NON_PERFORMING, S.R19_SPECIFIC_PROV, S.R19_UNSECURED_PORTION_NPL, S.R19_TOTAL, "
+				+ "        S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG " + "    FROM BRRS_M_SRWA_12E_MOD_SUMMARYTABLE S "
+				+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" + ") "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+
+		if (summaryUpdated == 0) {
+			throw new IllegalStateException("M_SRWA_12E modification record not found for date : " + reportDate);
+		}
+
+		System.out.println("M_SRWA_12E Summary Table Updated : " + summaryUpdated);
+
+		// 2. Update BRRS_M_SRWA_12E_DETAILTABLE from MOD table
+		String updateDetailSql = "UPDATE BRRS_M_SRWA_12E_DETAILTABLE M " + "SET ("
+				+ "    R13_PRODUCT, R13_PERFORMING_EXPOSURE, R13_NON_PERFORMING, R13_SPECIFIC_PROV, R13_UNSECURED_PORTION_NPL, R13_TOTAL, "
+				+ "    R14_PRODUCT, R14_PERFORMING_EXPOSURE, R14_NON_PERFORMING, R14_SPECIFIC_PROV, R14_UNSECURED_PORTION_NPL, R14_TOTAL, "
+				+ "    R15_PRODUCT, R15_PERFORMING_EXPOSURE, R15_NON_PERFORMING, R15_SPECIFIC_PROV, R15_UNSECURED_PORTION_NPL, R15_TOTAL, "
+				+ "    R16_PRODUCT, R16_PERFORMING_EXPOSURE, R16_NON_PERFORMING, R16_SPECIFIC_PROV, R16_UNSECURED_PORTION_NPL, R16_TOTAL, "
+				+ "    R17_PRODUCT, R17_PERFORMING_EXPOSURE, R17_NON_PERFORMING, R17_SPECIFIC_PROV, R17_UNSECURED_PORTION_NPL, R17_TOTAL, "
+				+ "    R18_PRODUCT, R18_PERFORMING_EXPOSURE, R18_NON_PERFORMING, R18_SPECIFIC_PROV, R18_UNSECURED_PORTION_NPL, R18_TOTAL, "
+				+ "    R19_PRODUCT, R19_PERFORMING_EXPOSURE, R19_NON_PERFORMING, R19_SPECIFIC_PROV, R19_UNSECURED_PORTION_NPL, R19_TOTAL, "
+				+ "    ENTITY_FLG, MODIFY_FLG, DEL_FLG" + ") = (" + "    SELECT "
+				+ "        S.R13_PRODUCT, S.R13_PERFORMING_EXPOSURE, S.R13_NON_PERFORMING, S.R13_SPECIFIC_PROV, S.R13_UNSECURED_PORTION_NPL, S.R13_TOTAL, "
+				+ "        S.R14_PRODUCT, S.R14_PERFORMING_EXPOSURE, S.R14_NON_PERFORMING, S.R14_SPECIFIC_PROV, S.R14_UNSECURED_PORTION_NPL, S.R14_TOTAL, "
+				+ "        S.R15_PRODUCT, S.R15_PERFORMING_EXPOSURE, S.R15_NON_PERFORMING, S.R15_SPECIFIC_PROV, S.R15_UNSECURED_PORTION_NPL, S.R15_TOTAL, "
+				+ "        S.R16_PRODUCT, S.R16_PERFORMING_EXPOSURE, S.R16_NON_PERFORMING, S.R16_SPECIFIC_PROV, S.R16_UNSECURED_PORTION_NPL, S.R16_TOTAL, "
+				+ "        S.R17_PRODUCT, S.R17_PERFORMING_EXPOSURE, S.R17_NON_PERFORMING, S.R17_SPECIFIC_PROV, S.R17_UNSECURED_PORTION_NPL, S.R17_TOTAL, "
+				+ "        S.R18_PRODUCT, S.R18_PERFORMING_EXPOSURE, S.R18_NON_PERFORMING, S.R18_SPECIFIC_PROV, S.R18_UNSECURED_PORTION_NPL, S.R18_TOTAL, "
+				+ "        S.R19_PRODUCT, S.R19_PERFORMING_EXPOSURE, S.R19_NON_PERFORMING, S.R19_SPECIFIC_PROV, S.R19_UNSECURED_PORTION_NPL, S.R19_TOTAL, "
+				+ "        S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG " + "    FROM BRRS_M_SRWA_12E_MOD_SUMMARYTABLE S "
+				+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" + ") "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+		System.out.println("M_SRWA_12E Detail Table Updated : " + detailUpdated);
+
+		// 3. Mark MOD record status as approved (MODIFY_FLG = 'N')
+		String updateModSql = "UPDATE BRRS_M_SRWA_12E_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+		int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+
+		System.out.println("M_SRWA_12E MOD Updated : " + modUpdated);
+		System.out.println("M_SRWA_12E Verification and Transfer Completed Successfully");
+	}
+
+	// =========================================================
+	// M_SRWA_12B – Checker transfer (MOD -> LIVE Summary + Detail)
+	// =========================================================
+	private void transferMSRWA12BData(AuditServicesEntity auditRecord) {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM ("
+				+ "    SELECT REPORT_DATE FROM BRRS_M_SRWA_12B_MOD_SUMMARYTABLE1 WHERE MODIFY_FLG = 'Y' "
+				+ "    UNION ALL "
+				+ "    SELECT REPORT_DATE FROM BRRS_M_SRWA_12B_MOD_SUMMARYTABLE2 WHERE MODIFY_FLG = 'Y' "
+				+ "    UNION ALL "
+				+ "    SELECT REPORT_DATE FROM BRRS_M_SRWA_12B_MOD_SUMMARYTABLE3 WHERE MODIFY_FLG = 'Y' "
+				+ "    UNION ALL "
+				+ "    SELECT REPORT_DATE FROM BRRS_M_SRWA_12B_MOD_SUMMARYTABLE4 WHERE MODIFY_FLG = 'Y' "
+				+ "    UNION ALL "
+				+ "    SELECT REPORT_DATE FROM BRRS_M_SRWA_12B_MOD_SUMMARYTABLE5 WHERE MODIFY_FLG = 'Y' "
+				+ "    UNION ALL "
+				+ "    SELECT REPORT_DATE FROM BRRS_M_SRWA_12B_MOD_SUMMARYTABLE6 WHERE MODIFY_FLG = 'Y' "
+				+ "    UNION ALL "
+				+ "    SELECT REPORT_DATE FROM BRRS_M_SRWA_12B_MOD_SUMMARYTABLE7 WHERE MODIFY_FLG = 'Y' "
+				+ "    UNION ALL "
+				+ "    SELECT REPORT_DATE FROM BRRS_M_SRWA_12B_MOD_SUMMARYTABLE8 WHERE MODIFY_FLG = 'Y' "
+				+ ")";
+		java.sql.Date reportDate = null;
+		try {
+			reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+		} catch (Exception e) {
+			// fallback
+		}
+		if (reportDate == null) {
+			String fallbackSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_SRWA_12B_MOD_SUMMARYTABLE1";
+			reportDate = jdbcTemplate.queryForObject(fallbackSql, java.sql.Date.class);
+		}
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified M_SRWA_12B record available for verification.");
+		}
+
+		System.out.println("M_SRWA_12B Report Date : " + reportDate);
+
+		transferMSRWA12BShard(1, BRRS_M_SRWA_12B_ReportService.R_COLS_1, reportDate);
+		transferMSRWA12BShard(2, BRRS_M_SRWA_12B_ReportService.R_COLS_2, reportDate);
+		transferMSRWA12BShard(3, BRRS_M_SRWA_12B_ReportService.R_COLS_3, reportDate);
+		transferMSRWA12BShard(4, BRRS_M_SRWA_12B_ReportService.R_COLS_4, reportDate);
+		transferMSRWA12BShard(5, BRRS_M_SRWA_12B_ReportService.R_COLS_5, reportDate);
+		transferMSRWA12BShard(6, BRRS_M_SRWA_12B_ReportService.R_COLS_6, reportDate);
+		transferMSRWA12BShard(7, BRRS_M_SRWA_12B_ReportService.R_COLS_7, reportDate);
+		transferMSRWA12BShard(8, BRRS_M_SRWA_12B_ReportService.R_COLS_8, reportDate);
+
+		System.out.println("M_SRWA_12B Verification and Transfer Completed Successfully for all 8 shards.");
+	}
+
+	private void transferMSRWA12BShard(int shard, String cols, java.sql.Date reportDate) {
+		String modTable = "BRRS_M_SRWA_12B_MOD_SUMMARYTABLE" + shard;
+		String sumTable = "BRRS_M_SRWA_12B_SUMMARYTABLE" + shard;
+		String detTable = "BRRS_M_SRWA_12B_DETAILTABLE" + shard;
+
+		Integer modCount = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM " + modTable + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				Integer.class, reportDate);
+		if (modCount == null || modCount == 0) {
+			System.out.println("No MOD record found in " + modTable + " for date: " + reportDate);
+			return;
+		}
+
+		String[] colArr = cols.split(",");
+		StringBuilder sCols = new StringBuilder();
+		for (int i = 0; i < colArr.length; i++) {
+			if (i > 0) sCols.append(", ");
+			sCols.append("S.").append(colArr[i].trim());
+		}
+
+		// 1. Update Live Summary Table
+		String updateSummarySql = "UPDATE " + sumTable + " M SET ("
+				+ cols + ", ENTITY_FLG, MODIFY_FLG, DEL_FLG) = ("
+				+ " SELECT " + sCols.toString() + ", 'Y', 'N', 'N' FROM " + modTable + " S"
+				+ " WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE))"
+				+ " WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+		System.out.println("M_SRWA_12B Shard " + shard + " Summary Table Updated : " + summaryUpdated);
+
+		// 2. Update Live Detail Table (or insert if not present)
+		Integer detailCount = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM " + detTable + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				Integer.class, reportDate);
+
+		if (detailCount != null && detailCount > 0) {
+			String updateDetailSql = "UPDATE " + detTable + " M SET ("
+					+ cols + ", ENTITY_FLG, MODIFY_FLG, DEL_FLG) = ("
+					+ " SELECT " + sCols.toString() + ", 'Y', 'N', 'N' FROM " + modTable + " S"
+					+ " WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE))"
+					+ " WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+			int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+			System.out.println("M_SRWA_12B Shard " + shard + " Detail Table Updated : " + detailUpdated);
+		} else {
+			String insertDetailSql = "INSERT INTO " + detTable
+					+ " (REPORT_DATE, " + cols + ", REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG)"
+					+ " SELECT S.REPORT_DATE, " + sCols.toString() + ", S.REPORT_VERSION, S.REPORT_FREQUENCY, S.REPORT_CODE, S.REPORT_DESC, 'Y', 'N', 'N'"
+					+ " FROM " + modTable + " S WHERE TRUNC(S.REPORT_DATE) = TRUNC(?)";
+			int detailInserted = jdbcTemplate.update(insertDetailSql, reportDate);
+			System.out.println("M_SRWA_12B Shard " + shard + " Detail Table Inserted : " + detailInserted);
+		}
+
+		// 3. Mark MOD record status as approved (MODIFY_FLG = 'N')
+		String updateModSql = "UPDATE " + modTable + " SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+		jdbcTemplate.update(updateModSql, reportDate);
+		System.out.println("M_SRWA_12B Shard " + shard + " MOD Record Marked Approved (MODIFY_FLG='N')");
+	}
+
+	// =========================================================
+	// M_SEC — Checker transfer (MOD -> LIVE Summary + Detail)
+	// =========================================================
+	private void transferMSecData(AuditServicesEntity auditRecord) {
+		// 1. Find the pending report date from any of the M_SEC MOD tables
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM ("
+				+ "    SELECT REPORT_DATE FROM BRRS_M_SEC_MOD_SUMMARYTABLE1 WHERE MODIFY_FLG = 'Y' "
+				+ "    UNION ALL "
+				+ "    SELECT REPORT_DATE FROM BRRS_M_SEC_MOD_SUMMARYTABLE2 WHERE MODIFY_FLG = 'Y' "
+				+ "    UNION ALL "
+				+ "    SELECT REPORT_DATE FROM BRRS_M_SEC_MOD_SUMMARYTABLE3 WHERE MODIFY_FLG = 'Y' "
+				+ "    UNION ALL "
+				+ "    SELECT REPORT_DATE FROM BRRS_M_SEC_MOD_SUMMARYTABLE4 WHERE MODIFY_FLG = 'Y' "
+				+ ")";
+		java.sql.Date reportDate = null;
+		try {
+			reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+		} catch (Exception e) {
+			// fallback
+		}
+
+		if (reportDate == null) {
+			String fallbackSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_SEC_MOD_SUMMARYTABLE1";
+			try {
+				reportDate = jdbcTemplate.queryForObject(fallbackSql, java.sql.Date.class);
+			} catch (Exception e) {
+				// ignore
+			}
+		}
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified M_SEC record available for verification.");
+		}
+
+		System.out.println("M_SEC Report Date : " + reportDate);
+
+		// 1. Transfer Table 1: Summary & Detail
+		try {
+			String updateSummary1 = "UPDATE BRRS_M_SEC_SUMMARYTABLE1 M SET ("
+					+ "    R11_PRODUCT, R11_TCA, R12_PRODUCT, R12_TCA, R13_PRODUCT, R13_TCA, "
+					+ "    R14_PRODUCT, R14_TCA, R15_PRODUCT, R15_TCA, R16_PRODUCT, R16_TCA, "
+					+ "    R17_PRODUCT, R17_TCA, R18_PRODUCT, R18_TCA, R19_PRODUCT, R19_TCA, "
+					+ "    ENTITY_FLG, MODIFY_FLG, DEL_FLG"
+					+ ") = ("
+					+ "    SELECT S.R11_PRODUCT, S.R11_TCA, S.R12_PRODUCT, S.R12_TCA, S.R13_PRODUCT, S.R13_TCA, "
+					+ "           S.R14_PRODUCT, S.R14_TCA, S.R15_PRODUCT, S.R15_TCA, S.R16_PRODUCT, S.R16_TCA, "
+					+ "           S.R17_PRODUCT, S.R17_TCA, S.R18_PRODUCT, S.R18_TCA, S.R19_PRODUCT, S.R19_TCA, "
+					+ "           S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG "
+					+ "    FROM BRRS_M_SEC_MOD_SUMMARYTABLE1 S "
+					+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+					+ ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+			int s1 = jdbcTemplate.update(updateSummary1, reportDate);
+			System.out.println("M_SEC Summary1 Updated : " + s1);
+
+			String updateDetail1 = "UPDATE BRRS_M_SEC_DETAILTABLE1 M SET ("
+					+ "    R11_PRODUCT, R11_TCA, R12_PRODUCT, R12_TCA, R13_PRODUCT, R13_TCA, "
+					+ "    R14_PRODUCT, R14_TCA, R15_PRODUCT, R15_TCA, R16_PRODUCT, R16_TCA, "
+					+ "    R17_PRODUCT, R17_TCA, R18_PRODUCT, R18_TCA, R19_PRODUCT, R19_TCA, "
+					+ "    ENTITY_FLG, MODIFY_FLG, DEL_FLG"
+					+ ") = ("
+					+ "    SELECT S.R11_PRODUCT, S.R11_TCA, S.R12_PRODUCT, S.R12_TCA, S.R13_PRODUCT, S.R13_TCA, "
+					+ "           S.R14_PRODUCT, S.R14_TCA, S.R15_PRODUCT, S.R15_TCA, S.R16_PRODUCT, S.R16_TCA, "
+					+ "           S.R17_PRODUCT, S.R17_TCA, S.R18_PRODUCT, S.R18_TCA, S.R19_PRODUCT, S.R19_TCA, "
+					+ "           S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG "
+					+ "    FROM BRRS_M_SEC_MOD_SUMMARYTABLE1 S "
+					+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+					+ ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+			int d1 = jdbcTemplate.update(updateDetail1, reportDate);
+			System.out.println("M_SEC Detail1 Updated : " + d1);
+		} catch (Exception e) {
+			System.err.println("Note on M_SEC Table 1 transfer: " + e.getMessage());
+		}
+
+		// 2. Transfer Table 2: Summary & Detail
+		try {
+			String updateSummary2 = "UPDATE BRRS_M_SEC_SUMMARYTABLE2 M SET ("
+					+ "    R11_PRODUCT, R11_TCA2, R12_PRODUCT, R12_TCA2, R13_PRODUCT, R13_TCA2, "
+					+ "    R14_PRODUCT, R14_TCA2, R15_PRODUCT, R15_TCA2, R16_PRODUCT, R16_TCA2, "
+					+ "    ENTITY_FLG, MODIFY_FLG, DEL_FLG"
+					+ ") = ("
+					+ "    SELECT S.R11_PRODUCT, S.R11_TCA2, S.R12_PRODUCT, S.R12_TCA2, S.R13_PRODUCT, S.R13_TCA2, "
+					+ "           S.R14_PRODUCT, S.R14_TCA2, S.R15_PRODUCT, S.R15_TCA2, S.R16_PRODUCT, S.R16_TCA2, "
+					+ "           S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG "
+					+ "    FROM BRRS_M_SEC_MOD_SUMMARYTABLE2 S "
+					+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+					+ ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+			int s2 = jdbcTemplate.update(updateSummary2, reportDate);
+			System.out.println("M_SEC Summary2 Updated : " + s2);
+
+			String updateDetail2 = "UPDATE BRRS_M_SEC_DETAILTABLE2 M SET ("
+					+ "    R11_PRODUCT, R11_TCA2, R12_PRODUCT, R12_TCA2, R13_PRODUCT, R13_TCA2, "
+					+ "    R14_PRODUCT, R14_TCA2, R15_PRODUCT, R15_TCA2, R16_PRODUCT, R16_TCA2, "
+					+ "    ENTITY_FLG, MODIFY_FLG, DEL_FLG"
+					+ ") = ("
+					+ "    SELECT S.R11_PRODUCT, S.R11_TCA2, S.R12_PRODUCT, S.R12_TCA2, S.R13_PRODUCT, S.R13_TCA2, "
+					+ "           S.R14_PRODUCT, S.R14_TCA2, S.R15_PRODUCT, S.R15_TCA2, S.R16_PRODUCT, S.R16_TCA2, "
+					+ "           S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG "
+					+ "    FROM BRRS_M_SEC_MOD_SUMMARYTABLE2 S "
+					+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+					+ ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+			int d2 = jdbcTemplate.update(updateDetail2, reportDate);
+			System.out.println("M_SEC Detail2 Updated : " + d2);
+		} catch (Exception e) {
+			System.err.println("Note on M_SEC Table 2 transfer: " + e.getMessage());
+		}
+
+		// Helper string for Table 3 columns (R26 to R31)
+		String cols3 = "R26_PRODUCT, R26_0_1Y_FT, R26_0_1Y_HTM, R26_0_1Y_TOTAL, R26_1_5Y_FT, R26_1_5Y_HTM, R26_1_5Y_TOTAL, R26_O5Y_FT, R26_O5Y_HTM, R26_O5Y_TOTAL, R26_T_FT, R26_T_HTM, R26_T_TOTAL, "
+				+ "R27_PRODUCT, R27_0_1Y_FT, R27_0_1Y_HTM, R27_0_1Y_TOTAL, R27_1_5Y_FT, R27_1_5Y_HTM, R27_1_5Y_TOTAL, R27_O5Y_FT, R27_O5Y_HTM, R27_O5Y_TOTAL, R27_T_FT, R27_T_HTM, R27_T_TOTAL, "
+				+ "R28_PRODUCT, R28_0_1Y_FT, R28_0_1Y_HTM, R28_0_1Y_TOTAL, R28_1_5Y_FT, R28_1_5Y_HTM, R28_1_5Y_TOTAL, R28_O5Y_FT, R28_O5Y_HTM, R28_O5Y_TOTAL, R28_T_FT, R28_T_HTM, R28_T_TOTAL, "
+				+ "R29_PRODUCT, R29_0_1Y_FT, R29_0_1Y_HTM, R29_0_1Y_TOTAL, R29_1_5Y_FT, R29_1_5Y_HTM, R29_1_5Y_TOTAL, R29_O5Y_FT, R29_O5Y_HTM, R29_O5Y_TOTAL, R29_T_FT, R29_T_HTM, R29_T_TOTAL, "
+				+ "R30_PRODUCT, R30_0_1Y_FT, R30_0_1Y_HTM, R30_0_1Y_TOTAL, R30_1_5Y_FT, R30_1_5Y_HTM, R30_1_5Y_TOTAL, R30_O5Y_FT, R30_O5Y_HTM, R30_O5Y_TOTAL, R30_T_FT, R30_T_HTM, R30_T_TOTAL, "
+				+ "R31_PRODUCT, R31_0_1Y_FT, R31_0_1Y_HTM, R31_0_1Y_TOTAL, R31_1_5Y_FT, R31_1_5Y_HTM, R31_1_5Y_TOTAL, R31_O5Y_FT, R31_O5Y_HTM, R31_O5Y_TOTAL, R31_T_FT, R31_T_HTM, R31_T_TOTAL";
+
+		// 3. Transfer Table 3: Summary & Detail
+		try {
+			String updateSummary3 = "UPDATE BRRS_M_SEC_SUMMARYTABLE3 M SET ("
+					+ cols3 + ", ENTITY_FLG, MODIFY_FLG, DEL_FLG"
+					+ ") = ("
+					+ "    SELECT " + cols3.replaceAll("(R\\w+)", "S.$1") + ", S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG "
+					+ "    FROM BRRS_M_SEC_MOD_SUMMARYTABLE3 S "
+					+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+					+ ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+			int s3 = jdbcTemplate.update(updateSummary3, reportDate);
+			System.out.println("M_SEC Summary3 Updated : " + s3);
+
+			String updateDetail3 = "UPDATE BRRS_M_SEC_DETAILTABLE3 M SET ("
+					+ cols3 + ", ENTITY_FLG, MODIFY_FLG, DEL_FLG"
+					+ ") = ("
+					+ "    SELECT " + cols3.replaceAll("(R\\w+)", "S.$1") + ", S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG "
+					+ "    FROM BRRS_M_SEC_MOD_SUMMARYTABLE3 S "
+					+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+					+ ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+			int d3 = jdbcTemplate.update(updateDetail3, reportDate);
+			System.out.println("M_SEC Detail3 Updated : " + d3);
+		} catch (Exception e) {
+			System.err.println("Note on M_SEC Table 3 transfer: " + e.getMessage());
+		}
+
+		// Helper string for Table 4 columns (R36 to R43)
+		String cols4 = "R36_PRODUCT, R36_0_1Y_FT, R36_0_1Y_HTM, R36_0_1Y_TOTAL, R36_1_5Y_FT, R36_1_5Y_HTM, R36_1_5Y_TOTAL, R36_O5Y_FT, R36_O5Y_HTM, R36_O5Y_TOTAL, R36_T_FT, R36_T_HTM, R36_T_TOTAL, "
+				+ "R37_PRODUCT, R37_0_1Y_FT, R37_0_1Y_HTM, R37_0_1Y_TOTAL, R37_1_5Y_FT, R37_1_5Y_HTM, R37_1_5Y_TOTAL, R37_O5Y_FT, R37_O5Y_HTM, R37_O5Y_TOTAL, R37_T_FT, R37_T_HTM, R37_T_TOTAL, "
+				+ "R38_PRODUCT, R38_0_1Y_FT, R38_0_1Y_HTM, R38_0_1Y_TOTAL, R38_1_5Y_FT, R38_1_5Y_HTM, R38_1_5Y_TOTAL, R38_O5Y_FT, R38_O5Y_HTM, R38_O5Y_TOTAL, R38_T_FT, R38_T_HTM, R38_T_TOTAL, "
+				+ "R39_PRODUCT, R39_0_1Y_FT, R39_0_1Y_HTM, R39_0_1Y_TOTAL, R39_1_5Y_FT, R39_1_5Y_HTM, R39_1_5Y_TOTAL, R39_O5Y_FT, R39_O5Y_HTM, R39_O5Y_TOTAL, R39_T_FT, R39_T_HTM, R39_T_TOTAL, "
+				+ "R40_PRODUCT, R40_0_1Y_FT, R40_0_1Y_HTM, R40_0_1Y_TOTAL, R40_1_5Y_FT, R40_1_5Y_HTM, R40_1_5Y_TOTAL, R40_O5Y_FT, R40_O5Y_HTM, R40_O5Y_TOTAL, R40_T_FT, R40_T_HTM, R40_T_TOTAL, "
+				+ "R41_PRODUCT, R41_0_1Y_FT, R41_0_1Y_HTM, R41_0_1Y_TOTAL, R41_1_5Y_FT, R41_1_5Y_HTM, R41_1_5Y_TOTAL, R41_O5Y_FT, R41_O5Y_HTM, R41_O5Y_TOTAL, R41_T_FT, R41_T_HTM, R41_T_TOTAL, "
+				+ "R42_PRODUCT, R42_0_1Y_FT, R42_0_1Y_HTM, R42_0_1Y_TOTAL, R42_1_5Y_FT, R42_1_5Y_HTM, R42_1_5Y_TOTAL, R42_O5Y_FT, R42_O5Y_HTM, R42_O5Y_TOTAL, R42_T_FT, R42_T_HTM, R42_T_TOTAL, "
+				+ "R43_PRODUCT, R43_0_1Y_FT, R43_0_1Y_HTM, R43_0_1Y_TOTAL, R43_1_5Y_FT, R43_1_5Y_HTM, R43_1_5Y_TOTAL, R43_O5Y_FT, R43_O5Y_HTM, R43_O5Y_TOTAL, R43_T_FT, R43_T_HTM, R43_T_TOTAL";
+
+		// 4. Transfer Table 4: Summary & Detail
+		try {
+			String updateSummary4 = "UPDATE BRRS_M_SEC_SUMMARYTABLE4 M SET ("
+					+ cols4 + ", ENTITY_FLG, MODIFY_FLG, DEL_FLG"
+					+ ") = ("
+					+ "    SELECT " + cols4.replaceAll("(R\\w+)", "S.$1") + ", S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG "
+					+ "    FROM BRRS_M_SEC_MOD_SUMMARYTABLE4 S "
+					+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+					+ ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+			int s4 = jdbcTemplate.update(updateSummary4, reportDate);
+			System.out.println("M_SEC Summary4 Updated : " + s4);
+
+			String updateDetail4 = "UPDATE BRRS_M_SEC_DETAILTABLE4 M SET ("
+					+ cols4 + ", ENTITY_FLG, MODIFY_FLG, DEL_FLG"
+					+ ") = ("
+					+ "    SELECT " + cols4.replaceAll("(R\\w+)", "S.$1") + ", S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG "
+					+ "    FROM BRRS_M_SEC_MOD_SUMMARYTABLE4 S "
+					+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+					+ ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+			int d4 = jdbcTemplate.update(updateDetail4, reportDate);
+			System.out.println("M_SEC Detail4 Updated : " + d4);
+		} catch (Exception e) {
+			System.err.println("Note on M_SEC Table 4 transfer: " + e.getMessage());
+		}
+
+		// 5. Update MOD tables flags to approved (MODIFY_FLG = 'N')
+		jdbcTemplate.update("UPDATE BRRS_M_SEC_MOD_SUMMARYTABLE1 SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)", reportDate);
+		jdbcTemplate.update("UPDATE BRRS_M_SEC_MOD_SUMMARYTABLE2 SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)", reportDate);
+		jdbcTemplate.update("UPDATE BRRS_M_SEC_MOD_SUMMARYTABLE3 SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)", reportDate);
+		jdbcTemplate.update("UPDATE BRRS_M_SEC_MOD_SUMMARYTABLE4 SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)", reportDate);
+
+		System.out.println("M_SEC Verification and Transfer Completed Successfully");
 	}
 	
 	private void transferMIrbData(AuditServicesEntity auditRecord) {

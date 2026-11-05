@@ -567,22 +567,16 @@ PURPOSE		: BWRBRREPORT
 			// ✅ Prevent double-trigger if already in edit mode
 			if ($(btn).is(":hidden")) return;
 
-			// ✅ List of IDs that should ALWAYS remain readonly
+			// ✅ List of IDs that should ALWAYS remain readonly (sum rows + labels)
 			var readonlyIds = [
 				"R19_UNSECURED_PORTION_NPL", "R19_PERFORMING_EXPOSURE", "R19_NON_PERFORMING", "R19_SPECIFIC_PROV",
 				"R13_UNSECURED_PORTION_NPL", "R14_UNSECURED_PORTION_NPL", "R15_UNSECURED_PORTION_NPL",
 				"R17_UNSECURED_PORTION_NPL", "R18_UNSECURED_PORTION_NPL", "R13_PRODUCT", "R14_PRODUCT", "R15_PRODUCT",
-				"R17_PRODUCT", "R18_PRODUCT", "R19_PRODUCT", "R13_TOTAL", "R19_TOTAL", "R16_TOTAL", "R16_SPECIFIC_PROV", "R16_NON_PERFORMING", "R16_PERFORMING_EXPOSURE", "R16_UNSECURED_PORTION_NPL"
+				"R16_PRODUCT", "R17_PRODUCT", "R18_PRODUCT", "R19_PRODUCT", "R13_TOTAL", "R19_TOTAL", "R16_TOTAL",
+				"R16_SPECIFIC_PROV", "R16_NON_PERFORMING", "R16_PERFORMING_EXPOSURE", "R16_UNSECURED_PORTION_NPL"
 			];
 
-			// ✅ Make all .Show_input editable except the ones in readonlyIds
-			$(".Show_input").each(function () {
-				if (!readonlyIds.includes(this.id)) {
-					$(this).prop("readonly", false).prop("disabled", false);
-				}
-			});
-
-			// ✅ Helper: force YELLOW with !important (overrides inline white bg)
+			// ✅ Helper: force YELLOW #FFF59D with !important (beats inline bg)
 			function paintYellow(selector) {
 				if ($(selector).length) {
 					$(selector).attr("style", function (idx, s) {
@@ -592,30 +586,15 @@ PURPOSE		: BWRBRREPORT
 				}
 			}
 
-			// Highlight editable fields for rows 13–18 (skip row 16)
-			for (let i = 13; i <= 18; i++) {
+			// ✅ Only paint <input> elements, never <button>
+			$("input.Show_input").each(function () {
+				if (!readonlyIds.includes(this.id)) {
+					$(this).removeAttr("readonly").removeAttr("disabled");
+					paintYellow("#" + this.id);
+				}
+			});
 
-				if (i === 16) continue; // skip 16
-
-				let fields = [
-					"_PERFORMING_EXPOSURE",
-					"_NON_PERFORMING",
-					"_SPECIFIC_PROV",
-					"_TOTAL"
-				];
-
-				fields.forEach(field => {
-
-					// Skip ONLY _TOTAL in R13, R15, R18
-					if ((i === 13 || i === 15 || i === 18) && field === "_TOTAL") {
-						return;
-					}
-
-					paintYellow(`#R${i}${field}`);
-				});
-			}
-
-			// ✅ Toggle buttons visibility (OUTSIDE loop now)
+			// ✅ Toggle buttons visibility (once, outside any loop)
 			$("#submitButton").show();
 			$("#cancelRecord").show();
 			$(btn).hide();
@@ -1255,7 +1234,7 @@ PURPOSE		: BWRBRREPORT
 											<tr>
 												<td id="ROW13" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="'80% to 90%'" id="R13_PRODUCT" name="R13_PRODUCT"
+														th:value="'80% to 90%'" id="R16_PRODUCT" name="R16_PRODUCT"
 														style="background-color: #FFFFFF; width: 290px; height: 28px; border-color: transparent; text-align: center;"
 														readonly />
 												</td>

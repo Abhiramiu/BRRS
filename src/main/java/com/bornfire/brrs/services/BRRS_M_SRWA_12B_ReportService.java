@@ -76,7 +76,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 	// JDBC QUERY/WRITE HELPER METHODS (generated) - M_SRWA_12B shards 1-8
 	// ===================================================================
 	// ===== Shard 1 shared business-field SQL fragments (business fields identical across all 6 families) =====
-	private static final String R_COLS_1 =
+	public static final String R_COLS_1 =
 		"R13_PRODUCT,R14_PRODUCT,R15_PRODUCT,R15_EXP_BEF_CRM,R15_SPEC_PROV_PAST_DUE_EXP,R15_AMT_ELI_BAL_SHEET_NET,R15_TOT_EXP_AFT_NET,R15_EXP_ELI_NONCOL_EXP_CRM_SUBAPR,R15_GUAN_NONCOL_EXP_CRM_SUBAPR,R15_CRE_DERI_NONCOL_EXP_CRM_SUBAPR," +
 		"R15_EXP_COV_CRM_NONCOL_EXP_CRM_SUBAPR,R15_ELIEXP_NOTCOV_CRM_NONCOL_EXP_CRM_SUBAPR,R15_RISKWEIGHTS_RWA_NONCOL_EXP_CRM_SUBAPR,R15_RWA_COV_CRM_RWA_NONCOL_EXP_CRM_SUBAPR,R15_RW_ORICOUNT_RWA_NONCOL_EXP_CRM_SUBAPR,R15_RWA_NOTCOV_CRM_RWA_NONCOL_EXP_CRM_SUBAPR,R15_VALUE,R15_EXPELI_COLEXP_CRM_COMAPR,R15_EXP_AFT_VOLADJ_COLEXP_CRM_COMAPR,R15_CASH_EFC_HAIRCUTS_COLEXP_CRM_COMAPR," +
 		"R15_TRESBILLS_BOT_BOB_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R15_DEBT_SECU_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R15_EQUITIES_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R15_U_TRUST_M_FUNDS_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R15_TOTCOL_AFT_HC_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R15_EXP_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R15_RWA_EXP_NOTCOV_CRM_RWA,R15_UNSECU_EXP_CREDIT_RISK_RWA,R15_RWA_UNSECU_EXP_RWA,R15_TOT_RWA," +
@@ -1281,9 +1281,11 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 	}
 
 	public M_SRWA_12B_Summary_Entity1 findSummaryByDate1(Date reportDate) {
-		java.util.List<M_SRWA_12B_Summary_Entity1> list = getSummaryByDate1(reportDate);
+		String selectSql = "SELECT * FROM BRRS_M_SRWA_12B_SUMMARYTABLE1 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		java.util.List<M_SRWA_12B_Summary_Entity1> list = jdbcTemplate.query(selectSql,
+				new Object[]{reportDate}, new M_SRWA_12BSummaryRowMapper1());
 		if (list.isEmpty()) {
-			throw new RuntimeException("Record not found for REPORT_DATE: " + reportDate);
+			throw new RuntimeException("Record not found in live summary table for REPORT_DATE : " + reportDate);
 		}
 		return list.get(0);
 	}
@@ -1304,6 +1306,51 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 			"UPDATE BRRS_M_SRWA_12B_SUMMARYTABLE1 SET " + R_FIELDS_SET_1 +
 			",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=?" +
 			" WHERE REPORT_DATE=?", params);
+	}
+
+	public M_SRWA_12B_Summary_Entity1 findModRecordByDate1(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_SRWA_12B_MOD_SUMMARYTABLE1 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		java.util.List<M_SRWA_12B_Summary_Entity1> list = jdbcTemplate.query(selectSql,
+				new Object[]{reportDate}, new M_SRWA_12BSummaryRowMapper1());
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public void saveModSummaryEntity1(M_SRWA_12B_Summary_Entity1 e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 8];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length]     = e.getReportVersion();
+		params[rVals.length + 1] = e.getReport_frequency();
+		params[rVals.length + 2] = e.getReport_code();
+		params[rVals.length + 3] = e.getReport_desc();
+		params[rVals.length + 4] = e.getEntity_flg();
+		params[rVals.length + 5] = e.getModify_flg();
+		params[rVals.length + 6] = e.getDel_flg();
+		params[rVals.length + 7] = e.getReportDate();
+
+		int updated = jdbcTemplate.update(
+			"UPDATE BRRS_M_SRWA_12B_MOD_SUMMARYTABLE1 SET " + R_FIELDS_SET_1 +
+			",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=?" +
+			" WHERE TRUNC(REPORT_DATE)=TRUNC(?)", params);
+		if (updated == 0) {
+			Object[] insParams = new Object[rVals.length + 8];
+			insParams[0] = e.getReportDate();
+			System.arraycopy(rVals, 0, insParams, 1, rVals.length);
+			insParams[rVals.length + 1] = e.getReportVersion();
+			insParams[rVals.length + 2] = e.getReport_frequency();
+			insParams[rVals.length + 3] = e.getReport_code();
+			insParams[rVals.length + 4] = e.getReport_desc();
+			insParams[rVals.length + 5] = e.getEntity_flg();
+			insParams[rVals.length + 6] = e.getModify_flg();
+			insParams[rVals.length + 7] = e.getDel_flg();
+			jdbcTemplate.update(
+				"INSERT INTO BRRS_M_SRWA_12B_MOD_SUMMARYTABLE1 (REPORT_DATE," + R_COLS_1 +
+				",REPORT_VERSION,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG) VALUES (?," +
+				R_PLACEHOLDERS_1 + ",?,?,?,?,?,?,?)", insParams);
+			System.out.println("✔ BRRS_M_SRWA_12B_MOD_SUMMARYTABLE1 inserted successfully.");
+		} else {
+			System.out.println("✔ BRRS_M_SRWA_12B_MOD_SUMMARYTABLE1 updated successfully.");
+		}
 	}
 
 	// ===== Shard 1: Detail =====
@@ -1468,7 +1515,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 
 
 	// ===== Shard 2 shared business-field SQL fragments (business fields identical across all 6 families) =====
-	private static final String R_COLS_2 =
+	public static final String R_COLS_2 =
 		"R51_PRODUCT,R51_EXP_BEF_CRM,R51_SPEC_PROV_PAST_DUE_EXP,R51_AMT_ELI_BAL_SHEET_NET,R51_TOT_EXP_AFT_NET,R51_EXP_ELI_NONCOL_EXP_CRM_SUBAPR,R51_GUAN_NONCOL_EXP_CRM_SUBAPR,R51_CRE_DERI_NONCOL_EXP_CRM_SUBAPR,R51_EXP_COV_CRM_NONCOL_EXP_CRM_SUBAPR,R51_ELIEXP_NOTCOV_CRM_NONCOL_EXP_CRM_SUBAPR," +
 		"R51_RISKWEIGHTS_RWA_NONCOL_EXP_CRM_SUBAPR,R51_RWA_COV_CRM_RWA_NONCOL_EXP_CRM_SUBAPR,R51_RW_ORICOUNT_RWA_NONCOL_EXP_CRM_SUBAPR,R51_RWA_NOTCOV_CRM_RWA_NONCOL_EXP_CRM_SUBAPR,R51_VALUE,R51_EXPELI_COLEXP_CRM_COMAPR,R51_EXP_AFT_VOLADJ_COLEXP_CRM_COMAPR,R51_CASH_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R51_TRESBILLS_BOT_BOB_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R51_DEBT_SECU_EFC_HAIRCUTS_COLEXP_CRM_COMAPR," +
 		"R51_EQUITIES_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R51_U_TRUST_M_FUNDS_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R51_TOTCOL_AFT_HC_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R51_EXP_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R51_RWA_EXP_NOTCOV_CRM_RWA,R51_UNSECU_EXP_CREDIT_RISK_RWA,R51_RWA_UNSECU_EXP_RWA,R51_TOT_RWA,R52_PRODUCT,R52_EXP_BEF_CRM," +
@@ -2704,9 +2751,11 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 	}
 
 	public M_SRWA_12B_Summary_Entity2 findSummaryByDate2(Date reportDate) {
-		java.util.List<M_SRWA_12B_Summary_Entity2> list = getSummaryByDate2(reportDate);
+		String selectSql = "SELECT * FROM BRRS_M_SRWA_12B_SUMMARYTABLE2 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		java.util.List<M_SRWA_12B_Summary_Entity2> list = jdbcTemplate.query(selectSql,
+				new Object[]{reportDate}, new M_SRWA_12BSummaryRowMapper2());
 		if (list.isEmpty()) {
-			throw new RuntimeException("Record not found for REPORT_DATE: " + reportDate);
+			throw new RuntimeException("Record not found in live summary table for REPORT_DATE : " + reportDate);
 		}
 		return list.get(0);
 	}
@@ -2727,6 +2776,51 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 			"UPDATE BRRS_M_SRWA_12B_SUMMARYTABLE2 SET " + R_FIELDS_SET_2 +
 			",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=?" +
 			" WHERE REPORT_DATE=?", params);
+	}
+
+	public M_SRWA_12B_Summary_Entity2 findModRecordByDate2(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_SRWA_12B_MOD_SUMMARYTABLE2 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		java.util.List<M_SRWA_12B_Summary_Entity2> list = jdbcTemplate.query(selectSql,
+				new Object[]{reportDate}, new M_SRWA_12BSummaryRowMapper2());
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public void saveModSummaryEntity2(M_SRWA_12B_Summary_Entity2 e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 8];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length]     = e.getReportVersion();
+		params[rVals.length + 1] = e.getReport_frequency();
+		params[rVals.length + 2] = e.getReport_code();
+		params[rVals.length + 3] = e.getReport_desc();
+		params[rVals.length + 4] = e.getEntity_flg();
+		params[rVals.length + 5] = e.getModify_flg();
+		params[rVals.length + 6] = e.getDel_flg();
+		params[rVals.length + 7] = e.getReportDate();
+
+		int updated = jdbcTemplate.update(
+			"UPDATE BRRS_M_SRWA_12B_MOD_SUMMARYTABLE2 SET " + R_FIELDS_SET_2 +
+			",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=?" +
+			" WHERE TRUNC(REPORT_DATE)=TRUNC(?)", params);
+		if (updated == 0) {
+			Object[] insParams = new Object[rVals.length + 8];
+			insParams[0] = e.getReportDate();
+			System.arraycopy(rVals, 0, insParams, 1, rVals.length);
+			insParams[rVals.length + 1] = e.getReportVersion();
+			insParams[rVals.length + 2] = e.getReport_frequency();
+			insParams[rVals.length + 3] = e.getReport_code();
+			insParams[rVals.length + 4] = e.getReport_desc();
+			insParams[rVals.length + 5] = e.getEntity_flg();
+			insParams[rVals.length + 6] = e.getModify_flg();
+			insParams[rVals.length + 7] = e.getDel_flg();
+			jdbcTemplate.update(
+				"INSERT INTO BRRS_M_SRWA_12B_MOD_SUMMARYTABLE2 (REPORT_DATE," + R_COLS_2 +
+				",REPORT_VERSION,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG) VALUES (?," +
+				R_PLACEHOLDERS_2 + ",?,?,?,?,?,?,?)", insParams);
+			System.out.println("✔ BRRS_M_SRWA_12B_MOD_SUMMARYTABLE2 inserted successfully.");
+		} else {
+			System.out.println("✔ BRRS_M_SRWA_12B_MOD_SUMMARYTABLE2 updated successfully.");
+		}
 	}
 
 	// ===== Shard 2: Detail =====
@@ -2891,7 +2985,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 
 
 	// ===== Shard 3 shared business-field SQL fragments (business fields identical across all 6 families) =====
-	private static final String R_COLS_3 =
+	public static final String R_COLS_3 =
 		"R90_PRODUCT,R91_PRODUCT,R92_PRODUCT,R92_EXP_BEF_CRM,R92_SPEC_PROV_PAST_DUE_EXP,R92_AMT_ELI_BAL_SHEET_NET,R92_TOT_EXP_AFT_NET,R92_EXP_ELI_NONCOL_EXP_CRM_SUBAPR,R92_GUAN_NONCOL_EXP_CRM_SUBAPR,R92_CRE_DERI_NONCOL_EXP_CRM_SUBAPR," +
 		"R92_EXP_COV_CRM_NONCOL_EXP_CRM_SUBAPR,R92_ELIEXP_NOTCOV_CRM_NONCOL_EXP_CRM_SUBAPR,R92_RISKWEIGHTS_RWA_NONCOL_EXP_CRM_SUBAPR,R92_RWA_COV_CRM_RWA_NONCOL_EXP_CRM_SUBAPR,R92_RW_ORICOUNT_RWA_NONCOL_EXP_CRM_SUBAPR,R92_RWA_NOTCOV_CRM_RWA_NONCOL_EXP_CRM_SUBAPR,R92_VALUE,R92_EXPELI_COLEXP_CRM_COMAPR,R92_EXP_AFT_VOLADJ_COLEXP_CRM_COMAPR,R92_CASH_EFC_HAIRCUTS_COLEXP_CRM_COMAPR," +
 		"R92_TRESBILLS_BOT_BOB_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R92_DEBT_SECU_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R92_EQUITIES_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R92_U_TRUST_M_FUNDS_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R92_TOTCOL_AFT_HC_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R92_EXP_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R92_RWA_EXP_NOTCOV_CRM_RWA,R92_UNSECU_EXP_CREDIT_RISK_RWA,R92_RWA_UNSECU_EXP_RWA,R92_TOT_RWA," +
@@ -4134,9 +4228,11 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 	}
 
 	public M_SRWA_12B_Summary_Entity3 findSummaryByDate3(Date reportDate) {
-		java.util.List<M_SRWA_12B_Summary_Entity3> list = getSummaryByDate3(reportDate);
+		String selectSql = "SELECT * FROM BRRS_M_SRWA_12B_SUMMARYTABLE3 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		java.util.List<M_SRWA_12B_Summary_Entity3> list = jdbcTemplate.query(selectSql,
+				new Object[]{reportDate}, new M_SRWA_12BSummaryRowMapper3());
 		if (list.isEmpty()) {
-			throw new RuntimeException("Record not found for REPORT_DATE: " + reportDate);
+			throw new RuntimeException("Record not found in live summary table for REPORT_DATE : " + reportDate);
 		}
 		return list.get(0);
 	}
@@ -4157,6 +4253,51 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 			"UPDATE BRRS_M_SRWA_12B_SUMMARYTABLE3 SET " + R_FIELDS_SET_3 +
 			",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=?" +
 			" WHERE REPORT_DATE=?", params);
+	}
+
+	public M_SRWA_12B_Summary_Entity3 findModRecordByDate3(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_SRWA_12B_MOD_SUMMARYTABLE3 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		java.util.List<M_SRWA_12B_Summary_Entity3> list = jdbcTemplate.query(selectSql,
+				new Object[]{reportDate}, new M_SRWA_12BSummaryRowMapper3());
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public void saveModSummaryEntity3(M_SRWA_12B_Summary_Entity3 e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 8];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length]     = e.getReportVersion();
+		params[rVals.length + 1] = e.getReport_frequency();
+		params[rVals.length + 2] = e.getReport_code();
+		params[rVals.length + 3] = e.getReport_desc();
+		params[rVals.length + 4] = e.getEntity_flg();
+		params[rVals.length + 5] = e.getModify_flg();
+		params[rVals.length + 6] = e.getDel_flg();
+		params[rVals.length + 7] = e.getReportDate();
+
+		int updated = jdbcTemplate.update(
+			"UPDATE BRRS_M_SRWA_12B_MOD_SUMMARYTABLE3 SET " + R_FIELDS_SET_3 +
+			",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=?" +
+			" WHERE TRUNC(REPORT_DATE)=TRUNC(?)", params);
+		if (updated == 0) {
+			Object[] insParams = new Object[rVals.length + 8];
+			insParams[0] = e.getReportDate();
+			System.arraycopy(rVals, 0, insParams, 1, rVals.length);
+			insParams[rVals.length + 1] = e.getReportVersion();
+			insParams[rVals.length + 2] = e.getReport_frequency();
+			insParams[rVals.length + 3] = e.getReport_code();
+			insParams[rVals.length + 4] = e.getReport_desc();
+			insParams[rVals.length + 5] = e.getEntity_flg();
+			insParams[rVals.length + 6] = e.getModify_flg();
+			insParams[rVals.length + 7] = e.getDel_flg();
+			jdbcTemplate.update(
+				"INSERT INTO BRRS_M_SRWA_12B_MOD_SUMMARYTABLE3 (REPORT_DATE," + R_COLS_3 +
+				",REPORT_VERSION,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG) VALUES (?," +
+				R_PLACEHOLDERS_3 + ",?,?,?,?,?,?,?)", insParams);
+			System.out.println("✔ BRRS_M_SRWA_12B_MOD_SUMMARYTABLE3 inserted successfully.");
+		} else {
+			System.out.println("✔ BRRS_M_SRWA_12B_MOD_SUMMARYTABLE3 updated successfully.");
+		}
 	}
 
 	// ===== Shard 3: Detail =====
@@ -4326,7 +4467,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 
 
 	// ===== Shard 4 shared business-field SQL fragments (business fields identical across all 6 families) =====
-	private static final String R_COLS_4 =
+	public static final String R_COLS_4 =
 		"R138_PRODUCT,R139_PRODUCT,R139_NOM_PRIN_AMT,R139_CRE_CON_FAC,R139_CRE_EQU_AMT,R139_CEAELI_COUN_BI_NET,R139_CEA_AFT_NET,R139_CEAELI_CRM_SUBAPR,R139_GUAN_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R139_CRE_DERI_NONCOL_OFFBAL_EXP_CRM_SUBAPR," +
 		"R139_EXP_COVCRM_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R139_EXP_NOTCOVCRM_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R139_RISKWEIGHTS_RWA_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R139_RWA_EXP_RWA_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R139_APP_RW_ORICOUNT_RWA_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R139_RWA_EXP_NOTCOV_RWA_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R139_CEAELI_COLEXP_CRM_COMAPR,R139_CEA_AFT_VOLADJ_COLEXP_CRM_COMAPR,R139_CASH_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R139_TRESBILLS_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR," +
 		"R139_DEBT_SECU_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R139_EQUITIS_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R139_U_TRUST_M_FUNDS_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R139_TOTCOL_AFT_HC_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R139_CEA_AFTCRM_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R139_RWA_CEA_NOTCOV_CRM_RWA,R139_UNSECU_CEA_CREDIT_RISK_RWA,R139_RWA_UNSECU_CEA_RWA,R139_TOT_RWA,R140_PRODUCT," +
@@ -5379,9 +5520,11 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 	}
 
 	public M_SRWA_12B_Summary_Entity4 findSummaryByDate4(Date reportDate) {
-		java.util.List<M_SRWA_12B_Summary_Entity4> list = getSummaryByDate4(reportDate);
+		String selectSql = "SELECT * FROM BRRS_M_SRWA_12B_SUMMARYTABLE4 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		java.util.List<M_SRWA_12B_Summary_Entity4> list = jdbcTemplate.query(selectSql,
+				new Object[]{reportDate}, new M_SRWA_12BSummaryRowMapper4());
 		if (list.isEmpty()) {
-			throw new RuntimeException("Record not found for REPORT_DATE: " + reportDate);
+			throw new RuntimeException("Record not found in live summary table for REPORT_DATE : " + reportDate);
 		}
 		return list.get(0);
 	}
@@ -5402,6 +5545,51 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 			"UPDATE BRRS_M_SRWA_12B_SUMMARYTABLE4 SET " + R_FIELDS_SET_4 +
 			",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=?" +
 			" WHERE REPORT_DATE=?", params);
+	}
+
+	public M_SRWA_12B_Summary_Entity4 findModRecordByDate4(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_SRWA_12B_MOD_SUMMARYTABLE4 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		java.util.List<M_SRWA_12B_Summary_Entity4> list = jdbcTemplate.query(selectSql,
+				new Object[]{reportDate}, new M_SRWA_12BSummaryRowMapper4());
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public void saveModSummaryEntity4(M_SRWA_12B_Summary_Entity4 e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 8];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length]     = e.getReportVersion();
+		params[rVals.length + 1] = e.getReport_frequency();
+		params[rVals.length + 2] = e.getReport_code();
+		params[rVals.length + 3] = e.getReport_desc();
+		params[rVals.length + 4] = e.getEntity_flg();
+		params[rVals.length + 5] = e.getModify_flg();
+		params[rVals.length + 6] = e.getDel_flg();
+		params[rVals.length + 7] = e.getReportDate();
+
+		int updated = jdbcTemplate.update(
+			"UPDATE BRRS_M_SRWA_12B_MOD_SUMMARYTABLE4 SET " + R_FIELDS_SET_4 +
+			",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=?" +
+			" WHERE TRUNC(REPORT_DATE)=TRUNC(?)", params);
+		if (updated == 0) {
+			Object[] insParams = new Object[rVals.length + 8];
+			insParams[0] = e.getReportDate();
+			System.arraycopy(rVals, 0, insParams, 1, rVals.length);
+			insParams[rVals.length + 1] = e.getReportVersion();
+			insParams[rVals.length + 2] = e.getReport_frequency();
+			insParams[rVals.length + 3] = e.getReport_code();
+			insParams[rVals.length + 4] = e.getReport_desc();
+			insParams[rVals.length + 5] = e.getEntity_flg();
+			insParams[rVals.length + 6] = e.getModify_flg();
+			insParams[rVals.length + 7] = e.getDel_flg();
+			jdbcTemplate.update(
+				"INSERT INTO BRRS_M_SRWA_12B_MOD_SUMMARYTABLE4 (REPORT_DATE," + R_COLS_4 +
+				",REPORT_VERSION,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG) VALUES (?," +
+				R_PLACEHOLDERS_4 + ",?,?,?,?,?,?,?)", insParams);
+			System.out.println("✔ BRRS_M_SRWA_12B_MOD_SUMMARYTABLE4 inserted successfully.");
+		} else {
+			System.out.println("✔ BRRS_M_SRWA_12B_MOD_SUMMARYTABLE4 updated successfully.");
+		}
 	}
 
 	// ===== Shard 4: Detail =====
@@ -5566,7 +5754,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 
 
 	// ===== Shard 5 shared business-field SQL fragments (business fields identical across all 6 families) =====
-	private static final String R_COLS_5 =
+	public static final String R_COLS_5 =
 		"R167_PRODUCT,R167_NOM_PRIN_AMT,R167_CRE_CON_FAC,R167_CRE_EQU_AMT,R167_CEAELI_COUN_BI_NET,R167_CEA_AFT_NET,R167_CEAELI_CRM_SUBAPR,R167_GUAN_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R167_CRE_DERI_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R167_EXP_COVCRM_NONCOL_OFFBAL_EXP_CRM_SUBAPR," +
 		"R167_EXP_NOTCOVCRM_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R167_RISKWEIGHTS_RWA_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R167_RWA_EXP_RWA_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R167_APP_RW_ORICOUNT_RWA_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R167_RWA_EXP_NOTCOV_RWA_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R167_CEAELI_COLEXP_CRM_COMAPR,R167_CEA_AFT_VOLADJ_COLEXP_CRM_COMAPR,R167_CASH_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R167_TRESBILLS_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R167_DEBT_SECU_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR," +
 		"R167_EQUITIS_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R167_U_TRUST_M_FUNDS_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R167_TOTCOL_AFT_HC_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R167_CEA_AFTCRM_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R167_RWA_CEA_NOTCOV_CRM_RWA,R167_UNSECU_CEA_CREDIT_RISK_RWA,R167_RWA_UNSECU_CEA_RWA,R167_TOT_RWA,R168_PRODUCT,R168_NOM_PRIN_AMT," +
@@ -6580,9 +6768,11 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 	}
 
 	public M_SRWA_12B_Summary_Entity5 findSummaryByDate5(Date reportDate) {
-		java.util.List<M_SRWA_12B_Summary_Entity5> list = getSummaryByDate5(reportDate);
+		String selectSql = "SELECT * FROM BRRS_M_SRWA_12B_SUMMARYTABLE5 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		java.util.List<M_SRWA_12B_Summary_Entity5> list = jdbcTemplate.query(selectSql,
+				new Object[]{reportDate}, new M_SRWA_12BSummaryRowMapper5());
 		if (list.isEmpty()) {
-			throw new RuntimeException("Record not found for REPORT_DATE: " + reportDate);
+			throw new RuntimeException("Record not found in live summary table for REPORT_DATE : " + reportDate);
 		}
 		return list.get(0);
 	}
@@ -6603,6 +6793,51 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 			"UPDATE BRRS_M_SRWA_12B_SUMMARYTABLE5 SET " + R_FIELDS_SET_5 +
 			",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=?" +
 			" WHERE REPORT_DATE=?", params);
+	}
+
+	public M_SRWA_12B_Summary_Entity5 findModRecordByDate5(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_SRWA_12B_MOD_SUMMARYTABLE5 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		java.util.List<M_SRWA_12B_Summary_Entity5> list = jdbcTemplate.query(selectSql,
+				new Object[]{reportDate}, new M_SRWA_12BSummaryRowMapper5());
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public void saveModSummaryEntity5(M_SRWA_12B_Summary_Entity5 e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 8];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length]     = e.getReportVersion();
+		params[rVals.length + 1] = e.getReport_frequency();
+		params[rVals.length + 2] = e.getReport_code();
+		params[rVals.length + 3] = e.getReport_desc();
+		params[rVals.length + 4] = e.getEntity_flg();
+		params[rVals.length + 5] = e.getModify_flg();
+		params[rVals.length + 6] = e.getDel_flg();
+		params[rVals.length + 7] = e.getReportDate();
+
+		int updated = jdbcTemplate.update(
+			"UPDATE BRRS_M_SRWA_12B_MOD_SUMMARYTABLE5 SET " + R_FIELDS_SET_5 +
+			",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=?" +
+			" WHERE TRUNC(REPORT_DATE)=TRUNC(?)", params);
+		if (updated == 0) {
+			Object[] insParams = new Object[rVals.length + 8];
+			insParams[0] = e.getReportDate();
+			System.arraycopy(rVals, 0, insParams, 1, rVals.length);
+			insParams[rVals.length + 1] = e.getReportVersion();
+			insParams[rVals.length + 2] = e.getReport_frequency();
+			insParams[rVals.length + 3] = e.getReport_code();
+			insParams[rVals.length + 4] = e.getReport_desc();
+			insParams[rVals.length + 5] = e.getEntity_flg();
+			insParams[rVals.length + 6] = e.getModify_flg();
+			insParams[rVals.length + 7] = e.getDel_flg();
+			jdbcTemplate.update(
+				"INSERT INTO BRRS_M_SRWA_12B_MOD_SUMMARYTABLE5 (REPORT_DATE," + R_COLS_5 +
+				",REPORT_VERSION,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG) VALUES (?," +
+				R_PLACEHOLDERS_5 + ",?,?,?,?,?,?,?)", insParams);
+			System.out.println("✔ BRRS_M_SRWA_12B_MOD_SUMMARYTABLE5 inserted successfully.");
+		} else {
+			System.out.println("✔ BRRS_M_SRWA_12B_MOD_SUMMARYTABLE5 updated successfully.");
+		}
 	}
 
 	// ===== Shard 5: Detail =====
@@ -6767,7 +7002,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 
 
 	// ===== Shard 6 shared business-field SQL fragments (business fields identical across all 6 families) =====
-	private static final String R_COLS_6 =
+	public static final String R_COLS_6 =
 		"R194_PRODUCT,R194_NOM_PRIN_AMT,R194_CRE_CON_FAC,R194_CRE_EQU_AMT,R194_CEAELI_COUN_BI_NET,R194_CEA_AFT_NET,R194_CEAELI_CRM_SUBAPR,R194_GUAN_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R194_CRE_DERI_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R194_EXP_COVCRM_NONCOL_OFFBAL_EXP_CRM_SUBAPR," +
 		"R194_EXP_NOTCOVCRM_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R194_RISKWEIGHTS_RWA_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R194_RWA_EXP_RWA_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R194_APP_RW_ORICOUNT_RWA_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R194_RWA_EXP_NOTCOV_RWA_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R194_CEAELI_COLEXP_CRM_COMAPR,R194_CEA_AFT_VOLADJ_COLEXP_CRM_COMAPR,R194_CASH_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R194_TRESBILLS_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R194_DEBT_SECU_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR," +
 		"R194_EQUITIS_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R194_U_TRUST_M_FUNDS_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R194_TOTCOL_AFT_HC_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R194_CEA_AFTCRM_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R194_RWA_CEA_NOTCOV_CRM_RWA,R194_UNSECU_CEA_CREDIT_RISK_RWA,R194_RWA_UNSECU_CEA_RWA,R194_TOT_RWA,R195_PRODUCT,R195_NOM_PRIN_AMT," +
@@ -7781,9 +8016,11 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 	}
 
 	public M_SRWA_12B_Summary_Entity6 findSummaryByDate6(Date reportDate) {
-		java.util.List<M_SRWA_12B_Summary_Entity6> list = getSummaryByDate6(reportDate);
+		String selectSql = "SELECT * FROM BRRS_M_SRWA_12B_SUMMARYTABLE6 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		java.util.List<M_SRWA_12B_Summary_Entity6> list = jdbcTemplate.query(selectSql,
+				new Object[]{reportDate}, new M_SRWA_12BSummaryRowMapper6());
 		if (list.isEmpty()) {
-			throw new RuntimeException("Record not found for REPORT_DATE: " + reportDate);
+			throw new RuntimeException("Record not found in live summary table for REPORT_DATE : " + reportDate);
 		}
 		return list.get(0);
 	}
@@ -7804,6 +8041,51 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 			"UPDATE BRRS_M_SRWA_12B_SUMMARYTABLE6 SET " + R_FIELDS_SET_6 +
 			",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=?" +
 			" WHERE REPORT_DATE=?", params);
+	}
+
+	public M_SRWA_12B_Summary_Entity6 findModRecordByDate6(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_SRWA_12B_MOD_SUMMARYTABLE6 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		java.util.List<M_SRWA_12B_Summary_Entity6> list = jdbcTemplate.query(selectSql,
+				new Object[]{reportDate}, new M_SRWA_12BSummaryRowMapper6());
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public void saveModSummaryEntity6(M_SRWA_12B_Summary_Entity6 e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 8];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length]     = e.getReportVersion();
+		params[rVals.length + 1] = e.getReport_frequency();
+		params[rVals.length + 2] = e.getReport_code();
+		params[rVals.length + 3] = e.getReport_desc();
+		params[rVals.length + 4] = e.getEntity_flg();
+		params[rVals.length + 5] = e.getModify_flg();
+		params[rVals.length + 6] = e.getDel_flg();
+		params[rVals.length + 7] = e.getReportDate();
+
+		int updated = jdbcTemplate.update(
+			"UPDATE BRRS_M_SRWA_12B_MOD_SUMMARYTABLE6 SET " + R_FIELDS_SET_6 +
+			",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=?" +
+			" WHERE TRUNC(REPORT_DATE)=TRUNC(?)", params);
+		if (updated == 0) {
+			Object[] insParams = new Object[rVals.length + 8];
+			insParams[0] = e.getReportDate();
+			System.arraycopy(rVals, 0, insParams, 1, rVals.length);
+			insParams[rVals.length + 1] = e.getReportVersion();
+			insParams[rVals.length + 2] = e.getReport_frequency();
+			insParams[rVals.length + 3] = e.getReport_code();
+			insParams[rVals.length + 4] = e.getReport_desc();
+			insParams[rVals.length + 5] = e.getEntity_flg();
+			insParams[rVals.length + 6] = e.getModify_flg();
+			insParams[rVals.length + 7] = e.getDel_flg();
+			jdbcTemplate.update(
+				"INSERT INTO BRRS_M_SRWA_12B_MOD_SUMMARYTABLE6 (REPORT_DATE," + R_COLS_6 +
+				",REPORT_VERSION,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG) VALUES (?," +
+				R_PLACEHOLDERS_6 + ",?,?,?,?,?,?,?)", insParams);
+			System.out.println("✔ BRRS_M_SRWA_12B_MOD_SUMMARYTABLE6 inserted successfully.");
+		} else {
+			System.out.println("✔ BRRS_M_SRWA_12B_MOD_SUMMARYTABLE6 updated successfully.");
+		}
 	}
 
 	// ===== Shard 6: Detail =====
@@ -7968,7 +8250,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 
 
 	// ===== Shard 7 shared business-field SQL fragments (business fields identical across all 6 families) =====
-	private static final String R_COLS_7 =
+	public static final String R_COLS_7 =
 		"R221_PRODUCT,R221_NOM_PRIN_AMT,R221_CRE_CON_FAC,R221_CRE_EQU_AMT,R221_CEAELI_COUN_BI_NET,R221_CEA_AFT_NET,R221_CEAELI_CRM_SUBAPR,R221_GUAN_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R221_CRE_DERI_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R221_EXP_COVCRM_NONCOL_OFFBAL_EXP_CRM_SUBAPR," +
 		"R221_EXP_NOTCOVCRM_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R221_RISKWEIGHTS_RWA_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R221_RWA_EXP_RWA_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R221_APP_RW_ORICOUNT_RWA_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R221_RWA_EXP_NOTCOV_RWA_NONCOL_OFFBAL_EXP_CRM_SUBAPR,R221_CEAELI_COLEXP_CRM_COMAPR,R221_CEA_AFT_VOLADJ_COLEXP_CRM_COMAPR,R221_CASH_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R221_TRESBILLS_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R221_DEBT_SECU_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR," +
 		"R221_EQUITIS_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R221_U_TRUST_M_FUNDS_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R221_TOTCOL_AFT_HC_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R221_CEA_AFTCRM_ELIFIN_COL_HAIRCUTS_COLEXP_CRM_COMAPR,R221_RWA_CEA_NOTCOV_CRM_RWA,R221_UNSECU_CEA_CREDIT_RISK_RWA,R221_RWA_UNSECU_CEA_RWA,R221_TOT_RWA,R222_PRODUCT,R222_NOM_PRIN_AMT," +
@@ -9020,9 +9302,11 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 	}
 
 	public M_SRWA_12B_Summary_Entity7 findSummaryByDate7(Date reportDate) {
-		java.util.List<M_SRWA_12B_Summary_Entity7> list = getSummaryByDate7(reportDate);
+		String selectSql = "SELECT * FROM BRRS_M_SRWA_12B_SUMMARYTABLE7 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		java.util.List<M_SRWA_12B_Summary_Entity7> list = jdbcTemplate.query(selectSql,
+				new Object[]{reportDate}, new M_SRWA_12BSummaryRowMapper7());
 		if (list.isEmpty()) {
-			throw new RuntimeException("Record not found for REPORT_DATE: " + reportDate);
+			throw new RuntimeException("Record not found in live summary table for REPORT_DATE : " + reportDate);
 		}
 		return list.get(0);
 	}
@@ -9043,6 +9327,51 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 			"UPDATE BRRS_M_SRWA_12B_SUMMARYTABLE7 SET " + R_FIELDS_SET_7 +
 			",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=?" +
 			" WHERE REPORT_DATE=?", params);
+	}
+
+	public M_SRWA_12B_Summary_Entity7 findModRecordByDate7(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_SRWA_12B_MOD_SUMMARYTABLE7 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		java.util.List<M_SRWA_12B_Summary_Entity7> list = jdbcTemplate.query(selectSql,
+				new Object[]{reportDate}, new M_SRWA_12BSummaryRowMapper7());
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public void saveModSummaryEntity7(M_SRWA_12B_Summary_Entity7 e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 8];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length]     = e.getReportVersion();
+		params[rVals.length + 1] = e.getReport_frequency();
+		params[rVals.length + 2] = e.getReport_code();
+		params[rVals.length + 3] = e.getReport_desc();
+		params[rVals.length + 4] = e.getEntity_flg();
+		params[rVals.length + 5] = e.getModify_flg();
+		params[rVals.length + 6] = e.getDel_flg();
+		params[rVals.length + 7] = e.getReportDate();
+
+		int updated = jdbcTemplate.update(
+			"UPDATE BRRS_M_SRWA_12B_MOD_SUMMARYTABLE7 SET " + R_FIELDS_SET_7 +
+			",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=?" +
+			" WHERE TRUNC(REPORT_DATE)=TRUNC(?)", params);
+		if (updated == 0) {
+			Object[] insParams = new Object[rVals.length + 8];
+			insParams[0] = e.getReportDate();
+			System.arraycopy(rVals, 0, insParams, 1, rVals.length);
+			insParams[rVals.length + 1] = e.getReportVersion();
+			insParams[rVals.length + 2] = e.getReport_frequency();
+			insParams[rVals.length + 3] = e.getReport_code();
+			insParams[rVals.length + 4] = e.getReport_desc();
+			insParams[rVals.length + 5] = e.getEntity_flg();
+			insParams[rVals.length + 6] = e.getModify_flg();
+			insParams[rVals.length + 7] = e.getDel_flg();
+			jdbcTemplate.update(
+				"INSERT INTO BRRS_M_SRWA_12B_MOD_SUMMARYTABLE7 (REPORT_DATE," + R_COLS_7 +
+				",REPORT_VERSION,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG) VALUES (?," +
+				R_PLACEHOLDERS_7 + ",?,?,?,?,?,?,?)", insParams);
+			System.out.println("✔ BRRS_M_SRWA_12B_MOD_SUMMARYTABLE7 inserted successfully.");
+		} else {
+			System.out.println("✔ BRRS_M_SRWA_12B_MOD_SUMMARYTABLE7 updated successfully.");
+		}
 	}
 
 	// ===== Shard 7: Detail =====
@@ -9207,7 +9536,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 
 
 	// ===== Shard 8 shared business-field SQL fragments (business fields identical across all 6 families) =====
-	private static final String R_COLS_8 =
+	public static final String R_COLS_8 =
 		"R110_NEW_COLUM_PRODUCT,R110_NEW_COLUM_EXP_BEF_CRM,R110_NEW_COLUM_SPEC_PROV_PAST_DUE_EXP,R110_NEW_COLUM_AMT_ELI_BAL_SHEET_NET,R110_NEW_COLUM_TOT_EXP_AFT_NET,R110_NEW_COLUM_EXP_ELI_NONCOL_EXP_CRM_SUBAPR,R110_NEW_COLUM_GUAN_NONCOL_EXP_CRM_SUBAPR,R110_NEW_COLUM_CRE_DERI_NONCOL_EXP_CRM_SUBAPR,R110_NEW_COLUM_EXP_COV_CRM_NONCOL_EXP_CRM_SUBAPR,R110_NEW_COLUM_ELIEXP_NOTCOV_CRM_NONCOL_EXP_CRM_SUBAPR," +
 		"R110_NEW_COLUM_RISKWEIGHTS_RWA_NONCOL_EXP_CRM_SUBAPR,R110_NEW_COLUM_RWA_COV_CRM_RWA_NONCOL_EXP_CRM_SUBAPR,R110_NEW_COLUM_RW_ORICOUNT_RWA_NONCOL_EXP_CRM_SUBAPR,R110_NEW_COLUM_RWA_NOTCOV_CRM_RWA_NONCOL_EXP_CRM_SUBAPR,R110_NEW_COLUM_VALUE,R110_NEW_COLUM_EXPELI_COLEXP_CRM_COMAPR,R110_NEW_COLUM_EXP_AFT_VOLADJ_COLEXP_CRM_COMAPR,R110_NEW_COLUM_CASH_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R110_NEW_COLUM_TRESBILLS_BOT_BOB_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R110_NEW_COLUM_DEBT_SECU_EFC_HAIRCUTS_COLEXP_CRM_COMAPR," +
 		"R110_NEW_COLUM_EQUITIES_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R110_NEW_COLUM_U_TRUST_M_FUNDS_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R110_NEW_COLUM_TOTCOL_AFT_HC_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R110_NEW_COLUM_EXP_EFC_HAIRCUTS_COLEXP_CRM_COMAPR,R110_NEW_COLUM_RWA_EXP_NOTCOV_CRM_RWA,R110_NEW_COLUM_UNSECU_EXP_CREDIT_RISK_RWA,R110_NEW_COLUM_RWA_UNSECU_EXP_RWA,R110_NEW_COLUM_TOT_RWA,R111_NEW_COLUM_PRODUCT,R111_NEW_COLUM_EXP_BEF_CRM," +
@@ -9365,9 +9694,11 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 	}
 
 	public M_SRWA_12B_Summary_Entity8 findSummaryByDate8(Date reportDate) {
-		java.util.List<M_SRWA_12B_Summary_Entity8> list = getSummaryByDate8(reportDate);
+		String selectSql = "SELECT * FROM BRRS_M_SRWA_12B_SUMMARYTABLE8 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		java.util.List<M_SRWA_12B_Summary_Entity8> list = jdbcTemplate.query(selectSql,
+				new Object[]{reportDate}, new M_SRWA_12BSummaryRowMapper8());
 		if (list.isEmpty()) {
-			throw new RuntimeException("Record not found for REPORT_DATE: " + reportDate);
+			throw new RuntimeException("Record not found in live summary table for REPORT_DATE : " + reportDate);
 		}
 		return list.get(0);
 	}
@@ -9388,6 +9719,51 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 			"UPDATE BRRS_M_SRWA_12B_SUMMARYTABLE8 SET " + R_FIELDS_SET_8 +
 			",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=?" +
 			" WHERE REPORT_DATE=?", params);
+	}
+
+	public M_SRWA_12B_Summary_Entity8 findModRecordByDate8(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_SRWA_12B_MOD_SUMMARYTABLE8 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		java.util.List<M_SRWA_12B_Summary_Entity8> list = jdbcTemplate.query(selectSql,
+				new Object[]{reportDate}, new M_SRWA_12BSummaryRowMapper8());
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public void saveModSummaryEntity8(M_SRWA_12B_Summary_Entity8 e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 8];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length]     = e.getReportVersion();
+		params[rVals.length + 1] = e.getReport_frequency();
+		params[rVals.length + 2] = e.getReport_code();
+		params[rVals.length + 3] = e.getReport_desc();
+		params[rVals.length + 4] = e.getEntity_flg();
+		params[rVals.length + 5] = e.getModify_flg();
+		params[rVals.length + 6] = e.getDel_flg();
+		params[rVals.length + 7] = e.getReportDate();
+
+		int updated = jdbcTemplate.update(
+			"UPDATE BRRS_M_SRWA_12B_MOD_SUMMARYTABLE8 SET " + R_FIELDS_SET_8 +
+			",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=?" +
+			" WHERE TRUNC(REPORT_DATE)=TRUNC(?)", params);
+		if (updated == 0) {
+			Object[] insParams = new Object[rVals.length + 8];
+			insParams[0] = e.getReportDate();
+			System.arraycopy(rVals, 0, insParams, 1, rVals.length);
+			insParams[rVals.length + 1] = e.getReportVersion();
+			insParams[rVals.length + 2] = e.getReport_frequency();
+			insParams[rVals.length + 3] = e.getReport_code();
+			insParams[rVals.length + 4] = e.getReport_desc();
+			insParams[rVals.length + 5] = e.getEntity_flg();
+			insParams[rVals.length + 6] = e.getModify_flg();
+			insParams[rVals.length + 7] = e.getDel_flg();
+			jdbcTemplate.update(
+				"INSERT INTO BRRS_M_SRWA_12B_MOD_SUMMARYTABLE8 (REPORT_DATE," + R_COLS_8 +
+				",REPORT_VERSION,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG) VALUES (?," +
+				R_PLACEHOLDERS_8 + ",?,?,?,?,?,?,?)", insParams);
+			System.out.println("✔ BRRS_M_SRWA_12B_MOD_SUMMARYTABLE8 inserted successfully.");
+		} else {
+			System.out.println("✔ BRRS_M_SRWA_12B_MOD_SUMMARYTABLE8 updated successfully.");
+		}
 	}
 
 	// ===== Shard 8: Detail =====
@@ -10879,1574 +11255,949 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 //	}
 	
 				
-				@Transactional
-				public void updateReport1(M_SRWA_12B_Summary_Entity1 updatedEntity) {
-
-				    System.out.println("Came to services1");
-				    System.out.println("Report Date: " + updatedEntity.getReportDate());
-
-				    M_SRWA_12B_Summary_Entity1 existing = findSummaryByDate1(updatedEntity.getReportDate());
-
-				    // ====================================================
-				    // OLD COPY FOR AUDIT
-				    // ====================================================
-
-				    M_SRWA_12B_Summary_Entity1 oldcopy =
-				            new M_SRWA_12B_Summary_Entity1();
-
-				    BeanUtils.copyProperties(existing, oldcopy);
-
-				    try {
-
-				        // ====================================================
-				        // 1. LOOP FROM R15 TO R50
-				        // ====================================================
-
-				        for (int i = 15; i <= 50; i++) {
-
-				            if (i == 25 || i == 26 || i == 27 ||
-				                i == 38 || i == 39 ||
-				                i == 41 || i == 42) {
-				                continue;
-				            }
-
-				            String prefix = "R" + i + "_";
-
-				            String[] fields = {
-				                    "exp_bef_crm",
-				                    "spec_prov_past_due_exp",
-				                    "amt_eli_bal_sheet_net",
-				                    "exp_eli_noncol_exp_crm_subapr",
-				                    "guan_noncol_exp_crm_subapr",
-				                    "cre_deri_noncol_exp_crm_subapr",
-				                    "riskweights_rwa_noncol_exp_crm_subapr",
-				                    "value",
-				                    "expeli_colexp_crm_comapr",
-				                    "exp_aft_voladj_colexp_crm_comapr",
-				                    "cash_efc_haircuts_colexp_crm_comapr",
-				                    "tresbills_bot_bob_efc_haircuts_colexp_crm_comapr",
-				                    "debt_secu_efc_haircuts_colexp_crm_comapr",
-				                    "equities_efc_haircuts_colexp_crm_comapr",
-				                    "u_trust_m_funds_efc_haircuts_colexp_crm_comapr"
-				            };
-
-				            for (String field : fields) {
-
-				                String getterName = "get" + prefix + field;
-				                String setterName = "set" + prefix + field;
-
-				                try {
-
-				                    Method getter =
-				                            M_SRWA_12B_Summary_Entity1.class.getMethod(getterName);
-
-				                    Method setter =
-				                            M_SRWA_12B_Summary_Entity1.class.getMethod(
-				                                    setterName,
-				                                    getter.getReturnType());
-
-				                    Object newValue = getter.invoke(updatedEntity);
-
-				                    setter.invoke(existing, newValue);
-
-				                } catch (NoSuchMethodException e) {
-				                    continue;
-				                }
-				            }
-				        }
-
-				        // ====================================================
-				        // 2. FORMULA FIELDS WITH VALUE FIELDS
-				        // ====================================================
-
-				        for (int i = 15; i <= 50; i++) {
-
-				            if (i == 21 || i == 25 || i == 26 || i == 27 ||
-				                i == 38 || i == 39 ||
-				                i == 41 || i == 42 ||
-				                i == 49) {
-				                continue;
-				            }
-
-				            String prefix = "R" + i + "_";
-
-				            String[] fields;
-
-				            if (i == 34) {
-
-				                fields = new String[] {
-				                        "tot_exp_aft_net"
-				                };
-
-				            } else {
-
-				                fields = new String[] {
-				                        "tot_exp_aft_net",
-				                        "exp_cov_crm_noncol_exp_crm_subapr",
-				                        "eliexp_notcov_crm_noncol_exp_crm_subapr",
-				                        "rwa_cov_crm_rwa_noncol_exp_crm_subapr",
-				                        "rwa_notcov_crm_rwa_noncol_exp_crm_subapr",
-				                        "totcol_aft_hc_efc_haircuts_colexp_crm_comapr",
-				                        "exp_efc_haircuts_colexp_crm_comapr",
-				                        "rwa_exp_notcov_crm_rwa",
-				                        "unsecu_exp_credit_risk_rwa",
-				                        "rwa_unsecu_exp_rwa",
-				                        "tot_rwa"
-				                };
-				            }
-
-				            for (String field : fields) {
-
-				                String getterName = "get" + prefix + field;
-				                String setterName = "set" + prefix + field;
-
-				                try {
-
-				                    Method getter =
-				                            M_SRWA_12B_Summary_Entity1.class.getMethod(getterName);
-
-				                    Method setter =
-				                            M_SRWA_12B_Summary_Entity1.class.getMethod(
-				                                    setterName,
-				                                    getter.getReturnType());
-
-				                    Object newValue = getter.invoke(updatedEntity);
-
-				                    setter.invoke(existing, newValue);
-
-				                } catch (NoSuchMethodException e) {
-				                    continue;
-				                }
-				            }
-				        }
-
-				        // ====================================================
-				        // 3. FORMULA ROWS (25,38,39)
-				        // ====================================================
-
-				        int[] targetRows = {25, 38, 39};
-
-				        for (int i : targetRows) {
-
-				            String prefix = "R" + i + "_";
-
-				            String[] fields = {
-				                    "exp_bef_crm",
-				                    "spec_prov_past_due_exp",
-				                    "amt_eli_bal_sheet_net",
-				                    "tot_exp_aft_net",
-				                    "exp_eli_noncol_exp_crm_subapr",
-				                    "guan_noncol_exp_crm_subapr",
-				                    "cre_deri_noncol_exp_crm_subapr",
-				                    "exp_cov_crm_noncol_exp_crm_subapr",
-				                    "eliexp_notcov_crm_noncol_exp_crm_subapr",
-				                    "riskweights_rwa_noncol_exp_crm_subapr",
-				                    "rwa_cov_crm_rwa_noncol_exp_crm_subapr",
-				                    "rwa_notcov_crm_rwa_noncol_exp_crm_subapr",
-				                    "value",
-				                    "expeli_colexp_crm_comapr",
-				                    "exp_aft_voladj_colexp_crm_comapr",
-				                    "cash_efc_haircuts_colexp_crm_comapr",
-				                    "tresbills_bot_bob_efc_haircuts_colexp_crm_comapr",
-				                    "debt_secu_efc_haircuts_colexp_crm_comapr",
-				                    "equities_efc_haircuts_colexp_crm_comapr",
-				                    "u_trust_m_funds_efc_haircuts_colexp_crm_comapr",
-				                    "totcol_aft_hc_efc_haircuts_colexp_crm_comapr",
-				                    "exp_efc_haircuts_colexp_crm_comapr",
-				                    "rwa_exp_notcov_crm_rwa",
-				                    "unsecu_exp_credit_risk_rwa",
-				                    "rwa_unsecu_exp_rwa",
-				                    "tot_rwa"
-				            };
-
-				            for (String field : fields) {
-
-				                String getterName = "get" + prefix + field;
-				                String setterName = "set" + prefix + field;
-
-				                try {
-
-				                    Method getter =
-				                            M_SRWA_12B_Summary_Entity1.class.getMethod(getterName);
-
-				                    Method setter =
-				                            M_SRWA_12B_Summary_Entity1.class.getMethod(
-				                                    setterName,
-				                                    getter.getReturnType());
-
-				                    Object newValue = getter.invoke(updatedEntity);
-
-				                    setter.invoke(existing, newValue);
-
-				                } catch (NoSuchMethodException e) {
-				                    continue;
-				                }
-				            }
-				        }
-
-				    } catch (Exception e) {
-
-				        throw new RuntimeException(
-				                "Error while updating report fields",
-				                e);
-				    }
-
-				    // ====================================================
-				    // SAVE SUMMARY
-				    // ====================================================
-
-				    saveSummary1(existing);
-
-				    // ====================================================
-				    // NEW COPY FOR AUDIT
-				    // ====================================================
-
-				    M_SRWA_12B_Summary_Entity1 newcopy =
-				            new M_SRWA_12B_Summary_Entity1();
-
-				    BeanUtils.copyProperties(existing, newcopy);
-
-				    // ====================================================
-				    // SAVE DETAIL
-				    // ====================================================
-
-				    M_SRWA_12B_Detail_Entity1 detail =
-				            new M_SRWA_12B_Detail_Entity1();
-
-				    BeanUtils.copyProperties(existing, detail);
-
-				    saveDetail1(detail);
-
-				    // ====================================================
-				    // FIELD LEVEL AUDIT
-				    // ====================================================
-
-				    auditService.compareEntitiesmanual(
-				            oldcopy,
-				            newcopy,
-				            updatedEntity.getReportDate().toString(),
-				            "SRWA 12B Summary 1",
-				            "BRRS_M_SRWA_12B_SUMMARYTABLE1"
-				    );
-
-				    System.out.println("SRWA 12B Summary 1 Updated Successfully");
-				}
-				
-				
-					public void updateReport2(M_SRWA_12B_Summary_Entity2 updatedEntity) {
-
-				    System.out.println("Came to services2");
-				    System.out.println("Report Date: " + updatedEntity.getReportDate());
-
-				    M_SRWA_12B_Summary_Entity2 existing = findSummaryByDate2(updatedEntity.getReportDate());
-				    
-
-				    // ====================================================
-				    // OLD COPY FOR AUDIT
-				    // ====================================================
-
-				    M_SRWA_12B_Summary_Entity2 oldcopy =
-				            new M_SRWA_12B_Summary_Entity2();
-
-				    BeanUtils.copyProperties(existing, oldcopy);
-
-				    try {
-
-				        // ====================================================
-				        // 1. VALUE FIELDS
-				        // ====================================================
-
-				        for (int i = 51; i <= 89; i++) {
-
-				            if (i == 53 || i == 54 || i == 55 || i == 66 || i == 67
-				                    || i == 68 || i == 78 || i == 79 || i == 80 || i == 89) {
-				                continue;
-				            }
-
-				            String prefix = "R" + i + "_";
-
-				            String[] fields = {
-				                    "exp_bef_crm",
-				                    "spec_prov_past_due_exp",
-				                    "amt_eli_bal_sheet_net",
-				                    "exp_eli_noncol_exp_crm_subapr",
-				                    "guan_noncol_exp_crm_subapr",
-				                    "cre_deri_noncol_exp_crm_subapr",
-				                    "riskweights_rwa_noncol_exp_crm_subapr",
-				                    "value",
-				                    "expeli_colexp_crm_comapr",
-				                    "exp_aft_voladj_colexp_crm_comapr",
-				                    "cash_efc_haircuts_colexp_crm_comapr",
-				                    "tresbills_bot_bob_efc_haircuts_colexp_crm_comapr",
-				                    "debt_secu_efc_haircuts_colexp_crm_comapr",
-				                    "equities_efc_haircuts_colexp_crm_comapr",
-				                    "u_trust_m_funds_efc_haircuts_colexp_crm_comapr"
-				            };
-
-				            for (String field : fields) {
-
-				                String getterName = "get" + prefix + field;
-				                String setterName = "set" + prefix + field;
-
-				                try {
-
-				                    Method getter =
-				                            M_SRWA_12B_Summary_Entity2.class.getMethod(getterName);
-
-				                    Method setter =
-				                            M_SRWA_12B_Summary_Entity2.class.getMethod(
-				                                    setterName,
-				                                    getter.getReturnType());
-
-				                    Object newValue = getter.invoke(updatedEntity);
-
-				                    setter.invoke(existing, newValue);
-
-				                } catch (NoSuchMethodException e) {
-				                    continue;
-				                }
-				            }
-				        }
-
-				        // ====================================================
-				        // 2. FORMULA FIELDS
-				        // ====================================================
-
-				        for (int i = 51; i <= 89; i++) {
-
-				            if (i == 53 || i == 54 || i == 55 || i == 62 || i == 66
-				                    || i == 67 || i == 68 || i == 74 || i == 78
-				                    || i == 79 || i == 80 || i == 85 || i == 89) {
-				                continue;
-				            }
-
-				            String prefix = "R" + i + "_";
-
-				            String[] fields = {
-				                    "tot_exp_aft_net",
-				                    "exp_cov_crm_noncol_exp_crm_subapr",
-				                    "eliexp_notcov_crm_noncol_exp_crm_subapr",
-				                    "rwa_cov_crm_rwa_noncol_exp_crm_subapr",
-				                    "rwa_notcov_crm_rwa_noncol_exp_crm_subapr",
-				                    "totcol_aft_hc_efc_haircuts_colexp_crm_comapr",
-				                    "exp_efc_haircuts_colexp_crm_comapr",
-				                    "rwa_exp_notcov_crm_rwa",
-				                    "unsecu_exp_credit_risk_rwa",
-				                    "rwa_unsecu_exp_rwa",
-				                    "tot_rwa"
-				            };
-
-				            for (String field : fields) {
-
-				                String getterName = "get" + prefix + field;
-				                String setterName = "set" + prefix + field;
-
-				                try {
-
-				                    Method getter =
-				                            M_SRWA_12B_Summary_Entity2.class.getMethod(getterName);
-
-				                    Method setter =
-				                            M_SRWA_12B_Summary_Entity2.class.getMethod(
-				                                    setterName,
-				                                    getter.getReturnType());
-
-				                    Object newValue = getter.invoke(updatedEntity);
-
-				                    setter.invoke(existing, newValue);
-
-				                } catch (NoSuchMethodException e) {
-				                    continue;
-				                }
-				            }
-				        }
-
-				        // ====================================================
-				        // 3. SPECIAL ROWS
-				        // ====================================================
-
-				        int[] targetRows = {53, 66, 78, 89};
-
-				        for (int i : targetRows) {
-
-				            String prefix = "R" + i + "_";
-
-				            String[] fields = {
-				                    "exp_bef_crm",
-				                    "spec_prov_past_due_exp",
-				                    "amt_eli_bal_sheet_net",
-				                    "tot_exp_aft_net",
-				                    "exp_eli_noncol_exp_crm_subapr",
-				                    "guan_noncol_exp_crm_subapr",
-				                    "cre_deri_noncol_exp_crm_subapr",
-				                    "exp_cov_crm_noncol_exp_crm_subapr",
-				                    "eliexp_notcov_crm_noncol_exp_crm_subapr",
-				                    "riskweights_rwa_noncol_exp_crm_subapr",
-				                    "rwa_cov_crm_rwa_noncol_exp_crm_subapr",
-				                    "rwa_notcov_crm_rwa_noncol_exp_crm_subapr",
-				                    "value",
-				                    "expeli_colexp_crm_comapr",
-				                    "exp_aft_voladj_colexp_crm_comapr",
-				                    "cash_efc_haircuts_colexp_crm_comapr",
-				                    "tresbills_bot_bob_efc_haircuts_colexp_crm_comapr",
-				                    "debt_secu_efc_haircuts_colexp_crm_comapr",
-				                    "equities_efc_haircuts_colexp_crm_comapr",
-				                    "u_trust_m_funds_efc_haircuts_colexp_crm_comapr",
-				                    "totcol_aft_hc_efc_haircuts_colexp_crm_comapr",
-				                    "exp_efc_haircuts_colexp_crm_comapr",
-				                    "rwa_exp_notcov_crm_rwa",
-				                    "unsecu_exp_credit_risk_rwa",
-				                    "rwa_unsecu_exp_rwa",
-				                    "tot_rwa"
-				            };
-
-				            for (String field : fields) {
-
-				                String getterName = "get" + prefix + field;
-				                String setterName = "set" + prefix + field;
-
-				                try {
-
-				                    Method getter =
-				                            M_SRWA_12B_Summary_Entity2.class.getMethod(getterName);
-
-				                    Method setter =
-				                            M_SRWA_12B_Summary_Entity2.class.getMethod(
-				                                    setterName,
-				                                    getter.getReturnType());
-
-				                    Object newValue = getter.invoke(updatedEntity);
-
-				                    setter.invoke(existing, newValue);
-
-				                } catch (NoSuchMethodException e) {
-				                    continue;
-				                }
-				            }
-				        }
-
-				    } catch (Exception e) {
-
-				        throw new RuntimeException(
-				                "Error while updating report fields", e);
-				    }
-
-				    // ====================================================
-				    // SAVE SUMMARY
-				    // ====================================================
-
-				    saveSummary2(existing);
-				    
-				    // ====================================================
-				    // NEW COPY FOR AUDIT
-				    // ====================================================
-
-				    M_SRWA_12B_Summary_Entity2 newcopy =
-				            new M_SRWA_12B_Summary_Entity2();
-
-				    BeanUtils.copyProperties(existing, newcopy);
-
-
-				    // ====================================================
-				    // SAVE DETAIL
-				    // ====================================================
-
-				    M_SRWA_12B_Detail_Entity2 detail =
-				            new M_SRWA_12B_Detail_Entity2();
-
-				    BeanUtils.copyProperties(existing, detail);
-
-				    saveDetail2(detail);
-
-
-				    // ====================================================
-				    // FIELD LEVEL AUDIT
-				    // ====================================================
-
-				    auditService.compareEntitiesmanual(
-				            oldcopy,
-				            newcopy,
-				            updatedEntity.getReportDate().toString(),
-				            "SRWA 12B Summary 2",
-				            "BRRS_M_SRWA_12B_SUMMARYTABLE2"
-				    );
-			
-
-				    System.out.println("M_SRWA_12B Summary 2 Update Completed");
-				}
-				
-				
-	public void updateReport3(M_SRWA_12B_Summary_Entity3 updatedEntity) {
-	    System.out.println("Came to services3");
-	    System.out.println("Report Date: " + updatedEntity.getReportDate());
-
-	    M_SRWA_12B_Summary_Entity3 existing = findSummaryByDate3(updatedEntity.getReportDate());
-	    
-
-	    // ====================================================
-	    // OLD COPY FOR AUDIT
-	    // ====================================================
-
-	    M_SRWA_12B_Summary_Entity3 oldcopy =
-	            new M_SRWA_12B_Summary_Entity3();
-
-	    BeanUtils.copyProperties(existing, oldcopy);
-
-	    try {
-	        // 1. Loop from R51 to R89 value fields
-	        for (int i = 92; i <= 129; i++) {
-		if (i == 98 || i == 99 || i == 100 || i == 110 || i == 111 || i == 112 || i == 118 || i == 119 || i == 128 || i == 129) {
-        continue;
-    }
-	            String prefix = "R" + i + "_";
-
-	            String[] fields = { "exp_bef_crm",
-"spec_prov_past_due_exp",
-"amt_eli_bal_sheet_net",
-"exp_eli_noncol_exp_crm_subapr",
-"guan_noncol_exp_crm_subapr",
-"cre_deri_noncol_exp_crm_subapr",
-"riskweights_rwa_noncol_exp_crm_subapr",
-"value",
-"expeli_colexp_crm_comapr",
-"exp_aft_voladj_colexp_crm_comapr",
-"cash_efc_haircuts_colexp_crm_comapr",
-"tresbills_bot_bob_efc_haircuts_colexp_crm_comapr",
-"debt_secu_efc_haircuts_colexp_crm_comapr",
-"equities_efc_haircuts_colexp_crm_comapr",
-"u_trust_m_funds_efc_haircuts_colexp_crm_comapr"
- };
-
-	            for (String field : fields) {
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
-
-	                try {
-	                    Method getter = M_SRWA_12B_Summary_Entity3.class.getMethod(getterName);
-	                    Method setter = M_SRWA_12B_Summary_Entity3.class.getMethod(setterName, getter.getReturnType());
-
-	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
-
-	                } catch (NoSuchMethodException e) {
-	                    // Skip missing fields
-	                    continue;
-	                }
-	            }
-	        }
-// 2. Loop through rows for formula fields with value fields
-for (int i = 92; i <= 129; i++) {
-    if (i == 94 || i == 98 || i == 99 || i == 100 || i == 104 || i == 110 || i == 111 || i == 112 || i == 114 || i == 118 || i == 119 || i == 128 || i == 129) {
-        continue;
-    }
-
-    String prefix = "R" + i + "_";
-
-	String[] fields = {  "tot_exp_aft_net",
-            "exp_cov_crm_noncol_exp_crm_subapr",
-            "eliexp_notcov_crm_noncol_exp_crm_subapr",
-            "rwa_cov_crm_rwa_noncol_exp_crm_subapr",
-            "rwa_notcov_crm_rwa_noncol_exp_crm_subapr",
-            "totcol_aft_hc_efc_haircuts_colexp_crm_comapr",
-            "exp_efc_haircuts_colexp_crm_comapr",
-            "rwa_exp_notcov_crm_rwa",
-            "unsecu_exp_credit_risk_rwa",
-            "rwa_unsecu_exp_rwa",
-            "tot_rwa"
- };
-
-    // Common reflection logic
-    for (String field : fields) {
-        String getterName = "get" + prefix + field;
-        String setterName = "set" + prefix + field;
-
-        try {
-            Method getter = M_SRWA_12B_Summary_Entity3.class.getMethod(getterName);
-            Method setter = M_SRWA_12B_Summary_Entity3.class.getMethod(setterName, getter.getReturnType());
-
-            Object newValue = getter.invoke(updatedEntity);
-            setter.invoke(existing, newValue);
-
-        } catch (NoSuchMethodException e) {
-            // Skip missing fields
-            continue;
-        }
-    }
-}
-
-
-// 3. Loop through rows for formula fields 
-int[] targetRows = {98, 110, 118, 128, 129};
-
-for (int i : targetRows) {
-    String prefix = "R" + i + "_";
-
-    String[] fields = {
-        "exp_bef_crm",
-        "spec_prov_past_due_exp",
-        "amt_eli_bal_sheet_net",
-        "tot_exp_aft_net",
-        "exp_eli_noncol_exp_crm_subapr",
-        "guan_noncol_exp_crm_subapr",
-        "cre_deri_noncol_exp_crm_subapr",
-        "exp_cov_crm_noncol_exp_crm_subapr",
-        "eliexp_notcov_crm_noncol_exp_crm_subapr",
-        "riskweights_rwa_noncol_exp_crm_subapr",
-        "rwa_cov_crm_rwa_noncol_exp_crm_subapr",
-        "rwa_notcov_crm_rwa_noncol_exp_crm_subapr",
-        "value",
-        "expeli_colexp_crm_comapr",
-        "exp_aft_voladj_colexp_crm_comapr",
-        "cash_efc_haircuts_colexp_crm_comapr",
-        "tresbills_bot_bob_efc_haircuts_colexp_crm_comapr",
-        "debt_secu_efc_haircuts_colexp_crm_comapr",
-        "equities_efc_haircuts_colexp_crm_comapr",
-        "u_trust_m_funds_efc_haircuts_colexp_crm_comapr",
-        "totcol_aft_hc_efc_haircuts_colexp_crm_comapr",
-        "exp_efc_haircuts_colexp_crm_comapr",
-        "rwa_exp_notcov_crm_rwa",
-        "unsecu_exp_credit_risk_rwa",
-        "rwa_unsecu_exp_rwa",
-        "tot_rwa"
-    };
-
-    for (String field : fields) {
-        String getterName = "get" + prefix + field;
-        String setterName = "set" + prefix + field;
-
-        try {
-            Method getter = M_SRWA_12B_Summary_Entity3.class.getMethod(getterName);
-            Method setter = M_SRWA_12B_Summary_Entity3.class.getMethod(setterName, getter.getReturnType());
-
-            Object newValue = getter.invoke(updatedEntity);
-            setter.invoke(existing, newValue);
-
-        } catch (NoSuchMethodException e) {
-            // Skip missing fields
-            continue;
-        }
-    }
-}
-}			
-
-	catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
-
-
-
-	    // ====================================================
-	    // SAVE SUMMARY
-	    // ====================================================
-
-	    saveSummary3(existing);
-	    
-	    // ====================================================
-	    // NEW COPY FOR AUDIT
-	    // ====================================================
-
-	    M_SRWA_12B_Summary_Entity3 newcopy =
-	            new M_SRWA_12B_Summary_Entity3();
-
-	    BeanUtils.copyProperties(existing, newcopy);
-
-
-	    // ====================================================
-	    // SAVE DETAIL
-	    // ====================================================
-
-	    M_SRWA_12B_Detail_Entity3 detail =
-	            new M_SRWA_12B_Detail_Entity3();
-
-	    BeanUtils.copyProperties(existing, detail);
-
-	    saveDetail3(detail);
-
-
-	    // ====================================================
-	    // FIELD LEVEL AUDIT
-	    // ====================================================
-
-	    auditService.compareEntitiesmanual(
-	            oldcopy,
-	            newcopy,
-	            updatedEntity.getReportDate().toString(),
-	            "SRWA 12B Summary 3",
-	            "BRRS_M_SRWA_12B_SUMMARYTABLE3"
-	    );
-
-
-	    System.out.println("M_SRWA_12B Summary 3 Update Completed");
-
+	// =========================================================================
+	// SINGLE UNIFIED UPDATE WORKFLOW (REPLICATED DIRECTLY FROM Q_STAFF)
+	// =========================================================================
+	private static final java.util.Map<String, Method> METHOD_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
+
+	private static Method getCachedMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {
+		String key = clazz.getName() + "#" + methodName;
+		if (paramTypes != null && paramTypes.length > 0) {
+			key += "#" + paramTypes[0].getName();
+		}
+		return METHOD_CACHE.computeIfAbsent(key, k -> {
+			try {
+				return clazz.getMethod(methodName, paramTypes);
+			} catch (NoSuchMethodException e) {
+				return null;
+			}
+		});
 	}
 
-	public void updateReport4(M_SRWA_12B_Summary_Entity4 updatedEntity) {
-	    System.out.println("Came to services4");
-	    System.out.println("Report Date: " + updatedEntity.getReportDate());
-
-	    M_SRWA_12B_Summary_Entity4 existing = findSummaryByDate4(updatedEntity.getReportDate());
-	    
-	    
-	    // ====================================================
-	    // OLD COPY FOR AUDIT
-	    // ====================================================
-	    M_SRWA_12B_Summary_Entity4 oldcopy =
-	            new M_SRWA_12B_Summary_Entity4();
-
-	    BeanUtils.copyProperties(existing, oldcopy);
-
-	    try {
-	        // 1. Loop from R138 to R166 value fields
-	        for (int i = 139; i <= 166; i++) {
-		if (i == 139 || i == 147 || i == 157 || i == 165) {
-        continue;
-    }
-	            String prefix = "R" + i + "_";
-
-	            String[] fields = { "nom_prin_amt",
-"cre_con_fac",
-"ceaeli_coun_bi_net",
-"ceaeli_crm_subapr",
-"guan_noncol_offbal_exp_crm_subapr",
-"cre_deri_noncol_offbal_exp_crm_subapr",
-"ceaeli_colexp_crm_comapr",
-"cea_aft_voladj_colexp_crm_comapr",
-"cash_elifin_col_haircuts_colexp_crm_comapr",
-"tresbills_elifin_col_haircuts_colexp_crm_comapr",
-"debt_secu_elifin_col_haircuts_colexp_crm_comapr",
-"equitis_elifin_col_haircuts_colexp_crm_comapr",
-"u_trust_m_funds_elifin_col_haircuts_colexp_crm_comapr"};
-
-	            for (String field : fields) {
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
-
-	                try {
-	                    Method getter = M_SRWA_12B_Summary_Entity4.class.getMethod(getterName);
-	                    Method setter = M_SRWA_12B_Summary_Entity4.class.getMethod(setterName, getter.getReturnType());
-
-	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
-
-	                } catch (NoSuchMethodException e) {
-	                    // Skip missing fields
-	                    continue;
-	                }
-	            }
-	        }
-// 2. Loop through rows for formula fields with value fields
-	        for (int i = 139; i <= 166; i++) {
-		if (i == 139 || i == 147 || i == 157 || i == 165) {
-        continue;
-    }
-
-    String prefix = "R" + i + "_";
-
-	String[] fields = {  "cre_equ_amt",
-            "cea_aft_net",
-            "exp_covcrm_noncol_offbal_exp_crm_subapr",
-            "exp_notcovcrm_noncol_offbal_exp_crm_subapr",
-            "rwa_exp_rwa_noncol_offbal_exp_crm_subapr",
-            "rwa_exp_notcov_rwa_noncol_offbal_exp_crm_subapr",
-            "totcol_aft_hc_elifin_col_haircuts_colexp_crm_comapr",
-            "cea_aftcrm_elifin_col_haircuts_colexp_crm_comapr",
-            "rwa_cea_notcov_crm_rwa",
-            "unsecu_cea_credit_risk_rwa",
-            "rwa_unsecu_cea_rwa", "tot_rwa"
- };
-
-    // Common reflection logic
-    for (String field : fields) {
-        String getterName = "get" + prefix + field;
-        String setterName = "set" + prefix + field;
-
-        try {
-            Method getter = M_SRWA_12B_Summary_Entity4.class.getMethod(getterName);
-            Method setter = M_SRWA_12B_Summary_Entity4.class.getMethod(setterName, getter.getReturnType());
-
-            Object newValue = getter.invoke(updatedEntity);
-            setter.invoke(existing, newValue);
-
-        } catch (NoSuchMethodException e) {
-            // Skip missing fields
-            continue;
-        }
-    }
-}
-
-
-// 3. Loop through rows for formula fields 
-int[] targetRows = {139, 147, 157, 165};
-
-for (int i : targetRows) {
-    String prefix = "R" + i + "_";
-
-    String[] fields = {
-        "nom_prin_amt",
-        "cre_con_fac",
-        "cre_equ_amt",
-        "ceaeli_coun_bi_net",
-        "cea_aft_net",
-        "ceaeli_crm_subapr",
-        "guan_noncol_offbal_exp_crm_subapr",
-        "cre_deri_noncol_offbal_exp_crm_subapr",
-        "exp_covcrm_noncol_offbal_exp_crm_subapr",
-        "exp_notcovcrm_noncol_offbal_exp_crm_subapr",
-        "rwa_exp_rwa_noncol_offbal_exp_crm_subapr",
-        "rwa_exp_notcov_rwa_noncol_offbal_exp_crm_subapr",
-        "ceaeli_colexp_crm_comapr",
-        "cea_aft_voladj_colexp_crm_comapr",
-        "cash_elifin_col_haircuts_colexp_crm_comapr",
-        "tresbills_elifin_col_haircuts_colexp_crm_comapr",
-        "debt_secu_elifin_col_haircuts_colexp_crm_comapr",
-        "equitis_elifin_col_haircuts_colexp_crm_comapr",
-        "u_trust_m_funds_elifin_col_haircuts_colexp_crm_comapr",
-        "totcol_aft_hc_elifin_col_haircuts_colexp_crm_comapr",
-        "cea_aftcrm_elifin_col_haircuts_colexp_crm_comapr",
-        "rwa_cea_notcov_crm_rwa",
-        "unsecu_cea_credit_risk_rwa",
-        "rwa_unsecu_cea_rwa",
-        "tot_rwa"};
-
-    for (String field : fields) {
-        String getterName = "get" + prefix + field;
-        String setterName = "set" + prefix + field;
-
-        try {
-            Method getter = M_SRWA_12B_Summary_Entity4.class.getMethod(getterName);
-            Method setter = M_SRWA_12B_Summary_Entity4.class.getMethod(setterName, getter.getReturnType());
-
-            Object newValue = getter.invoke(updatedEntity);
-            setter.invoke(existing, newValue);
-
-        } catch (NoSuchMethodException e) {
-            // Skip missing fields
-            continue;
-        }
-    }
-}
-}			
-
-	catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
-	    
-
-	    // ====================================================
-	    // SAVE SUMMARY
-	    // ====================================================
-
-	    saveSummary4(existing);
-	    
-	    // ====================================================
-	    // NEW COPY FOR AUDIT
-	    // ====================================================
-
-	    M_SRWA_12B_Summary_Entity4 newcopy =
-	            new M_SRWA_12B_Summary_Entity4();
-
-	    BeanUtils.copyProperties(existing, newcopy);
-
-
-	    // ====================================================
-	    // SAVE DETAIL
-	    // ====================================================
-
-	    M_SRWA_12B_Detail_Entity4 detail =
-	            new M_SRWA_12B_Detail_Entity4();
-
-	    BeanUtils.copyProperties(existing, detail);
-
-	    saveDetail4(detail);
-
-
-	    // ====================================================
-	    // FIELD LEVEL AUDIT
-	    // ====================================================
-
-	    auditService.compareEntitiesmanual(
-	            oldcopy,
-	            newcopy,
-	            updatedEntity.getReportDate().toString(),
-	            "SRWA 12B Summary 4",
-	            "BRRS_M_SRWA_12B_SUMMARYTABLE4"
-	    );
-
-
-	    System.out.println("M_SRWA_12B Summary 4 Update Completed");
-		
-	}
-		
-		public void updateReport5(M_SRWA_12B_Summary_Entity5 updatedEntity) {
-	    System.out.println("Came to services5");
-	    System.out.println("Report Date: " + updatedEntity.getReportDate());
-
-	    M_SRWA_12B_Summary_Entity5 existing = findSummaryByDate5(updatedEntity.getReportDate());
-	    
-	    // ====================================================
-	    // OLD COPY FOR AUDIT
-	    // ====================================================
-	    M_SRWA_12B_Summary_Entity5 oldcopy =
-	            new M_SRWA_12B_Summary_Entity5();
-
-	    BeanUtils.copyProperties(existing, oldcopy);
-
-	    try {
-	        // 1. Loop from R167 to R193 value fields
-	        for (int i = 167; i <= 193; i++) {
-		if (i == 173 || i == 181 || i == 189) {
-        continue;
-    }
-	            String prefix = "R" + i + "_";
-
-	            String[] fields = { "nom_prin_amt",
-"cre_con_fac",
-"ceaeli_coun_bi_net",
-"ceaeli_crm_subapr",
-"guan_noncol_offbal_exp_crm_subapr",
-"cre_deri_noncol_offbal_exp_crm_subapr",
-"ceaeli_colexp_crm_comapr",
-"cea_aft_voladj_colexp_crm_comapr",
-"cash_elifin_col_haircuts_colexp_crm_comapr",
-"tresbills_elifin_col_haircuts_colexp_crm_comapr",
-"debt_secu_elifin_col_haircuts_colexp_crm_comapr",
-"equitis_elifin_col_haircuts_colexp_crm_comapr",
-"u_trust_m_funds_elifin_col_haircuts_colexp_crm_comapr"};
-
-	            for (String field : fields) {
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
-
-	                try {
-	                    Method getter = M_SRWA_12B_Summary_Entity5.class.getMethod(getterName);
-	                    Method setter = M_SRWA_12B_Summary_Entity5.class.getMethod(setterName, getter.getReturnType());
-
-	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
-
-	                } catch (NoSuchMethodException e) {
-	                    // Skip missing fields
-	                    continue;
-	                }
-	            }
-	        }
-// 2. Loop through rows for formula fields with value fields
-	         for (int i = 167; i <= 193; i++) {
-		if (i == 173 || i == 181 || i == 189) {
-        continue;
-    }
-
-    String prefix = "R" + i + "_";
-
-	String[] fields = {  "cre_equ_amt",
-            "cea_aft_net",
-            "exp_covcrm_noncol_offbal_exp_crm_subapr",
-            "exp_notcovcrm_noncol_offbal_exp_crm_subapr",
-            "rwa_exp_rwa_noncol_offbal_exp_crm_subapr",
-            "rwa_exp_notcov_rwa_noncol_offbal_exp_crm_subapr",
-            "totcol_aft_hc_elifin_col_haircuts_colexp_crm_comapr",
-            "cea_aftcrm_elifin_col_haircuts_colexp_crm_comapr",
-            "rwa_cea_notcov_crm_rwa",
-            "unsecu_cea_credit_risk_rwa",
-            "rwa_unsecu_cea_rwa", "tot_rwa"
- };
-
-    // Common reflection logic
-    for (String field : fields) {
-        String getterName = "get" + prefix + field;
-        String setterName = "set" + prefix + field;
-
-        try {
-            Method getter = M_SRWA_12B_Summary_Entity5.class.getMethod(getterName);
-            Method setter = M_SRWA_12B_Summary_Entity5.class.getMethod(setterName, getter.getReturnType());
-
-            Object newValue = getter.invoke(updatedEntity);
-            setter.invoke(existing, newValue);
-
-        } catch (NoSuchMethodException e) {
-            // Skip missing fields
-            continue;
-        }
-    }
-}
-
-
-// 3. Loop through rows for formula fields 
-int[] targetRows = {173, 181, 189};
-
-for (int i : targetRows) {
-    String prefix = "R" + i + "_";
-
-    String[] fields = {
-        "nom_prin_amt",
-        "cre_con_fac",
-        "cre_equ_amt",
-        "ceaeli_coun_bi_net",
-        "cea_aft_net",
-        "ceaeli_crm_subapr",
-        "guan_noncol_offbal_exp_crm_subapr",
-        "cre_deri_noncol_offbal_exp_crm_subapr",
-        "exp_covcrm_noncol_offbal_exp_crm_subapr",
-        "exp_notcovcrm_noncol_offbal_exp_crm_subapr",
-        "rwa_exp_rwa_noncol_offbal_exp_crm_subapr",
-        "rwa_exp_notcov_rwa_noncol_offbal_exp_crm_subapr",
-        "ceaeli_colexp_crm_comapr",
-        "cea_aft_voladj_colexp_crm_comapr",
-        "cash_elifin_col_haircuts_colexp_crm_comapr",
-        "tresbills_elifin_col_haircuts_colexp_crm_comapr",
-        "debt_secu_elifin_col_haircuts_colexp_crm_comapr",
-        "equitis_elifin_col_haircuts_colexp_crm_comapr",
-        "u_trust_m_funds_elifin_col_haircuts_colexp_crm_comapr",
-        "totcol_aft_hc_elifin_col_haircuts_colexp_crm_comapr",
-        "cea_aftcrm_elifin_col_haircuts_colexp_crm_comapr",
-        "rwa_cea_notcov_crm_rwa",
-        "unsecu_cea_credit_risk_rwa",
-        "rwa_unsecu_cea_rwa",
-        "tot_rwa"};
-
-    for (String field : fields) {
-        String getterName = "get" + prefix + field;
-        String setterName = "set" + prefix + field;
-
-        try {
-            Method getter = M_SRWA_12B_Summary_Entity5.class.getMethod(getterName);
-            Method setter = M_SRWA_12B_Summary_Entity5.class.getMethod(setterName, getter.getReturnType());
-
-            Object newValue = getter.invoke(updatedEntity);
-            setter.invoke(existing, newValue);
-
-        } catch (NoSuchMethodException e) {
-            // Skip missing fields
-            continue;
-        }
-    }
-}
-}			
-
-	catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
-	    // ====================================================
-	    // SAVE SUMMARY
-	    // ====================================================
-
-	    saveSummary5(existing);
-	    
-	    // ====================================================
-	    // NEW COPY FOR AUDIT
-	    // ====================================================
-
-	    M_SRWA_12B_Summary_Entity5 newcopy =
-	            new M_SRWA_12B_Summary_Entity5();
-
-	    BeanUtils.copyProperties(existing, newcopy);
-
-
-	    // ====================================================
-	    // SAVE DETAIL
-	    // ====================================================
-
-	    M_SRWA_12B_Detail_Entity5 detail =
-	            new M_SRWA_12B_Detail_Entity5();
-
-	    BeanUtils.copyProperties(existing, detail);
-
-	    saveDetail5(detail);
-
-
-	    // ====================================================
-	    // FIELD LEVEL AUDIT
-	    // ====================================================
-
-	    auditService.compareEntitiesmanual(
-	            oldcopy,
-	            newcopy,
-	            updatedEntity.getReportDate().toString(),
-	            "SRWA 12B Summary 5",
-	            "BRRS_M_SRWA_12B_SUMMARYTABLE5"
-	    );
-
-
-	    System.out.println("M_SRWA_12B Summary 5 Update Completed");
+	/**
+	 * Intelligent equivalence check:
+	 * - Handles null vs 0 equivalence (unpopulated DB cells vs form defaults)
+	 * - Handles BigDecimal scale differences (e.g. 100.00 vs 100)
+	 * Prevents thousands of false diffs from flooding the database and audit trail.
+	 */
+	private static boolean valuesEqual(Object submittedVal, Object currentVal) {
+		if (submittedVal == null && currentVal == null) return true;
+
+		// If currentVal in DB is null and submittedVal is 0, they are EQUIVALENT (no user edit)
+		if (currentVal == null && submittedVal instanceof java.math.BigDecimal) {
+			return ((java.math.BigDecimal) submittedVal).compareTo(java.math.BigDecimal.ZERO) == 0;
+		}
+		if (submittedVal == null && currentVal instanceof java.math.BigDecimal) {
+			return ((java.math.BigDecimal) currentVal).compareTo(java.math.BigDecimal.ZERO) == 0;
 		}
 
-public void updateReport6(M_SRWA_12B_Summary_Entity6 updatedEntity) {
-	    System.out.println("Came to services6");
-	    System.out.println("Report Date: " + updatedEntity.getReportDate());
+		// Numeric comparison ignoring scale differences
+		if (submittedVal instanceof java.math.BigDecimal && currentVal instanceof java.math.BigDecimal) {
+			return ((java.math.BigDecimal) submittedVal).compareTo((java.math.BigDecimal) currentVal) == 0;
+		}
 
-	    M_SRWA_12B_Summary_Entity6 existing = findSummaryByDate6(updatedEntity.getReportDate());
-	    
-	    // ====================================================
-	    // OLD COPY FOR AUDIT
-	    // ====================================================
-	    M_SRWA_12B_Summary_Entity6 oldcopy =
-	            new M_SRWA_12B_Summary_Entity6();
+		if (submittedVal == null || currentVal == null) return false;
 
-	    BeanUtils.copyProperties(existing, oldcopy);
+		if (submittedVal instanceof String && currentVal instanceof String) {
+			return ((String) submittedVal).trim().equals(((String) currentVal).trim());
+		}
 
-	    try {
-	        // 1. Loop from R194 to R220 value fields
-	        for (int i = 194; i <= 220; i++) {
-		if (i == 213) {
-        continue;
-    }
-	            String prefix = "R" + i + "_";
-
-	            String[] fields = { "nom_prin_amt",
-"cre_con_fac",
-"ceaeli_coun_bi_net",
-"ceaeli_crm_subapr",
-"guan_noncol_offbal_exp_crm_subapr",
-"cre_deri_noncol_offbal_exp_crm_subapr",
-"ceaeli_colexp_crm_comapr",
-"cea_aft_voladj_colexp_crm_comapr",
-"cash_elifin_col_haircuts_colexp_crm_comapr",
-"tresbills_elifin_col_haircuts_colexp_crm_comapr",
-"debt_secu_elifin_col_haircuts_colexp_crm_comapr",
-"equitis_elifin_col_haircuts_colexp_crm_comapr",
-"u_trust_m_funds_elifin_col_haircuts_colexp_crm_comapr"};
-
-	            for (String field : fields) {
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
-
-	                try {
-	                    Method getter = M_SRWA_12B_Summary_Entity6.class.getMethod(getterName);
-	                    Method setter = M_SRWA_12B_Summary_Entity6.class.getMethod(setterName, getter.getReturnType());
-
-	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
-
-	                } catch (NoSuchMethodException e) {
-	                    // Skip missing fields
-	                    continue;
-	                }
-	            }
-	        }
-// 2. Loop through rows for formula fields with value fields
-	        for (int i = 194; i <= 220; i++) {
-		if (i == 213) {
-        continue;
-    }
-
-    String prefix = "R" + i + "_";
-
-	String[] fields = {  "cre_equ_amt",
-            "cea_aft_net",
-            "exp_covcrm_noncol_offbal_exp_crm_subapr",
-            "exp_notcovcrm_noncol_offbal_exp_crm_subapr",
-            "rwa_exp_rwa_noncol_offbal_exp_crm_subapr",
-            "rwa_exp_notcov_rwa_noncol_offbal_exp_crm_subapr",
-            "totcol_aft_hc_elifin_col_haircuts_colexp_crm_comapr",
-            "cea_aftcrm_elifin_col_haircuts_colexp_crm_comapr",
-            "rwa_cea_notcov_crm_rwa",
-            "unsecu_cea_credit_risk_rwa",
-            "rwa_unsecu_cea_rwa", "tot_rwa"
- };
-
-    // Common reflection logic
-    for (String field : fields) {
-        String getterName = "get" + prefix + field;
-        String setterName = "set" + prefix + field;
-
-        try {
-            Method getter = M_SRWA_12B_Summary_Entity6.class.getMethod(getterName);
-            Method setter = M_SRWA_12B_Summary_Entity6.class.getMethod(setterName, getter.getReturnType());
-
-            Object newValue = getter.invoke(updatedEntity);
-            setter.invoke(existing, newValue);
-
-        } catch (NoSuchMethodException e) {
-            // Skip missing fields
-            continue;
-        }
-    }
-}
-
-
-// 3. Loop through rows for formula fields 
-int[] targetRows = {213};
-
-for (int i : targetRows) {
-    String prefix = "R" + i + "_";
-
-    String[] fields = {
-        "nom_prin_amt",
-        "cre_con_fac",
-        "cre_equ_amt",
-        "ceaeli_coun_bi_net",
-        "cea_aft_net",
-        "ceaeli_crm_subapr",
-        "guan_noncol_offbal_exp_crm_subapr",
-        "cre_deri_noncol_offbal_exp_crm_subapr",
-        "exp_covcrm_noncol_offbal_exp_crm_subapr",
-        "exp_notcovcrm_noncol_offbal_exp_crm_subapr",
-        "rwa_exp_rwa_noncol_offbal_exp_crm_subapr",
-        "rwa_exp_notcov_rwa_noncol_offbal_exp_crm_subapr",
-        "ceaeli_colexp_crm_comapr",
-        "cea_aft_voladj_colexp_crm_comapr",
-        "cash_elifin_col_haircuts_colexp_crm_comapr",
-        "tresbills_elifin_col_haircuts_colexp_crm_comapr",
-        "debt_secu_elifin_col_haircuts_colexp_crm_comapr",
-        "equitis_elifin_col_haircuts_colexp_crm_comapr",
-        "u_trust_m_funds_elifin_col_haircuts_colexp_crm_comapr",
-        "totcol_aft_hc_elifin_col_haircuts_colexp_crm_comapr",
-        "cea_aftcrm_elifin_col_haircuts_colexp_crm_comapr",
-        "rwa_cea_notcov_crm_rwa",
-        "unsecu_cea_credit_risk_rwa",
-        "rwa_unsecu_cea_rwa",
-        "tot_rwa"};
-
-    for (String field : fields) {
-        String getterName = "get" + prefix + field;
-        String setterName = "set" + prefix + field;
-
-        try {
-            Method getter = M_SRWA_12B_Summary_Entity6.class.getMethod(getterName);
-            Method setter = M_SRWA_12B_Summary_Entity6.class.getMethod(setterName, getter.getReturnType());
-
-            Object newValue = getter.invoke(updatedEntity);
-            setter.invoke(existing, newValue);
-
-        } catch (NoSuchMethodException e) {
-            // Skip missing fields
-            continue;
-        }
-    }
-}
-}			
-
-	catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
-	    
-	    // ====================================================
-	    // SAVE SUMMARY
-	    // ====================================================
-
-	    saveSummary6(existing);
-	    
-	    // ====================================================
-	    // NEW COPY FOR AUDIT
-	    // ====================================================
-
-	    M_SRWA_12B_Summary_Entity6 newcopy =
-	            new M_SRWA_12B_Summary_Entity6();
-
-	    BeanUtils.copyProperties(existing, newcopy);
-
-
-	    // ====================================================
-	    // SAVE DETAIL
-	    // ====================================================
-
-	    M_SRWA_12B_Detail_Entity6 detail =
-	            new M_SRWA_12B_Detail_Entity6();
-
-	    BeanUtils.copyProperties(existing, detail);
-
-	    saveDetail6(detail);
-
-
-	    // ====================================================
-	    // FIELD LEVEL AUDIT
-	    // ====================================================
-
-	    auditService.compareEntitiesmanual(
-	            oldcopy,
-	            newcopy,
-	            updatedEntity.getReportDate().toString(),
-	            "SRWA 12B Summary 6",
-	            "BRRS_M_SRWA_12B_SUMMARYTABLE6"
-	    );
-
-
-	    System.out.println("M_SRWA_12B Summary 6 Update Completed");
-}
-
-
-	public void updateReport7(M_SRWA_12B_Summary_Entity7 updatedEntity) {
-	    System.out.println("Came to services7");
-	    System.out.println("Report Date: " + updatedEntity.getReportDate());
-
-	    M_SRWA_12B_Summary_Entity7 existing = findSummaryByDate7(updatedEntity.getReportDate());
-	    
-	    // ====================================================
-	    // OLD COPY FOR AUDIT
-	    // ====================================================
-	    M_SRWA_12B_Summary_Entity7 oldcopy =
-	            new M_SRWA_12B_Summary_Entity7();
-
-	    BeanUtils.copyProperties(existing, oldcopy);
-
-	    try {
-	        // 1. Loop from R221 to R248 value fields
-	        for (int i = 221; i <= 248; i++) {
-		if (i == 221 || i == 229 || i == 237 || i == 245 || i == 246 || i == 247 || i == 248) {
-        continue;
-    }
-	            String prefix = "R" + i + "_";
-
-	            String[] fields = { "nom_prin_amt",
-"cre_con_fac",
-"ceaeli_coun_bi_net",
-"ceaeli_crm_subapr",
-"guan_noncol_offbal_exp_crm_subapr",
-"cre_deri_noncol_offbal_exp_crm_subapr",
-"ceaeli_colexp_crm_comapr",
-"cea_aft_voladj_colexp_crm_comapr",
-"cash_elifin_col_haircuts_colexp_crm_comapr",
-"tresbills_elifin_col_haircuts_colexp_crm_comapr",
-"debt_secu_elifin_col_haircuts_colexp_crm_comapr",
-"equitis_elifin_col_haircuts_colexp_crm_comapr",
-"u_trust_m_funds_elifin_col_haircuts_colexp_crm_comapr"};
-
-	            for (String field : fields) {
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
-
-	                try {
-	                    Method getter = M_SRWA_12B_Summary_Entity7.class.getMethod(getterName);
-	                    Method setter = M_SRWA_12B_Summary_Entity7.class.getMethod(setterName, getter.getReturnType());
-
-	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
-
-	                } catch (NoSuchMethodException e) {
-	                    // Skip missing fields
-	                    continue;
-	                }
-	            }
-	        }
-// 2. Loop through rows for formula fields with value fields
-	        for (int i = 221; i <= 248; i++) {
-		if (i == 221 || i == 229 || i == 237 || i == 245 || i == 246 || i == 247 || i == 248) {
-        continue;
-    }
-
-    String prefix = "R" + i + "_";
-
-	String[] fields = {"cre_equ_amt",
-            "cea_aft_net",
-            "exp_covcrm_noncol_offbal_exp_crm_subapr",
-            "exp_notcovcrm_noncol_offbal_exp_crm_subapr",
-            "rwa_exp_rwa_noncol_offbal_exp_crm_subapr",
-            "rwa_exp_notcov_rwa_noncol_offbal_exp_crm_subapr",
-            "totcol_aft_hc_elifin_col_haircuts_colexp_crm_comapr",
-            "cea_aftcrm_elifin_col_haircuts_colexp_crm_comapr",
-            "rwa_cea_notcov_crm_rwa",
-            "unsecu_cea_credit_risk_rwa",
-            "rwa_unsecu_cea_rwa", "tot_rwa"
- };
-
-    // Common reflection logic
-    for (String field : fields) {
-        String getterName = "get" + prefix + field;
-        String setterName = "set" + prefix + field;
-
-        try {
-            Method getter = M_SRWA_12B_Summary_Entity7.class.getMethod(getterName);
-            Method setter = M_SRWA_12B_Summary_Entity7.class.getMethod(setterName, getter.getReturnType());
-
-            Object newValue = getter.invoke(updatedEntity);
-            setter.invoke(existing, newValue);
-
-        } catch (NoSuchMethodException e) {
-            // Skip missing fields
-            continue;
-        }
-    }
-}
-
-
-// 3. Loop through rows for formula fields 
-int[] targetRows = {221, 229, 237, 247, 248};
-
-for (int i : targetRows) {
-    String prefix = "R" + i + "_";
-
-    String[] fields = {
-        "nom_prin_amt",
-        "cre_con_fac",
-        "cre_equ_amt",
-        "ceaeli_coun_bi_net",
-        "cea_aft_net",
-        "ceaeli_crm_subapr",
-        "guan_noncol_offbal_exp_crm_subapr",
-        "cre_deri_noncol_offbal_exp_crm_subapr",
-        "exp_covcrm_noncol_offbal_exp_crm_subapr",
-        "exp_notcovcrm_noncol_offbal_exp_crm_subapr",
-        "rwa_exp_rwa_noncol_offbal_exp_crm_subapr",
-        "rwa_exp_notcov_rwa_noncol_offbal_exp_crm_subapr",
-        "ceaeli_colexp_crm_comapr",
-        "cea_aft_voladj_colexp_crm_comapr",
-        "cash_elifin_col_haircuts_colexp_crm_comapr",
-        "tresbills_elifin_col_haircuts_colexp_crm_comapr",
-        "debt_secu_elifin_col_haircuts_colexp_crm_comapr",
-        "equitis_elifin_col_haircuts_colexp_crm_comapr",
-        "u_trust_m_funds_elifin_col_haircuts_colexp_crm_comapr",
-        "totcol_aft_hc_elifin_col_haircuts_colexp_crm_comapr",
-        "cea_aftcrm_elifin_col_haircuts_colexp_crm_comapr",
-        "rwa_cea_notcov_crm_rwa",
-        "unsecu_cea_credit_risk_rwa",
-        "rwa_unsecu_cea_rwa",
-        "tot_rwa"};
-
-    for (String field : fields) {
-        String getterName = "get" + prefix + field;
-        String setterName = "set" + prefix + field;
-
-        try {
-            Method getter = M_SRWA_12B_Summary_Entity7.class.getMethod(getterName);
-            Method setter = M_SRWA_12B_Summary_Entity7.class.getMethod(setterName, getter.getReturnType());
-
-            Object newValue = getter.invoke(updatedEntity);
-            setter.invoke(existing, newValue);
-
-        } catch (NoSuchMethodException e) {
-            // Skip missing fields
-            continue;
-        }
-    }
-}
-}			
-
-	catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
-	    
-	    // ====================================================
-	    // SAVE SUMMARY
-	    // ====================================================
-
-	    saveSummary7(existing);
-	    
-	    // ====================================================
-	    	    // NEW COPY FOR AUDIT
-	    // ====================================================
-
-	    M_SRWA_12B_Summary_Entity7 newcopy =
-	            new M_SRWA_12B_Summary_Entity7();
-
-	    BeanUtils.copyProperties(existing, newcopy);
-
-
-	    // ====================================================
-	    // SAVE DETAIL
-	    // ====================================================
-
-	    M_SRWA_12B_Detail_Entity7 detail =
-	            new M_SRWA_12B_Detail_Entity7();
-
-	    BeanUtils.copyProperties(existing, detail);
-
-	    saveDetail7(detail);
-
-
-	    // ====================================================
-	    // FIELD LEVEL AUDIT
-	    // ====================================================
-
-	    auditService.compareEntitiesmanual(
-	            oldcopy,
-	            newcopy,
-	            updatedEntity.getReportDate().toString(),
-	            "SRWA 12B Summary 7",
-	            "BRRS_M_SRWA_12B_SUMMARYTABLE7"
-	    );
-
-
-	    System.out.println("M_SRWA_12B Summary 7 Update Completed");
-		
-		
+		return submittedVal.equals(currentVal);
 	}
-	
-		@Transactional
-	public void updateReport8(M_SRWA_12B_Summary_Entity8 updatedEntity) {
 
-	    System.out.println("Came to services8");
-	    System.out.println("Report Date: " + updatedEntity.getReportDate());
-
-	    M_SRWA_12B_Summary_Entity8 existing = findSummaryByDate8(updatedEntity.getReportDate());
-
-	    // ====================================================
-	    // OLD COPY FOR AUDIT
-	    // ====================================================
-	    M_SRWA_12B_Summary_Entity8 oldcopy =
-	            new M_SRWA_12B_Summary_Entity8();
-
-	    BeanUtils.copyProperties(existing, oldcopy);
-
-	    // ====================================================
-	    // PRESERVE VERSION
-	    // ====================================================
-	    String version_no = existing.getReportVersion();
-
-	    updatedEntity.setReportVersion(version_no);
-
-	    // ====================================================
-	    // UPDATE SUMMARY
-	    // ====================================================
-	    BeanUtils.copyProperties(updatedEntity, existing);
-
-	    // ====================================================
-	    // SAVE SUMMARY
-	    // ====================================================
-	    saveSummary8(existing);
-
-	    // ====================================================
-	    // SAVE DETAIL
-	    // ====================================================
-	    M_SRWA_12B_Detail_Entity8 detail =
-	            new M_SRWA_12B_Detail_Entity8();
-
-	    System.out.println(
-	            existing.getR110_new_colum_exp_bef_crm()
-	                    + " ******999999999");
-
-	    BeanUtils.copyProperties(existing, detail);
-
-	    System.out.println(
-	            detail.getReportDate()
-	                    + " =======111111");
-
-	    System.out.println(
-	            detail.getR110_new_colum_exp_bef_crm()
-	                    + " =======1888888");
-
-	    saveDetail8(detail);
-
-	    // ====================================================
-	    // NEW COPY FOR AUDIT
-	    // ====================================================
-	    M_SRWA_12B_Summary_Entity8 newcopy =
-	            new M_SRWA_12B_Summary_Entity8();
-
-	    BeanUtils.copyProperties(existing, newcopy);
-
-	    // ====================================================
-	    // AUDIT ENTRY
-	    // ====================================================
-	    try {
-
-	        auditService.compareEntitiesmanual(
-	                oldcopy,
-	                newcopy,
-	                updatedEntity.getReportDate().toString(),
-	                "SRWA 12B Summary 8",
-	                "BRRS_M_SRWA_12B_SUMMARYTABLE8"
-	        );
-
-	    } catch (Exception ex) {
-
-	        System.out.println(
-	                "Audit failed : " + ex.getMessage());
-	    }
-	    
-	    System.out.println(
-	            "M_SRWA_12B Summary 8 Update Completed");
+	private <T> int applyChangesToEntity(Class<T> clazz, int startRow, int endRow, int[] skipRows, String[] fields,
+			T updatedEntity, T targetEntity) {
+		java.util.Set<Integer> skipSet = new java.util.HashSet<>();
+		if (skipRows != null) {
+			for (int r : skipRows) skipSet.add(r);
+		}
+		int changesCount = 0;
+		for (int i = startRow; i <= endRow; i++) {
+			if (skipSet.contains(i)) {
+				continue;
+			}
+			String prefix = "R" + i + "_";
+			changesCount += applyFieldsWithPrefix(clazz, prefix, fields, updatedEntity, targetEntity);
+		}
+		return changesCount;
 	}
-	
+
+	private <T> int applyChangesToTargetRows(Class<T> clazz, int[] targetRows, String[] fields,
+			T updatedEntity, T targetEntity) {
+		if (targetRows == null) return 0;
+		int changesCount = 0;
+		for (int i : targetRows) {
+			String prefix = "R" + i + "_";
+			changesCount += applyFieldsWithPrefix(clazz, prefix, fields, updatedEntity, targetEntity);
+		}
+		return changesCount;
+	}
+
+	private <T> int applyFieldsWithPrefix(Class<T> clazz, String prefix, String[] fields,
+			T updatedEntity, T targetEntity) {
+		int changesCount = 0;
+		for (String field : fields) {
+			String getterName = "get" + prefix + field;
+			String setterName = "set" + prefix + field;
+
+			Method getter = getCachedMethod(clazz, getterName);
+			if (getter == null) {
+				continue;
+			}
+
+			try {
+				Object value = getter.invoke(updatedEntity);
+
+				// Clean and convert string numbers to proper numeric format or null (replicated from Q_STAFF)
+				if (value instanceof String) {
+					String valStr = ((String) value).trim();
+					if (valStr.isEmpty()) {
+						value = null;
+					} else {
+						try {
+							value = new java.math.BigDecimal(valStr);
+						} catch (NumberFormatException e) {
+							value = null;
+						}
+					}
+				}
+
+				// If value is null, skip! Do not overwrite baseline with null! (from Q_STAFF)
+				if (value == null) {
+					continue;
+				}
+
+				// Check if value is already equivalent in targetEntity
+				Object currentValue = getter.invoke(targetEntity);
+				if (valuesEqual(value, currentValue)) {
+					continue;
+				}
+
+				// Normalize scale for BigDecimal to match standard scale 2
+				if (value instanceof java.math.BigDecimal) {
+					value = ((java.math.BigDecimal) value).setScale(2, java.math.RoundingMode.HALF_UP);
+				}
+
+				Method setter = getCachedMethod(clazz, setterName, getter.getReturnType());
+				if (setter != null) {
+					setter.invoke(targetEntity, value);
+					changesCount++;
+				}
+
+			} catch (Exception e) {
+				throw new RuntimeException("Error applying field: " + getterName, e);
+			}
+		}
+		return changesCount;
+	}
+
+	/**
+	 * Unified update method for M_SRWA_12B.
+	 * Performs single unified Maker-Checker staging and audit comparison.
+	 * Unchanged shards are detected in memory and completely bypassed.
+	 */
+	@Transactional
+	public void updateReport(
+			M_SRWA_12B_Summary_Entity1 request1, M_SRWA_12B_Summary_Entity2 request2,
+			M_SRWA_12B_Summary_Entity3 request3, M_SRWA_12B_Summary_Entity4 request4,
+			M_SRWA_12B_Summary_Entity5 request5, M_SRWA_12B_Summary_Entity6 request6,
+			M_SRWA_12B_Summary_Entity7 request7, M_SRWA_12B_Summary_Entity8 request8) {
+
+		long start = System.currentTimeMillis();
+		System.out.println("Came to M_SRWA_12B single unified updateReport");
+
+		int shardsModified = 0;
+		if (processShard1(request1)) shardsModified++;
+		if (processShard2(request2)) shardsModified++;
+		if (processShard3(request3)) shardsModified++;
+		if (processShard4(request4)) shardsModified++;
+		if (processShard5(request5)) shardsModified++;
+		if (processShard6(request6)) shardsModified++;
+		if (processShard7(request7)) shardsModified++;
+		if (processShard8(request8)) shardsModified++;
+
+		long duration = System.currentTimeMillis() - start;
+		System.out.println("M_SRWA_12B single unified updateReport completed in " + duration + " ms. Shards modified: " + shardsModified);
+	}
+
+	@Transactional
+	public void updateReport1(M_SRWA_12B_Summary_Entity1 request1) {
+		processShard1(request1);
+	}
+
+	@Transactional
+	public void updateReport2(M_SRWA_12B_Summary_Entity2 request2) {
+		processShard2(request2);
+	}
+
+	@Transactional
+	public void updateReport3(M_SRWA_12B_Summary_Entity3 request3) {
+		processShard3(request3);
+	}
+
+	@Transactional
+	public void updateReport4(M_SRWA_12B_Summary_Entity4 request4) {
+		processShard4(request4);
+	}
+
+	@Transactional
+	public void updateReport5(M_SRWA_12B_Summary_Entity5 request5) {
+		processShard5(request5);
+	}
+
+	@Transactional
+	public void updateReport6(M_SRWA_12B_Summary_Entity6 request6) {
+		processShard6(request6);
+	}
+
+	@Transactional
+	public void updateReport7(M_SRWA_12B_Summary_Entity7 request7) {
+		processShard7(request7);
+	}
+
+	@Transactional
+	public void updateReport8(M_SRWA_12B_Summary_Entity8 request8) {
+		processShard8(request8);
+	}
+
+	private boolean processShard1(M_SRWA_12B_Summary_Entity1 updatedEntity) {
+		if (updatedEntity == null || updatedEntity.getReportDate() == null) return false;
+
+		M_SRWA_12B_Summary_Entity1 liveSummary = findSummaryByDate1(updatedEntity.getReportDate());
+		if (liveSummary == null) {
+			throw new RuntimeException("Record not found in live summary table for REPORT_DATE : " + updatedEntity.getReportDate());
+		}
+
+		M_SRWA_12B_Summary_Entity1 modRecord = findModRecordByDate1(updatedEntity.getReportDate());
+		if (modRecord == null) {
+			modRecord = new M_SRWA_12B_Summary_Entity1();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
+
+		M_SRWA_12B_Summary_Entity1 oldcopy = new M_SRWA_12B_Summary_Entity1();
+		BeanUtils.copyProperties(modRecord, oldcopy);
+
+		int changesCount = 0;
+		try {
+			int[] skip1 = {25, 26, 27, 38, 39, 41, 42};
+			String[] fields1 = {
+				"exp_bef_crm", "spec_prov_past_due_exp", "amt_eli_bal_sheet_net", "exp_eli_noncol_exp_crm_subapr",
+				"guan_noncol_exp_crm_subapr", "cre_deri_noncol_exp_crm_subapr", "riskweights_rwa_noncol_exp_crm_subapr",
+				"value", "expeli_colexp_crm_comapr", "exp_aft_voladj_colexp_crm_comapr", "cash_efc_haircuts_colexp_crm_comapr",
+				"tresbills_bot_bob_efc_haircuts_colexp_crm_comapr", "debt_secu_efc_haircuts_colexp_crm_comapr",
+				"equities_efc_haircuts_colexp_crm_comapr", "u_trust_m_funds_efc_haircuts_colexp_crm_comapr"
+			};
+			changesCount += applyChangesToEntity(M_SRWA_12B_Summary_Entity1.class, 15, 50, skip1, fields1, updatedEntity, modRecord);
+
+			int[] skip2 = {21, 25, 26, 27, 34, 38, 39, 41, 42, 49};
+			String[] fields2 = {
+				"tot_exp_aft_net", "exp_cov_crm_noncol_exp_crm_subapr", "eliexp_notcov_crm_noncol_exp_crm_subapr",
+				"rwa_cov_crm_rwa_noncol_exp_crm_subapr", "rwa_notcov_crm_rwa_noncol_exp_crm_subapr",
+				"totcol_aft_hc_efc_haircuts_colexp_crm_comapr", "exp_efc_haircuts_colexp_crm_comapr",
+				"rwa_exp_notcov_crm_rwa", "unsecu_exp_credit_risk_rwa", "rwa_unsecu_exp_rwa", "tot_rwa"
+			};
+			changesCount += applyChangesToEntity(M_SRWA_12B_Summary_Entity1.class, 15, 50, skip2, fields2, updatedEntity, modRecord);
+			changesCount += applyFieldsWithPrefix(M_SRWA_12B_Summary_Entity1.class, "R34_", new String[]{"tot_exp_aft_net"}, updatedEntity, modRecord);
+
+			int[] targetRows = {25, 38, 39};
+			String[] fields3 = {
+				"exp_bef_crm", "spec_prov_past_due_exp", "amt_eli_bal_sheet_net", "tot_exp_aft_net",
+				"exp_eli_noncol_exp_crm_subapr", "guan_noncol_exp_crm_subapr", "cre_deri_noncol_exp_crm_subapr",
+				"exp_cov_crm_noncol_exp_crm_subapr", "eliexp_notcov_crm_noncol_exp_crm_subapr",
+				"riskweights_rwa_noncol_exp_crm_subapr", "rwa_cov_crm_rwa_noncol_exp_crm_subapr",
+				"rwa_notcov_crm_rwa_noncol_exp_crm_subapr", "value", "expeli_colexp_crm_comapr",
+				"exp_aft_voladj_colexp_crm_comapr", "cash_efc_haircuts_colexp_crm_comapr",
+				"tresbills_bot_bob_efc_haircuts_colexp_crm_comapr", "debt_secu_efc_haircuts_colexp_crm_comapr",
+				"equities_efc_haircuts_colexp_crm_comapr", "u_trust_m_funds_efc_haircuts_colexp_crm_comapr",
+				"totcol_aft_hc_efc_haircuts_colexp_crm_comapr", "exp_efc_haircuts_colexp_crm_comapr",
+				"rwa_exp_notcov_crm_rwa", "unsecu_exp_credit_risk_rwa", "rwa_unsecu_exp_rwa", "tot_rwa"
+			};
+			changesCount += applyChangesToTargetRows(M_SRWA_12B_Summary_Entity1.class, targetRows, fields3, updatedEntity, modRecord);
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields for Shard 1", e);
+		}
+
+		if (changesCount == 0) {
+			System.out.println("Shard 1: No changes detected, skipped.");
+			return false;
+		}
+
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		if (changes != null && !changes.isEmpty()) {
+			modRecord.setEntity_flg("Y");
+			modRecord.setModify_flg("Y");
+			modRecord.setDel_flg("N");
+			saveModSummaryEntity1(modRecord);
+			auditService.compareEntitiesmanual(
+					oldcopy,
+					modRecord,
+					updatedEntity.getReportDate().toString(),
+					"SRWA 12B Summary 1",
+					"BRRS_M_SRWA_12B_MOD_SUMMARYTABLE1"
+			);
+			System.out.println("Shard 1: Updated successfully with " + changesCount + " field changes.");
+			return true;
+		}
+		return false;
+	}
+
+	private boolean processShard2(M_SRWA_12B_Summary_Entity2 updatedEntity) {
+		if (updatedEntity == null || updatedEntity.getReportDate() == null) return false;
+
+		M_SRWA_12B_Summary_Entity2 liveSummary = findSummaryByDate2(updatedEntity.getReportDate());
+		if (liveSummary == null) {
+			throw new RuntimeException("Record not found in live summary table for REPORT_DATE : " + updatedEntity.getReportDate());
+		}
+
+		M_SRWA_12B_Summary_Entity2 modRecord = findModRecordByDate2(updatedEntity.getReportDate());
+		if (modRecord == null) {
+			modRecord = new M_SRWA_12B_Summary_Entity2();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
+
+		M_SRWA_12B_Summary_Entity2 oldcopy = new M_SRWA_12B_Summary_Entity2();
+		BeanUtils.copyProperties(modRecord, oldcopy);
+
+		int changesCount = 0;
+		try {
+			int[] skip1 = {53, 54, 55, 66, 67, 68, 78, 79, 80, 89};
+			String[] fields1 = {
+				"exp_bef_crm", "spec_prov_past_due_exp", "amt_eli_bal_sheet_net", "exp_eli_noncol_exp_crm_subapr",
+				"guan_noncol_exp_crm_subapr", "cre_deri_noncol_exp_crm_subapr", "riskweights_rwa_noncol_exp_crm_subapr",
+				"value", "expeli_colexp_crm_comapr", "exp_aft_voladj_colexp_crm_comapr", "cash_efc_haircuts_colexp_crm_comapr",
+				"tresbills_bot_bob_efc_haircuts_colexp_crm_comapr", "debt_secu_efc_haircuts_colexp_crm_comapr",
+				"equities_efc_haircuts_colexp_crm_comapr", "u_trust_m_funds_efc_haircuts_colexp_crm_comapr"
+			};
+			changesCount += applyChangesToEntity(M_SRWA_12B_Summary_Entity2.class, 51, 89, skip1, fields1, updatedEntity, modRecord);
+
+			int[] skip2 = {53, 54, 55, 62, 66, 67, 68, 74, 78, 79, 80, 85, 89};
+			String[] fields2 = {
+				"tot_exp_aft_net", "exp_cov_crm_noncol_exp_crm_subapr", "eliexp_notcov_crm_noncol_exp_crm_subapr",
+				"rwa_cov_crm_rwa_noncol_exp_crm_subapr", "rwa_notcov_crm_rwa_noncol_exp_crm_subapr",
+				"totcol_aft_hc_efc_haircuts_colexp_crm_comapr", "exp_efc_haircuts_colexp_crm_comapr",
+				"rwa_exp_notcov_crm_rwa", "unsecu_exp_credit_risk_rwa", "rwa_unsecu_exp_rwa", "tot_rwa"
+			};
+			changesCount += applyChangesToEntity(M_SRWA_12B_Summary_Entity2.class, 51, 89, skip2, fields2, updatedEntity, modRecord);
+
+			int[] targetRows = {53, 66, 78, 89};
+			String[] fields3 = {
+				"exp_bef_crm", "spec_prov_past_due_exp", "amt_eli_bal_sheet_net", "tot_exp_aft_net",
+				"exp_eli_noncol_exp_crm_subapr", "guan_noncol_exp_crm_subapr", "cre_deri_noncol_exp_crm_subapr",
+				"exp_cov_crm_noncol_exp_crm_subapr", "eliexp_notcov_crm_noncol_exp_crm_subapr",
+				"riskweights_rwa_noncol_exp_crm_subapr", "rwa_cov_crm_rwa_noncol_exp_crm_subapr",
+				"rwa_notcov_crm_rwa_noncol_exp_crm_subapr", "value", "expeli_colexp_crm_comapr",
+				"exp_aft_voladj_colexp_crm_comapr", "cash_efc_haircuts_colexp_crm_comapr",
+				"tresbills_bot_bob_efc_haircuts_colexp_crm_comapr", "debt_secu_efc_haircuts_colexp_crm_comapr",
+				"equities_efc_haircuts_colexp_crm_comapr", "u_trust_m_funds_efc_haircuts_colexp_crm_comapr",
+				"totcol_aft_hc_efc_haircuts_colexp_crm_comapr", "exp_efc_haircuts_colexp_crm_comapr",
+				"rwa_exp_notcov_crm_rwa", "unsecu_exp_credit_risk_rwa", "rwa_unsecu_exp_rwa", "tot_rwa"
+			};
+			changesCount += applyChangesToTargetRows(M_SRWA_12B_Summary_Entity2.class, targetRows, fields3, updatedEntity, modRecord);
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields for Shard 2", e);
+		}
+
+		if (changesCount == 0) {
+			System.out.println("Shard 2: No changes detected, skipped.");
+			return false;
+		}
+
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		if (changes != null && !changes.isEmpty()) {
+			modRecord.setEntity_flg("Y");
+			modRecord.setModify_flg("Y");
+			modRecord.setDel_flg("N");
+			saveModSummaryEntity2(modRecord);
+			auditService.compareEntitiesmanual(
+					oldcopy,
+					modRecord,
+					updatedEntity.getReportDate().toString(),
+					"SRWA 12B Summary 2",
+					"BRRS_M_SRWA_12B_MOD_SUMMARYTABLE2"
+			);
+			System.out.println("Shard 2: Updated successfully with " + changesCount + " field changes.");
+			return true;
+		}
+		return false;
+	}
+
+	private boolean processShard3(M_SRWA_12B_Summary_Entity3 updatedEntity) {
+		if (updatedEntity == null || updatedEntity.getReportDate() == null) return false;
+
+		M_SRWA_12B_Summary_Entity3 liveSummary = findSummaryByDate3(updatedEntity.getReportDate());
+		if (liveSummary == null) {
+			throw new RuntimeException("Record not found in live summary table for REPORT_DATE : " + updatedEntity.getReportDate());
+		}
+
+		M_SRWA_12B_Summary_Entity3 modRecord = findModRecordByDate3(updatedEntity.getReportDate());
+		if (modRecord == null) {
+			modRecord = new M_SRWA_12B_Summary_Entity3();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
+
+		M_SRWA_12B_Summary_Entity3 oldcopy = new M_SRWA_12B_Summary_Entity3();
+		BeanUtils.copyProperties(modRecord, oldcopy);
+
+		int changesCount = 0;
+		try {
+			int[] skip1 = {98, 99, 100, 110, 111, 112, 118, 119, 128, 129};
+			String[] fields1 = {
+				"exp_bef_crm", "spec_prov_past_due_exp", "amt_eli_bal_sheet_net", "exp_eli_noncol_exp_crm_subapr",
+				"guan_noncol_exp_crm_subapr", "cre_deri_noncol_exp_crm_subapr", "riskweights_rwa_noncol_exp_crm_subapr",
+				"value", "expeli_colexp_crm_comapr", "exp_aft_voladj_colexp_crm_comapr", "cash_efc_haircuts_colexp_crm_comapr",
+				"tresbills_bot_bob_efc_haircuts_colexp_crm_comapr", "debt_secu_efc_haircuts_colexp_crm_comapr",
+				"equities_efc_haircuts_colexp_crm_comapr", "u_trust_m_funds_efc_haircuts_colexp_crm_comapr"
+			};
+			changesCount += applyChangesToEntity(M_SRWA_12B_Summary_Entity3.class, 92, 129, skip1, fields1, updatedEntity, modRecord);
+
+			int[] skip2 = {94, 98, 99, 100, 104, 110, 111, 112, 114, 118, 119, 128, 129};
+			String[] fields2 = {
+				"tot_exp_aft_net", "exp_cov_crm_noncol_exp_crm_subapr", "eliexp_notcov_crm_noncol_exp_crm_subapr",
+				"rwa_cov_crm_rwa_noncol_exp_crm_subapr", "rwa_notcov_crm_rwa_noncol_exp_crm_subapr",
+				"totcol_aft_hc_efc_haircuts_colexp_crm_comapr", "exp_efc_haircuts_colexp_crm_comapr",
+				"rwa_exp_notcov_crm_rwa", "unsecu_exp_credit_risk_rwa", "rwa_unsecu_exp_rwa", "tot_rwa"
+			};
+			changesCount += applyChangesToEntity(M_SRWA_12B_Summary_Entity3.class, 92, 129, skip2, fields2, updatedEntity, modRecord);
+
+			int[] targetRows = {98, 110, 118, 128, 129};
+			String[] fields3 = {
+				"exp_bef_crm", "spec_prov_past_due_exp", "amt_eli_bal_sheet_net", "tot_exp_aft_net",
+				"exp_eli_noncol_exp_crm_subapr", "guan_noncol_exp_crm_subapr", "cre_deri_noncol_exp_crm_subapr",
+				"exp_cov_crm_noncol_exp_crm_subapr", "eliexp_notcov_crm_noncol_exp_crm_subapr",
+				"riskweights_rwa_noncol_exp_crm_subapr", "rwa_cov_crm_rwa_noncol_exp_crm_subapr",
+				"rwa_notcov_crm_rwa_noncol_exp_crm_subapr", "value", "expeli_colexp_crm_comapr",
+				"exp_aft_voladj_colexp_crm_comapr", "cash_efc_haircuts_colexp_crm_comapr",
+				"tresbills_bot_bob_efc_haircuts_colexp_crm_comapr", "debt_secu_efc_haircuts_colexp_crm_comapr",
+				"equities_efc_haircuts_colexp_crm_comapr", "u_trust_m_funds_efc_haircuts_colexp_crm_comapr",
+				"totcol_aft_hc_efc_haircuts_colexp_crm_comapr", "exp_efc_haircuts_colexp_crm_comapr",
+				"rwa_exp_notcov_crm_rwa", "unsecu_exp_credit_risk_rwa", "rwa_unsecu_exp_rwa", "tot_rwa"
+			};
+			changesCount += applyChangesToTargetRows(M_SRWA_12B_Summary_Entity3.class, targetRows, fields3, updatedEntity, modRecord);
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields for Shard 3", e);
+		}
+
+		if (changesCount == 0) {
+			System.out.println("Shard 3: No changes detected, skipped.");
+			return false;
+		}
+
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		if (changes != null && !changes.isEmpty()) {
+			modRecord.setEntity_flg("Y");
+			modRecord.setModify_flg("Y");
+			modRecord.setDel_flg("N");
+			saveModSummaryEntity3(modRecord);
+			auditService.compareEntitiesmanual(
+					oldcopy,
+					modRecord,
+					updatedEntity.getReportDate().toString(),
+					"SRWA 12B Summary 3",
+					"BRRS_M_SRWA_12B_MOD_SUMMARYTABLE3"
+			);
+			System.out.println("Shard 3: Updated successfully with " + changesCount + " field changes.");
+			return true;
+		}
+		return false;
+	}
+
+	private boolean processShard4(M_SRWA_12B_Summary_Entity4 updatedEntity) {
+		if (updatedEntity == null || updatedEntity.getReportDate() == null) return false;
+
+		M_SRWA_12B_Summary_Entity4 liveSummary = findSummaryByDate4(updatedEntity.getReportDate());
+		if (liveSummary == null) {
+			throw new RuntimeException("Record not found in live summary table for REPORT_DATE : " + updatedEntity.getReportDate());
+		}
+
+		M_SRWA_12B_Summary_Entity4 modRecord = findModRecordByDate4(updatedEntity.getReportDate());
+		if (modRecord == null) {
+			modRecord = new M_SRWA_12B_Summary_Entity4();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
+
+		M_SRWA_12B_Summary_Entity4 oldcopy = new M_SRWA_12B_Summary_Entity4();
+		BeanUtils.copyProperties(modRecord, oldcopy);
+
+		int changesCount = 0;
+		try {
+			int[] skip1 = {139, 147, 157, 165};
+			String[] fields1 = {
+				"nom_prin_amt", "cre_con_fac", "ceaeli_coun_bi_net", "ceaeli_crm_subapr",
+				"guan_noncol_offbal_exp_crm_subapr", "cre_deri_noncol_offbal_exp_crm_subapr", "ceaeli_colexp_crm_comapr",
+				"cea_aft_voladj_colexp_crm_comapr", "cash_elifin_col_haircuts_colexp_crm_comapr",
+				"tresbills_elifin_col_haircuts_colexp_crm_comapr", "debt_secu_elifin_col_haircuts_colexp_crm_comapr",
+				"equitis_elifin_col_haircuts_colexp_crm_comapr", "u_trust_m_funds_elifin_col_haircuts_colexp_crm_comapr"
+			};
+			changesCount += applyChangesToEntity(M_SRWA_12B_Summary_Entity4.class, 139, 166, skip1, fields1, updatedEntity, modRecord);
+
+			int[] skip2 = {139, 147, 157, 165};
+			String[] fields2 = {
+				"cre_equ_amt", "offbal_exp_cov_crm_subapr", "eliexp_notcov_crm_subapr", "rwa_cov_crm_rwa_subapr",
+				"rwa_notcov_crm_rwa_subapr", "tot_col_aft_haircuts", "unsecu_exp_cre_risk_rwa", "exp_aft_haircuts_comapr",
+				"rwa_exp_notcov_crm_rwa", "unsecu_exp_cre_risk_rwa_comapr", "rwa_unsecu_exp_rwa", "tot_rwa"
+			};
+			changesCount += applyChangesToEntity(M_SRWA_12B_Summary_Entity4.class, 139, 166, skip2, fields2, updatedEntity, modRecord);
+
+			int[] targetRows = {139, 147, 157, 165};
+			String[] fields3 = {
+				"nom_prin_amt", "cre_con_fac", "ceaeli_coun_bi_net", "cre_equ_amt", "ceaeli_crm_subapr",
+				"guan_noncol_offbal_exp_crm_subapr", "cre_deri_noncol_offbal_exp_crm_subapr", "offbal_exp_cov_crm_subapr",
+				"eliexp_notcov_crm_subapr", "rwa_cov_crm_rwa_subapr", "rwa_notcov_crm_rwa_subapr", "ceaeli_colexp_crm_comapr",
+				"cea_aft_voladj_colexp_crm_comapr", "cash_elifin_col_haircuts_colexp_crm_comapr",
+				"tresbills_elifin_col_haircuts_colexp_crm_comapr", "debt_secu_elifin_col_haircuts_colexp_crm_comapr",
+				"equitis_elifin_col_haircuts_colexp_crm_comapr", "u_trust_m_funds_elifin_col_haircuts_colexp_crm_comapr",
+				"tot_col_aft_haircuts", "unsecu_exp_cre_risk_rwa", "exp_aft_haircuts_comapr", "rwa_exp_notcov_crm_rwa",
+				"unsecu_exp_cre_risk_rwa_comapr", "rwa_unsecu_exp_rwa", "tot_rwa"
+			};
+			changesCount += applyChangesToTargetRows(M_SRWA_12B_Summary_Entity4.class, targetRows, fields3, updatedEntity, modRecord);
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields for Shard 4", e);
+		}
+
+		if (changesCount == 0) {
+			System.out.println("Shard 4: No changes detected, skipped.");
+			return false;
+		}
+
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		if (changes != null && !changes.isEmpty()) {
+			modRecord.setEntity_flg("Y");
+			modRecord.setModify_flg("Y");
+			modRecord.setDel_flg("N");
+			saveModSummaryEntity4(modRecord);
+			auditService.compareEntitiesmanual(
+					oldcopy,
+					modRecord,
+					updatedEntity.getReportDate().toString(),
+					"SRWA 12B Summary 4",
+					"BRRS_M_SRWA_12B_MOD_SUMMARYTABLE4"
+			);
+			System.out.println("Shard 4: Updated successfully with " + changesCount + " field changes.");
+			return true;
+		}
+		return false;
+	}
+
+	private boolean processShard5(M_SRWA_12B_Summary_Entity5 updatedEntity) {
+		if (updatedEntity == null || updatedEntity.getReportDate() == null) return false;
+
+		M_SRWA_12B_Summary_Entity5 liveSummary = findSummaryByDate5(updatedEntity.getReportDate());
+		if (liveSummary == null) {
+			throw new RuntimeException("Record not found in live summary table for REPORT_DATE : " + updatedEntity.getReportDate());
+		}
+
+		M_SRWA_12B_Summary_Entity5 modRecord = findModRecordByDate5(updatedEntity.getReportDate());
+		if (modRecord == null) {
+			modRecord = new M_SRWA_12B_Summary_Entity5();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
+
+		M_SRWA_12B_Summary_Entity5 oldcopy = new M_SRWA_12B_Summary_Entity5();
+		BeanUtils.copyProperties(modRecord, oldcopy);
+
+		int changesCount = 0;
+		try {
+			int[] skip1 = {173, 181, 189};
+			String[] fields1 = {
+				"nom_prin_amt", "cre_con_fac", "ceaeli_coun_bi_net", "ceaeli_crm_subapr",
+				"guan_noncol_offbal_exp_crm_subapr", "cre_deri_noncol_offbal_exp_crm_subapr", "ceaeli_colexp_crm_comapr",
+				"cea_aft_voladj_colexp_crm_comapr", "cash_elifin_col_haircuts_colexp_crm_comapr",
+				"tresbills_elifin_col_haircuts_colexp_crm_comapr", "debt_secu_elifin_col_haircuts_colexp_crm_comapr",
+				"equitis_elifin_col_haircuts_colexp_crm_comapr", "u_trust_m_funds_elifin_col_haircuts_colexp_crm_comapr"
+			};
+			changesCount += applyChangesToEntity(M_SRWA_12B_Summary_Entity5.class, 167, 193, skip1, fields1, updatedEntity, modRecord);
+
+			int[] skip2 = {173, 181, 189};
+			String[] fields2 = {
+				"cre_equ_amt", "offbal_exp_cov_crm_subapr", "eliexp_notcov_crm_subapr", "rwa_cov_crm_rwa_subapr",
+				"rwa_notcov_crm_rwa_subapr", "tot_col_aft_haircuts", "unsecu_exp_cre_risk_rwa", "exp_aft_haircuts_comapr",
+				"rwa_exp_notcov_crm_rwa", "unsecu_exp_cre_risk_rwa_comapr", "rwa_unsecu_exp_rwa", "tot_rwa"
+			};
+			changesCount += applyChangesToEntity(M_SRWA_12B_Summary_Entity5.class, 167, 193, skip2, fields2, updatedEntity, modRecord);
+
+			int[] targetRows = {173, 181, 189};
+			String[] fields3 = {
+				"nom_prin_amt", "cre_con_fac", "ceaeli_coun_bi_net", "cre_equ_amt", "ceaeli_crm_subapr",
+				"guan_noncol_offbal_exp_crm_subapr", "cre_deri_noncol_offbal_exp_crm_subapr", "offbal_exp_cov_crm_subapr",
+				"eliexp_notcov_crm_subapr", "rwa_cov_crm_rwa_subapr", "rwa_notcov_crm_rwa_subapr", "ceaeli_colexp_crm_comapr",
+				"cea_aft_voladj_colexp_crm_comapr", "cash_elifin_col_haircuts_colexp_crm_comapr",
+				"tresbills_elifin_col_haircuts_colexp_crm_comapr", "debt_secu_elifin_col_haircuts_colexp_crm_comapr",
+				"equitis_elifin_col_haircuts_colexp_crm_comapr", "u_trust_m_funds_elifin_col_haircuts_colexp_crm_comapr",
+				"tot_col_aft_haircuts", "unsecu_exp_cre_risk_rwa", "exp_aft_haircuts_comapr", "rwa_exp_notcov_crm_rwa",
+				"unsecu_exp_cre_risk_rwa_comapr", "rwa_unsecu_exp_rwa", "tot_rwa"
+			};
+			changesCount += applyChangesToTargetRows(M_SRWA_12B_Summary_Entity5.class, targetRows, fields3, updatedEntity, modRecord);
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields for Shard 5", e);
+		}
+
+		if (changesCount == 0) {
+			System.out.println("Shard 5: No changes detected, skipped.");
+			return false;
+		}
+
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		if (changes != null && !changes.isEmpty()) {
+			modRecord.setEntity_flg("Y");
+			modRecord.setModify_flg("Y");
+			modRecord.setDel_flg("N");
+			saveModSummaryEntity5(modRecord);
+			auditService.compareEntitiesmanual(
+					oldcopy,
+					modRecord,
+					updatedEntity.getReportDate().toString(),
+					"SRWA 12B Summary 5",
+					"BRRS_M_SRWA_12B_MOD_SUMMARYTABLE5"
+			);
+			System.out.println("Shard 5: Updated successfully with " + changesCount + " field changes.");
+			return true;
+		}
+		return false;
+	}
+
+	private boolean processShard6(M_SRWA_12B_Summary_Entity6 updatedEntity) {
+		if (updatedEntity == null || updatedEntity.getReportDate() == null) return false;
+
+		M_SRWA_12B_Summary_Entity6 liveSummary = findSummaryByDate6(updatedEntity.getReportDate());
+		if (liveSummary == null) {
+			throw new RuntimeException("Record not found in live summary table for REPORT_DATE : " + updatedEntity.getReportDate());
+		}
+
+		M_SRWA_12B_Summary_Entity6 modRecord = findModRecordByDate6(updatedEntity.getReportDate());
+		if (modRecord == null) {
+			modRecord = new M_SRWA_12B_Summary_Entity6();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
+
+		M_SRWA_12B_Summary_Entity6 oldcopy = new M_SRWA_12B_Summary_Entity6();
+		BeanUtils.copyProperties(modRecord, oldcopy);
+
+		int changesCount = 0;
+		try {
+			int[] skip1 = {213};
+			String[] fields1 = {
+				"nom_prin_amt", "cre_con_fac", "ceaeli_coun_bi_net", "ceaeli_crm_subapr",
+				"guan_noncol_offbal_exp_crm_subapr", "cre_deri_noncol_offbal_exp_crm_subapr", "ceaeli_colexp_crm_comapr",
+				"cea_aft_voladj_colexp_crm_comapr", "cash_elifin_col_haircuts_colexp_crm_comapr",
+				"tresbills_elifin_col_haircuts_colexp_crm_comapr", "debt_secu_elifin_col_haircuts_colexp_crm_comapr",
+				"equitis_elifin_col_haircuts_colexp_crm_comapr", "u_trust_m_funds_elifin_col_haircuts_colexp_crm_comapr"
+			};
+			changesCount += applyChangesToEntity(M_SRWA_12B_Summary_Entity6.class, 194, 220, skip1, fields1, updatedEntity, modRecord);
+
+			int[] skip2 = {213};
+			String[] fields2 = {
+				"cre_equ_amt", "offbal_exp_cov_crm_subapr", "eliexp_notcov_crm_subapr", "rwa_cov_crm_rwa_subapr",
+				"rwa_notcov_crm_rwa_subapr", "tot_col_aft_haircuts", "unsecu_exp_cre_risk_rwa", "exp_aft_haircuts_comapr",
+				"rwa_exp_notcov_crm_rwa", "unsecu_exp_cre_risk_rwa_comapr", "rwa_unsecu_exp_rwa", "tot_rwa"
+			};
+			changesCount += applyChangesToEntity(M_SRWA_12B_Summary_Entity6.class, 194, 220, skip2, fields2, updatedEntity, modRecord);
+
+			int[] targetRows = {213};
+			String[] fields3 = {
+				"nom_prin_amt", "cre_con_fac", "ceaeli_coun_bi_net", "cre_equ_amt", "ceaeli_crm_subapr",
+				"guan_noncol_offbal_exp_crm_subapr", "cre_deri_noncol_offbal_exp_crm_subapr", "offbal_exp_cov_crm_subapr",
+				"eliexp_notcov_crm_subapr", "rwa_cov_crm_rwa_subapr", "rwa_notcov_crm_rwa_subapr", "ceaeli_colexp_crm_comapr",
+				"cea_aft_voladj_colexp_crm_comapr", "cash_elifin_col_haircuts_colexp_crm_comapr",
+				"tresbills_elifin_col_haircuts_colexp_crm_comapr", "debt_secu_elifin_col_haircuts_colexp_crm_comapr",
+				"equitis_elifin_col_haircuts_colexp_crm_comapr", "u_trust_m_funds_elifin_col_haircuts_colexp_crm_comapr",
+				"tot_col_aft_haircuts", "unsecu_exp_cre_risk_rwa", "exp_aft_haircuts_comapr", "rwa_exp_notcov_crm_rwa",
+				"unsecu_exp_cre_risk_rwa_comapr", "rwa_unsecu_exp_rwa", "tot_rwa"
+			};
+			changesCount += applyChangesToTargetRows(M_SRWA_12B_Summary_Entity6.class, targetRows, fields3, updatedEntity, modRecord);
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields for Shard 6", e);
+		}
+
+		if (changesCount == 0) {
+			System.out.println("Shard 6: No changes detected, skipped.");
+			return false;
+		}
+
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		if (changes != null && !changes.isEmpty()) {
+			modRecord.setEntity_flg("Y");
+			modRecord.setModify_flg("Y");
+			modRecord.setDel_flg("N");
+			saveModSummaryEntity6(modRecord);
+			auditService.compareEntitiesmanual(
+					oldcopy,
+					modRecord,
+					updatedEntity.getReportDate().toString(),
+					"SRWA 12B Summary 6",
+					"BRRS_M_SRWA_12B_MOD_SUMMARYTABLE6"
+			);
+			System.out.println("Shard 6: Updated successfully with " + changesCount + " field changes.");
+			return true;
+		}
+		return false;
+	}
+
+	private boolean processShard7(M_SRWA_12B_Summary_Entity7 updatedEntity) {
+		if (updatedEntity == null || updatedEntity.getReportDate() == null) return false;
+
+		M_SRWA_12B_Summary_Entity7 liveSummary = findSummaryByDate7(updatedEntity.getReportDate());
+		if (liveSummary == null) {
+			throw new RuntimeException("Record not found in live summary table for REPORT_DATE : " + updatedEntity.getReportDate());
+		}
+
+		M_SRWA_12B_Summary_Entity7 modRecord = findModRecordByDate7(updatedEntity.getReportDate());
+		if (modRecord == null) {
+			modRecord = new M_SRWA_12B_Summary_Entity7();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
+
+		M_SRWA_12B_Summary_Entity7 oldcopy = new M_SRWA_12B_Summary_Entity7();
+		BeanUtils.copyProperties(modRecord, oldcopy);
+
+		int changesCount = 0;
+		try {
+			int[] skip1 = {221, 229, 237, 245, 246, 247, 248};
+			String[] fields1 = {
+				"nom_prin_amt", "cre_con_fac", "ceaeli_coun_bi_net", "ceaeli_crm_subapr",
+				"guan_noncol_offbal_exp_crm_subapr", "cre_deri_noncol_offbal_exp_crm_subapr", "ceaeli_colexp_crm_comapr",
+				"cea_aft_voladj_colexp_crm_comapr", "cash_elifin_col_haircuts_colexp_crm_comapr",
+				"tresbills_elifin_col_haircuts_colexp_crm_comapr", "debt_secu_elifin_col_haircuts_colexp_crm_comapr",
+				"equitis_elifin_col_haircuts_colexp_crm_comapr", "u_trust_m_funds_elifin_col_haircuts_colexp_crm_comapr"
+			};
+			changesCount += applyChangesToEntity(M_SRWA_12B_Summary_Entity7.class, 221, 248, skip1, fields1, updatedEntity, modRecord);
+
+			int[] skip2 = {221, 229, 237, 245, 246, 247, 248};
+			String[] fields2 = {
+				"cre_equ_amt", "offbal_exp_cov_crm_subapr", "eliexp_notcov_crm_subapr", "rwa_cov_crm_rwa_subapr",
+				"rwa_notcov_crm_rwa_subapr", "tot_col_aft_haircuts", "unsecu_exp_cre_risk_rwa", "exp_aft_haircuts_comapr",
+				"rwa_exp_notcov_crm_rwa", "unsecu_exp_cre_risk_rwa_comapr", "rwa_unsecu_exp_rwa", "tot_rwa"
+			};
+			changesCount += applyChangesToEntity(M_SRWA_12B_Summary_Entity7.class, 221, 248, skip2, fields2, updatedEntity, modRecord);
+
+			int[] targetRows = {221, 229, 237, 247, 248};
+			String[] fields3 = {
+				"nom_prin_amt", "cre_con_fac", "ceaeli_coun_bi_net", "cre_equ_amt", "ceaeli_crm_subapr",
+				"guan_noncol_offbal_exp_crm_subapr", "cre_deri_noncol_offbal_exp_crm_subapr", "offbal_exp_cov_crm_subapr",
+				"eliexp_notcov_crm_subapr", "rwa_cov_crm_rwa_subapr", "rwa_notcov_crm_rwa_subapr", "ceaeli_colexp_crm_comapr",
+				"cea_aft_voladj_colexp_crm_comapr", "cash_elifin_col_haircuts_colexp_crm_comapr",
+				"tresbills_elifin_col_haircuts_colexp_crm_comapr", "debt_secu_elifin_col_haircuts_colexp_crm_comapr",
+				"equitis_elifin_col_haircuts_colexp_crm_comapr", "u_trust_m_funds_elifin_col_haircuts_colexp_crm_comapr",
+				"tot_col_aft_haircuts", "unsecu_exp_cre_risk_rwa", "exp_aft_haircuts_comapr", "rwa_exp_notcov_crm_rwa",
+				"unsecu_exp_cre_risk_rwa_comapr", "rwa_unsecu_exp_rwa", "tot_rwa"
+			};
+			changesCount += applyChangesToTargetRows(M_SRWA_12B_Summary_Entity7.class, targetRows, fields3, updatedEntity, modRecord);
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields for Shard 7", e);
+		}
+
+		if (changesCount == 0) {
+			System.out.println("Shard 7: No changes detected, skipped.");
+			return false;
+		}
+
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		if (changes != null && !changes.isEmpty()) {
+			modRecord.setEntity_flg("Y");
+			modRecord.setModify_flg("Y");
+			modRecord.setDel_flg("N");
+			saveModSummaryEntity7(modRecord);
+			auditService.compareEntitiesmanual(
+					oldcopy,
+					modRecord,
+					updatedEntity.getReportDate().toString(),
+					"SRWA 12B Summary 7",
+					"BRRS_M_SRWA_12B_MOD_SUMMARYTABLE7"
+			);
+			System.out.println("Shard 7: Updated successfully with " + changesCount + " field changes.");
+			return true;
+		}
+		return false;
+	}
+
+	private boolean processShard8(M_SRWA_12B_Summary_Entity8 updatedEntity) {
+		if (updatedEntity == null || updatedEntity.getReportDate() == null) return false;
+
+		M_SRWA_12B_Summary_Entity8 liveSummary = findSummaryByDate8(updatedEntity.getReportDate());
+		if (liveSummary == null) {
+			throw new RuntimeException("Record not found in live summary table for REPORT_DATE : " + updatedEntity.getReportDate());
+		}
+
+		M_SRWA_12B_Summary_Entity8 modRecord = findModRecordByDate8(updatedEntity.getReportDate());
+		if (modRecord == null) {
+			modRecord = new M_SRWA_12B_Summary_Entity8();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
+
+		M_SRWA_12B_Summary_Entity8 oldcopy = new M_SRWA_12B_Summary_Entity8();
+		BeanUtils.copyProperties(modRecord, oldcopy);
+
+		int changesCount = 0;
+		try {
+			int[] rows = {110, 111, 112};
+			String[] fields = {
+				"new_colum_product", "new_colum_exp_bef_crm", "new_colum_spec_prov_past_due_exp",
+				"new_colum_amt_eli_bal_sheet_net", "new_colum_tot_exp_aft_net", "new_colum_exp_eli_noncol_exp_crm_subapr",
+				"new_colum_guan_noncol_exp_crm_subapr", "new_colum_cre_deri_noncol_exp_crm_subapr",
+				"new_colum_exp_cov_crm_noncol_exp_crm_subapr", "new_colum_eliexp_notcov_crm_noncol_exp_crm_subapr",
+				"new_colum_riskweights_rwa_noncol_exp_crm_subapr", "new_colum_rwa_cov_crm_rwa_noncol_exp_crm_subapr",
+				"new_colum_rw_oricount_rwa_noncol_exp_crm_subapr", "new_colum_rwa_notcov_crm_rwa_noncol_exp_crm_subapr",
+				"new_colum_value", "new_colum_expeli_colexp_crm_comapr", "new_colum_exp_aft_voladj_colexp_crm_comapr",
+				"new_colum_cash_efc_haircuts_colexp_crm_comapr", "new_colum_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr",
+				"new_colum_debt_secu_efc_haircuts_colexp_crm_comapr", "new_colum_equities_efc_haircuts_colexp_crm_comapr",
+				"new_colum_u_trust_m_funds_efc_haircuts_colexp_crm_comapr", "new_colum_totcol_aft_hc_efc_haircuts_colexp_crm_comapr",
+				"new_colum_exp_efc_haircuts_colexp_crm_comapr", "new_colum_rwa_exp_notcov_crm_rwa",
+				"new_colum_unsecu_exp_credit_risk_rwa", "new_colum_rwa_unsecu_exp_rwa", "new_colum_tot_rwa"
+			};
+			changesCount += applyChangesToTargetRows(M_SRWA_12B_Summary_Entity8.class, rows, fields, updatedEntity, modRecord);
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields for Shard 8", e);
+		}
+
+		if (changesCount == 0) {
+			System.out.println("Shard 8: No changes detected, skipped.");
+			return false;
+		}
+
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		if (changes != null && !changes.isEmpty()) {
+			modRecord.setEntity_flg("Y");
+			modRecord.setModify_flg("Y");
+			modRecord.setDel_flg("N");
+			saveModSummaryEntity8(modRecord);
+			auditService.compareEntitiesmanual(
+					oldcopy,
+					modRecord,
+					updatedEntity.getReportDate().toString(),
+					"SRWA 12B Summary 8",
+					"BRRS_M_SRWA_12B_MOD_SUMMARYTABLE8"
+			);
+			System.out.println("Shard 8: Updated successfully with " + changesCount + " field changes.");
+			return true;
+		}
+		return false;
+	}
+	@Transactional
+	public void approveReport(Date reportDate) {
+		System.out.println("Came to M_SRWA_12B approveReport for date: " + reportDate);
+
+		// 1. Fetch pending modification record from MOD table 1
+		M_SRWA_12B_Summary_Entity1 modRecord = jdbcTemplate.queryForObject(
+				"SELECT * FROM BRRS_M_SRWA_12B_MOD_SUMMARYTABLE1 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				new M_SRWA_12BSummaryRowMapper1(), reportDate);
+
+		if (modRecord == null) {
+			throw new RuntimeException("No pending modification found for approval on date: " + reportDate);
+		}
+
+		// 2. TRANSFER MOD VALUES TO LIVE SUMMARY AND DETAIL TABLES
+		transferModValuesToLiveTables(reportDate);
+
+		// 3. Mark modified flag as 'N' (Approved) in the MOD tables
+		for (int k = 1; k <= 8; k++) {
+			jdbcTemplate.update(
+					"UPDATE BRRS_M_SRWA_12B_MOD_SUMMARYTABLE" + k + " SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+					reportDate);
+		}
+
+		System.out.println(
+				"✔ M_SRWA_12B Checker Approved Successfully: MOD values successfully transferred to Summary & Detail live tables.");
+	}
+
+	private void transferModValuesToLiveTables(Date reportDate) {
+		// Shard 1
+		M_SRWA_12B_Summary_Entity1 m1 = findModRecordByDate1(reportDate);
+		if (m1 != null) {
+			m1.setEntity_flg("Y");
+			m1.setModify_flg("N");
+			m1.setDel_flg("N");
+			saveSummary1(m1);
+			M_SRWA_12B_Detail_Entity1 d1 = new M_SRWA_12B_Detail_Entity1();
+			BeanUtils.copyProperties(m1, d1);
+			saveDetail1(d1);
+		}
+		// Shard 2
+		M_SRWA_12B_Summary_Entity2 m2 = findModRecordByDate2(reportDate);
+		if (m2 != null) {
+			m2.setEntity_flg("Y");
+			m2.setModify_flg("N");
+			m2.setDel_flg("N");
+			saveSummary2(m2);
+			M_SRWA_12B_Detail_Entity2 d2 = new M_SRWA_12B_Detail_Entity2();
+			BeanUtils.copyProperties(m2, d2);
+			saveDetail2(d2);
+		}
+		// Shard 3
+		M_SRWA_12B_Summary_Entity3 m3 = findModRecordByDate3(reportDate);
+		if (m3 != null) {
+			m3.setEntity_flg("Y");
+			m3.setModify_flg("N");
+			m3.setDel_flg("N");
+			saveSummary3(m3);
+			M_SRWA_12B_Detail_Entity3 d3 = new M_SRWA_12B_Detail_Entity3();
+			BeanUtils.copyProperties(m3, d3);
+			saveDetail3(d3);
+		}
+		// Shard 4
+		M_SRWA_12B_Summary_Entity4 m4 = findModRecordByDate4(reportDate);
+		if (m4 != null) {
+			m4.setEntity_flg("Y");
+			m4.setModify_flg("N");
+			m4.setDel_flg("N");
+			saveSummary4(m4);
+			M_SRWA_12B_Detail_Entity4 d4 = new M_SRWA_12B_Detail_Entity4();
+			BeanUtils.copyProperties(m4, d4);
+			saveDetail4(d4);
+		}
+		// Shard 5
+		M_SRWA_12B_Summary_Entity5 m5 = findModRecordByDate5(reportDate);
+		if (m5 != null) {
+			m5.setEntity_flg("Y");
+			m5.setModify_flg("N");
+			m5.setDel_flg("N");
+			saveSummary5(m5);
+			M_SRWA_12B_Detail_Entity5 d5 = new M_SRWA_12B_Detail_Entity5();
+			BeanUtils.copyProperties(m5, d5);
+			saveDetail5(d5);
+		}
+		// Shard 6
+		M_SRWA_12B_Summary_Entity6 m6 = findModRecordByDate6(reportDate);
+		if (m6 != null) {
+			m6.setEntity_flg("Y");
+			m6.setModify_flg("N");
+			m6.setDel_flg("N");
+			saveSummary6(m6);
+			M_SRWA_12B_Detail_Entity6 d6 = new M_SRWA_12B_Detail_Entity6();
+			BeanUtils.copyProperties(m6, d6);
+			saveDetail6(d6);
+		}
+		// Shard 7
+		M_SRWA_12B_Summary_Entity7 m7 = findModRecordByDate7(reportDate);
+		if (m7 != null) {
+			m7.setEntity_flg("Y");
+			m7.setModify_flg("N");
+			m7.setDel_flg("N");
+			saveSummary7(m7);
+			M_SRWA_12B_Detail_Entity7 d7 = new M_SRWA_12B_Detail_Entity7();
+			BeanUtils.copyProperties(m7, d7);
+			saveDetail7(d7);
+		}
+		// Shard 8
+		M_SRWA_12B_Summary_Entity8 m8 = findModRecordByDate8(reportDate);
+		if (m8 != null) {
+			m8.setEntity_flg("Y");
+			m8.setModify_flg("N");
+			m8.setDel_flg("N");
+			saveSummary8(m8);
+			M_SRWA_12B_Detail_Entity8 d8 = new M_SRWA_12B_Detail_Entity8();
+			BeanUtils.copyProperties(m8, d8);
+			saveDetail8(d8);
+		}
+	}
+
+		
 	
 	public byte[] getM_SRWA_12BExcel(String filename, String reportId, String fromdate, String todate, String currency,
 			 String dtltype, String type, String format, BigDecimal version) throws Exception {
