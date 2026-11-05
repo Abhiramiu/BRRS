@@ -1476,10 +1476,13 @@ public class BRRS_M_AIDP_ReportService {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
-			boolean isDetail = "email".equalsIgnoreCase(dtltype);
-
+			
+			boolean isDetail = "email".equalsIgnoreCase(dtltype) 
+			        || (filename != null && filename.toUpperCase().contains("EMAIL"));
+			
 			Path templatePath = Paths.get(env.getProperty("output.exportpathtemp"), filename);
+			logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+			
 			if (!Files.exists(templatePath)) {
 				throw new FileNotFoundException("Template NOT FOUND: " + templatePath);
 			}
