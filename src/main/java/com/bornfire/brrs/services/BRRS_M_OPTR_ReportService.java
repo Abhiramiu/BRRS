@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.IdClass;
+
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -45,6 +46,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +56,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.AuditServicesEntity;
 import com.bornfire.brrs.entities.UserProfileRep;
 
 @Component
@@ -2879,449 +2883,614 @@ public class BRRS_M_OPTR_ReportService {
 	}
 
 	@Transactional
-	public void updateReport(M_OPTR_Summary_Entity request1) {
+	public void updateReport(M_OPTR_Summary_Entity updatedEntity) {
+		logger.info("Came to M_OPTR Unified Update");
+		logger.info("Report Date: {}", updatedEntity.getREPORT_DATE());
 
-	    try {
+		// 1. Fetch live summary record as baseline reference
+		List<M_OPTR_Summary_Entity> summaryList = getDataByDate1(updatedEntity.getREPORT_DATE());
+		if (summaryList == null || summaryList.isEmpty()) {
+			throw new RuntimeException("Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE());
+		}
+		M_OPTR_Summary_Entity liveSummary = summaryList.get(0);
 
-	        logger.info("Came to services");
-	        logger.info("Report Date: {}", request1.getREPORT_DATE());
+		// 2. Fetch existing mod record or clone from live summary
+		M_OPTR_Summary_Entity existingMod = findM_OPTR_ModRecordByReportDate(updatedEntity.getREPORT_DATE());
+		final M_OPTR_Summary_Entity modRecord = new M_OPTR_Summary_Entity();
 
-	        // Fetch existing record
-	        List<M_OPTR_Summary_Entity> records =
-	        		 getDataByDate1(request1.getREPORT_DATE());
-	        
-	        if (records == null || records.isEmpty()) {
+		if (existingMod != null) {
+			BeanUtils.copyProperties(existingMod, modRecord);
+		} else {
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
 
-	            throw new RuntimeException(
-	                    "Record not found for REPORT_DATE : "
-	                            + request1.getREPORT_DATE());
-	        }
+		// 3. Create a pristine independent oldcopy snapshot for audit comparison
+		M_OPTR_Summary_Entity oldcopy = new M_OPTR_Summary_Entity();
+		BeanUtils.copyProperties(modRecord, oldcopy);
 
-	        M_OPTR_Summary_Entity existing = records.get(0);
-	        // Audit old copy
-	        M_OPTR_Summary_Entity oldcopy = new M_OPTR_Summary_Entity();
-	        BeanUtils.copyProperties(existing, oldcopy);
+		// Categories mapping your M_OPTR columns
+		String[] categories = { "INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES", "TOTAL" };
 
-	        String changes = auditService.getChanges(oldcopy, request1);
+		try {
+			// Loop rows R10 to R14
+			for (int i = 10; i <= 14; i++) {
+				String prefix = "R" + i + "_";
 
-	        if (!changes.isEmpty()) {
+				for (String cat : categories) {
+					String field = prefix + cat;
+					String getterName = "get" + field;
+					String setterName = "set" + field;
 
-	            String sql =
-	                    "UPDATE BRRS_M_OPTR_SUMMARYTABLE SET " +
-	                    "R10_INTEREST_RATES=?, R10_EQUITIES=?, R10_FOREIGN_EXC_GOLD=?, R10_COMMODITIES=?, R10_TOTAL=?, " +
-	                    "R11_INTEREST_RATES=?, R11_EQUITIES=?, R11_FOREIGN_EXC_GOLD=?, R11_COMMODITIES=?, R11_TOTAL=?, " +
-	                    "R12_INTEREST_RATES=?, R12_EQUITIES=?, R12_FOREIGN_EXC_GOLD=?, R12_COMMODITIES=?, R12_TOTAL=?, " +
-	                    "R13_INTEREST_RATES=?, R13_EQUITIES=?, R13_FOREIGN_EXC_GOLD=?, R13_COMMODITIES=?, R13_TOTAL=?, " +
-	                    "R14_INTEREST_RATES=?, R14_EQUITIES=?, R14_FOREIGN_EXC_GOLD=?, R14_COMMODITIES=?, R14_TOTAL=? " +
-	                    "WHERE REPORT_DATE=?";
+					try {
+						Method getter = M_OPTR_Summary_Entity.class.getMethod(getterName);
+						Object value = getter.invoke(updatedEntity);
 
-	            int count = jdbcTemplate.update(
+						if (value instanceof String) {
+							String valStr = ((String) value).trim();
+							if (valStr.isEmpty()) {
+								value = null;
+							} else {
+								try {
+									value = new java.math.BigDecimal(valStr);
+								} catch (NumberFormatException e) {
+									value = null;
+								}
+							}
+						}
 
-	                    sql,
+						if (value == null) {
+							continue;
+						}
 
-	                    request1.getR10_INTEREST_RATES(),
-	                    request1.getR10_EQUITIES(),
-	                    request1.getR10_FOREIGN_EXC_GOLD(),
-	                    request1.getR10_COMMODITIES(),
-	                    request1.getR10_TOTAL(),
+						Method setter = null;
+						for (Method m : M_OPTR_Summary_Entity.class.getMethods()) {
+							if (m.getName().equals(setterName) && m.getParameterCount() == 1) {
+								setter = m;
+								break;
+							}
+						}
 
-	                    request1.getR11_INTEREST_RATES(),
-	                    request1.getR11_EQUITIES(),
-	                    request1.getR11_FOREIGN_EXC_GOLD(),
-	                    request1.getR11_COMMODITIES(),
-	                    request1.getR11_TOTAL(),
+						if (setter != null) {
+							Class<?> paramType = setter.getParameterTypes()[0];
+							if (!paramType.isAssignableFrom(value.getClass())) {
+								if (paramType.equals(String.class)) {
+									value = value.toString();
+								} else if (paramType.equals(java.math.BigDecimal.class) && value instanceof String) {
+									value = new java.math.BigDecimal((String) value);
+								}
+							}
+							setter.invoke(modRecord, value);
+						}
 
-	                    request1.getR12_INTEREST_RATES(),
-	                    request1.getR12_EQUITIES(),
-	                    request1.getR12_FOREIGN_EXC_GOLD(),
-	                    request1.getR12_COMMODITIES(),
-	                    request1.getR12_TOTAL(),
+					} catch (NoSuchMethodException e) {
+						continue;
+					}
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating M_OPTR report fields", e);
+		}
 
-	                    request1.getR13_INTEREST_RATES(),
-	                    request1.getR13_EQUITIES(),
-	                    request1.getR13_FOREIGN_EXC_GOLD(),
-	                    request1.getR13_COMMODITIES(),
-	                    request1.getR13_TOTAL(),
+		// 4. Custom Field-by-Field Comparison to capture Old & New values for audit
+		// view
+		StringBuilder changesBuilder = new StringBuilder();
+		try {
+			for (int i = 10; i <= 14; i++) {
+				String prefix = "R" + i + "_";
+				for (String cat : categories) {
+					String field = prefix + cat;
+					String getterName = "get" + field;
+					Method getter = M_OPTR_Summary_Entity.class.getMethod(getterName);
 
-	                    request1.getR14_INTEREST_RATES(),
-	                    request1.getR14_EQUITIES(),
-	                    request1.getR14_FOREIGN_EXC_GOLD(),
-	                    request1.getR14_COMMODITIES(),
-	                    request1.getR14_TOTAL(),
+					Object oldValue = getter.invoke(oldcopy);
+					Object newValue = getter.invoke(modRecord);
 
-	                    request1.getREPORT_DATE()
-	            );
+					String oldStr = (oldValue == null) ? "" : oldValue.toString().trim();
+					String newStr = (newValue == null) ? "" : newValue.toString().trim();
 
-	            if (count > 0) {
+					if (!oldStr.equals(newStr)) {
+						changesBuilder.append(field).append(" [Old: ").append(oldStr).append(", New: ").append(newStr)
+								.append("]; ");
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Error generating detailed change log for M_OPTR: {}", e.getMessage());
+		}
 
-	                auditService.compareEntitiesmanual(
-	                        oldcopy,
-	                        request1,
-	                        request1.getREPORT_DATE().toString(),
-	                        "M OPTR Summary Screen",
-	                        "BRRS_M_OPTR_SUMMARY"
-	                );
+		String changes = changesBuilder.toString();
+		logger.info("M_OPTR Detailed Changes: {}", changes);
 
-	                logger.info(
-	                        "Audit completed for REPORT_DATE {}",
-	                        request1.getREPORT_DATE());
+		// 5. Set Maker-Checker Flags
+		modRecord.setENTITY_FLG("Y");
+		modRecord.setMODIFY_FLG("Y");
+		modRecord.setDEL_FLG("N");
 
-	                logger.info(
-	                        "M_OPTR Summary Updated Successfully. Rows Updated: {}",
-	                        count);
-	            }
+		// 6. Save into MOD Table ONLY (`BRRS_M_OPTR_MOD_SUMMARYTABLE`)
+		saveM_OPTR_ModSummaryEntity(modRecord);
+		logger.info("✔ Record saved into BRRS_M_OPTR_MOD_SUMMARYTABLE for Checker Approval");
 
-	        } else {
+		// 7. Audit Log Execution
+		if (!changes.isEmpty()) {
+			try {
+				auditService.compareEntitiesmanual(oldcopy, modRecord, updatedEntity.getREPORT_DATE().toString(),
+						"M OPTR Summary Screen", "BRRS_M_OPTR_MOD_SUMMARYTABLE");
+				logger.info("✔ Audit record with Old/New values saved successfully!");
+			} catch (Exception e) {
+				logger.error("❌ Audit failed to save: {}", e.getMessage(), e);
+			}
+		} else {
+			logger.info("⚠ No changes detected between old and new record; audit skipped.");
+		}
 
-	            logger.info(
-	                    "No changes detected for REPORT_DATE {}",
-	                    request1.getREPORT_DATE());
-	        }
+		logger.info("M_OPTR Update Completed Successfully");
+	}
 
-	    } catch (Exception e) {
+	public M_OPTR_Summary_Entity findM_OPTR_ModRecordByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_OPTR_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<M_OPTR_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(M_OPTR_Summary_Entity.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
 
-	        logger.error(
-	                "Error while updating BRRS_M_OPTR Report",
-	                e);
+	public void saveM_OPTR_ModSummaryEntity(M_OPTR_Summary_Entity entity) {
+		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
 
-	        throw new RuntimeException(
-	                "Error while updating BRRS_M_OPTR Report",
-	                e);
-	    }
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_OPTR_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+		MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", entity.getREPORT_DATE());
+		Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
+
+		MapSqlParameterSource params = new MapSqlParameterSource().addValue("reportDate", entity.getREPORT_DATE())
+				.addValue("entity_flg", entity.getENTITY_FLG()).addValue("modify_flg", entity.getMODIFY_FLG())
+				.addValue("del_flg", entity.getDEL_FLG());
+
+		StringBuilder updateSetSql = new StringBuilder(
+				"MODIFY_FLG = :modify_flg, ENTITY_FLG = :entity_flg, DEL_FLG = :del_flg");
+		List<String> insertColumns = new ArrayList<>();
+		List<String> insertValues = new ArrayList<>();
+
+		insertColumns.add("REPORT_DATE");
+		insertValues.add(":reportDate");
+		insertColumns.add("ENTITY_FLG");
+		insertValues.add(":entity_flg");
+		insertColumns.add("MODIFY_FLG");
+		insertValues.add(":modify_flg");
+		insertColumns.add("DEL_FLG");
+		insertValues.add(":del_flg");
+
+		String[] categories = { "INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES", "TOTAL" };
+
+		for (int i = 10; i <= 14; i++) {
+			for (String cat : categories) {
+				String fieldSuffix = i + "_" + cat;
+				String getterName = "getR" + fieldSuffix;
+				String paramName = "r" + fieldSuffix.toLowerCase();
+				String columnName = "R" + fieldSuffix;
+
+				try {
+					Method getter = M_OPTR_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(entity);
+
+					if (value instanceof String) {
+						String valStr = ((String) value).trim();
+						if (valStr.isEmpty()) {
+							value = null;
+						} else {
+							try {
+								value = new java.math.BigDecimal(valStr);
+							} catch (NumberFormatException e) {
+								value = null;
+							}
+						}
+					}
+
+					params.addValue(paramName, value);
+					updateSetSql.append(", ").append(columnName).append(" = :").append(paramName);
+					insertColumns.add(columnName);
+					insertValues.add(":" + paramName);
+				} catch (Exception e) {
+					// Skip if getter is missing
+				}
+			}
+		}
+
+		if (count != null && count > 0) {
+			String updateSql = "UPDATE BRRS_M_OPTR_MOD_SUMMARYTABLE SET " + updateSetSql.toString()
+					+ " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+			namedParamJdbc.update(updateSql, params);
+		} else {
+			String insertSql = "INSERT INTO BRRS_M_OPTR_MOD_SUMMARYTABLE (" + String.join(", ", insertColumns)
+					+ ") VALUES (" + String.join(", ", insertValues) + ")";
+			namedParamJdbc.update(insertSql, params);
+		}
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		M_OPTR_Summary_Entity modRecord = jdbcTemplate.queryForObject(
+				"SELECT * FROM BRRS_M_OPTR_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				new BeanPropertyRowMapper<>(M_OPTR_Summary_Entity.class), reportDate);
+
+		if (modRecord == null) {
+			throw new RuntimeException("No pending modification found for approval on date: " + reportDate);
+		}
+
+		transferM_OPTR_Data(null);
+
+		jdbcTemplate.update(
+				"UPDATE BRRS_M_OPTR_MOD_SUMMARYTABLE SET MODIFY_FLG = 'N', ENTITY_FLG = 'Y' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+
+		logger.info("✔ M_OPTR Checker Approved Successfully: MOD values transferred to live Summary & Detail tables.");
+	}
+
+	private void transferM_OPTR_Data(AuditServicesEntity auditRecord) {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_OPTR_MOD_SUMMARYTABLE";
+		java.sql.Date reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified M_OPTR record available for transfer.");
+		}
+
+		System.out.println("M_OPTR Report Date : " + reportDate);
+
+		StringBuilder setColumns = new StringBuilder();
+		StringBuilder selectColumns = new StringBuilder();
+		String[] categories = { "INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES", "TOTAL" };
+
+		for (int i = 10; i <= 14; i++) {
+			for (String cat : categories) {
+				String col = "R" + i + "_" + cat.toUpperCase();
+				setColumns.append(col).append(", ");
+				selectColumns.append("S.").append(col).append(", ");
+			}
+		}
+		setColumns.append("ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+		selectColumns.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+
+		// Base query template referencing MOD table to Live tables
+		String selectSubquery = " SELECT " + selectColumns.toString() + " FROM BRRS_M_OPTR_MOD_SUMMARYTABLE S "
+				+ " WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)";
+
+		// ==========================================
+		// 1. UPDATE LIVE SUMMARY TABLE
+		// ==========================================
+		String updateSummarySql = "UPDATE BRRS_M_OPTR_SUMMARYTABLE M SET (" + setColumns.toString() + ") = ("
+				+ selectSubquery + ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+
+		if (summaryUpdated == 0) {
+			throw new IllegalStateException(
+					"M_OPTR modification record not found in live summary table for date : " + reportDate);
+		}
+		System.out.println("M_OPTR Summary Table Updated (BRRS_M_OPTR_SUMMARYTABLE) : " + summaryUpdated);
+
+		// ==========================================
+		// 2. UPDATE LIVE DETAIL TABLE
+		// ==========================================
+		String updateDetailSql = "UPDATE BRRS_M_OPTR_DETAILTABLE M SET (" + setColumns.toString() + ") = ("
+				+ selectSubquery + ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+		System.out.println("M_OPTR Detail Table Updated (BRRS_M_OPTR_DETAILTABLE) : " + detailUpdated);
+
+		// ==========================================
+		// 3. MARK MOD RECORD AS APPROVED (MODIFY_FLG = 'N')
+		// ==========================================
+		String updateModSql = "UPDATE BRRS_M_OPTR_MOD_SUMMARYTABLE SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+
+		System.out.println("M_OPTR MOD Record Updated : " + modUpdated);
+		System.out.println("✔ M_OPTR Verification and Transfer Completed Successfully across Summary & Detail tables!");
 	}
 
 	private Object getValue(Object obj, String methodName) {
-	    try {
-	        return obj.getClass().getMethod(methodName).invoke(obj);
-	    } catch (Exception e) {
-	        throw new RuntimeException(e);
-	    }
+		try {
+			return obj.getClass().getMethod(methodName).invoke(obj);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
-	
-	
+
 	@Transactional
 	public void updateResubReport(M_OPTR_RESUB_Summary_Entity updatedEntity) {
 
-	    // ====================================================
-	    // 1. GET REPORT DATE
-	    // ====================================================
+		// ====================================================
+		// 1. GET REPORT DATE
+		// ====================================================
 
-	    Date reportDate = updatedEntity.getREPORT_DATE();
+		Date reportDate = updatedEntity.getREPORT_DATE();
 
-	    if (reportDate == null) {
-	        throw new RuntimeException("Report date cannot be null");
-	    }
+		if (reportDate == null) {
+			throw new RuntimeException("Report date cannot be null");
+		}
 
-	    // ====================================================
-	    // 2. FETCH MAX VERSION
-	    // ====================================================
+		// ====================================================
+		// 2. FETCH MAX VERSION
+		// ====================================================
 
-	    BigDecimal maxVersion = RESUBfindMaxVersion1(reportDate);
+		BigDecimal maxVersion = RESUBfindMaxVersion1(reportDate);
 
-	    if (maxVersion == null) {
-	        maxVersion = BigDecimal.ZERO;
-	    }
+		if (maxVersion == null) {
+			maxVersion = BigDecimal.ZERO;
+		}
 
-	    BigDecimal newVersion = maxVersion.add(BigDecimal.ONE);
+		BigDecimal newVersion = maxVersion.add(BigDecimal.ONE);
 
-	    Date now = new Date();
+		Date now = new Date();
 
-	    // ====================================================
-	    // 3. RESUB SUMMARY
-	    // ====================================================
+		// ====================================================
+		// 3. RESUB SUMMARY
+		// ====================================================
 
-	    updatedEntity.setREPORT_VERSION(newVersion);
-	    updatedEntity.setREPORT_RESUBDATE(now);
+		updatedEntity.setREPORT_VERSION(newVersion);
+		updatedEntity.setREPORT_RESUBDATE(now);
 
-	    insertResubSummary(updatedEntity);
+		insertResubSummary(updatedEntity);
 
-	    // ====================================================
-	    // 4. RESUB DETAIL
-	    // ====================================================
+		// ====================================================
+		// 4. RESUB DETAIL
+		// ====================================================
 
-	    M_OPTR_RESUB_Detail_Entity detailEntity =
-	            new M_OPTR_RESUB_Detail_Entity();
+		M_OPTR_RESUB_Detail_Entity detailEntity = new M_OPTR_RESUB_Detail_Entity();
 
-	    BeanUtils.copyProperties(updatedEntity, detailEntity);
+		BeanUtils.copyProperties(updatedEntity, detailEntity);
 
-	    detailEntity.setREPORT_DATE(reportDate);
-	    detailEntity.setREPORT_VERSION(newVersion);
-	    detailEntity.setREPORT_RESUBDATE(now);
+		detailEntity.setREPORT_DATE(reportDate);
+		detailEntity.setREPORT_VERSION(newVersion);
+		detailEntity.setREPORT_RESUBDATE(now);
 
-	    insertResubDetail(detailEntity);
+		insertResubDetail(detailEntity);
 
-	    // ====================================================
-	    // 5. ARCHIVAL SUMMARY
-	    // ====================================================
+		// ====================================================
+		// 5. ARCHIVAL SUMMARY
+		// ====================================================
 
-	    M_OPTR_Archival_Summary_Entity archivalSummary =
-	            new M_OPTR_Archival_Summary_Entity();
+		M_OPTR_Archival_Summary_Entity archivalSummary = new M_OPTR_Archival_Summary_Entity();
 
-	    BeanUtils.copyProperties(updatedEntity, archivalSummary);
+		BeanUtils.copyProperties(updatedEntity, archivalSummary);
 
-	    archivalSummary.setREPORT_DATE(reportDate);
-	    archivalSummary.setREPORT_VERSION(newVersion);
-	    archivalSummary.setREPORT_RESUBDATE(now);
+		archivalSummary.setREPORT_DATE(reportDate);
+		archivalSummary.setREPORT_VERSION(newVersion);
+		archivalSummary.setREPORT_RESUBDATE(now);
 
-	    insertArchivalSummary(archivalSummary);
+		insertArchivalSummary(archivalSummary);
 
-	    // ====================================================
-	    // 6. ARCHIVAL DETAIL
-	    // ====================================================
+		// ====================================================
+		// 6. ARCHIVAL DETAIL
+		// ====================================================
 
-	    M_OPTR_Archival_Detail_Entity archivalDetail =
-	            new M_OPTR_Archival_Detail_Entity();
+		M_OPTR_Archival_Detail_Entity archivalDetail = new M_OPTR_Archival_Detail_Entity();
 
-	    BeanUtils.copyProperties(updatedEntity, archivalDetail);
+		BeanUtils.copyProperties(updatedEntity, archivalDetail);
 
-	    archivalDetail.setREPORT_DATE(reportDate);
-	    archivalDetail.setREPORT_VERSION(newVersion);
-	    archivalDetail.setREPORT_RESUBDATE(now);
+		archivalDetail.setREPORT_DATE(reportDate);
+		archivalDetail.setREPORT_VERSION(newVersion);
+		archivalDetail.setREPORT_RESUBDATE(now);
 
-	    insertArchivalDetail(archivalDetail);
+		insertArchivalDetail(archivalDetail);
 
-	    System.out.println("Resubmission Version Created : " + newVersion);
+		System.out.println("Resubmission Version Created : " + newVersion);
 	}
-	
+
 	private void insertResubSummary(M_OPTR_RESUB_Summary_Entity entity) {
 
-	    try {
+		try {
 
-	        StringBuilder columns = new StringBuilder(
-	                "INSERT INTO BRRS_M_OPTR_RESUB_SUMMARY (REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,");
+			StringBuilder columns = new StringBuilder(
+					"INSERT INTO BRRS_M_OPTR_RESUB_SUMMARY (REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,");
 
-	        StringBuilder values = new StringBuilder(
-	                " VALUES (?,?,?,");
+			StringBuilder values = new StringBuilder(" VALUES (?,?,?,");
 
-	        List<Object> params = new ArrayList<>();
+			List<Object> params = new ArrayList<>();
 
-	        params.add(entity.getREPORT_DATE());
-	        params.add(entity.getREPORT_VERSION());
-	        params.add(entity.getREPORT_RESUBDATE());
+			params.add(entity.getREPORT_DATE());
+			params.add(entity.getREPORT_VERSION());
+			params.add(entity.getREPORT_RESUBDATE());
 
-	        for (int i = 10; i <= 14; i++) {
+			for (int i = 10; i <= 14; i++) {
 
-	            columns.append("R").append(i).append("_INTEREST_RATES,")
-	                   .append("R").append(i).append("_EQUITIES,")
-	                   .append("R").append(i).append("_FOREIGN_EXC_GOLD,")
-	                   .append("R").append(i).append("_COMMODITIES,")
-	                   .append("R").append(i).append("_TOTAL,");
+				columns.append("R").append(i).append("_INTEREST_RATES,").append("R").append(i).append("_EQUITIES,")
+						.append("R").append(i).append("_FOREIGN_EXC_GOLD,").append("R").append(i)
+						.append("_COMMODITIES,").append("R").append(i).append("_TOTAL,");
 
-	            values.append("?,?,?,?,?,");
+				values.append("?,?,?,?,?,");
 
-	            params.add(getValue(entity, "getR" + i + "_INTEREST_RATES"));
-	            params.add(getValue(entity, "getR" + i + "_EQUITIES"));
-	            params.add(getValue(entity, "getR" + i + "_FOREIGN_EXC_GOLD"));
-	            params.add(getValue(entity, "getR" + i + "_COMMODITIES"));
-	            params.add(getValue(entity, "getR" + i + "_TOTAL"));
-	        }
+				params.add(getValue(entity, "getR" + i + "_INTEREST_RATES"));
+				params.add(getValue(entity, "getR" + i + "_EQUITIES"));
+				params.add(getValue(entity, "getR" + i + "_FOREIGN_EXC_GOLD"));
+				params.add(getValue(entity, "getR" + i + "_COMMODITIES"));
+				params.add(getValue(entity, "getR" + i + "_TOTAL"));
+			}
 
-	        columns.deleteCharAt(columns.length() - 1);
-	        values.deleteCharAt(values.length() - 1);
+			columns.deleteCharAt(columns.length() - 1);
+			values.deleteCharAt(values.length() - 1);
 
-	        columns.append(")");
-	        values.append(")");
+			columns.append(")");
+			values.append(")");
 
-	        jdbcTemplate.update(columns.toString() + values.toString(), params.toArray());
+			jdbcTemplate.update(columns.toString() + values.toString(), params.toArray());
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        throw new RuntimeException("Error inserting RESUB SUMMARY", e);
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error inserting RESUB SUMMARY", e);
+		}
 	}
-	
-	
+
 	private void insertResubDetail(M_OPTR_RESUB_Detail_Entity entity) {
 
-	    try {
+		try {
 
-	        StringBuilder columns = new StringBuilder(
-	                "INSERT INTO BRRS_M_OPTR_RESUB_DETAIL (REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,");
+			StringBuilder columns = new StringBuilder(
+					"INSERT INTO BRRS_M_OPTR_RESUB_DETAIL (REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,");
 
-	        StringBuilder values = new StringBuilder(
-	                " VALUES (?,?,?,");
+			StringBuilder values = new StringBuilder(" VALUES (?,?,?,");
 
-	        List<Object> params = new ArrayList<>();
+			List<Object> params = new ArrayList<>();
 
-	        params.add(entity.getREPORT_DATE());
-	        params.add(entity.getREPORT_VERSION());
-	        params.add(entity.getREPORT_RESUBDATE());
+			params.add(entity.getREPORT_DATE());
+			params.add(entity.getREPORT_VERSION());
+			params.add(entity.getREPORT_RESUBDATE());
 
-	        for (int i = 10; i <= 14; i++) {
+			for (int i = 10; i <= 14; i++) {
 
-	            columns.append("R").append(i).append("_INTEREST_RATES,")
-	                   .append("R").append(i).append("_EQUITIES,")
-	                   .append("R").append(i).append("_FOREIGN_EXC_GOLD,")
-	                   .append("R").append(i).append("_COMMODITIES,")
-	                   .append("R").append(i).append("_TOTAL,");
+				columns.append("R").append(i).append("_INTEREST_RATES,").append("R").append(i).append("_EQUITIES,")
+						.append("R").append(i).append("_FOREIGN_EXC_GOLD,").append("R").append(i)
+						.append("_COMMODITIES,").append("R").append(i).append("_TOTAL,");
 
-	            values.append("?,?,?,?,?,");
+				values.append("?,?,?,?,?,");
 
-	            params.add(getValue(entity, "getR" + i + "_INTEREST_RATES"));
-	            params.add(getValue(entity, "getR" + i + "_EQUITIES"));
-	            params.add(getValue(entity, "getR" + i + "_FOREIGN_EXC_GOLD"));
-	            params.add(getValue(entity, "getR" + i + "_COMMODITIES"));
-	            params.add(getValue(entity, "getR" + i + "_TOTAL"));
-	        }
+				params.add(getValue(entity, "getR" + i + "_INTEREST_RATES"));
+				params.add(getValue(entity, "getR" + i + "_EQUITIES"));
+				params.add(getValue(entity, "getR" + i + "_FOREIGN_EXC_GOLD"));
+				params.add(getValue(entity, "getR" + i + "_COMMODITIES"));
+				params.add(getValue(entity, "getR" + i + "_TOTAL"));
+			}
 
-	        columns.deleteCharAt(columns.length() - 1);
-	        values.deleteCharAt(values.length() - 1);
+			columns.deleteCharAt(columns.length() - 1);
+			values.deleteCharAt(values.length() - 1);
 
-	        columns.append(")");
-	        values.append(")");
+			columns.append(")");
+			values.append(")");
 
-	        jdbcTemplate.update(columns.toString() + values.toString(), params.toArray());
+			jdbcTemplate.update(columns.toString() + values.toString(), params.toArray());
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        throw new RuntimeException("Error inserting RESUB DETAIL", e);
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error inserting RESUB DETAIL", e);
+		}
 	}
-	
+
 	private void insertArchivalSummary(M_OPTR_Archival_Summary_Entity entity) {
 
-	    try {
+		try {
 
-	        StringBuilder columns = new StringBuilder(
-	                "INSERT INTO BRRS_M_OPTR_ARCHIVAL_SUMMARY (REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,");
+			StringBuilder columns = new StringBuilder(
+					"INSERT INTO BRRS_M_OPTR_ARCHIVAL_SUMMARY (REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,");
 
-	        StringBuilder values = new StringBuilder(
-	                " VALUES (?,?,?,");
+			StringBuilder values = new StringBuilder(" VALUES (?,?,?,");
 
-	        List<Object> params = new ArrayList<>();
+			List<Object> params = new ArrayList<>();
 
-	        params.add(entity.getREPORT_DATE());
-	        params.add(entity.getREPORT_VERSION());
-	        params.add(entity.getREPORT_RESUBDATE());
+			params.add(entity.getREPORT_DATE());
+			params.add(entity.getREPORT_VERSION());
+			params.add(entity.getREPORT_RESUBDATE());
 
-	        for (int i = 10; i <= 14; i++) {
+			for (int i = 10; i <= 14; i++) {
 
-	            columns.append("R").append(i).append("_INTEREST_RATES,")
-	                   .append("R").append(i).append("_EQUITIES,")
-	                   .append("R").append(i).append("_FOREIGN_EXC_GOLD,")
-	                   .append("R").append(i).append("_COMMODITIES,")
-	                   .append("R").append(i).append("_TOTAL,");
+				columns.append("R").append(i).append("_INTEREST_RATES,").append("R").append(i).append("_EQUITIES,")
+						.append("R").append(i).append("_FOREIGN_EXC_GOLD,").append("R").append(i)
+						.append("_COMMODITIES,").append("R").append(i).append("_TOTAL,");
 
-	            values.append("?,?,?,?,?,");
+				values.append("?,?,?,?,?,");
 
-	            params.add(getValue(entity, "getR" + i + "_INTEREST_RATES"));
-	            params.add(getValue(entity, "getR" + i + "_EQUITIES"));
-	            params.add(getValue(entity, "getR" + i + "_FOREIGN_EXC_GOLD"));
-	            params.add(getValue(entity, "getR" + i + "_COMMODITIES"));
-	            params.add(getValue(entity, "getR" + i + "_TOTAL"));
-	        }
+				params.add(getValue(entity, "getR" + i + "_INTEREST_RATES"));
+				params.add(getValue(entity, "getR" + i + "_EQUITIES"));
+				params.add(getValue(entity, "getR" + i + "_FOREIGN_EXC_GOLD"));
+				params.add(getValue(entity, "getR" + i + "_COMMODITIES"));
+				params.add(getValue(entity, "getR" + i + "_TOTAL"));
+			}
 
-	        columns.deleteCharAt(columns.length() - 1);
-	        values.deleteCharAt(values.length() - 1);
+			columns.deleteCharAt(columns.length() - 1);
+			values.deleteCharAt(values.length() - 1);
 
-	        columns.append(")");
-	        values.append(")");
+			columns.append(")");
+			values.append(")");
 
-	        jdbcTemplate.update(columns.toString() + values.toString(), params.toArray());
+			jdbcTemplate.update(columns.toString() + values.toString(), params.toArray());
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        throw new RuntimeException("Error inserting ARCHIVAL SUMMARY", e);
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error inserting ARCHIVAL SUMMARY", e);
+		}
 	}
-	
+
 	private void insertArchivalDetail(M_OPTR_Archival_Detail_Entity entity) {
 
-	    try {
+		try {
 
-	        StringBuilder columns = new StringBuilder(
-	                "INSERT INTO BRRS_M_OPTR_ARCHIVAL_DETAIL (REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,");
+			StringBuilder columns = new StringBuilder(
+					"INSERT INTO BRRS_M_OPTR_ARCHIVAL_DETAIL (REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,");
 
-	        StringBuilder values = new StringBuilder(
-	                " VALUES (?,?,?,");
+			StringBuilder values = new StringBuilder(" VALUES (?,?,?,");
 
-	        List<Object> params = new ArrayList<>();
+			List<Object> params = new ArrayList<>();
 
-	        params.add(entity.getREPORT_DATE());
-	        params.add(entity.getREPORT_VERSION());
-	        params.add(entity.getREPORT_RESUBDATE());
+			params.add(entity.getREPORT_DATE());
+			params.add(entity.getREPORT_VERSION());
+			params.add(entity.getREPORT_RESUBDATE());
 
-	        for (int i = 10; i <= 14; i++) {
+			for (int i = 10; i <= 14; i++) {
 
-	            columns.append("R").append(i).append("_INTEREST_RATES,")
-	                   .append("R").append(i).append("_EQUITIES,")
-	                   .append("R").append(i).append("_FOREIGN_EXC_GOLD,")
-	                   .append("R").append(i).append("_COMMODITIES,")
-	                   .append("R").append(i).append("_TOTAL,");
+				columns.append("R").append(i).append("_INTEREST_RATES,").append("R").append(i).append("_EQUITIES,")
+						.append("R").append(i).append("_FOREIGN_EXC_GOLD,").append("R").append(i)
+						.append("_COMMODITIES,").append("R").append(i).append("_TOTAL,");
 
-	            values.append("?,?,?,?,?,");
+				values.append("?,?,?,?,?,");
 
-	            params.add(getValue(entity, "getR" + i + "_INTEREST_RATES"));
-	            params.add(getValue(entity, "getR" + i + "_EQUITIES"));
-	            params.add(getValue(entity, "getR" + i + "_FOREIGN_EXC_GOLD"));
-	            params.add(getValue(entity, "getR" + i + "_COMMODITIES"));
-	            params.add(getValue(entity, "getR" + i + "_TOTAL"));
-	        }
+				params.add(getValue(entity, "getR" + i + "_INTEREST_RATES"));
+				params.add(getValue(entity, "getR" + i + "_EQUITIES"));
+				params.add(getValue(entity, "getR" + i + "_FOREIGN_EXC_GOLD"));
+				params.add(getValue(entity, "getR" + i + "_COMMODITIES"));
+				params.add(getValue(entity, "getR" + i + "_TOTAL"));
+			}
 
-	        columns.deleteCharAt(columns.length() - 1);
-	        values.deleteCharAt(values.length() - 1);
+			columns.deleteCharAt(columns.length() - 1);
+			values.deleteCharAt(values.length() - 1);
 
-	        columns.append(")");
-	        values.append(")");
+			columns.append(")");
+			values.append(")");
 
-	        jdbcTemplate.update(columns.toString() + values.toString(), params.toArray());
+			jdbcTemplate.update(columns.toString() + values.toString(), params.toArray());
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        throw new RuntimeException("Error inserting ARCHIVAL DETAIL", e);
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error inserting ARCHIVAL DETAIL", e);
+		}
 	}
 
 	public List<Object[]> getM_OPTRResub() {
 
-	    List<Object[]> resubList = new ArrayList<>();
+		List<Object[]> resubList = new ArrayList<>();
 
-	    try {
+		try {
 
-	        List<M_OPTR_Archival_Summary_Entity> latestArchivalList = getdatabydateListWithVersion1();
+			List<M_OPTR_Archival_Summary_Entity> latestArchivalList = getdatabydateListWithVersion1();
 
+			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
 
-	        if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+				for (M_OPTR_Archival_Summary_Entity entity : latestArchivalList) {
 
-	            for (M_OPTR_Archival_Summary_Entity entity : latestArchivalList) {
+					resubList.add(new Object[] { entity.getREPORT_DATE(), entity.getREPORT_VERSION(),
+							entity.getREPORT_RESUBDATE() });
+				}
 
-	                resubList.add(new Object[] {
-	                		 entity.getREPORT_DATE(),
-		                        entity.getREPORT_VERSION(),
-		                        entity.getREPORT_RESUBDATE()
-	                });
-	            }
+				System.out.println("Fetched " + resubList.size() + " record(s)");
 
-	            System.out.println("Fetched " + resubList.size() + " record(s)");
+			} else {
 
-	        } else {
+				System.out.println("No archival data found.");
+			}
 
-	            System.out.println("No archival data found.");
-	        }
+		} catch (Exception e) {
 
-	    } catch (Exception e) {
+			System.err.println("Error fetching M_OPTR Resub data: " + e.getMessage());
+			e.printStackTrace();
+		}
 
-	        System.err.println("Error fetching M_OPTR Resub data: " + e.getMessage());
-	        e.printStackTrace();
-	    }
-
-	    return resubList;
+		return resubList;
 	}
-	
+
 	public List<Object[]> getM_OPTRArchival() {
 
-	    String sql = "SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE "
-	            + "FROM BRRS_M_OPTR_ARCHIVAL_SUMMARY "
-	            + "ORDER BY REPORT_VERSION";
+		String sql = "SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE " + "FROM BRRS_M_OPTR_ARCHIVAL_SUMMARY "
+				+ "ORDER BY REPORT_VERSION";
 
-	    return jdbcTemplate.query(sql,
-	            (rs, rowNum) -> new Object[] {
-	                    rs.getDate("REPORT_DATE"),
-	                    rs.getBigDecimal("REPORT_VERSION"),
-	                    rs.getDate("REPORT_RESUBDATE")
-	            });
+		return jdbcTemplate.query(sql, (rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"),
+				rs.getBigDecimal("REPORT_VERSION"), rs.getDate("REPORT_RESUBDATE") });
 	}
-	
+
 	// Normal format Excel
 
 	public byte[] getBRRS_M_OPTRExcel(String filename, String reportId, String fromdate, String todate, String currency,

@@ -454,26 +454,32 @@ public class NavigationController {
 		}
 	}
 
+	@Autowired
+	UserProfileRep userProfileRep;
+	
 	@RequestMapping(value = "BRRS", method = { RequestMethod.GET, RequestMethod.POST })
 	public String brrs(Model md, HttpServletRequest req)
 
 	{
-		// String roleId = (String) req.getSession().getAttribute("ROLEID");
-		// String domainid = (String) req.getSession().getAttribute("DOMAINID");
-
+		String userid = (String) req.getSession().getAttribute("USERID");
+		System.out.println("The login userid is : " + userid);
 		md.addAttribute("menu", " Basel Returns- Monthly Reports");
-		System.out.println("nisha1");
-		// System.out.println("count"+rrReportlist.getReportListbrrs().size());
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
 		md.addAttribute("reportlist", rrReportlist.getReportListbrrs());
-
 		return "BRRS/RRReports";
 
 	}
 
 	@RequestMapping(value = "Quarterly", method = { RequestMethod.GET, RequestMethod.POST })
 	public String Quarterly(Model md, HttpServletRequest req) {
-		// String roleId = (String) req.getSession().getAttribute("ROLEID");
-		// String domainid = (String) req.getSession().getAttribute("DOMAINID");
+		String userid = (String) req.getSession().getAttribute("USERID");
+		System.out.println("The login userid is : " + userid);
+		md.addAttribute("menu", " Basel Returns- Monthly Reports");
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
 		md.addAttribute("menu", "Basel Returns- Quarterly Reports");
 		System.out.println("count" + rrReportlist.getReportListbrrsQ().size());
 		md.addAttribute("reportlist", rrReportlist.getReportListbrrsQ());
@@ -485,6 +491,12 @@ public class NavigationController {
 	@RequestMapping(value = "HalfYearly", method = { RequestMethod.GET, RequestMethod.POST })
 	public String HalfYearly(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "Basel Returns- HalfYearly Reports");
+		String userid = (String) req.getSession().getAttribute("USERID");
+		System.out.println("The login userid is : " + userid);
+		md.addAttribute("menu", " Basel Returns- Monthly Reports");
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
 		System.out.println("count" + rrReportlist.getReportListbrrsH().size());
 		md.addAttribute("reportlist", rrReportlist.getReportListbrrsH());
 
@@ -495,6 +507,12 @@ public class NavigationController {
 	@RequestMapping(value = "Pillar3Disclosure", method = { RequestMethod.GET, RequestMethod.POST })
 	public String Pillar3Disclosure(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- Pillar 3 Disclosure Reports");
+		String userid = (String) req.getSession().getAttribute("USERID");
+		System.out.println("The login userid is : " + userid);
+		md.addAttribute("menu", " Basel Returns- Monthly Reports");
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
 		System.out.println("count" + rrReportlist.getReportListbrrsP3().size());
 		md.addAttribute("reportlist", rrReportlist.getReportListbrrsP3());
 
@@ -505,6 +523,12 @@ public class NavigationController {
 	@RequestMapping(value = "PulaCFS", method = { RequestMethod.GET, RequestMethod.POST })
 	public String PulaCFS(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- Pula CFS Reports");
+		String userid = (String) req.getSession().getAttribute("USERID");
+		System.out.println("The login userid is : " + userid);
+		md.addAttribute("menu", " Basel Returns- Monthly Reports");
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
 		System.out.println("count" + rrReportlist.getReportListbrrsPCFS().size());
 		md.addAttribute("reportlist", rrReportlist.getReportListbrrsPCFS());
 
@@ -516,6 +540,12 @@ public class NavigationController {
 	public String DISBMonthlyAndQuaterly(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- DISB Monthly And Quaterly Reports");
 		System.out.println("count" + rrReportlist.getReportListbrrsDMQ().size());
+		String userid = (String) req.getSession().getAttribute("USERID");
+		System.out.println("The login userid is : " + userid);
+		md.addAttribute("menu", " Basel Returns- Monthly Reports");
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
 		md.addAttribute("reportlist", rrReportlist.getReportListbrrsDMQ());
 
 		return "BRRS/RRReports";
@@ -525,6 +555,7 @@ public class NavigationController {
 	@RequestMapping(value = "LCR", method = { RequestMethod.GET, RequestMethod.POST })
 	public String LCR(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- LCR");
+		
 		System.out.println("count" + rrReportlist.getReportListbrrsLCR().size());
 		md.addAttribute("reportlist", rrReportlist.getReportListbrrsLCR());
 

@@ -489,9 +489,17 @@ PURPOSE		: RRREPORT
 		}
 
 		/* Same colours as the table rows */
-		.rpt-legend .legend-yellow { background-color: rgb(255, 244, 202); }
-		.rpt-legend .legend-grey   { background-color: rgb(225, 231, 234); }
-		.rpt-legend .legend-white  { background-color: #ffffff; }
+		.rpt-legend .legend-yellow {
+			background-color: rgb(255, 244, 202);
+		}
+
+		.rpt-legend .legend-grey {
+			background-color: rgb(225, 231, 234);
+		}
+
+		.rpt-legend .legend-white {
+			background-color: #ffffff;
+		}
 	</style>
 
 	<script>
@@ -542,7 +550,8 @@ PURPOSE		: RRREPORT
 
 						</div>
 
-						<button type="button" class="modify-status-btn" id="Modify_status" onclick="contentLoad(this)">
+						<button type="button" class="modify-status-btn" id="Modify_status" onclick="contentLoad(this)"
+							th:if="${role != 'M'}">
 							Modify Status
 						</button>
 
@@ -552,7 +561,9 @@ PURPOSE		: RRREPORT
 				<div class="row">
 					<div class="col-sm-12">
 						<!-- TOP BAR : search box goes here (right side) -->
-						<div id="rptTopBar" style="display:flex !important; justify-content:flex-end !important; align-items:center !important; padding:10px;"></div>
+						<div id="rptTopBar"
+							style="display:flex !important; justify-content:flex-end !important; align-items:center !important; padding:10px;">
+						</div>
 
 						<div class="table-container" style="max-height: 620px; ">
 
@@ -600,19 +611,20 @@ PURPOSE		: RRREPORT
 
 						<!-- ✅ Colour legend. Moved to the bottom-left (beside the pagination) by the DataTable script -->
 						<!-- BOTTOM BAR : legend on the left, pagination on the right (one line) -->
-						<div id="rptBottomBar" style="display:flex !important; flex-wrap:nowrap !important; flex-direction:row !important; justify-content:space-between !important; align-items:center !important; padding:8px 0 8px 10px;">
-						<div id="rptLegend" class="rpt-legend">
-							<span class="legend-item">
-								<span class="legend-box legend-yellow"></span>NO MANUAL
-							</span>
-							<span class="legend-item">
-								<span class="legend-box legend-grey"></span>FULL MANUAL
-							</span>
-							<span class="legend-item">
-								<span class="legend-box legend-white"></span>PARTIAL MANUAL
-							</span>
-						</div>
-						<div id="rptPager" style="margin-left:auto !important;"></div>
+						<div id="rptBottomBar"
+							style="display:flex !important; flex-wrap:nowrap !important; flex-direction:row !important; justify-content:space-between !important; align-items:center !important; padding:8px 0 8px 10px;">
+							<div id="rptLegend" class="rpt-legend">
+								<span class="legend-item">
+									<span class="legend-box legend-yellow"></span>NO MANUAL
+								</span>
+								<span class="legend-item">
+									<span class="legend-box legend-grey"></span>FULL MANUAL
+								</span>
+								<span class="legend-item">
+									<span class="legend-box legend-white"></span>PARTIAL MANUAL
+								</span>
+							</div>
+							<div id="rptPager" style="margin-left:auto !important;"></div>
 						</div>
 
 					</div>
@@ -643,7 +655,7 @@ PURPOSE		: RRREPORT
 
 		// inline !important so no stylesheet can override
 		function force(el, props) {
-			for (var k in props) { el.style.setProperty(k, props[k], 'important'); }
+			for (var k in props) {el.style.setProperty(k, props[k], 'important');}
 		}
 
 		// Works with BOTH DataTables 1.x (.dataTables_filter / .dataTables_paginate)
@@ -651,10 +663,10 @@ PURPOSE		: RRREPORT
 		function arrange() {
 			var filter = document.querySelector('.dataTables_filter, .dt-search');
 			var pager = document.querySelector('.dataTables_paginate, .dt-paging');
-			if (!filter || !pager) { return false; }
+			if (!filter || !pager) {return false;}
 
-			force(filter, { 'float': 'none', 'margin': '0', 'padding': '0', 'text-align': 'right' });
-			force(pager, { 'float': 'none', 'margin': '0', 'padding': '0', 'text-align': 'right', 'justify-content': 'flex-end' });
+			force(filter, {'float': 'none', 'margin': '0', 'padding': '0', 'text-align': 'right'});
+			force(pager, {'float': 'none', 'margin': '0', 'padding': '0', 'text-align': 'right', 'justify-content': 'flex-end'});
 
 			document.getElementById('rptTopBar').appendChild(filter);   // search -> top right
 			document.getElementById('rptPager').appendChild(pager);     // pagination -> bottom right
@@ -690,7 +702,7 @@ PURPOSE		: RRREPORT
 		var tries = 0;
 		var timer = setInterval(function () {
 			tries++;
-			if (arrange() || tries > 50) { clearInterval(timer); }
+			if (arrange() || tries > 50) {clearInterval(timer);}
 		}, 100);
 	});
 </script>

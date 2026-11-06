@@ -4666,10 +4666,13 @@ public class BRRS_ReportsController {
 
 			@ModelAttribute Q_BRANCHNET_Summary_Entity request1) {
 		try {
+
 			System.out.println("Came to single controller");
 
-			// set date into all 3 entities request1.setReport_date(asondate);
-
+			if (asondate != null) {
+				request1.setReport_date(asondate);
+			}
+			
 			QBRANCHNET_service.updateQBranchnetReport(request1); //
 //			  QBRANCHNET_service.QBranchnetUpdate2(request1); //
 //			  QBRANCHNET_service.QBranchnetUpdate3(request1); //

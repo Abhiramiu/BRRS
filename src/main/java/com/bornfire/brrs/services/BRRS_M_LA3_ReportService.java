@@ -3,6 +3,7 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,10 +52,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.ui.Model;
@@ -5665,91 +5670,185 @@ public class BRRS_M_LA3_ReportService {
 		}
 	}
 
+	private static final String LA3_LIVE_TABLE = "BRRS_M_LA3_SUMMARYTABLE2";
+	private static final String LA3_MOD_TABLE = "BRRS_M_LA3_MOD_SUMMARYTABLE2";
+
+	private static final String[] LA3_FIELDS = { "NO_OF_AC", "CREDIT_LIMIT", "AMOUNT_OUTSTANDING" };
+
 	@Transactional
 	public void updateReport(M_LA3_Summary_Entity2 request) {
 
+		logger.info("Came to M_LA3 Manual Update (Services)");
+		logger.info("Report Date: {}", request.getREPORT_DATE());
+
+		// 🔹 Fetch existing record from the live table
+		List<M_LA3_Summary_Entity2> records = getDataByDate2(request.getREPORT_DATE());
+
+		if (records == null || records.isEmpty()) {
+			throw new RuntimeException("Record not found for REPORT_DATE: " + request.getREPORT_DATE());
+		}
+
+		M_LA3_Summary_Entity2 existing = records.get(0);
+
+		// 🔹 Audit copy: clone of original DB state before altering any attributes
+		M_LA3_Summary_Entity2 oldcopy = new M_LA3_Summary_Entity2();
+		BeanUtils.copyProperties(existing, oldcopy);
+
 		try {
+			// ✅ Loop rows 36 to 42 : NO_OF_AC, CREDIT_LIMIT, AMOUNT_OUTSTANDING
+			for (int i = 36; i <= 42; i++) {
+				for (String field : LA3_FIELDS) {
+					String getterName = "getR" + i + "_" + field;
+					String setterName = "setR" + i + "_" + field;
 
-			logger.info("Came to services");
-			logger.info("Report Date: {}", request.getREPORT_DATE());
+					try {
+						Method getter = M_LA3_Summary_Entity2.class.getMethod(getterName);
+						Method setter = M_LA3_Summary_Entity2.class.getMethod(setterName, getter.getReturnType());
 
-			// Fetch existing record
-			List<M_LA3_Summary_Entity2> records = getDataByDate2(request.getREPORT_DATE());
+						Object newValue = getter.invoke(request);
+						Object existingValue = getter.invoke(existing);
 
-			if (records == null || records.isEmpty()) {
+						// --- Normalize state differences to keep audit log payload minimal ---
+						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
 
-				throw new RuntimeException("Record not found for REPORT_DATE: " + request.getREPORT_DATE());
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
+
+						setter.invoke(existing, newValue);
+					} catch (NoSuchMethodException e) {
+						System.out.println("Missing method: " + getterName);
+					}
+				}
 			}
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating M_LA3 report fields", e);
+		}
 
-			M_LA3_Summary_Entity2 existing = records.get(0);
+		// 🔹 Evaluate audit changes
+		String changes = auditService.getChanges(oldcopy, existing);
+		System.out.println("M_LA3 Changes Length = " + (changes != null ? changes.length() : 0));
 
-			// Audit old copy
-			M_LA3_Summary_Entity2 oldcopy = new M_LA3_Summary_Entity2();
-			BeanUtils.copyProperties(existing, oldcopy);
+		// 🔹 Set Maker-Checker Flags
+		existing.setENTITY_FLG("Y");
+		existing.setMODIFY_FLG("Y");
+		existing.setDEL_FLG("N");
 
-			String changes = auditService.getChanges(oldcopy, request);
+		// 🔹 Save into MOD Summary Table for Checker Approval
+		saveModSummaryEntity(existing);
+		System.out.println("✔ Record saved into " + LA3_MOD_TABLE + " for Checker Approval");
 
-			if (!changes.isEmpty()) {
+		// 🔹 Log Audit Trail if changes exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existing, request.getREPORT_DATE().toString(),
+					"M LA3 Summary Screen", LA3_MOD_TABLE);
+			logger.info("Audit completed for REPORT_DATE {}", request.getREPORT_DATE());
+		} else {
+			logger.info("No changes detected for REPORT_DATE {}", request.getREPORT_DATE());
+		}
 
-				String sql = "UPDATE BRRS_M_LA3_SUMMARYTABLE2 SET " +
+		// 🔹 Post-Commit Transaction Synchronization to execute Stored Procedure
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+			@Override
+			public void afterCommit() {
+				try {
+					String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(request.getREPORT_DATE());
 
-						"R36_NO_OF_AC=?, R36_CREDIT_LIMIT=?, R36_AMOUNT_OUTSTANDING=?, " +
+					logger.info("Transaction committed — calling BRRS_M_LA3_SUMMARY_PROCEDURE({})", formattedDate);
 
-						"R37_NO_OF_AC=?, R37_CREDIT_LIMIT=?, R37_AMOUNT_OUTSTANDING=?, " +
+					jdbcTemplate.update("BEGIN BRRS_M_LA3_SUMMARY_PROCEDURE(?); END;", formattedDate);
 
-						"R38_NO_OF_AC=?, R38_CREDIT_LIMIT=?, R38_AMOUNT_OUTSTANDING=?, " +
+					logger.info("BRRS_M_LA3_SUMMARY_PROCEDURE executed successfully after commit.");
+				} catch (Exception e) {
+					logger.error("Procedure execution failed", e);
+					throw new RuntimeException("Procedure execution failed", e);
+				}
+			}
+		});
+	}
 
-						"R39_NO_OF_AC=?, R39_CREDIT_LIMIT=?, R39_AMOUNT_OUTSTANDING=?, " +
+// Saves into BRRS_M_LA3_MOD_SUMMARYTABLE2
+	public void saveModSummaryEntity(M_LA3_Summary_Entity2 entity) {
+		saveToTable(entity, LA3_MOD_TABLE);
+	}
 
-						"R40_NO_OF_AC=?, R40_CREDIT_LIMIT=?, R40_AMOUNT_OUTSTANDING=?, " +
+// Generic upsert (insert if no row for the report date, else update)
+	private void saveToTable(M_LA3_Summary_Entity2 entity, String tableName) {
+		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
 
-						"R41_NO_OF_AC=?, R41_CREDIT_LIMIT=?, R41_AMOUNT_OUTSTANDING=?, " +
+		// 🔹 1. Check if record already exists for this report date
+		String checkSql = "SELECT COUNT(*) FROM " + tableName + " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+		MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", entity.getREPORT_DATE());
+		Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
 
-						"R42_NO_OF_AC=?, R42_CREDIT_LIMIT=?, R42_AMOUNT_OUTSTANDING=? " +
+		// 🔹 2. Build parameter map for all fields
+		MapSqlParameterSource params = new MapSqlParameterSource().addValue("reportDate", entity.getREPORT_DATE())
+				.addValue("entity_flg", entity.getENTITY_FLG()).addValue("modify_flg", entity.getMODIFY_FLG())
+				.addValue("del_flg", entity.getDEL_FLG());
 
-						"WHERE REPORT_DATE=?";
+		StringBuilder updateSet = new StringBuilder();
+		StringBuilder insertCols = new StringBuilder("REPORT_DATE");
+		StringBuilder insertVals = new StringBuilder(":reportDate");
 
-				int count = jdbcTemplate.update(
+		for (int i = 36; i <= 42; i++) {
+			for (String field : LA3_FIELDS) {
+				String paramName = "r" + i + "_" + field.toLowerCase();
+				String columnName = "R" + i + "_" + field;
 
-						sql,
-
-						request.getR36_NO_OF_AC(), request.getR36_CREDIT_LIMIT(), request.getR36_AMOUNT_OUTSTANDING(),
-
-						request.getR37_NO_OF_AC(), request.getR37_CREDIT_LIMIT(), request.getR37_AMOUNT_OUTSTANDING(),
-
-						request.getR38_NO_OF_AC(), request.getR38_CREDIT_LIMIT(), request.getR38_AMOUNT_OUTSTANDING(),
-
-						request.getR39_NO_OF_AC(), request.getR39_CREDIT_LIMIT(), request.getR39_AMOUNT_OUTSTANDING(),
-
-						request.getR40_NO_OF_AC(), request.getR40_CREDIT_LIMIT(), request.getR40_AMOUNT_OUTSTANDING(),
-
-						request.getR41_NO_OF_AC(), request.getR41_CREDIT_LIMIT(), request.getR41_AMOUNT_OUTSTANDING(),
-
-						request.getR42_NO_OF_AC(), request.getR42_CREDIT_LIMIT(), request.getR42_AMOUNT_OUTSTANDING(),
-
-						request.getREPORT_DATE());
-
-				if (count > 0) {
-
-					auditService.compareEntitiesmanual(oldcopy, request, request.getREPORT_DATE().toString(),
-							"M LA3 Summary Screen", "BRRS_M_LA3_SUMMARYTABLE2");
-
-					logger.info("Audit completed for REPORT_DATE {}", request.getREPORT_DATE());
-
-					logger.info("M LA3 Summary Updated Successfully. Rows Updated: {}", count);
+				Object val = null;
+				try {
+					val = M_LA3_Summary_Entity2.class.getMethod("getR" + i + "_" + field).invoke(entity);
+				} catch (NoSuchMethodException e) {
+					System.out.println("Missing getter for R" + i + "_" + field);
+				} catch (Exception e) {
+					throw new RuntimeException("Error reading " + columnName, e);
 				}
 
-			} else {
+				params.addValue(paramName, val);
 
-				logger.info("No changes detected for REPORT_DATE {}", request.getREPORT_DATE());
+				updateSet.append(columnName).append(" = :").append(paramName).append(", ");
+				insertCols.append(", ").append(columnName);
+				insertVals.append(", :").append(paramName);
 			}
-
-		} catch (Exception e) {
-
-			logger.error("Error while updating BRRS_M_LA3 Report", e);
-
-			throw new RuntimeException("Error while updating BRRS_M_LA3 Report", e);
 		}
+
+		// Flags
+		updateSet.append("ENTITY_FLG = :entity_flg, MODIFY_FLG = :modify_flg, DEL_FLG = :del_flg");
+		insertCols.append(", ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+		insertVals.append(", :entity_flg, :modify_flg, :del_flg");
+
+		if (count != null && count > 0) {
+			// 🔹 3. UPDATE existing record
+			String updateSql = "UPDATE " + tableName + " SET " + updateSet
+					+ " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+			namedParamJdbc.update(updateSql, params);
+		} else {
+			// 🔹 4. INSERT new record
+			String insertSql = "INSERT INTO " + tableName + " (" + insertCols + ") VALUES (" + insertVals + ")";
+			namedParamJdbc.update(insertSql, params);
+		}
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		M_LA3_Summary_Entity2 modRecord = jdbcTemplate.queryForObject(
+				"SELECT * FROM " + LA3_MOD_TABLE + " WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND MODIFY_FLG='Y'",
+				new BeanPropertyRowMapper<>(M_LA3_Summary_Entity2.class), reportDate);
+
+		// Copy/Merge MOD values into the LIVE summary table
+		saveToTable(modRecord, LA3_LIVE_TABLE);
+
+		// Mark modified flag as 'N' (Approved) in the MOD table
+		jdbcTemplate.update("UPDATE " + LA3_MOD_TABLE + " SET MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				reportDate);
+
+		String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+
+		// Run procedure after approval
+		jdbcTemplate.update("BEGIN BRRS_M_LA3_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+		System.out.println("M_LA3 Checker Approved Successfully");
 	}
 
 	@Autowired

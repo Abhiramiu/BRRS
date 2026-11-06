@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.bornfire.brrs.entities.AuditServicesEntity;
 import com.bornfire.brrs.entities.AuditServicesRep;
+import com.bornfire.brrs.entities.UserProfileRep;
 import com.bornfire.brrs.services.AuditService;
 
 @Controller
@@ -66,7 +67,9 @@ public class AuditController {
 
 		return "Service_Audit";
 	}
-
+	@Autowired
+	UserProfileRep userProfileRep;
+	
 	@RequestMapping(value = "Modify_status", method = RequestMethod.GET)
 	public String ModifyStatus(Model md, HttpServletRequest req) {
 		String userid = (String) req.getSession().getAttribute("USERID");
@@ -76,7 +79,9 @@ public class AuditController {
 		System.out.println("The time is " + localDateTime);
 
 		md.addAttribute("menu", "Audit");
-
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
 		// Add list to the model
 		md.addAttribute("AuditListModify", auditService.getModifyStatus());
 

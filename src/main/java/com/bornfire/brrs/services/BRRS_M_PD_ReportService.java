@@ -42,6 +42,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
@@ -403,264 +404,231 @@ public class BRRS_M_PD_ReportService {
 		}
 
 
-	
+private static final String PD_LIVE_TABLE = "BRRS_M_PD_MANUAL_SUMMARYTABLE";
+private static final String PD_MOD_TABLE  = "BRRS_M_PD_MANUAL_MOD_SUMMARYTABLE";
 
-		@Transactional
-		public void updateReport(M_PD_Manual_Summary_Entity updatedEntity) {
+private static final int[] PD_TABLE2_ROWS = { 8, 12, 26, 35, 38, 41, 46, 50, 54, 61 };
 
-		    System.out.println("Came to services1");
-		    System.out.println("Report Date: " + updatedEntity.getReport_date());
+private static final String[] PD_TABLE2_FIELDS = { "30D_90D_PASTDUE", "NON_PERFORM_LOANS", "NON_ACCRUALS1",
+		"SPECIFIC_PROV1", "NO_OF_ACC1", "90D_180D_PASTDUE", "NON_ACCRUALS2", "SPECIFIC_PROV2", "NO_OF_ACC2",
+		"180D_ABOVE_PASTDUE", "NON_ACCRUALS3", "SPECIFIC_PROV3", "NO_OF_ACC3", "TOTAL_NON_ACCRUAL",
+		"TOTAL_DUE_LOANS", "TOTAL_PERFORMING_LOAN", "VALUE_OF_COLLATERAL", "TOTAL_VALUE_NPL",
+		"TOTAL_SPECIFIC_PROV", "SPECIFIC_PROV_NPL" };
 
-		//  Use your query to fetch by date
-		    List<M_PD_Manual_Summary_Entity> list = getManualSummaryByDate(updatedEntity.getReport_date());
+private static final String[] PD_MAIN_FIELDS = { "30D_90D_PASTDUE", "NON_PERFORM_LOANS", "NON_ACCRUALS1",
+		"SPECIFIC_PROV1", "NO_OF_ACC1", "90D_180D_PASTDUE", "NON_ACCRUALS2", "SPECIFIC_PROV2", "NO_OF_ACC2",
+		"VALUE_OF_COLLATERAL" };
 
-		    boolean existingRowFound = !list.isEmpty();
-		    M_PD_Manual_Summary_Entity existing;
-		    if (list.isEmpty()) {
-		        // Record not found â€” optionally create it
-		        System.out.println("No record found for REPORT_DATE: " + updatedEntity.getReport_date());
-		        existing = new M_PD_Manual_Summary_Entity();
-		        existing.setReport_date(updatedEntity.getReport_date());
-		    } else {
-		        existing = list.get(0);
-		    }
-		    
-		 // =========================================
-		 // AUDIT OLD COPY
-		 // =========================================
+private static final String[] PD_TOTAL_FIELDS = { "TOTAL_NON_ACCRUAL", "TOTAL_DUE_LOANS", "TOTAL_PERFORMING_LOAN",
+		"TOTAL_VALUE_NPL", "TOTAL_SPECIFIC_PROV", "SPECIFIC_PROV_NPL" };
 
-		 M_PD_Manual_Summary_Entity oldcopy =
-		         new M_PD_Manual_Summary_Entity();
+// Rows skipped in the "rows 9 to 60" loops
+private boolean pdSkipRow(int i) {
+	return i == 12 || i == 26 || i == 35 || i == 38 || i == 41 || i == 46 || i == 50 || i == 54;
+}
 
-		 BeanUtils.copyProperties(existing, oldcopy);
-		    
+// Copies one field from request to existing (null values never overwrite)
+private void pdCopyField(M_PD_Manual_Summary_Entity from, M_PD_Manual_Summary_Entity to, int row, String field)
+		throws Exception {
+	try {
+		Method getter = M_PD_Manual_Summary_Entity.class.getMethod("getR" + row + "_" + field);
+		Method setter = M_PD_Manual_Summary_Entity.class.getMethod("setR" + row + "_" + field,
+				getter.getReturnType());
 
-		    try {
+		Object newValue = getter.invoke(from);
 
-		        // ---------------------------
-		        // TABLE 2 ROWS
-		        // ---------------------------
-		        int[] rows = {8,12,26,35,38,41,46,50,54,61};
-
-		        for (int i : rows) {
-
-		            String prefix = "R" + i + "_";
-
-		            String[] fields = {
-		                "30D_90D_PASTDUE","NON_PERFORM_LOANS","NON_ACCRUALS1",
-		                "SPECIFIC_PROV1","NO_OF_ACC1","90D_180D_PASTDUE",
-		                "NON_ACCRUALS2","SPECIFIC_PROV2","NO_OF_ACC2",
-		                "180D_ABOVE_PASTDUE","NON_ACCRUALS3","SPECIFIC_PROV3",
-		                "NO_OF_ACC3","TOTAL_NON_ACCRUAL","TOTAL_DUE_LOANS",
-		                "TOTAL_PERFORMING_LOAN","VALUE_OF_COLLATERAL",
-		                "TOTAL_VALUE_NPL","TOTAL_SPECIFIC_PROV","SPECIFIC_PROV_NPL"
-		            };
-
-		            for (String field : fields) {
-
-		                try {
-
-		                    String getterName = "get" + prefix + field;
-		                    String setterName = "set" + prefix + field;
-
-		                    Method getter =
-		                            M_PD_Manual_Summary_Entity.class.getMethod(getterName);
-
-		                    Method setter =
-		                            M_PD_Manual_Summary_Entity.class
-		                            .getMethod(setterName, getter.getReturnType());
-
-		                    Object newValue = getter.invoke(updatedEntity);
-
-		                    // Prevent NULL overwrite
-		                    if (newValue != null) {
-		                        setter.invoke(existing, newValue);
-		                    }
-
-		                } catch (NoSuchMethodException e) {
-		                    continue;
-		                }
-		            }
-		        }
-
-		        // ---------------------------
-		        // ROWS 9 TO 60 (MAIN FIELDS)
-		        // ---------------------------
-		        for (int i = 9; i <= 60; i++) {
-
-		            if (i == 12 || i == 26 || i == 35 || i == 38
-		                    || i == 41 || i == 46 || i == 50 || i == 54)
-		                continue;
-
-		            String prefix = "R" + i + "_";
-
-		            String[] fields = {
-		                "30D_90D_PASTDUE","NON_PERFORM_LOANS",
-		                "NON_ACCRUALS1","SPECIFIC_PROV1","NO_OF_ACC1",
-		                "90D_180D_PASTDUE","NON_ACCRUALS2",
-		                "SPECIFIC_PROV2","NO_OF_ACC2",
-		                "VALUE_OF_COLLATERAL"
-		            };
-
-		            for (String field : fields) {
-
-		                try {
-
-		                    String getterName = "get" + prefix + field;
-		                    String setterName = "set" + prefix + field;
-
-		                    Method getter =
-		                            M_PD_Manual_Summary_Entity.class.getMethod(getterName);
-
-		                    Method setter =
-		                            M_PD_Manual_Summary_Entity.class
-		                            .getMethod(setterName, getter.getReturnType());
-
-		                    Object newValue = getter.invoke(updatedEntity);
-
-		                    if (newValue != null) {
-		                        setter.invoke(existing, newValue);
-		                    }
-
-		                } catch (NoSuchMethodException e) {
-		                    continue;
-		                }
-		            }
-		        }
-
-		        // ---------------------------
-		        // TOTAL COLUMNS
-		        // ---------------------------
-		        for (int i = 9; i <= 60; i++) {
-
-		            if (i == 12 || i == 26 || i == 35 || i == 38
-		                    || i == 41 || i == 46 || i == 50 || i == 54)
-		                continue;
-
-		            String prefix = "R" + i + "_";
-
-		            String[] fields = {
-		                "TOTAL_NON_ACCRUAL","TOTAL_DUE_LOANS",
-		                "TOTAL_PERFORMING_LOAN","TOTAL_VALUE_NPL",
-		                "TOTAL_SPECIFIC_PROV","SPECIFIC_PROV_NPL"
-		            };
-
-		            for (String field : fields) {
-
-		                try {
-
-		                    String getterName = "get" + prefix + field;
-		                    String setterName = "set" + prefix + field;
-
-		                    Method getter =
-		                            M_PD_Manual_Summary_Entity.class.getMethod(getterName);
-
-		                    Method setter =
-		                            M_PD_Manual_Summary_Entity.class
-		                            .getMethod(setterName, getter.getReturnType());
-
-		                    Object newValue = getter.invoke(updatedEntity);
-
-		                    if (newValue != null) {
-		                        setter.invoke(existing, newValue);
-		                    }
-
-		                } catch (NoSuchMethodException e) {
-		                    continue;
-		                }
-		            }
-		        }
-
-		     // =========================================
-		     // CHECK CHANGES
-		     // =========================================
-
-		     String changes = auditService.getChanges(oldcopy, existing);
-
-		     // =========================================
-		     // SAVE TO DATABASE
-		     // =========================================
-
-		     saveManualSummary(existing, existingRowFound);
-
-		     // =========================================
-		     // AUDIT ONLY IF CHANGES FOUND
-		     // =========================================
-
-		     if (changes != null && !changes.trim().isEmpty()) {
-
-		         System.out.println("Audit Length : " + changes.length());
-
-		         if (changes.length() <= 2000) {
-
-		             auditService.compareEntitiesmanual(
-		                     oldcopy,
-		                     existing,
-		                     updatedEntity.getReport_date().toString(),
-		                     "M PD Manual Summary Screen",
-		                     "BRRS_M_PD_MANUAL_SUMMARY"
-		             );
-
-		         } else {
-
-		             System.out.println("Audit skipped because MODI_DETAILS exceeds 2000 characters.");
-		         }
-		     }
-
-		     System.out.println("Record Updated Successfully");
-
-		    } catch (Exception e) {
-		        throw new RuntimeException("Error while updating report fields", e);
-		    }
+		// Prevent NULL overwrite
+		if (newValue != null) {
+			setter.invoke(to, newValue);
 		}
+	} catch (NoSuchMethodException e) {
+		// Skip missing row/field combinations
+	}
+}
 
-	// Builds and runs an UPDATE (existing row) or INSERT (new row) dynamically from
-	// the entity's getters, since M_PD_Manual_Summary_Entity has ~1080 columns.
-	private void saveManualSummary(M_PD_Manual_Summary_Entity e, boolean existingRowFound) {
-		List<String> columns = new ArrayList<>();
-		List<Object> values = new ArrayList<>();
-		for (Method getter : M_PD_Manual_Summary_Entity.class.getMethods()) {
-			if (!getter.getName().startsWith("get") || getter.getParameterCount() != 0
-					|| getter.getName().equals("getClass")) {
-				continue;
-			}
-			String column = getter.getName().substring(3).toUpperCase();
-			if (column.equals("REPORT_DATE")) {
-				continue;
-			}
-			try {
-				columns.add(column);
-				values.add(getter.invoke(e));
-			} catch (Exception ex) {
-				throw new RuntimeException("Failed reading " + getter.getName(), ex);
+// Sets a flag only if the entity has that setter
+private void pdSetFlag(M_PD_Manual_Summary_Entity e, String setterName, String value) {
+	try {
+		e.getClass().getMethod(setterName, String.class).invoke(e, value);
+	} catch (NoSuchMethodException ignored) {
+	} catch (Exception ex) {
+		throw new RuntimeException("Failed setting " + setterName, ex);
+	}
+}
+
+// All column getters of the entity (excluding REPORT_DATE), in a stable order
+private List<Method> pdGetters() {
+	List<Method> getters = new ArrayList<>();
+	for (Method m : M_PD_Manual_Summary_Entity.class.getMethods()) {
+		if (!m.getName().startsWith("get") || m.getParameterCount() != 0 || m.getName().equals("getClass")) {
+			continue;
+		}
+		if (m.getName().substring(3).equalsIgnoreCase("REPORT_DATE")) {
+			continue;
+		}
+		getters.add(m);
+	}
+	getters.sort((a, b) -> a.getName().compareTo(b.getName()));
+	return getters;
+}
+
+private List<String> pdColumns() {
+	List<String> cols = new ArrayList<>();
+	for (Method m : pdGetters()) {
+		cols.add(m.getName().substring(3).toUpperCase());
+	}
+	return cols;
+}
+
+@Transactional
+public void updateReport(M_PD_Manual_Summary_Entity updatedEntity) {
+
+	System.out.println("Came to M_PD Manual Update (Services)");
+	System.out.println("Report Date: " + updatedEntity.getReport_date());
+
+	// 🔹 Fetch existing record from the live table
+	List<M_PD_Manual_Summary_Entity> list = getManualSummaryByDate(updatedEntity.getReport_date());
+
+	M_PD_Manual_Summary_Entity existing;
+	if (list.isEmpty()) {
+		System.out.println("No record found for REPORT_DATE: " + updatedEntity.getReport_date());
+		existing = new M_PD_Manual_Summary_Entity();
+		existing.setReport_date(updatedEntity.getReport_date());
+	} else {
+		existing = list.get(0);
+	}
+
+	// 🔹 Audit copy: clone of original DB state before altering any attributes
+	M_PD_Manual_Summary_Entity oldcopy = new M_PD_Manual_Summary_Entity();
+	BeanUtils.copyProperties(existing, oldcopy);
+
+	try {
+		// ---------------------------
+		// TABLE 2 ROWS
+		// ---------------------------
+		for (int i : PD_TABLE2_ROWS) {
+			for (String field : PD_TABLE2_FIELDS) {
+				pdCopyField(updatedEntity, existing, i, field);
 			}
 		}
 
-		if (existingRowFound) {
-			StringBuilder sql = new StringBuilder("UPDATE BRRS_M_PD_MANUAL_SUMMARYTABLE SET ");
-			for (int i = 0; i < columns.size(); i++) {
-				if (i > 0) sql.append(",");
-				sql.append(columns.get(i)).append("=?");
+		// ---------------------------
+		// ROWS 9 TO 60 (MAIN FIELDS)
+		// ---------------------------
+		for (int i = 9; i <= 60; i++) {
+			if (pdSkipRow(i)) continue;
+			for (String field : PD_MAIN_FIELDS) {
+				pdCopyField(updatedEntity, existing, i, field);
 			}
-			sql.append(" WHERE TRUNC(REPORT_DATE)=TRUNC(?)");
-			List<Object> params = new ArrayList<>(values);
-			params.add(e.getReport_date());
-			jdbcTemplate.update(sql.toString(), params.toArray());
+		}
+
+		// ---------------------------
+		// TOTAL COLUMNS
+		// ---------------------------
+		for (int i = 9; i <= 60; i++) {
+			if (pdSkipRow(i)) continue;
+			for (String field : PD_TOTAL_FIELDS) {
+				pdCopyField(updatedEntity, existing, i, field);
+			}
+		}
+	} catch (Exception e) {
+		throw new RuntimeException("Error while updating report fields", e);
+	}
+
+	// 🔹 Check changes
+	String changes = auditService.getChanges(oldcopy, existing);
+
+	// 🔹 Set Maker-Checker Flags (only if the entity has these fields)
+	pdSetFlag(existing, "setEntity_flg", "Y");
+	pdSetFlag(existing, "setModify_flg", "Y");
+	pdSetFlag(existing, "setDel_flg", "N");
+
+	// 🔹 Save into MOD Summary Table for Checker Approval
+	saveModSummaryEntity(existing);
+	System.out.println("✔ Record saved into " + PD_MOD_TABLE + " for Checker Approval");
+
+	// 🔹 Audit only if changes found
+	if (changes != null && !changes.trim().isEmpty()) {
+		System.out.println("Audit Length : " + changes.length());
+
+		if (changes.length() <= 2000) {
+			auditService.compareEntitiesmanual(oldcopy, existing, updatedEntity.getReport_date().toString(),
+					"M PD Manual Summary Screen", PD_MOD_TABLE);
 		} else {
-			StringBuilder sql = new StringBuilder("INSERT INTO BRRS_M_PD_MANUAL_SUMMARYTABLE (REPORT_DATE,");
-			sql.append(String.join(",", columns)).append(") VALUES (?");
-			for (int i = 0; i < columns.size(); i++) {
-				sql.append(",?");
-			}
-			sql.append(")");
-			List<Object> params = new ArrayList<>();
-			params.add(e.getReport_date());
-			params.addAll(values);
-			jdbcTemplate.update(sql.toString(), params.toArray());
+			System.out.println("Audit skipped because MODI_DETAILS exceeds 2000 characters.");
 		}
 	}
 
+	System.out.println("Record Updated Successfully");
+}
 
+// Saves into BRRS_M_PD_MANUAL_MOD_SUMMARYTABLE
+public void saveModSummaryEntity(M_PD_Manual_Summary_Entity entity) {
+	saveToTable(entity, PD_MOD_TABLE);
+}
+
+// Generic upsert (insert if no row for the report date, else update)
+private void saveToTable(M_PD_Manual_Summary_Entity e, String tableName) {
+	List<String> columns = new ArrayList<>();
+	List<Object> values = new ArrayList<>();
+
+	for (Method getter : pdGetters()) {
+		try {
+			columns.add(getter.getName().substring(3).toUpperCase());
+			values.add(getter.invoke(e));
+		} catch (Exception ex) {
+			throw new RuntimeException("Failed reading " + getter.getName(), ex);
+		}
+	}
+
+	// 🔹 1. Check if record already exists for this report date
+	Integer count = jdbcTemplate.queryForObject(
+			"SELECT COUNT(*) FROM " + tableName + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", Integer.class,
+			e.getReport_date());
+
+	if (count != null && count > 0) {
+		// 🔹 2. UPDATE existing record
+		StringBuilder sql = new StringBuilder("UPDATE " + tableName + " SET ");
+		for (int i = 0; i < columns.size(); i++) {
+			if (i > 0) sql.append(",");
+			sql.append(columns.get(i)).append("=?");
+		}
+		sql.append(" WHERE TRUNC(REPORT_DATE)=TRUNC(?)");
+
+		List<Object> params = new ArrayList<>(values);
+		params.add(e.getReport_date());
+		jdbcTemplate.update(sql.toString(), params.toArray());
+	} else {
+		// 🔹 3. INSERT new record
+		StringBuilder sql = new StringBuilder("INSERT INTO " + tableName + " (REPORT_DATE,");
+		sql.append(String.join(",", columns)).append(") VALUES (?");
+		for (int i = 0; i < columns.size(); i++) {
+			sql.append(",?");
+		}
+		sql.append(")");
+
+		List<Object> params = new ArrayList<>();
+		params.add(e.getReport_date());
+		params.addAll(values);
+		jdbcTemplate.update(sql.toString(), params.toArray());
+	}
+}
+
+@Transactional
+public void approveReport(Date reportDate) {
+	M_PD_Manual_Summary_Entity modRecord = jdbcTemplate.queryForObject(
+			"SELECT * FROM " + PD_MOD_TABLE + " WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND MODIFY_FLG='Y'",
+			new BeanPropertyRowMapper<>(M_PD_Manual_Summary_Entity.class), reportDate);
+
+	// Copy/Merge MOD values into the LIVE summary table
+	saveToTable(modRecord, PD_LIVE_TABLE);
+
+	// Mark modified flag as 'N' (Approved) in the MOD table
+	jdbcTemplate.update("UPDATE " + PD_MOD_TABLE + " SET MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+			reportDate);
+
+	System.out.println("M_PD Checker Approved Successfully");
+}
 
 	public byte[] BRRS_M_PDDetailExcel(String filename, String fromdate, String todate, String currency,
 										   String dtltype, String type, String version) {

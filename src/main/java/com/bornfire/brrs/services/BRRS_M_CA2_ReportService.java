@@ -46,9 +46,13 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.ui.Model;
@@ -57,7 +61,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.UserProfileRep;
-
 
 @Service
 @Transactional
@@ -133,20 +136,18 @@ public class BRRS_M_CA2_ReportService {
 				new M_CA2DetailRowMapper());
 		return list.isEmpty() ? null : list.get(0);
 	}
-	
-	//=====================RESUB  
-	
+
+	// =====================RESUB
+
 	// ─── Resub summary by date and version (archival table) ────────────────────
 	public List<M_CA2_Summary_Entity> get_ResubSummaryByDate(Date reportDate, String reportVersion) {
 
-	    return jdbcTemplate.query(
-	        "SELECT * FROM BRRS_M_CA2_ARCHIVALTABLE_SUMMARY " +
-	        "WHERE TRUNC(REPORT_DATE)=TRUNC(?) " +
-	        "AND REPORT_VERSION=?",
-	        new Object[] { reportDate, reportVersion },
-	        new M_CA2SummaryRowMapper());
+		return jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_CA2_ARCHIVALTABLE_SUMMARY " + "WHERE TRUNC(REPORT_DATE)=TRUNC(?) "
+						+ "AND REPORT_VERSION=?",
+				new Object[] { reportDate, reportVersion }, new M_CA2SummaryRowMapper());
 	}
-	
+
 	// ─── Find archival detail by ACCT_NUMBER ───────────────────────────────────
 	public M_CA2_Detail_Entity findBySnoArch(String acctNumber) {
 		if (acctNumber == null || acctNumber.trim().isEmpty()) {
@@ -154,7 +155,8 @@ public class BRRS_M_CA2_ReportService {
 		}
 		try {
 			String sql = "SELECT * FROM BRRS_M_CA2_ARCHIVALTABLE_DETAIL WHERE ACCT_NUMBER = ? ORDER BY REPORT_DATE DESC";
-			List<M_CA2_Detail_Entity> list = jdbcTemplate.query(sql, new Object[] { acctNumber.trim() }, new M_CA2DetailRowMapper());
+			List<M_CA2_Detail_Entity> list = jdbcTemplate.query(sql, new Object[] { acctNumber.trim() },
+					new M_CA2DetailRowMapper());
 			return (list != null && !list.isEmpty()) ? list.get(0) : null;
 		} catch (Exception e) {
 			return null;
@@ -168,7 +170,8 @@ public class BRRS_M_CA2_ReportService {
 		if (reportDate != null) {
 			try {
 				String sql = "SELECT * FROM BRRS_M_CA2_ARCHIVALTABLE_DETAIL WHERE ACCT_NUMBER = ? AND TRUNC(REPORT_DATE) = TRUNC(?)";
-				List<M_CA2_Detail_Entity> list = jdbcTemplate.query(sql, new Object[] { acctNumber.trim(), reportDate }, new M_CA2DetailRowMapper());
+				List<M_CA2_Detail_Entity> list = jdbcTemplate.query(sql, new Object[] { acctNumber.trim(), reportDate },
+						new M_CA2DetailRowMapper());
 				if (list != null && !list.isEmpty()) {
 					return list.get(0);
 				}
@@ -178,7 +181,7 @@ public class BRRS_M_CA2_ReportService {
 		}
 		return findBySnoArch(acctNumber);
 	}
-	
+
 	// ─── Find current detail by SNO / ACCT_NUMBER ─────────────────────────────
 	public M_CA2_Detail_Entity findBySno(String sno) {
 		if (sno == null || sno.trim().isEmpty()) {
@@ -186,13 +189,14 @@ public class BRRS_M_CA2_ReportService {
 		}
 		try {
 			String sql = "SELECT * FROM BRRS_M_CA2_DETAILTABLE WHERE ACCT_NUMBER = ?";
-			List<M_CA2_Detail_Entity> list = jdbcTemplate.query(sql, new Object[] { sno.trim() }, new M_CA2DetailRowMapper());
+			List<M_CA2_Detail_Entity> list = jdbcTemplate.query(sql, new Object[] { sno.trim() },
+					new M_CA2DetailRowMapper());
 			return (list != null && !list.isEmpty()) ? list.get(0) : null;
 		} catch (Exception ignored) {
 			return null;
 		}
 	}
-	
+
 	// ─── Check if version is the highest ───────────────────────────────────────
 	public String getishighestversion(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
 		String sql = "SELECT CASE WHEN ? = MAX(REPORT_VERSION) THEN 'YES' ELSE 'NO' END AS is_highest "
@@ -200,19 +204,18 @@ public class BRRS_M_CA2_ReportService {
 		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_VERSION, REPORT_DATE }, String.class);
 
 	}
+
 //=====================
 	// ─── Archival detail by date ────────────────────────────────────────────────
 	public List<M_CA2_Archival_Detail_Entity> getArchivalDetailByDateAndVersion(Date reportDate) {
 
-	    return jdbcTemplate.query(
-	            "SELECT * FROM BRRS_M_CA2_ARCHIVALTABLE_DETAIL WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
-	            new Object[] { reportDate },
-	            new M_CA2ArchivalDetailRowMapper());
+		return jdbcTemplate.query("SELECT * FROM BRRS_M_CA2_ARCHIVALTABLE_DETAIL WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				new Object[] { reportDate }, new M_CA2ArchivalDetailRowMapper());
 	}
 
 	// ─── Archival detail by label and criteria ─────────────────────────────────
-	public List<M_CA2_Archival_Detail_Entity> getArchivalDetailByRowIdAndColumnId(String reportLabel, String reportAddlCriteria1,
-			Date reportDate) {
+	public List<M_CA2_Archival_Detail_Entity> getArchivalDetailByRowIdAndColumnId(String reportLabel,
+			String reportAddlCriteria1, Date reportDate) {
 		return jdbcTemplate.query(
 				"SELECT * FROM BRRS_M_CA2_ARCHIVALTABLE_DETAIL WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND TRUNC(REPORT_DATE) = TRUNC(?)",
 				new Object[] { reportLabel, reportAddlCriteria1, reportDate }, new M_CA2ArchivalDetailRowMapper());
@@ -304,7 +307,7 @@ public class BRRS_M_CA2_ReportService {
 //
 //		return mv;
 //	}
-	
+
 	// ─── Main report view ───────────────────────────────────────────────────────
 	public ModelAndView getM_CA2View(String reportId, String fromdate, String todate, String currency, String dtltype,
 			Pageable pageable, String type, BigDecimal version, HttpServletRequest req1, Model md) {
@@ -346,7 +349,7 @@ public class BRRS_M_CA2_ReportService {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-           mv.addObject("displaymode", "summary");
+			mv.addObject("displaymode", "summary");
 			mv.addObject("reportsummary", T1Master);
 		}
 
@@ -373,7 +376,7 @@ public class BRRS_M_CA2_ReportService {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-           mv.addObject("displaymode", "summary");
+			mv.addObject("displaymode", "summary");
 			mv.addObject("reportsummary", T1Master);
 		}
 
@@ -383,7 +386,8 @@ public class BRRS_M_CA2_ReportService {
 		} catch (Exception e) {
 			try {
 				parsedDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate != null ? todate : fromdate);
-			} catch (Exception ignored) {}
+			} catch (Exception ignored) {
+			}
 		}
 		String formattedDdmmyyyy = parsedDate != null ? new SimpleDateFormat("dd/MM/yyyy").format(parsedDate) : todate;
 
@@ -400,7 +404,7 @@ public class BRRS_M_CA2_ReportService {
 
 		return mv;
 	}
-	
+
 	// ─── Current detail view ───────────────────────────────────────────────────
 	public ModelAndView getM_CA2currentDtl(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String filter, String type, String version, HttpServletRequest req1,
@@ -680,14 +684,20 @@ public class BRRS_M_CA2_ReportService {
 		return resubList;
 	}
 
+	private static final String CA2_LIVE_TABLE = "BRRS_M_CA2_SUMMARYTABLE";
+	private static final String CA2_MOD_TABLE = "BRRS_M_CA2_MOD_SUMMARYTABLE";
+
+	private static final int[] CA2_AMOUNT2_ROWS = { 11, 32, 42, 44, 43, 46 };
+	private static final int[] CA2_AMOUNT1_ROWS = { 14, 15, 16, 18, 19, 21 };
+
 	@Transactional
-	// ─── Update summary report (Overloaded) ─────────────────────────────────────
 	public ResponseEntity<?> updateReport(M_CA2_Summary_Entity updatedEntity) {
 		return updateReport(updatedEntity, null, null, null);
 	}
 
 	@Transactional
-	public ResponseEntity<?> updateReport(M_CA2_Summary_Entity updatedEntity, String type, String version, String entry) {
+	public ResponseEntity<?> updateReport(M_CA2_Summary_Entity updatedEntity, String type, String version,
+			String entry) {
 		try {
 			boolean isResub = "RESUB".equalsIgnoreCase(type);
 			Date reportDate = updatedEntity.getReport_date();
@@ -697,7 +707,8 @@ public class BRRS_M_CA2_ReportService {
 			java.sql.Date sqlDate = new java.sql.Date(reportDate.getTime());
 			String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
 
-			System.out.println("Updating CA2 Summary: type=" + type + ", version=" + version + ", entry=" + entry + ", date=" + formattedDate);
+			System.out.println("Updating CA2 Summary: type=" + type + ", version=" + version + ", entry=" + entry
+					+ ", date=" + formattedDate);
 
 			// =========================================
 			// FETCH EXISTING RECORD
@@ -744,14 +755,8 @@ public class BRRS_M_CA2_ReportService {
 
 			boolean isChanged = false;
 
-			// =========================================
-			// ALLOWED ROWS
-			// =========================================
-			int[] amount2Indexes = { 11, 32, 42, 44, 43, 46 };
-			int[] amount1Indexes = { 14, 15, 16, 18, 19, 21 };
-
 			// AMOUNT_2 UPDATE
-			for (int i : amount2Indexes) {
+			for (int i : CA2_AMOUNT2_ROWS) {
 				String getterName = "getR" + i + "_amount_2";
 				String setterName = "setR" + i + "_amount_2";
 				try {
@@ -772,7 +777,7 @@ public class BRRS_M_CA2_ReportService {
 			}
 
 			// AMOUNT_1 UPDATE
-			for (int i : amount1Indexes) {
+			for (int i : CA2_AMOUNT1_ROWS) {
 				String getterName = "getR" + i + "_amount_1";
 				String setterName = "setR" + i + "_amount_1";
 				try {
@@ -822,13 +827,12 @@ public class BRRS_M_CA2_ReportService {
 				if (isResub) {
 					if (isResubNoEntry) {
 						// REGENERATE: Do NOT overwrite the old version in archival summary!
-						// The old record remains in version 'ver'.
-						// Clean live summary first:
-						jdbcTemplate.update("DELETE FROM BRRS_M_CA2_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)", sqlDate);
+						jdbcTemplate.update("DELETE FROM BRRS_M_CA2_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+								sqlDate);
 
-						// Build columnsPart string
 						StringBuilder columnsPart = new StringBuilder();
-						int[] allRows = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 31, 32, 33, 34, 35, 36, 41, 42, 43, 44, 45, 46, 47, 48, 49 };
+						int[] allRows = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 31, 32,
+								33, 34, 35, 36, 41, 42, 43, 44, 45, 46, 47, 48, 49 };
 						String[] tokens = { "PRODUCT", "AMOUNT_1", "AMOUNT_2" };
 						for (int row : allRows) {
 							for (String token : tokens) {
@@ -836,36 +840,28 @@ public class BRRS_M_CA2_ReportService {
 							}
 						}
 
-						// Copy base archival row to live summary
-						String copyToLiveSql = "INSERT INTO BRRS_M_CA2_SUMMARYTABLE ("
-								+ columnsPart
+						String copyToLiveSql = "INSERT INTO BRRS_M_CA2_SUMMARYTABLE (" + columnsPart
 								+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-								+ "SELECT "
-								+ columnsPart
+								+ "SELECT " + columnsPart
 								+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG "
 								+ "FROM BRRS_M_CA2_ARCHIVALTABLE_SUMMARY WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
 						jdbcTemplate.update(copyToLiveSql, sqlDate, ver);
 
-						// Apply modified manual values to live summary so procedure uses them
 						String updateLiveSql = "UPDATE BRRS_M_CA2_SUMMARYTABLE SET "
 								+ "R11_AMOUNT_2=?, R32_AMOUNT_2=?, R42_AMOUNT_2=?, R44_AMOUNT_2=?, R43_AMOUNT_2=?, R46_AMOUNT_2=?, "
 								+ "R14_AMOUNT_1=?, R15_AMOUNT_1=?, R16_AMOUNT_1=?, R18_AMOUNT_1=?, R19_AMOUNT_1=?, R21_AMOUNT_1=? "
 								+ "WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
-						jdbcTemplate.update(updateLiveSql,
-								existing.getR11_amount_2(), existing.getR32_amount_2(), existing.getR42_amount_2(),
-								existing.getR44_amount_2(), existing.getR43_amount_2(), existing.getR46_amount_2(),
-								existing.getR14_amount_1(), existing.getR15_amount_1(), existing.getR16_amount_1(),
-								existing.getR18_amount_1(), existing.getR19_amount_1(), existing.getR21_amount_1(),
-								sqlDate);
+						jdbcTemplate.update(updateLiveSql, existing.getR11_amount_2(), existing.getR32_amount_2(),
+								existing.getR42_amount_2(), existing.getR44_amount_2(), existing.getR43_amount_2(),
+								existing.getR46_amount_2(), existing.getR14_amount_1(), existing.getR15_amount_1(),
+								existing.getR16_amount_1(), existing.getR18_amount_1(), existing.getR19_amount_1(),
+								existing.getR21_amount_1(), sqlDate);
 
-						auditService.compareEntitiesmanual(
-								oldcopy,
-								existing,
-								reportDate.toString(),
-								"M CA2 Archival Summary Screen",
-								"BRRS_M_CA2_ARCHIVALTABLE_SUMMARY");
+						auditService.compareEntitiesmanual(oldcopy, existing, reportDate.toString(),
+								"M CA2 Archival Summary Screen", "BRRS_M_CA2_ARCHIVALTABLE_SUMMARY");
 
-						System.out.println("Modified values staged into live summary. Old version " + ver + " preserved in archival summary.");
+						System.out.println("Modified values staged into live summary. Old version " + ver
+								+ " preserved in archival summary.");
 
 						Run_M_CA2_Procedure(formattedDate, "RESUB", "NO");
 						return ResponseEntity.ok("Record updated and Report Regenerated successfully!");
@@ -877,49 +873,50 @@ public class BRRS_M_CA2_ReportService {
 								+ "R14_AMOUNT_1=?, R15_AMOUNT_1=?, R16_AMOUNT_1=?, R18_AMOUNT_1=?, R19_AMOUNT_1=?, R21_AMOUNT_1=? "
 								+ "WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND REPORT_VERSION=?";
 
-						jdbcTemplate.update(updateSql,
-								existing.getR11_amount_2(), existing.getR32_amount_2(), existing.getR42_amount_2(),
-								existing.getR44_amount_2(), existing.getR43_amount_2(), existing.getR46_amount_2(),
-								existing.getR14_amount_1(), existing.getR15_amount_1(), existing.getR16_amount_1(),
-								existing.getR18_amount_1(), existing.getR19_amount_1(), existing.getR21_amount_1(),
-								sqlDate, ver);
+						jdbcTemplate.update(updateSql, existing.getR11_amount_2(), existing.getR32_amount_2(),
+								existing.getR42_amount_2(), existing.getR44_amount_2(), existing.getR43_amount_2(),
+								existing.getR46_amount_2(), existing.getR14_amount_1(), existing.getR15_amount_1(),
+								existing.getR16_amount_1(), existing.getR18_amount_1(), existing.getR19_amount_1(),
+								existing.getR21_amount_1(), sqlDate, ver);
 
-						auditService.compareEntitiesmanual(
-								oldcopy,
-								existing,
-								reportDate.toString(),
-								"M CA2 Archival Summary Screen",
-								"BRRS_M_CA2_ARCHIVALTABLE_SUMMARY");
+						auditService.compareEntitiesmanual(oldcopy, existing, reportDate.toString(),
+								"M CA2 Archival Summary Screen", "BRRS_M_CA2_ARCHIVALTABLE_SUMMARY");
 
 						System.out.println("CA2 Archival Summary updated successfully for version " + ver);
 						return ResponseEntity.ok("Record updated successfully!");
 					}
 
 				} else {
-					jdbcTemplate.update(
-							"UPDATE BRRS_M_CA2_SUMMARYTABLE SET "
-									+ "R11_AMOUNT_2=?, R32_AMOUNT_2=?, R42_AMOUNT_2=?, R44_AMOUNT_2=?, R43_AMOUNT_2=?, R46_AMOUNT_2=?, "
-									+ "R14_AMOUNT_1=?, R15_AMOUNT_1=?, R16_AMOUNT_1=?, R18_AMOUNT_1=?, R19_AMOUNT_1=?, R21_AMOUNT_1=?, "
-									+ "REPORT_VERSION=?, REPORT_FREQUENCY=?, REPORT_CODE=?, REPORT_DESC=?, ENTITY_FLG=?, MODIFY_FLG=?, DEL_FLG=? "
-									+ "WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
-							existing.getR11_amount_2(), existing.getR32_amount_2(), existing.getR42_amount_2(),
-							existing.getR44_amount_2(), existing.getR43_amount_2(), existing.getR46_amount_2(),
-							existing.getR14_amount_1(), existing.getR15_amount_1(), existing.getR16_amount_1(),
-							existing.getR18_amount_1(), existing.getR19_amount_1(), existing.getR21_amount_1(),
-							existing.getReport_version(), existing.getReport_frequency(), existing.getReport_code(),
-							existing.getReport_desc(), existing.getEntity_flg(), existing.getModify_flg(),
-							existing.getDel_flg(), sqlDate);
+					// 🔹 Set Maker-Checker Flags
+					existing.setEntity_flg("Y");
+					existing.setModify_flg("Y");
+					existing.setDel_flg("N");
 
-					auditService.compareEntitiesmanual(
-							oldcopy,
-							existing,
-							reportDate.toString(),
-							"M CA2 Summary Screen",
-							"BRRS_M_CA2_SUMMARY");
+					// 🔹 Save into MOD Summary Table for Checker Approval
+					saveModSummaryEntity(existing);
+					System.out.println("✔ Record saved into " + CA2_MOD_TABLE + " for Checker Approval");
 
-					System.out.println("CA2 Summary updated successfully");
+					// 🔹 Log Audit Trail
+					auditService.compareEntitiesmanual(oldcopy, existing, reportDate.toString(), "M CA2 Summary Screen",
+							CA2_MOD_TABLE);
 
-					return ResponseEntity.ok("CA2 Summary updated successfully");
+					// 🔹 Post-Commit: execute Stored Procedure
+					TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+						@Override
+						public void afterCommit() {
+							try {
+								logger.info("Transaction committed — calling BRRS_M_CA2_SUMMARY_PROCEDURE({})",
+										formattedDate);
+								jdbcTemplate.update("BEGIN BRRS_M_CA2_SUMMARY_PROCEDURE(?); END;", formattedDate);
+								logger.info("BRRS_M_CA2_SUMMARY_PROCEDURE executed successfully after commit.");
+							} catch (Exception e) {
+								logger.error("Procedure execution failed", e);
+								throw new RuntimeException("Procedure execution failed", e);
+							}
+						}
+					});
+
+					return ResponseEntity.ok("CA2 Summary saved for Checker Approval");
 				}
 			} else {
 				if (isResubNoEntry) {
@@ -935,8 +932,83 @@ public class BRRS_M_CA2_ReportService {
 					.body("Error updating CA2 Summary : " + e.getMessage());
 		}
 	}
-	
-	
+
+// Saves into BRRS_M_CA2_MOD_SUMMARYTABLE
+	public void saveModSummaryEntity(M_CA2_Summary_Entity entity) {
+		saveToTable(entity, CA2_MOD_TABLE);
+	}
+
+// Generic upsert (insert if no row for the report date, else update)
+	private void saveToTable(M_CA2_Summary_Entity entity, String tableName) {
+		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
+
+		// 🔹 1. Check if record already exists for this report date
+		String checkSql = "SELECT COUNT(*) FROM " + tableName + " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+		Integer count = namedParamJdbc.queryForObject(checkSql,
+				new MapSqlParameterSource("reportDate", entity.getReport_date()), Integer.class);
+
+		// 🔹 2. Build parameter map
+		MapSqlParameterSource params = new MapSqlParameterSource().addValue("reportDate", entity.getReport_date())
+				.addValue("r11_amount_2", entity.getR11_amount_2()).addValue("r32_amount_2", entity.getR32_amount_2())
+				.addValue("r42_amount_2", entity.getR42_amount_2()).addValue("r44_amount_2", entity.getR44_amount_2())
+				.addValue("r43_amount_2", entity.getR43_amount_2()).addValue("r46_amount_2", entity.getR46_amount_2())
+				.addValue("r14_amount_1", entity.getR14_amount_1()).addValue("r15_amount_1", entity.getR15_amount_1())
+				.addValue("r16_amount_1", entity.getR16_amount_1()).addValue("r18_amount_1", entity.getR18_amount_1())
+				.addValue("r19_amount_1", entity.getR19_amount_1()).addValue("r21_amount_1", entity.getR21_amount_1())
+				.addValue("report_version", entity.getReport_version())
+				.addValue("report_frequency", entity.getReport_frequency())
+				.addValue("report_code", entity.getReport_code()).addValue("report_desc", entity.getReport_desc())
+				.addValue("entity_flg", entity.getEntity_flg()).addValue("modify_flg", entity.getModify_flg())
+				.addValue("del_flg", entity.getDel_flg());
+
+		if (count != null && count > 0) {
+			// 🔹 3. UPDATE existing record
+			String updateSql = "UPDATE " + tableName + " SET "
+					+ "R11_AMOUNT_2 = :r11_amount_2, R32_AMOUNT_2 = :r32_amount_2, R42_AMOUNT_2 = :r42_amount_2, "
+					+ "R44_AMOUNT_2 = :r44_amount_2, R43_AMOUNT_2 = :r43_amount_2, R46_AMOUNT_2 = :r46_amount_2, "
+					+ "R14_AMOUNT_1 = :r14_amount_1, R15_AMOUNT_1 = :r15_amount_1, R16_AMOUNT_1 = :r16_amount_1, "
+					+ "R18_AMOUNT_1 = :r18_amount_1, R19_AMOUNT_1 = :r19_amount_1, R21_AMOUNT_1 = :r21_amount_1, "
+					+ "REPORT_VERSION = :report_version, REPORT_FREQUENCY = :report_frequency, "
+					+ "REPORT_CODE = :report_code, REPORT_DESC = :report_desc, "
+					+ "ENTITY_FLG = :entity_flg, MODIFY_FLG = :modify_flg, DEL_FLG = :del_flg "
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+			namedParamJdbc.update(updateSql, params);
+		} else {
+			// 🔹 4. INSERT new record
+			String insertSql = "INSERT INTO " + tableName + " (REPORT_DATE, "
+					+ "R11_AMOUNT_2, R32_AMOUNT_2, R42_AMOUNT_2, R44_AMOUNT_2, R43_AMOUNT_2, R46_AMOUNT_2, "
+					+ "R14_AMOUNT_1, R15_AMOUNT_1, R16_AMOUNT_1, R18_AMOUNT_1, R19_AMOUNT_1, R21_AMOUNT_1, "
+					+ "REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (:reportDate, "
+					+ ":r11_amount_2, :r32_amount_2, :r42_amount_2, :r44_amount_2, :r43_amount_2, :r46_amount_2, "
+					+ ":r14_amount_1, :r15_amount_1, :r16_amount_1, :r18_amount_1, :r19_amount_1, :r21_amount_1, "
+					+ ":report_version, :report_frequency, :report_code, :report_desc, "
+					+ ":entity_flg, :modify_flg, :del_flg)";
+			namedParamJdbc.update(insertSql, params);
+		}
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		M_CA2_Summary_Entity modRecord = jdbcTemplate.queryForObject(
+				"SELECT * FROM " + CA2_MOD_TABLE + " WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND MODIFY_FLG='Y'",
+				new BeanPropertyRowMapper<>(M_CA2_Summary_Entity.class), reportDate);
+
+		// Copy/Merge MOD values into the LIVE summary table
+		saveToTable(modRecord, CA2_LIVE_TABLE);
+
+		// Mark modified flag as 'N' (Approved) in the MOD table
+		jdbcTemplate.update("UPDATE " + CA2_MOD_TABLE + " SET MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				reportDate);
+
+		String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+
+		// Run procedure after approval
+		jdbcTemplate.update("BEGIN BRRS_M_CA2_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+		System.out.println("M_CA2 Checker Approved Successfully");
+	}
+
 //	@Transactional
 //	public ResponseEntity<?> updateReport(M_CA2_Summary_Entity updatedEntity, String type) {
 //
@@ -1684,11 +1756,11 @@ public class BRRS_M_CA2_ReportService {
 			return new byte[0];
 		}
 	}
-	
-	    //========================
-		// FOR RESUB 
-		//==========================
-	
+
+	// ========================
+	// FOR RESUB
+	// ==========================
+
 	// ─── View or edit detail page ───────────────────────────────────────────────
 	public ModelAndView getViewOrEditPage(String SNO, String formMode, String type) {
 		return getViewOrEditPage(SNO, formMode, type, null);
@@ -1701,8 +1773,10 @@ public class BRRS_M_CA2_ReportService {
 		String acctNo = null;
 		if (request != null) {
 			String asondateParam = request.getParameter("asondate");
-			if (asondateParam == null) asondateParam = request.getParameter("reportDate");
-			if (asondateParam == null) asondateParam = request.getParameter("todate");
+			if (asondateParam == null)
+				asondateParam = request.getParameter("reportDate");
+			if (asondateParam == null)
+				asondateParam = request.getParameter("todate");
 			if (asondateParam != null && !asondateParam.trim().isEmpty()) {
 				try {
 					reportDate = new SimpleDateFormat("dd-MM-yyyy").parse(asondateParam.trim());
@@ -1712,7 +1786,8 @@ public class BRRS_M_CA2_ReportService {
 					} catch (Exception e2) {
 						try {
 							reportDate = dateformat.parse(asondateParam.trim());
-						} catch (Exception ignored) {}
+						} catch (Exception ignored) {
+						}
 					}
 				}
 			}
@@ -1722,7 +1797,8 @@ public class BRRS_M_CA2_ReportService {
 			acctNo = SNO;
 		}
 
-		System.out.println("getViewOrEditPage: SNO=" + SNO + ", acctNo=" + acctNo + ", reportDate=" + reportDate + ", type=" + type);
+		System.out.println("getViewOrEditPage: SNO=" + SNO + ", acctNo=" + acctNo + ", reportDate=" + reportDate
+				+ ", type=" + type);
 
 		M_CA2_Detail_Entity la1Entity = null;
 
@@ -1752,7 +1828,8 @@ public class BRRS_M_CA2_ReportService {
 		}
 
 		if (la1Entity != null) {
-			if (reportDate != null && (la1Entity.getReportDate() == null || !la1Entity.getReportDate().equals(reportDate))) {
+			if (reportDate != null
+					&& (la1Entity.getReportDate() == null || !la1Entity.getReportDate().equals(reportDate))) {
 				la1Entity.setReportDate(reportDate);
 			}
 			Date d = la1Entity.getReportDate() != null ? la1Entity.getReportDate() : reportDate;
@@ -1808,11 +1885,11 @@ public class BRRS_M_CA2_ReportService {
 		mv.addObject("formmode", formMode != null ? formMode : "edit");
 		return mv;
 	}
-	
-	//========================
-	// FOR RESUB 
-	//==========================
-	
+
+	// ========================
+	// FOR RESUB
+	// ==========================
+
 	// ─── Save detail edit ───────────────────────────────────────────────────────
 	@Transactional
 	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
@@ -1840,11 +1917,13 @@ public class BRRS_M_CA2_ReportService {
 				} catch (Exception e) {
 					try {
 						parsedReportDate = new SimpleDateFormat("dd-MM-yyyy").parse(reportDateStr.trim());
-					} catch (Exception ignored) {}
+					} catch (Exception ignored) {
+					}
 				}
 			}
 
-			System.out.println("updateDetailEdit: Sno=" + Sno + ", acctNumber=" + acctNumber + ", date=" + reportDateStr);
+			System.out
+					.println("updateDetailEdit: Sno=" + Sno + ", acctNumber=" + acctNumber + ", date=" + reportDateStr);
 
 			String type = request.getParameter("type");
 			String entry = (request.getParameter("entry") != null) ? request.getParameter("entry") : "YES";
@@ -1880,7 +1959,8 @@ public class BRRS_M_CA2_ReportService {
 							if (list != null && !list.isEmpty()) {
 								existing = list.get(0);
 							}
-						} catch (Exception ignored) {}
+						} catch (Exception ignored) {
+						}
 					}
 					if (existing == null) {
 						try {
@@ -1890,7 +1970,8 @@ public class BRRS_M_CA2_ReportService {
 							if (list != null && !list.isEmpty()) {
 								existing = list.get(0);
 							}
-						} catch (Exception ignored) {}
+						} catch (Exception ignored) {
+						}
 					}
 				}
 			}
@@ -1948,9 +2029,7 @@ public class BRRS_M_CA2_ReportService {
 						try {
 							rowsUpdated = jdbcTemplate.update(
 									"UPDATE BRRS_M_CA2_ARCHIVALTABLE_DETAIL SET ACCT_NAME = ?, ACCT_BALANCE_IN_PULA = ? WHERE ACCT_NUMBER = ? AND TRUNC(REPORT_DATE) = TRUNC(?)",
-									existing.getAcctName(),
-									existing.getAcctBalanceInPula(),
-									existing.getAcctNumber(),
+									existing.getAcctName(), existing.getAcctBalanceInPula(), existing.getAcctNumber(),
 									dt);
 						} catch (Exception ex) {
 							System.err.println("Warning updating archival detail with date: " + ex.getMessage());
@@ -1958,19 +2037,14 @@ public class BRRS_M_CA2_ReportService {
 					} else {
 						rowsUpdated = jdbcTemplate.update(
 								"UPDATE BRRS_M_CA2_ARCHIVALTABLE_DETAIL SET ACCT_NAME = ?, ACCT_BALANCE_IN_PULA = ? WHERE ACCT_NUMBER = ?",
-								existing.getAcctName(),
-								existing.getAcctBalanceInPula(),
-								existing.getAcctNumber());
+								existing.getAcctName(), existing.getAcctBalanceInPula(), existing.getAcctNumber());
 					}
 					System.out.println("Archival rows updated: " + rowsUpdated);
 
-					String auditId = (existing.getAcctNumber() != null) ? existing.getAcctNumber() : (Sno != null ? Sno : "0");
+					String auditId = (existing.getAcctNumber() != null) ? existing.getAcctNumber()
+							: (Sno != null ? Sno : "0");
 					try {
-						auditService.compareEntitiesmanual(
-								oldcopy,
-								existing,
-								auditId,
-								"M_CA2 Archival Screen",
+						auditService.compareEntitiesmanual(oldcopy, existing, auditId, "M_CA2 Archival Screen",
 								"BRRS_M_CA2_ARCHIVALTABLE_DETAIL");
 					} catch (Exception auditEx) {
 						System.err.println("Audit warning: " + auditEx.getMessage());
@@ -1980,17 +2054,11 @@ public class BRRS_M_CA2_ReportService {
 
 					jdbcTemplate.update(
 							"UPDATE BRRS_M_CA2_DETAILTABLE SET ACCT_NAME = ?, ACCT_BALANCE_IN_PULA = ? WHERE ACCT_NUMBER = ?",
-							existing.getAcctName(),
-							existing.getAcctBalanceInPula(),
-							existing.getAcctNumber());
+							existing.getAcctName(), existing.getAcctBalanceInPula(), existing.getAcctNumber());
 
 					String auditId = existing.getAcctNumber();
 					try {
-						auditService.compareEntitiesmanual(
-								oldcopy,
-								existing,
-								auditId,
-								"M_CA2 Screen",
+						auditService.compareEntitiesmanual(oldcopy, existing, auditId, "M_CA2 Screen",
 								"BRRS_M_CA2_DETAILTABLE");
 					} catch (Exception auditEx) {
 						System.err.println("Audit warning: " + auditEx.getMessage());
@@ -1999,8 +2067,10 @@ public class BRRS_M_CA2_ReportService {
 
 				System.out.println("Record updated using JDBC");
 
-				Date effectiveDate = (existing != null && existing.getReportDate() != null) ? existing.getReportDate() : parsedReportDate;
-				String dateForProc = (effectiveDate != null) ? new SimpleDateFormat("dd-MM-yyyy").format(effectiveDate) : reportDateStr;
+				Date effectiveDate = (existing != null && existing.getReportDate() != null) ? existing.getReportDate()
+						: parsedReportDate;
+				String dateForProc = (effectiveDate != null) ? new SimpleDateFormat("dd-MM-yyyy").format(effectiveDate)
+						: reportDateStr;
 				Run_M_CA2_Procedure(dateForProc, type, entry);
 
 				if ("RESUB".equals(type) && "NO".equals(entry)) {
@@ -2012,8 +2082,12 @@ public class BRRS_M_CA2_ReportService {
 			} else {
 
 				if ("RESUB".equals(type) && "NO".equals(entry)) {
-					Date effectiveDate = (existing != null && existing.getReportDate() != null) ? existing.getReportDate() : parsedReportDate;
-					String dateForProc = (effectiveDate != null) ? new SimpleDateFormat("dd-MM-yyyy").format(effectiveDate) : reportDateStr;
+					Date effectiveDate = (existing != null && existing.getReportDate() != null)
+							? existing.getReportDate()
+							: parsedReportDate;
+					String dateForProc = (effectiveDate != null)
+							? new SimpleDateFormat("dd-MM-yyyy").format(effectiveDate)
+							: reportDateStr;
 					Run_M_CA2_Procedure(dateForProc, type, entry);
 					return ResponseEntity.ok("Record updated and Report Regenerated successfully!");
 				}
@@ -2029,9 +2103,10 @@ public class BRRS_M_CA2_ReportService {
 					.body("Error updating record: " + e.getMessage());
 		}
 	}
-     	//========================
-		// FOR RESUB 
-		//==========================
+
+	// ========================
+	// FOR RESUB
+	// ==========================
 	// ─── Trigger report regeneration ───────────────────────────────────────────
 	@Transactional
 	public ResponseEntity<?> callregenprocedure(HttpServletRequest request) {
@@ -2048,10 +2123,10 @@ public class BRRS_M_CA2_ReportService {
 
 		}
 	}
-    	//========================
-		// FOR RESUB 
-		//==========================
-	
+	// ========================
+	// FOR RESUB
+	// ==========================
+
 	private void Run_M_CA2_Procedure(String reportDateStr, String type, String entry) {
 		Date parsedDate = null;
 		if (reportDateStr != null && !reportDateStr.trim().isEmpty()) {
@@ -2060,7 +2135,8 @@ public class BRRS_M_CA2_ReportService {
 			} catch (Exception e) {
 				try {
 					parsedDate = new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr.trim());
-				} catch (Exception ignored) {}
+				} catch (Exception ignored) {
+				}
 			}
 		}
 		if (parsedDate == null) {
@@ -2121,22 +2197,25 @@ public class BRRS_M_CA2_ReportService {
 				return;
 			}
 
-			int rowsDeleted = jdbcTemplate.update("DELETE FROM BRRS_M_CA2_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)", sqlDate);
+			int rowsDeleted = jdbcTemplate
+					.update("DELETE FROM BRRS_M_CA2_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)", sqlDate);
 			System.out.println("Detail rows deleted before transfer: " + rowsDeleted);
 
 			String colsJoined = String.join(", ", commonCols);
 			boolean liveHasSno = liveCols.contains("SNO");
 			String insertSql;
 			if (liveHasSno) {
-				insertSql = "INSERT INTO BRRS_M_CA2_DETAILTABLE (SNO, " + colsJoined + ") "
-						+ "SELECT ROWNUM AS SNO, " + colsJoined + " FROM BRRS_M_CA2_ARCHIVALTABLE_DETAIL WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+				insertSql = "INSERT INTO BRRS_M_CA2_DETAILTABLE (SNO, " + colsJoined + ") " + "SELECT ROWNUM AS SNO, "
+						+ colsJoined + " FROM BRRS_M_CA2_ARCHIVALTABLE_DETAIL WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 			} else {
-				insertSql = "INSERT INTO BRRS_M_CA2_DETAILTABLE (" + colsJoined + ") "
-						+ "SELECT " + colsJoined + " FROM BRRS_M_CA2_ARCHIVALTABLE_DETAIL WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+				insertSql = "INSERT INTO BRRS_M_CA2_DETAILTABLE (" + colsJoined + ") " + "SELECT " + colsJoined
+						+ " FROM BRRS_M_CA2_ARCHIVALTABLE_DETAIL WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 			}
 			int rowsTransferred = jdbcTemplate.update(insertSql, sqlDate);
 			System.out.println("Detail rows transferred from archival: " + rowsTransferred);
-			jdbcTemplate.update("UPDATE BRRS_M_CA2_DETAILTABLE SET REPORT_DATE = TRUNC(REPORT_DATE) WHERE TRUNC(REPORT_DATE) = TRUNC(?)", sqlDate);
+			jdbcTemplate.update(
+					"UPDATE BRRS_M_CA2_DETAILTABLE SET REPORT_DATE = TRUNC(REPORT_DATE) WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+					sqlDate);
 		} catch (Exception e) {
 			System.err.println("Warning in transferArchivalDetailsToLive: " + e.getMessage());
 		}
@@ -2150,11 +2229,13 @@ public class BRRS_M_CA2_ReportService {
 			String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
 			java.sql.Date sqlDate = new java.sql.Date(reportDate.getTime());
 
-			System.out.println("executeProcedureLogic: formattedDate = " + formattedDate + ", type = " + type + ", entry = " + entry);
+			System.out.println("executeProcedureLogic: formattedDate = " + formattedDate + ", type = " + type
+					+ ", entry = " + entry);
 
 			// Build columns part for all 32 rows
 			StringBuilder columnsPart = new StringBuilder();
-			int[] allRows = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 31, 32, 33, 34, 35, 36, 41, 42, 43, 44, 45, 46, 47, 48, 49 };
+			int[] allRows = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 31, 32, 33, 34, 35,
+					36, 41, 42, 43, 44, 45, 46, 47, 48, 49 };
 			String[] tokens = { "PRODUCT", "AMOUNT_1", "AMOUNT_2" };
 			for (int row : allRows) {
 				for (String token : tokens) {
@@ -2172,25 +2253,27 @@ public class BRRS_M_CA2_ReportService {
 						Integer.class, sqlDate);
 
 				if (liveSumCount == null || liveSumCount == 0) {
-					// Live summary is empty (e.g. triggered from Details view) -> restore from latest archival summary
+					// Live summary is empty (e.g. triggered from Details view) -> restore from
+					// latest archival summary
 					String maxVerSql = "SELECT NVL(MAX(REPORT_VERSION), 0) FROM BRRS_M_CA2_ARCHIVALTABLE_SUMMARY WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 					Integer currentMaxVersion = jdbcTemplate.queryForObject(maxVerSql, Integer.class, sqlDate);
 
 					if (currentMaxVersion != null && currentMaxVersion > 0) {
-						String copyArchSummarySql = "INSERT INTO BRRS_M_CA2_SUMMARYTABLE ("
-								+ columnsPart
+						String copyArchSummarySql = "INSERT INTO BRRS_M_CA2_SUMMARYTABLE (" + columnsPart
 								+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-								+ "SELECT "
-								+ columnsPart
+								+ "SELECT " + columnsPart
 								+ "TRUNC(REPORT_DATE), REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG "
 								+ "FROM BRRS_M_CA2_ARCHIVALTABLE_SUMMARY WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
 						int sumCopied = jdbcTemplate.update(copyArchSummarySql, sqlDate, currentMaxVersion);
 						System.out.println("Archival summary restored to live summary: " + sumCopied);
 					}
 				} else {
-					System.out.println("Live summary already contains modified staged values; preserving for procedure.");
+					System.out
+							.println("Live summary already contains modified staged values; preserving for procedure.");
 				}
-				jdbcTemplate.update("UPDATE BRRS_M_CA2_SUMMARYTABLE SET REPORT_DATE = TRUNC(REPORT_DATE) WHERE TRUNC(REPORT_DATE) = TRUNC(?)", sqlDate);
+				jdbcTemplate.update(
+						"UPDATE BRRS_M_CA2_SUMMARYTABLE SET REPORT_DATE = TRUNC(REPORT_DATE) WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+						sqlDate);
 			}
 
 			// 6. Execute stored procedure
@@ -2213,11 +2296,9 @@ public class BRRS_M_CA2_ReportService {
 				System.out.println("Archiving new summary with version: " + highestValue);
 
 				// Insert new version into archival summary
-				String archiveSummarySql = "INSERT INTO BRRS_M_CA2_ARCHIVALTABLE_SUMMARY ("
-						+ columnsPart
+				String archiveSummarySql = "INSERT INTO BRRS_M_CA2_ARCHIVALTABLE_SUMMARY (" + columnsPart
 						+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE) "
-						+ "SELECT "
-						+ columnsPart
+						+ "SELECT " + columnsPart
 						+ "TRUNC(REPORT_DATE), ?, NVL(REPORT_FREQUENCY, 'MONTHLY'), NVL(REPORT_CODE, 'M_CA2'), NVL(REPORT_DESC, 'Capital Adequacy 2'), NVL(ENTITY_FLG, 'N'), NVL(MODIFY_FLG, 'N'), NVL(DEL_FLG, 'N'), SYSDATE "
 						+ "FROM BRRS_M_CA2_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 				int rowsArchived = jdbcTemplate.update(archiveSummarySql, highestValue, sqlDate);
@@ -2233,10 +2314,6 @@ public class BRRS_M_CA2_ReportService {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
-
 
 //	@Transactional
 //	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
@@ -5105,215 +5182,837 @@ public class BRRS_M_CA2_ReportService {
 		private String modify_flg;
 		private String del_flg;
 
-		public String getR10_product() { return r10_product; }
-		public void setR10_product(String r10_product) { this.r10_product = r10_product; }
-		public BigDecimal getR10_amount_1() { return r10_amount_1; }
-		public void setR10_amount_1(BigDecimal r10_amount_1) { this.r10_amount_1 = r10_amount_1; }
-		public BigDecimal getR10_amount_2() { return r10_amount_2; }
-		public void setR10_amount_2(BigDecimal r10_amount_2) { this.r10_amount_2 = r10_amount_2; }
-		public String getR11_product() { return r11_product; }
-		public void setR11_product(String r11_product) { this.r11_product = r11_product; }
-		public BigDecimal getR11_amount_1() { return r11_amount_1; }
-		public void setR11_amount_1(BigDecimal r11_amount_1) { this.r11_amount_1 = r11_amount_1; }
-		public BigDecimal getR11_amount_2() { return r11_amount_2; }
-		public void setR11_amount_2(BigDecimal r11_amount_2) { this.r11_amount_2 = r11_amount_2; }
-		public String getR12_product() { return r12_product; }
-		public void setR12_product(String r12_product) { this.r12_product = r12_product; }
-		public BigDecimal getR12_amount_1() { return r12_amount_1; }
-		public void setR12_amount_1(BigDecimal r12_amount_1) { this.r12_amount_1 = r12_amount_1; }
-		public BigDecimal getR12_amount_2() { return r12_amount_2; }
-		public void setR12_amount_2(BigDecimal r12_amount_2) { this.r12_amount_2 = r12_amount_2; }
-		public String getR13_product() { return r13_product; }
-		public void setR13_product(String r13_product) { this.r13_product = r13_product; }
-		public BigDecimal getR13_amount_1() { return r13_amount_1; }
-		public void setR13_amount_1(BigDecimal r13_amount_1) { this.r13_amount_1 = r13_amount_1; }
-		public BigDecimal getR13_amount_2() { return r13_amount_2; }
-		public void setR13_amount_2(BigDecimal r13_amount_2) { this.r13_amount_2 = r13_amount_2; }
-		public String getR14_product() { return r14_product; }
-		public void setR14_product(String r14_product) { this.r14_product = r14_product; }
-		public BigDecimal getR14_amount_1() { return r14_amount_1; }
-		public void setR14_amount_1(BigDecimal r14_amount_1) { this.r14_amount_1 = r14_amount_1; }
-		public BigDecimal getR14_amount_2() { return r14_amount_2; }
-		public void setR14_amount_2(BigDecimal r14_amount_2) { this.r14_amount_2 = r14_amount_2; }
-		public String getR15_product() { return r15_product; }
-		public void setR15_product(String r15_product) { this.r15_product = r15_product; }
-		public BigDecimal getR15_amount_1() { return r15_amount_1; }
-		public void setR15_amount_1(BigDecimal r15_amount_1) { this.r15_amount_1 = r15_amount_1; }
-		public BigDecimal getR15_amount_2() { return r15_amount_2; }
-		public void setR15_amount_2(BigDecimal r15_amount_2) { this.r15_amount_2 = r15_amount_2; }
-		public String getR16_product() { return r16_product; }
-		public void setR16_product(String r16_product) { this.r16_product = r16_product; }
-		public BigDecimal getR16_amount_1() { return r16_amount_1; }
-		public void setR16_amount_1(BigDecimal r16_amount_1) { this.r16_amount_1 = r16_amount_1; }
-		public BigDecimal getR16_amount_2() { return r16_amount_2; }
-		public void setR16_amount_2(BigDecimal r16_amount_2) { this.r16_amount_2 = r16_amount_2; }
-		public String getR17_product() { return r17_product; }
-		public void setR17_product(String r17_product) { this.r17_product = r17_product; }
-		public BigDecimal getR17_amount_1() { return r17_amount_1; }
-		public void setR17_amount_1(BigDecimal r17_amount_1) { this.r17_amount_1 = r17_amount_1; }
-		public BigDecimal getR17_amount_2() { return r17_amount_2; }
-		public void setR17_amount_2(BigDecimal r17_amount_2) { this.r17_amount_2 = r17_amount_2; }
-		public String getR18_product() { return r18_product; }
-		public void setR18_product(String r18_product) { this.r18_product = r18_product; }
-		public BigDecimal getR18_amount_1() { return r18_amount_1; }
-		public void setR18_amount_1(BigDecimal r18_amount_1) { this.r18_amount_1 = r18_amount_1; }
-		public BigDecimal getR18_amount_2() { return r18_amount_2; }
-		public void setR18_amount_2(BigDecimal r18_amount_2) { this.r18_amount_2 = r18_amount_2; }
-		public String getR19_product() { return r19_product; }
-		public void setR19_product(String r19_product) { this.r19_product = r19_product; }
-		public BigDecimal getR19_amount_1() { return r19_amount_1; }
-		public void setR19_amount_1(BigDecimal r19_amount_1) { this.r19_amount_1 = r19_amount_1; }
-		public BigDecimal getR19_amount_2() { return r19_amount_2; }
-		public void setR19_amount_2(BigDecimal r19_amount_2) { this.r19_amount_2 = r19_amount_2; }
-		public String getR20_product() { return r20_product; }
-		public void setR20_product(String r20_product) { this.r20_product = r20_product; }
-		public BigDecimal getR20_amount_1() { return r20_amount_1; }
-		public void setR20_amount_1(BigDecimal r20_amount_1) { this.r20_amount_1 = r20_amount_1; }
-		public BigDecimal getR20_amount_2() { return r20_amount_2; }
-		public void setR20_amount_2(BigDecimal r20_amount_2) { this.r20_amount_2 = r20_amount_2; }
-		public String getR21_product() { return r21_product; }
-		public void setR21_product(String r21_product) { this.r21_product = r21_product; }
-		public BigDecimal getR21_amount_1() { return r21_amount_1; }
-		public void setR21_amount_1(BigDecimal r21_amount_1) { this.r21_amount_1 = r21_amount_1; }
-		public BigDecimal getR21_amount_2() { return r21_amount_2; }
-		public void setR21_amount_2(BigDecimal r21_amount_2) { this.r21_amount_2 = r21_amount_2; }
-		public String getR22_product() { return r22_product; }
-		public void setR22_product(String r22_product) { this.r22_product = r22_product; }
-		public BigDecimal getR22_amount_1() { return r22_amount_1; }
-		public void setR22_amount_1(BigDecimal r22_amount_1) { this.r22_amount_1 = r22_amount_1; }
-		public BigDecimal getR22_amount_2() { return r22_amount_2; }
-		public void setR22_amount_2(BigDecimal r22_amount_2) { this.r22_amount_2 = r22_amount_2; }
-		public String getR23_product() { return r23_product; }
-		public void setR23_product(String r23_product) { this.r23_product = r23_product; }
-		public BigDecimal getR23_amount_1() { return r23_amount_1; }
-		public void setR23_amount_1(BigDecimal r23_amount_1) { this.r23_amount_1 = r23_amount_1; }
-		public BigDecimal getR23_amount_2() { return r23_amount_2; }
-		public void setR23_amount_2(BigDecimal r23_amount_2) { this.r23_amount_2 = r23_amount_2; }
-		public String getR24_product() { return r24_product; }
-		public void setR24_product(String r24_product) { this.r24_product = r24_product; }
-		public BigDecimal getR24_amount_1() { return r24_amount_1; }
-		public void setR24_amount_1(BigDecimal r24_amount_1) { this.r24_amount_1 = r24_amount_1; }
-		public BigDecimal getR24_amount_2() { return r24_amount_2; }
-		public void setR24_amount_2(BigDecimal r24_amount_2) { this.r24_amount_2 = r24_amount_2; }
-		public String getR25_product() { return r25_product; }
-		public void setR25_product(String r25_product) { this.r25_product = r25_product; }
-		public BigDecimal getR25_amount_1() { return r25_amount_1; }
-		public void setR25_amount_1(BigDecimal r25_amount_1) { this.r25_amount_1 = r25_amount_1; }
-		public BigDecimal getR25_amount_2() { return r25_amount_2; }
-		public void setR25_amount_2(BigDecimal r25_amount_2) { this.r25_amount_2 = r25_amount_2; }
-		public String getR26_product() { return r26_product; }
-		public void setR26_product(String r26_product) { this.r26_product = r26_product; }
-		public BigDecimal getR26_amount_1() { return r26_amount_1; }
-		public void setR26_amount_1(BigDecimal r26_amount_1) { this.r26_amount_1 = r26_amount_1; }
-		public BigDecimal getR26_amount_2() { return r26_amount_2; }
-		public void setR26_amount_2(BigDecimal r26_amount_2) { this.r26_amount_2 = r26_amount_2; }
-		public String getR31_product() { return r31_product; }
-		public void setR31_product(String r31_product) { this.r31_product = r31_product; }
-		public BigDecimal getR31_amount_1() { return r31_amount_1; }
-		public void setR31_amount_1(BigDecimal r31_amount_1) { this.r31_amount_1 = r31_amount_1; }
-		public BigDecimal getR31_amount_2() { return r31_amount_2; }
-		public void setR31_amount_2(BigDecimal r31_amount_2) { this.r31_amount_2 = r31_amount_2; }
-		public String getR32_product() { return r32_product; }
-		public void setR32_product(String r32_product) { this.r32_product = r32_product; }
-		public BigDecimal getR32_amount_1() { return r32_amount_1; }
-		public void setR32_amount_1(BigDecimal r32_amount_1) { this.r32_amount_1 = r32_amount_1; }
-		public BigDecimal getR32_amount_2() { return r32_amount_2; }
-		public void setR32_amount_2(BigDecimal r32_amount_2) { this.r32_amount_2 = r32_amount_2; }
-		public String getR33_product() { return r33_product; }
-		public void setR33_product(String r33_product) { this.r33_product = r33_product; }
-		public BigDecimal getR33_amount_1() { return r33_amount_1; }
-		public void setR33_amount_1(BigDecimal r33_amount_1) { this.r33_amount_1 = r33_amount_1; }
-		public BigDecimal getR33_amount_2() { return r33_amount_2; }
-		public void setR33_amount_2(BigDecimal r33_amount_2) { this.r33_amount_2 = r33_amount_2; }
-		public String getR34_product() { return r34_product; }
-		public void setR34_product(String r34_product) { this.r34_product = r34_product; }
-		public BigDecimal getR34_amount_1() { return r34_amount_1; }
-		public void setR34_amount_1(BigDecimal r34_amount_1) { this.r34_amount_1 = r34_amount_1; }
-		public BigDecimal getR34_amount_2() { return r34_amount_2; }
-		public void setR34_amount_2(BigDecimal r34_amount_2) { this.r34_amount_2 = r34_amount_2; }
-		public String getR35_product() { return r35_product; }
-		public void setR35_product(String r35_product) { this.r35_product = r35_product; }
-		public BigDecimal getR35_amount_1() { return r35_amount_1; }
-		public void setR35_amount_1(BigDecimal r35_amount_1) { this.r35_amount_1 = r35_amount_1; }
-		public BigDecimal getR35_amount_2() { return r35_amount_2; }
-		public void setR35_amount_2(BigDecimal r35_amount_2) { this.r35_amount_2 = r35_amount_2; }
-		public String getR36_product() { return r36_product; }
-		public void setR36_product(String r36_product) { this.r36_product = r36_product; }
-		public BigDecimal getR36_amount_1() { return r36_amount_1; }
-		public void setR36_amount_1(BigDecimal r36_amount_1) { this.r36_amount_1 = r36_amount_1; }
-		public BigDecimal getR36_amount_2() { return r36_amount_2; }
-		public void setR36_amount_2(BigDecimal r36_amount_2) { this.r36_amount_2 = r36_amount_2; }
-		public String getR41_product() { return r41_product; }
-		public void setR41_product(String r41_product) { this.r41_product = r41_product; }
-		public BigDecimal getR41_amount_1() { return r41_amount_1; }
-		public void setR41_amount_1(BigDecimal r41_amount_1) { this.r41_amount_1 = r41_amount_1; }
-		public BigDecimal getR41_amount_2() { return r41_amount_2; }
-		public void setR41_amount_2(BigDecimal r41_amount_2) { this.r41_amount_2 = r41_amount_2; }
-		public String getR42_product() { return r42_product; }
-		public void setR42_product(String r42_product) { this.r42_product = r42_product; }
-		public BigDecimal getR42_amount_1() { return r42_amount_1; }
-		public void setR42_amount_1(BigDecimal r42_amount_1) { this.r42_amount_1 = r42_amount_1; }
-		public BigDecimal getR42_amount_2() { return r42_amount_2; }
-		public void setR42_amount_2(BigDecimal r42_amount_2) { this.r42_amount_2 = r42_amount_2; }
-		public String getR43_product() { return r43_product; }
-		public void setR43_product(String r43_product) { this.r43_product = r43_product; }
-		public BigDecimal getR43_amount_1() { return r43_amount_1; }
-		public void setR43_amount_1(BigDecimal r43_amount_1) { this.r43_amount_1 = r43_amount_1; }
-		public BigDecimal getR43_amount_2() { return r43_amount_2; }
-		public void setR43_amount_2(BigDecimal r43_amount_2) { this.r43_amount_2 = r43_amount_2; }
-		public String getR44_product() { return r44_product; }
-		public void setR44_product(String r44_product) { this.r44_product = r44_product; }
-		public BigDecimal getR44_amount_1() { return r44_amount_1; }
-		public void setR44_amount_1(BigDecimal r44_amount_1) { this.r44_amount_1 = r44_amount_1; }
-		public BigDecimal getR44_amount_2() { return r44_amount_2; }
-		public void setR44_amount_2(BigDecimal r44_amount_2) { this.r44_amount_2 = r44_amount_2; }
-		public String getR45_product() { return r45_product; }
-		public void setR45_product(String r45_product) { this.r45_product = r45_product; }
-		public BigDecimal getR45_amount_1() { return r45_amount_1; }
-		public void setR45_amount_1(BigDecimal r45_amount_1) { this.r45_amount_1 = r45_amount_1; }
-		public BigDecimal getR45_amount_2() { return r45_amount_2; }
-		public void setR45_amount_2(BigDecimal r45_amount_2) { this.r45_amount_2 = r45_amount_2; }
-		public String getR46_product() { return r46_product; }
-		public void setR46_product(String r46_product) { this.r46_product = r46_product; }
-		public BigDecimal getR46_amount_1() { return r46_amount_1; }
-		public void setR46_amount_1(BigDecimal r46_amount_1) { this.r46_amount_1 = r46_amount_1; }
-		public BigDecimal getR46_amount_2() { return r46_amount_2; }
-		public void setR46_amount_2(BigDecimal r46_amount_2) { this.r46_amount_2 = r46_amount_2; }
-		public String getR47_product() { return r47_product; }
-		public void setR47_product(String r47_product) { this.r47_product = r47_product; }
-		public BigDecimal getR47_amount_1() { return r47_amount_1; }
-		public void setR47_amount_1(BigDecimal r47_amount_1) { this.r47_amount_1 = r47_amount_1; }
-		public BigDecimal getR47_amount_2() { return r47_amount_2; }
-		public void setR47_amount_2(BigDecimal r47_amount_2) { this.r47_amount_2 = r47_amount_2; }
-		public String getR48_product() { return r48_product; }
-		public void setR48_product(String r48_product) { this.r48_product = r48_product; }
-		public BigDecimal getR48_amount_1() { return r48_amount_1; }
-		public void setR48_amount_1(BigDecimal r48_amount_1) { this.r48_amount_1 = r48_amount_1; }
-		public BigDecimal getR48_amount_2() { return r48_amount_2; }
-		public void setR48_amount_2(BigDecimal r48_amount_2) { this.r48_amount_2 = r48_amount_2; }
-		public String getR49_product() { return r49_product; }
-		public void setR49_product(String r49_product) { this.r49_product = r49_product; }
-		public BigDecimal getR49_amount_1() { return r49_amount_1; }
-		public void setR49_amount_1(BigDecimal r49_amount_1) { this.r49_amount_1 = r49_amount_1; }
-		public BigDecimal getR49_amount_2() { return r49_amount_2; }
-		public void setR49_amount_2(BigDecimal r49_amount_2) { this.r49_amount_2 = r49_amount_2; }
+		public String getR10_product() {
+			return r10_product;
+		}
 
-		public Date getReport_date() { return report_date; }
-		public void setReport_date(Date report_date) { this.report_date = report_date; }
-		public String getReport_version() { return report_version; }
-		public void setReport_version(String report_version) { this.report_version = report_version; }
-		public String getReport_frequency() { return report_frequency; }
-		public void setReport_frequency(String report_frequency) { this.report_frequency = report_frequency; }
-		public String getReport_code() { return report_code; }
-		public void setReport_code(String report_code) { this.report_code = report_code; }
-		public String getReport_desc() { return report_desc; }
-		public void setReport_desc(String report_desc) { this.report_desc = report_desc; }
-		public String getEntity_flg() { return entity_flg; }
-		public void setEntity_flg(String entity_flg) { this.entity_flg = entity_flg; }
-		public String getModify_flg() { return modify_flg; }
-		public void setModify_flg(String modify_flg) { this.modify_flg = modify_flg; }
-		public String getDel_flg() { return del_flg; }
-		public void setDel_flg(String del_flg) { this.del_flg = del_flg; }
+		public void setR10_product(String r10_product) {
+			this.r10_product = r10_product;
+		}
+
+		public BigDecimal getR10_amount_1() {
+			return r10_amount_1;
+		}
+
+		public void setR10_amount_1(BigDecimal r10_amount_1) {
+			this.r10_amount_1 = r10_amount_1;
+		}
+
+		public BigDecimal getR10_amount_2() {
+			return r10_amount_2;
+		}
+
+		public void setR10_amount_2(BigDecimal r10_amount_2) {
+			this.r10_amount_2 = r10_amount_2;
+		}
+
+		public String getR11_product() {
+			return r11_product;
+		}
+
+		public void setR11_product(String r11_product) {
+			this.r11_product = r11_product;
+		}
+
+		public BigDecimal getR11_amount_1() {
+			return r11_amount_1;
+		}
+
+		public void setR11_amount_1(BigDecimal r11_amount_1) {
+			this.r11_amount_1 = r11_amount_1;
+		}
+
+		public BigDecimal getR11_amount_2() {
+			return r11_amount_2;
+		}
+
+		public void setR11_amount_2(BigDecimal r11_amount_2) {
+			this.r11_amount_2 = r11_amount_2;
+		}
+
+		public String getR12_product() {
+			return r12_product;
+		}
+
+		public void setR12_product(String r12_product) {
+			this.r12_product = r12_product;
+		}
+
+		public BigDecimal getR12_amount_1() {
+			return r12_amount_1;
+		}
+
+		public void setR12_amount_1(BigDecimal r12_amount_1) {
+			this.r12_amount_1 = r12_amount_1;
+		}
+
+		public BigDecimal getR12_amount_2() {
+			return r12_amount_2;
+		}
+
+		public void setR12_amount_2(BigDecimal r12_amount_2) {
+			this.r12_amount_2 = r12_amount_2;
+		}
+
+		public String getR13_product() {
+			return r13_product;
+		}
+
+		public void setR13_product(String r13_product) {
+			this.r13_product = r13_product;
+		}
+
+		public BigDecimal getR13_amount_1() {
+			return r13_amount_1;
+		}
+
+		public void setR13_amount_1(BigDecimal r13_amount_1) {
+			this.r13_amount_1 = r13_amount_1;
+		}
+
+		public BigDecimal getR13_amount_2() {
+			return r13_amount_2;
+		}
+
+		public void setR13_amount_2(BigDecimal r13_amount_2) {
+			this.r13_amount_2 = r13_amount_2;
+		}
+
+		public String getR14_product() {
+			return r14_product;
+		}
+
+		public void setR14_product(String r14_product) {
+			this.r14_product = r14_product;
+		}
+
+		public BigDecimal getR14_amount_1() {
+			return r14_amount_1;
+		}
+
+		public void setR14_amount_1(BigDecimal r14_amount_1) {
+			this.r14_amount_1 = r14_amount_1;
+		}
+
+		public BigDecimal getR14_amount_2() {
+			return r14_amount_2;
+		}
+
+		public void setR14_amount_2(BigDecimal r14_amount_2) {
+			this.r14_amount_2 = r14_amount_2;
+		}
+
+		public String getR15_product() {
+			return r15_product;
+		}
+
+		public void setR15_product(String r15_product) {
+			this.r15_product = r15_product;
+		}
+
+		public BigDecimal getR15_amount_1() {
+			return r15_amount_1;
+		}
+
+		public void setR15_amount_1(BigDecimal r15_amount_1) {
+			this.r15_amount_1 = r15_amount_1;
+		}
+
+		public BigDecimal getR15_amount_2() {
+			return r15_amount_2;
+		}
+
+		public void setR15_amount_2(BigDecimal r15_amount_2) {
+			this.r15_amount_2 = r15_amount_2;
+		}
+
+		public String getR16_product() {
+			return r16_product;
+		}
+
+		public void setR16_product(String r16_product) {
+			this.r16_product = r16_product;
+		}
+
+		public BigDecimal getR16_amount_1() {
+			return r16_amount_1;
+		}
+
+		public void setR16_amount_1(BigDecimal r16_amount_1) {
+			this.r16_amount_1 = r16_amount_1;
+		}
+
+		public BigDecimal getR16_amount_2() {
+			return r16_amount_2;
+		}
+
+		public void setR16_amount_2(BigDecimal r16_amount_2) {
+			this.r16_amount_2 = r16_amount_2;
+		}
+
+		public String getR17_product() {
+			return r17_product;
+		}
+
+		public void setR17_product(String r17_product) {
+			this.r17_product = r17_product;
+		}
+
+		public BigDecimal getR17_amount_1() {
+			return r17_amount_1;
+		}
+
+		public void setR17_amount_1(BigDecimal r17_amount_1) {
+			this.r17_amount_1 = r17_amount_1;
+		}
+
+		public BigDecimal getR17_amount_2() {
+			return r17_amount_2;
+		}
+
+		public void setR17_amount_2(BigDecimal r17_amount_2) {
+			this.r17_amount_2 = r17_amount_2;
+		}
+
+		public String getR18_product() {
+			return r18_product;
+		}
+
+		public void setR18_product(String r18_product) {
+			this.r18_product = r18_product;
+		}
+
+		public BigDecimal getR18_amount_1() {
+			return r18_amount_1;
+		}
+
+		public void setR18_amount_1(BigDecimal r18_amount_1) {
+			this.r18_amount_1 = r18_amount_1;
+		}
+
+		public BigDecimal getR18_amount_2() {
+			return r18_amount_2;
+		}
+
+		public void setR18_amount_2(BigDecimal r18_amount_2) {
+			this.r18_amount_2 = r18_amount_2;
+		}
+
+		public String getR19_product() {
+			return r19_product;
+		}
+
+		public void setR19_product(String r19_product) {
+			this.r19_product = r19_product;
+		}
+
+		public BigDecimal getR19_amount_1() {
+			return r19_amount_1;
+		}
+
+		public void setR19_amount_1(BigDecimal r19_amount_1) {
+			this.r19_amount_1 = r19_amount_1;
+		}
+
+		public BigDecimal getR19_amount_2() {
+			return r19_amount_2;
+		}
+
+		public void setR19_amount_2(BigDecimal r19_amount_2) {
+			this.r19_amount_2 = r19_amount_2;
+		}
+
+		public String getR20_product() {
+			return r20_product;
+		}
+
+		public void setR20_product(String r20_product) {
+			this.r20_product = r20_product;
+		}
+
+		public BigDecimal getR20_amount_1() {
+			return r20_amount_1;
+		}
+
+		public void setR20_amount_1(BigDecimal r20_amount_1) {
+			this.r20_amount_1 = r20_amount_1;
+		}
+
+		public BigDecimal getR20_amount_2() {
+			return r20_amount_2;
+		}
+
+		public void setR20_amount_2(BigDecimal r20_amount_2) {
+			this.r20_amount_2 = r20_amount_2;
+		}
+
+		public String getR21_product() {
+			return r21_product;
+		}
+
+		public void setR21_product(String r21_product) {
+			this.r21_product = r21_product;
+		}
+
+		public BigDecimal getR21_amount_1() {
+			return r21_amount_1;
+		}
+
+		public void setR21_amount_1(BigDecimal r21_amount_1) {
+			this.r21_amount_1 = r21_amount_1;
+		}
+
+		public BigDecimal getR21_amount_2() {
+			return r21_amount_2;
+		}
+
+		public void setR21_amount_2(BigDecimal r21_amount_2) {
+			this.r21_amount_2 = r21_amount_2;
+		}
+
+		public String getR22_product() {
+			return r22_product;
+		}
+
+		public void setR22_product(String r22_product) {
+			this.r22_product = r22_product;
+		}
+
+		public BigDecimal getR22_amount_1() {
+			return r22_amount_1;
+		}
+
+		public void setR22_amount_1(BigDecimal r22_amount_1) {
+			this.r22_amount_1 = r22_amount_1;
+		}
+
+		public BigDecimal getR22_amount_2() {
+			return r22_amount_2;
+		}
+
+		public void setR22_amount_2(BigDecimal r22_amount_2) {
+			this.r22_amount_2 = r22_amount_2;
+		}
+
+		public String getR23_product() {
+			return r23_product;
+		}
+
+		public void setR23_product(String r23_product) {
+			this.r23_product = r23_product;
+		}
+
+		public BigDecimal getR23_amount_1() {
+			return r23_amount_1;
+		}
+
+		public void setR23_amount_1(BigDecimal r23_amount_1) {
+			this.r23_amount_1 = r23_amount_1;
+		}
+
+		public BigDecimal getR23_amount_2() {
+			return r23_amount_2;
+		}
+
+		public void setR23_amount_2(BigDecimal r23_amount_2) {
+			this.r23_amount_2 = r23_amount_2;
+		}
+
+		public String getR24_product() {
+			return r24_product;
+		}
+
+		public void setR24_product(String r24_product) {
+			this.r24_product = r24_product;
+		}
+
+		public BigDecimal getR24_amount_1() {
+			return r24_amount_1;
+		}
+
+		public void setR24_amount_1(BigDecimal r24_amount_1) {
+			this.r24_amount_1 = r24_amount_1;
+		}
+
+		public BigDecimal getR24_amount_2() {
+			return r24_amount_2;
+		}
+
+		public void setR24_amount_2(BigDecimal r24_amount_2) {
+			this.r24_amount_2 = r24_amount_2;
+		}
+
+		public String getR25_product() {
+			return r25_product;
+		}
+
+		public void setR25_product(String r25_product) {
+			this.r25_product = r25_product;
+		}
+
+		public BigDecimal getR25_amount_1() {
+			return r25_amount_1;
+		}
+
+		public void setR25_amount_1(BigDecimal r25_amount_1) {
+			this.r25_amount_1 = r25_amount_1;
+		}
+
+		public BigDecimal getR25_amount_2() {
+			return r25_amount_2;
+		}
+
+		public void setR25_amount_2(BigDecimal r25_amount_2) {
+			this.r25_amount_2 = r25_amount_2;
+		}
+
+		public String getR26_product() {
+			return r26_product;
+		}
+
+		public void setR26_product(String r26_product) {
+			this.r26_product = r26_product;
+		}
+
+		public BigDecimal getR26_amount_1() {
+			return r26_amount_1;
+		}
+
+		public void setR26_amount_1(BigDecimal r26_amount_1) {
+			this.r26_amount_1 = r26_amount_1;
+		}
+
+		public BigDecimal getR26_amount_2() {
+			return r26_amount_2;
+		}
+
+		public void setR26_amount_2(BigDecimal r26_amount_2) {
+			this.r26_amount_2 = r26_amount_2;
+		}
+
+		public String getR31_product() {
+			return r31_product;
+		}
+
+		public void setR31_product(String r31_product) {
+			this.r31_product = r31_product;
+		}
+
+		public BigDecimal getR31_amount_1() {
+			return r31_amount_1;
+		}
+
+		public void setR31_amount_1(BigDecimal r31_amount_1) {
+			this.r31_amount_1 = r31_amount_1;
+		}
+
+		public BigDecimal getR31_amount_2() {
+			return r31_amount_2;
+		}
+
+		public void setR31_amount_2(BigDecimal r31_amount_2) {
+			this.r31_amount_2 = r31_amount_2;
+		}
+
+		public String getR32_product() {
+			return r32_product;
+		}
+
+		public void setR32_product(String r32_product) {
+			this.r32_product = r32_product;
+		}
+
+		public BigDecimal getR32_amount_1() {
+			return r32_amount_1;
+		}
+
+		public void setR32_amount_1(BigDecimal r32_amount_1) {
+			this.r32_amount_1 = r32_amount_1;
+		}
+
+		public BigDecimal getR32_amount_2() {
+			return r32_amount_2;
+		}
+
+		public void setR32_amount_2(BigDecimal r32_amount_2) {
+			this.r32_amount_2 = r32_amount_2;
+		}
+
+		public String getR33_product() {
+			return r33_product;
+		}
+
+		public void setR33_product(String r33_product) {
+			this.r33_product = r33_product;
+		}
+
+		public BigDecimal getR33_amount_1() {
+			return r33_amount_1;
+		}
+
+		public void setR33_amount_1(BigDecimal r33_amount_1) {
+			this.r33_amount_1 = r33_amount_1;
+		}
+
+		public BigDecimal getR33_amount_2() {
+			return r33_amount_2;
+		}
+
+		public void setR33_amount_2(BigDecimal r33_amount_2) {
+			this.r33_amount_2 = r33_amount_2;
+		}
+
+		public String getR34_product() {
+			return r34_product;
+		}
+
+		public void setR34_product(String r34_product) {
+			this.r34_product = r34_product;
+		}
+
+		public BigDecimal getR34_amount_1() {
+			return r34_amount_1;
+		}
+
+		public void setR34_amount_1(BigDecimal r34_amount_1) {
+			this.r34_amount_1 = r34_amount_1;
+		}
+
+		public BigDecimal getR34_amount_2() {
+			return r34_amount_2;
+		}
+
+		public void setR34_amount_2(BigDecimal r34_amount_2) {
+			this.r34_amount_2 = r34_amount_2;
+		}
+
+		public String getR35_product() {
+			return r35_product;
+		}
+
+		public void setR35_product(String r35_product) {
+			this.r35_product = r35_product;
+		}
+
+		public BigDecimal getR35_amount_1() {
+			return r35_amount_1;
+		}
+
+		public void setR35_amount_1(BigDecimal r35_amount_1) {
+			this.r35_amount_1 = r35_amount_1;
+		}
+
+		public BigDecimal getR35_amount_2() {
+			return r35_amount_2;
+		}
+
+		public void setR35_amount_2(BigDecimal r35_amount_2) {
+			this.r35_amount_2 = r35_amount_2;
+		}
+
+		public String getR36_product() {
+			return r36_product;
+		}
+
+		public void setR36_product(String r36_product) {
+			this.r36_product = r36_product;
+		}
+
+		public BigDecimal getR36_amount_1() {
+			return r36_amount_1;
+		}
+
+		public void setR36_amount_1(BigDecimal r36_amount_1) {
+			this.r36_amount_1 = r36_amount_1;
+		}
+
+		public BigDecimal getR36_amount_2() {
+			return r36_amount_2;
+		}
+
+		public void setR36_amount_2(BigDecimal r36_amount_2) {
+			this.r36_amount_2 = r36_amount_2;
+		}
+
+		public String getR41_product() {
+			return r41_product;
+		}
+
+		public void setR41_product(String r41_product) {
+			this.r41_product = r41_product;
+		}
+
+		public BigDecimal getR41_amount_1() {
+			return r41_amount_1;
+		}
+
+		public void setR41_amount_1(BigDecimal r41_amount_1) {
+			this.r41_amount_1 = r41_amount_1;
+		}
+
+		public BigDecimal getR41_amount_2() {
+			return r41_amount_2;
+		}
+
+		public void setR41_amount_2(BigDecimal r41_amount_2) {
+			this.r41_amount_2 = r41_amount_2;
+		}
+
+		public String getR42_product() {
+			return r42_product;
+		}
+
+		public void setR42_product(String r42_product) {
+			this.r42_product = r42_product;
+		}
+
+		public BigDecimal getR42_amount_1() {
+			return r42_amount_1;
+		}
+
+		public void setR42_amount_1(BigDecimal r42_amount_1) {
+			this.r42_amount_1 = r42_amount_1;
+		}
+
+		public BigDecimal getR42_amount_2() {
+			return r42_amount_2;
+		}
+
+		public void setR42_amount_2(BigDecimal r42_amount_2) {
+			this.r42_amount_2 = r42_amount_2;
+		}
+
+		public String getR43_product() {
+			return r43_product;
+		}
+
+		public void setR43_product(String r43_product) {
+			this.r43_product = r43_product;
+		}
+
+		public BigDecimal getR43_amount_1() {
+			return r43_amount_1;
+		}
+
+		public void setR43_amount_1(BigDecimal r43_amount_1) {
+			this.r43_amount_1 = r43_amount_1;
+		}
+
+		public BigDecimal getR43_amount_2() {
+			return r43_amount_2;
+		}
+
+		public void setR43_amount_2(BigDecimal r43_amount_2) {
+			this.r43_amount_2 = r43_amount_2;
+		}
+
+		public String getR44_product() {
+			return r44_product;
+		}
+
+		public void setR44_product(String r44_product) {
+			this.r44_product = r44_product;
+		}
+
+		public BigDecimal getR44_amount_1() {
+			return r44_amount_1;
+		}
+
+		public void setR44_amount_1(BigDecimal r44_amount_1) {
+			this.r44_amount_1 = r44_amount_1;
+		}
+
+		public BigDecimal getR44_amount_2() {
+			return r44_amount_2;
+		}
+
+		public void setR44_amount_2(BigDecimal r44_amount_2) {
+			this.r44_amount_2 = r44_amount_2;
+		}
+
+		public String getR45_product() {
+			return r45_product;
+		}
+
+		public void setR45_product(String r45_product) {
+			this.r45_product = r45_product;
+		}
+
+		public BigDecimal getR45_amount_1() {
+			return r45_amount_1;
+		}
+
+		public void setR45_amount_1(BigDecimal r45_amount_1) {
+			this.r45_amount_1 = r45_amount_1;
+		}
+
+		public BigDecimal getR45_amount_2() {
+			return r45_amount_2;
+		}
+
+		public void setR45_amount_2(BigDecimal r45_amount_2) {
+			this.r45_amount_2 = r45_amount_2;
+		}
+
+		public String getR46_product() {
+			return r46_product;
+		}
+
+		public void setR46_product(String r46_product) {
+			this.r46_product = r46_product;
+		}
+
+		public BigDecimal getR46_amount_1() {
+			return r46_amount_1;
+		}
+
+		public void setR46_amount_1(BigDecimal r46_amount_1) {
+			this.r46_amount_1 = r46_amount_1;
+		}
+
+		public BigDecimal getR46_amount_2() {
+			return r46_amount_2;
+		}
+
+		public void setR46_amount_2(BigDecimal r46_amount_2) {
+			this.r46_amount_2 = r46_amount_2;
+		}
+
+		public String getR47_product() {
+			return r47_product;
+		}
+
+		public void setR47_product(String r47_product) {
+			this.r47_product = r47_product;
+		}
+
+		public BigDecimal getR47_amount_1() {
+			return r47_amount_1;
+		}
+
+		public void setR47_amount_1(BigDecimal r47_amount_1) {
+			this.r47_amount_1 = r47_amount_1;
+		}
+
+		public BigDecimal getR47_amount_2() {
+			return r47_amount_2;
+		}
+
+		public void setR47_amount_2(BigDecimal r47_amount_2) {
+			this.r47_amount_2 = r47_amount_2;
+		}
+
+		public String getR48_product() {
+			return r48_product;
+		}
+
+		public void setR48_product(String r48_product) {
+			this.r48_product = r48_product;
+		}
+
+		public BigDecimal getR48_amount_1() {
+			return r48_amount_1;
+		}
+
+		public void setR48_amount_1(BigDecimal r48_amount_1) {
+			this.r48_amount_1 = r48_amount_1;
+		}
+
+		public BigDecimal getR48_amount_2() {
+			return r48_amount_2;
+		}
+
+		public void setR48_amount_2(BigDecimal r48_amount_2) {
+			this.r48_amount_2 = r48_amount_2;
+		}
+
+		public String getR49_product() {
+			return r49_product;
+		}
+
+		public void setR49_product(String r49_product) {
+			this.r49_product = r49_product;
+		}
+
+		public BigDecimal getR49_amount_1() {
+			return r49_amount_1;
+		}
+
+		public void setR49_amount_1(BigDecimal r49_amount_1) {
+			this.r49_amount_1 = r49_amount_1;
+		}
+
+		public BigDecimal getR49_amount_2() {
+			return r49_amount_2;
+		}
+
+		public void setR49_amount_2(BigDecimal r49_amount_2) {
+			this.r49_amount_2 = r49_amount_2;
+		}
+
+		public Date getReport_date() {
+			return report_date;
+		}
+
+		public void setReport_date(Date report_date) {
+			this.report_date = report_date;
+		}
+
+		public String getReport_version() {
+			return report_version;
+		}
+
+		public void setReport_version(String report_version) {
+			this.report_version = report_version;
+		}
+
+		public String getReport_frequency() {
+			return report_frequency;
+		}
+
+		public void setReport_frequency(String report_frequency) {
+			this.report_frequency = report_frequency;
+		}
+
+		public String getReport_code() {
+			return report_code;
+		}
+
+		public void setReport_code(String report_code) {
+			this.report_code = report_code;
+		}
+
+		public String getReport_desc() {
+			return report_desc;
+		}
+
+		public void setReport_desc(String report_desc) {
+			this.report_desc = report_desc;
+		}
+
+		public String getEntity_flg() {
+			return entity_flg;
+		}
+
+		public void setEntity_flg(String entity_flg) {
+			this.entity_flg = entity_flg;
+		}
+
+		public String getModify_flg() {
+			return modify_flg;
+		}
+
+		public void setModify_flg(String modify_flg) {
+			this.modify_flg = modify_flg;
+		}
+
+		public String getDel_flg() {
+			return del_flg;
+		}
+
+		public void setDel_flg(String del_flg) {
+			this.del_flg = del_flg;
+		}
 	}
 
 	// =========================================================
@@ -7563,7 +8262,7 @@ public class BRRS_M_CA2_ReportService {
 	// Inner entity: M_CA2_Detail_Entity (camelCase, matches @Column names)
 	// =========================================================
 	public static class M_CA2_Detail_Entity {
-		
+
 		private Long sno;
 		private String custId;
 		private String acctNumber;
@@ -7591,7 +8290,7 @@ public class BRRS_M_CA2_ReportService {
 		private String delFlg;
 		private String glCode;
 		private String glSubCode;
-		
+
 		public Long getSno() {
 			return sno;
 		}
@@ -7837,32 +8536,58 @@ public class BRRS_M_CA2_ReportService {
 			} else {
 				obj.setSno((long) (rowNum + 1));
 			}
-			if (hasCol(rs, "CUST_ID")) obj.setCustId(rs.getString("CUST_ID"));
-			if (hasCol(rs, "ACCT_NUMBER")) obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
-			if (hasCol(rs, "ACCT_NAME")) obj.setAcctName(rs.getString("ACCT_NAME"));
-			if (hasCol(rs, "DATA_TYPE")) obj.setDataType(rs.getString("DATA_TYPE"));
-			if (hasCol(rs, "REPORT_LABEL")) obj.setReportLabel(rs.getString("REPORT_LABEL"));
-			if (hasCol(rs, "REPORT_ADDL_CRITERIA_1")) obj.setReportAddlCriteria1(rs.getString("REPORT_ADDL_CRITERIA_1"));
-			if (hasCol(rs, "REPORT_ADDL_CRITERIA_2")) obj.setReportAddlCriteria2(rs.getString("REPORT_ADDL_CRITERIA_2"));
-			if (hasCol(rs, "REPORT_ADDL_CRITERIA_3")) obj.setReportAddlCriteria3(rs.getString("REPORT_ADDL_CRITERIA_3"));
-			if (hasCol(rs, "SANCTION_LIMIT")) obj.setSanctionLimit(rs.getBigDecimal("SANCTION_LIMIT"));
-			if (hasCol(rs, "REPORT_REMARKS")) obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
-			if (hasCol(rs, "MODIFICATION_REMARKS")) obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
-			if (hasCol(rs, "DATA_ENTRY_VERSION")) obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
-			if (hasCol(rs, "ACCT_BALANCE_IN_PULA")) obj.setAcctBalanceInPula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
-			if (hasCol(rs, "REPORT_DATE")) obj.setReportDate(rs.getDate("REPORT_DATE"));
-			if (hasCol(rs, "REPORT_NAME")) obj.setReportName(rs.getString("REPORT_NAME"));
-			if (hasCol(rs, "CREATE_USER")) obj.setCreateUser(rs.getString("CREATE_USER"));
-			if (hasCol(rs, "CREATE_TIME")) obj.setCreateTime(rs.getDate("CREATE_TIME"));
-			if (hasCol(rs, "MODIFY_USER")) obj.setModifyUser(rs.getString("MODIFY_USER"));
-			if (hasCol(rs, "MODIFY_TIME")) obj.setModifyTime(rs.getDate("MODIFY_TIME"));
-			if (hasCol(rs, "VERIFY_USER")) obj.setVerifyUser(rs.getString("VERIFY_USER"));
-			if (hasCol(rs, "VERIFY_TIME")) obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
-			if (hasCol(rs, "ENTITY_FLG")) obj.setEntityFlg(rs.getString("ENTITY_FLG"));
-			if (hasCol(rs, "MODIFY_FLG")) obj.setModifyFlg(rs.getString("MODIFY_FLG"));
-			if (hasCol(rs, "DEL_FLG")) obj.setDelFlg(rs.getString("DEL_FLG"));
-			if (hasCol(rs, "GL_CODE")) obj.setGlCode(rs.getString("GL_CODE"));
-			if (hasCol(rs, "GL_SUB_CODE")) obj.setGlSubCode(rs.getString("GL_SUB_CODE"));
+			if (hasCol(rs, "CUST_ID"))
+				obj.setCustId(rs.getString("CUST_ID"));
+			if (hasCol(rs, "ACCT_NUMBER"))
+				obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
+			if (hasCol(rs, "ACCT_NAME"))
+				obj.setAcctName(rs.getString("ACCT_NAME"));
+			if (hasCol(rs, "DATA_TYPE"))
+				obj.setDataType(rs.getString("DATA_TYPE"));
+			if (hasCol(rs, "REPORT_LABEL"))
+				obj.setReportLabel(rs.getString("REPORT_LABEL"));
+			if (hasCol(rs, "REPORT_ADDL_CRITERIA_1"))
+				obj.setReportAddlCriteria1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+			if (hasCol(rs, "REPORT_ADDL_CRITERIA_2"))
+				obj.setReportAddlCriteria2(rs.getString("REPORT_ADDL_CRITERIA_2"));
+			if (hasCol(rs, "REPORT_ADDL_CRITERIA_3"))
+				obj.setReportAddlCriteria3(rs.getString("REPORT_ADDL_CRITERIA_3"));
+			if (hasCol(rs, "SANCTION_LIMIT"))
+				obj.setSanctionLimit(rs.getBigDecimal("SANCTION_LIMIT"));
+			if (hasCol(rs, "REPORT_REMARKS"))
+				obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
+			if (hasCol(rs, "MODIFICATION_REMARKS"))
+				obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
+			if (hasCol(rs, "DATA_ENTRY_VERSION"))
+				obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
+			if (hasCol(rs, "ACCT_BALANCE_IN_PULA"))
+				obj.setAcctBalanceInPula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+			if (hasCol(rs, "REPORT_DATE"))
+				obj.setReportDate(rs.getDate("REPORT_DATE"));
+			if (hasCol(rs, "REPORT_NAME"))
+				obj.setReportName(rs.getString("REPORT_NAME"));
+			if (hasCol(rs, "CREATE_USER"))
+				obj.setCreateUser(rs.getString("CREATE_USER"));
+			if (hasCol(rs, "CREATE_TIME"))
+				obj.setCreateTime(rs.getDate("CREATE_TIME"));
+			if (hasCol(rs, "MODIFY_USER"))
+				obj.setModifyUser(rs.getString("MODIFY_USER"));
+			if (hasCol(rs, "MODIFY_TIME"))
+				obj.setModifyTime(rs.getDate("MODIFY_TIME"));
+			if (hasCol(rs, "VERIFY_USER"))
+				obj.setVerifyUser(rs.getString("VERIFY_USER"));
+			if (hasCol(rs, "VERIFY_TIME"))
+				obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
+			if (hasCol(rs, "ENTITY_FLG"))
+				obj.setEntityFlg(rs.getString("ENTITY_FLG"));
+			if (hasCol(rs, "MODIFY_FLG"))
+				obj.setModifyFlg(rs.getString("MODIFY_FLG"));
+			if (hasCol(rs, "DEL_FLG"))
+				obj.setDelFlg(rs.getString("DEL_FLG"));
+			if (hasCol(rs, "GL_CODE"))
+				obj.setGlCode(rs.getString("GL_CODE"));
+			if (hasCol(rs, "GL_SUB_CODE"))
+				obj.setGlSubCode(rs.getString("GL_SUB_CODE"));
 			return obj;
 		}
 	}
@@ -7871,7 +8596,7 @@ public class BRRS_M_CA2_ReportService {
 	// Inner entity: M_CA2_Archival_Detail_Entity
 	// =========================================================
 	public static class M_CA2_Archival_Detail_Entity {
-		
+
 		private Long sno;
 		private String custId;
 		private String acctNumber;
@@ -7899,7 +8624,7 @@ public class BRRS_M_CA2_ReportService {
 		private String delFlg;
 		private String glCode;
 		private String glSubCode;
-		
+
 		public Long getSno() {
 			return sno;
 		}
@@ -8145,32 +8870,58 @@ public class BRRS_M_CA2_ReportService {
 			} else {
 				obj.setSno(null);
 			}
-			if (hasCol(rs, "CUST_ID")) obj.setCustId(rs.getString("CUST_ID"));
-			if (hasCol(rs, "ACCT_NUMBER")) obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
-			if (hasCol(rs, "ACCT_NAME")) obj.setAcctName(rs.getString("ACCT_NAME"));
-			if (hasCol(rs, "DATA_TYPE")) obj.setDataType(rs.getString("DATA_TYPE"));
-			if (hasCol(rs, "REPORT_LABEL")) obj.setReportLabel(rs.getString("REPORT_LABEL"));
-			if (hasCol(rs, "REPORT_ADDL_CRITERIA_1")) obj.setReportAddlCriteria1(rs.getString("REPORT_ADDL_CRITERIA_1"));
-			if (hasCol(rs, "REPORT_ADDL_CRITERIA_2")) obj.setReportAddlCriteria2(rs.getString("REPORT_ADDL_CRITERIA_2"));
-			if (hasCol(rs, "REPORT_ADDL_CRITERIA_3")) obj.setReportAddlCriteria3(rs.getString("REPORT_ADDL_CRITERIA_3"));
-			if (hasCol(rs, "SANCTION_LIMIT")) obj.setSanctionLimit(rs.getBigDecimal("SANCTION_LIMIT"));
-			if (hasCol(rs, "REPORT_REMARKS")) obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
-			if (hasCol(rs, "MODIFICATION_REMARKS")) obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
-			if (hasCol(rs, "DATA_ENTRY_VERSION")) obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
-			if (hasCol(rs, "ACCT_BALANCE_IN_PULA")) obj.setAcctBalanceInPula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
-			if (hasCol(rs, "REPORT_DATE")) obj.setReportDate(rs.getDate("REPORT_DATE"));
-			if (hasCol(rs, "REPORT_NAME")) obj.setReportName(rs.getString("REPORT_NAME"));
-			if (hasCol(rs, "CREATE_USER")) obj.setCreateUser(rs.getString("CREATE_USER"));
-			if (hasCol(rs, "CREATE_TIME")) obj.setCreateTime(rs.getDate("CREATE_TIME"));
-			if (hasCol(rs, "MODIFY_USER")) obj.setModifyUser(rs.getString("MODIFY_USER"));
-			if (hasCol(rs, "MODIFY_TIME")) obj.setModifyTime(rs.getDate("MODIFY_TIME"));
-			if (hasCol(rs, "VERIFY_USER")) obj.setVerifyUser(rs.getString("VERIFY_USER"));
-			if (hasCol(rs, "VERIFY_TIME")) obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
-			if (hasCol(rs, "ENTITY_FLG")) obj.setEntityFlg(rs.getString("ENTITY_FLG"));
-			if (hasCol(rs, "MODIFY_FLG")) obj.setModifyFlg(rs.getString("MODIFY_FLG"));
-			if (hasCol(rs, "DEL_FLG")) obj.setDelFlg(rs.getString("DEL_FLG"));
-			if (hasCol(rs, "GL_CODE")) obj.setGlCode(rs.getString("GL_CODE"));
-			if (hasCol(rs, "GL_SUB_CODE")) obj.setGlSubCode(rs.getString("GL_SUB_CODE"));
+			if (hasCol(rs, "CUST_ID"))
+				obj.setCustId(rs.getString("CUST_ID"));
+			if (hasCol(rs, "ACCT_NUMBER"))
+				obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
+			if (hasCol(rs, "ACCT_NAME"))
+				obj.setAcctName(rs.getString("ACCT_NAME"));
+			if (hasCol(rs, "DATA_TYPE"))
+				obj.setDataType(rs.getString("DATA_TYPE"));
+			if (hasCol(rs, "REPORT_LABEL"))
+				obj.setReportLabel(rs.getString("REPORT_LABEL"));
+			if (hasCol(rs, "REPORT_ADDL_CRITERIA_1"))
+				obj.setReportAddlCriteria1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+			if (hasCol(rs, "REPORT_ADDL_CRITERIA_2"))
+				obj.setReportAddlCriteria2(rs.getString("REPORT_ADDL_CRITERIA_2"));
+			if (hasCol(rs, "REPORT_ADDL_CRITERIA_3"))
+				obj.setReportAddlCriteria3(rs.getString("REPORT_ADDL_CRITERIA_3"));
+			if (hasCol(rs, "SANCTION_LIMIT"))
+				obj.setSanctionLimit(rs.getBigDecimal("SANCTION_LIMIT"));
+			if (hasCol(rs, "REPORT_REMARKS"))
+				obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
+			if (hasCol(rs, "MODIFICATION_REMARKS"))
+				obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
+			if (hasCol(rs, "DATA_ENTRY_VERSION"))
+				obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
+			if (hasCol(rs, "ACCT_BALANCE_IN_PULA"))
+				obj.setAcctBalanceInPula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+			if (hasCol(rs, "REPORT_DATE"))
+				obj.setReportDate(rs.getDate("REPORT_DATE"));
+			if (hasCol(rs, "REPORT_NAME"))
+				obj.setReportName(rs.getString("REPORT_NAME"));
+			if (hasCol(rs, "CREATE_USER"))
+				obj.setCreateUser(rs.getString("CREATE_USER"));
+			if (hasCol(rs, "CREATE_TIME"))
+				obj.setCreateTime(rs.getDate("CREATE_TIME"));
+			if (hasCol(rs, "MODIFY_USER"))
+				obj.setModifyUser(rs.getString("MODIFY_USER"));
+			if (hasCol(rs, "MODIFY_TIME"))
+				obj.setModifyTime(rs.getDate("MODIFY_TIME"));
+			if (hasCol(rs, "VERIFY_USER"))
+				obj.setVerifyUser(rs.getString("VERIFY_USER"));
+			if (hasCol(rs, "VERIFY_TIME"))
+				obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
+			if (hasCol(rs, "ENTITY_FLG"))
+				obj.setEntityFlg(rs.getString("ENTITY_FLG"));
+			if (hasCol(rs, "MODIFY_FLG"))
+				obj.setModifyFlg(rs.getString("MODIFY_FLG"));
+			if (hasCol(rs, "DEL_FLG"))
+				obj.setDelFlg(rs.getString("DEL_FLG"));
+			if (hasCol(rs, "GL_CODE"))
+				obj.setGlCode(rs.getString("GL_CODE"));
+			if (hasCol(rs, "GL_SUB_CODE"))
+				obj.setGlSubCode(rs.getString("GL_SUB_CODE"));
 			return obj;
 		}
 	}
