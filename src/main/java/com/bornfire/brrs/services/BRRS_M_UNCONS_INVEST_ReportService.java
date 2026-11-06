@@ -34,8 +34,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -43,6 +46,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.AuditServicesEntity;
 import com.bornfire.brrs.entities.UserProfileRep;
 
 @Component
@@ -164,26 +168,22 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 				e.getR15_percent_of_additional_tier_1_holding(), e.getR15_percent_of_tier_2_holding(),
 				e.getR22_product(), e.getR22_accuulated_equity_interest_5(), e.getR22_assets(), e.getR22_liabilities(),
 				e.getR22_revenue(), e.getR22_profit_or_loss(), e.getR22_unreg_share_of_loss(),
-				e.getR22_cumulative_unreg_share_of_loss(),
-				e.getR23_product(), e.getR23_accuulated_equity_interest_5(), e.getR23_assets(), e.getR23_liabilities(),
-				e.getR23_revenue(), e.getR23_profit_or_loss(), e.getR23_unreg_share_of_loss(),
-				e.getR23_cumulative_unreg_share_of_loss(),
-				e.getR24_product(), e.getR24_accuulated_equity_interest_5(), e.getR24_assets(), e.getR24_liabilities(),
-				e.getR24_revenue(), e.getR24_profit_or_loss(), e.getR24_unreg_share_of_loss(),
-				e.getR24_cumulative_unreg_share_of_loss(),
-				e.getR29_product(), e.getR29_fair_value(),
-				e.getR35_product(), e.getR35_company(), e.getR35_jurisdiction_of_incorp_1(),
-				e.getR35_jurisdiction_of_incorp_2(), e.getR35_line_of_business(), e.getR35_currency(),
-				e.getR35_share_capital(), e.getR35_accumulated_equity_interest(),
+				e.getR22_cumulative_unreg_share_of_loss(), e.getR23_product(), e.getR23_accuulated_equity_interest_5(),
+				e.getR23_assets(), e.getR23_liabilities(), e.getR23_revenue(), e.getR23_profit_or_loss(),
+				e.getR23_unreg_share_of_loss(), e.getR23_cumulative_unreg_share_of_loss(), e.getR24_product(),
+				e.getR24_accuulated_equity_interest_5(), e.getR24_assets(), e.getR24_liabilities(), e.getR24_revenue(),
+				e.getR24_profit_or_loss(), e.getR24_unreg_share_of_loss(), e.getR24_cumulative_unreg_share_of_loss(),
+				e.getR29_product(), e.getR29_fair_value(), e.getR35_product(), e.getR35_company(),
+				e.getR35_jurisdiction_of_incorp_1(), e.getR35_jurisdiction_of_incorp_2(), e.getR35_line_of_business(),
+				e.getR35_currency(), e.getR35_share_capital(), e.getR35_accumulated_equity_interest(),
 				e.getR36_product(), e.getR36_company(), e.getR36_jurisdiction_of_incorp_1(),
 				e.getR36_jurisdiction_of_incorp_2(), e.getR36_line_of_business(), e.getR36_currency(),
-				e.getR36_share_capital(), e.getR36_accumulated_equity_interest(),
-				e.getR37_product(), e.getR37_company(), e.getR37_jurisdiction_of_incorp_1(),
-				e.getR37_jurisdiction_of_incorp_2(), e.getR37_line_of_business(), e.getR37_currency(),
-				e.getR37_share_capital(), e.getR37_accumulated_equity_interest(),
-				e.getR38_product(), e.getR38_company(), e.getR38_jurisdiction_of_incorp_1(),
-				e.getR38_jurisdiction_of_incorp_2(), e.getR38_line_of_business(), e.getR38_currency(),
-				e.getR38_share_capital(), e.getR38_accumulated_equity_interest() };
+				e.getR36_share_capital(), e.getR36_accumulated_equity_interest(), e.getR37_product(),
+				e.getR37_company(), e.getR37_jurisdiction_of_incorp_1(), e.getR37_jurisdiction_of_incorp_2(),
+				e.getR37_line_of_business(), e.getR37_currency(), e.getR37_share_capital(),
+				e.getR37_accumulated_equity_interest(), e.getR38_product(), e.getR38_company(),
+				e.getR38_jurisdiction_of_incorp_1(), e.getR38_jurisdiction_of_incorp_2(), e.getR38_line_of_business(),
+				e.getR38_currency(), e.getR38_share_capital(), e.getR38_accumulated_equity_interest() };
 	}
 
 	private Object[] rFieldValues(M_UNCONS_INVEST_Detail_Entity e) {
@@ -199,26 +199,22 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 				e.getR15_percent_of_additional_tier_1_holding(), e.getR15_percent_of_tier_2_holding(),
 				e.getR22_product(), e.getR22_accuulated_equity_interest_5(), e.getR22_assets(), e.getR22_liabilities(),
 				e.getR22_revenue(), e.getR22_profit_or_loss(), e.getR22_unreg_share_of_loss(),
-				e.getR22_cumulative_unreg_share_of_loss(),
-				e.getR23_product(), e.getR23_accuulated_equity_interest_5(), e.getR23_assets(), e.getR23_liabilities(),
-				e.getR23_revenue(), e.getR23_profit_or_loss(), e.getR23_unreg_share_of_loss(),
-				e.getR23_cumulative_unreg_share_of_loss(),
-				e.getR24_product(), e.getR24_accuulated_equity_interest_5(), e.getR24_assets(), e.getR24_liabilities(),
-				e.getR24_revenue(), e.getR24_profit_or_loss(), e.getR24_unreg_share_of_loss(),
-				e.getR24_cumulative_unreg_share_of_loss(),
-				e.getR29_product(), e.getR29_fair_value(),
-				e.getR35_product(), e.getR35_company(), e.getR35_jurisdiction_of_incorp_1(),
-				e.getR35_jurisdiction_of_incorp_2(), e.getR35_line_of_business(), e.getR35_currency(),
-				e.getR35_share_capital(), e.getR35_accumulated_equity_interest(),
+				e.getR22_cumulative_unreg_share_of_loss(), e.getR23_product(), e.getR23_accuulated_equity_interest_5(),
+				e.getR23_assets(), e.getR23_liabilities(), e.getR23_revenue(), e.getR23_profit_or_loss(),
+				e.getR23_unreg_share_of_loss(), e.getR23_cumulative_unreg_share_of_loss(), e.getR24_product(),
+				e.getR24_accuulated_equity_interest_5(), e.getR24_assets(), e.getR24_liabilities(), e.getR24_revenue(),
+				e.getR24_profit_or_loss(), e.getR24_unreg_share_of_loss(), e.getR24_cumulative_unreg_share_of_loss(),
+				e.getR29_product(), e.getR29_fair_value(), e.getR35_product(), e.getR35_company(),
+				e.getR35_jurisdiction_of_incorp_1(), e.getR35_jurisdiction_of_incorp_2(), e.getR35_line_of_business(),
+				e.getR35_currency(), e.getR35_share_capital(), e.getR35_accumulated_equity_interest(),
 				e.getR36_product(), e.getR36_company(), e.getR36_jurisdiction_of_incorp_1(),
 				e.getR36_jurisdiction_of_incorp_2(), e.getR36_line_of_business(), e.getR36_currency(),
-				e.getR36_share_capital(), e.getR36_accumulated_equity_interest(),
-				e.getR37_product(), e.getR37_company(), e.getR37_jurisdiction_of_incorp_1(),
-				e.getR37_jurisdiction_of_incorp_2(), e.getR37_line_of_business(), e.getR37_currency(),
-				e.getR37_share_capital(), e.getR37_accumulated_equity_interest(),
-				e.getR38_product(), e.getR38_company(), e.getR38_jurisdiction_of_incorp_1(),
-				e.getR38_jurisdiction_of_incorp_2(), e.getR38_line_of_business(), e.getR38_currency(),
-				e.getR38_share_capital(), e.getR38_accumulated_equity_interest() };
+				e.getR36_share_capital(), e.getR36_accumulated_equity_interest(), e.getR37_product(),
+				e.getR37_company(), e.getR37_jurisdiction_of_incorp_1(), e.getR37_jurisdiction_of_incorp_2(),
+				e.getR37_line_of_business(), e.getR37_currency(), e.getR37_share_capital(),
+				e.getR37_accumulated_equity_interest(), e.getR38_product(), e.getR38_company(),
+				e.getR38_jurisdiction_of_incorp_1(), e.getR38_jurisdiction_of_incorp_2(), e.getR38_line_of_business(),
+				e.getR38_currency(), e.getR38_share_capital(), e.getR38_accumulated_equity_interest() };
 	}
 
 	private Object[] rFieldValues(M_UNCONS_INVEST_Archival_Summary_Entity e) {
@@ -234,26 +230,22 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 				e.getR15_percent_of_additional_tier_1_holding(), e.getR15_percent_of_tier_2_holding(),
 				e.getR22_product(), e.getR22_accuulated_equity_interest_5(), e.getR22_assets(), e.getR22_liabilities(),
 				e.getR22_revenue(), e.getR22_profit_or_loss(), e.getR22_unreg_share_of_loss(),
-				e.getR22_cumulative_unreg_share_of_loss(),
-				e.getR23_product(), e.getR23_accuulated_equity_interest_5(), e.getR23_assets(), e.getR23_liabilities(),
-				e.getR23_revenue(), e.getR23_profit_or_loss(), e.getR23_unreg_share_of_loss(),
-				e.getR23_cumulative_unreg_share_of_loss(),
-				e.getR24_product(), e.getR24_accuulated_equity_interest_5(), e.getR24_assets(), e.getR24_liabilities(),
-				e.getR24_revenue(), e.getR24_profit_or_loss(), e.getR24_unreg_share_of_loss(),
-				e.getR24_cumulative_unreg_share_of_loss(),
-				e.getR29_product(), e.getR29_fair_value(),
-				e.getR35_product(), e.getR35_company(), e.getR35_jurisdiction_of_incorp_1(),
-				e.getR35_jurisdiction_of_incorp_2(), e.getR35_line_of_business(), e.getR35_currency(),
-				e.getR35_share_capital(), e.getR35_accumulated_equity_interest(),
+				e.getR22_cumulative_unreg_share_of_loss(), e.getR23_product(), e.getR23_accuulated_equity_interest_5(),
+				e.getR23_assets(), e.getR23_liabilities(), e.getR23_revenue(), e.getR23_profit_or_loss(),
+				e.getR23_unreg_share_of_loss(), e.getR23_cumulative_unreg_share_of_loss(), e.getR24_product(),
+				e.getR24_accuulated_equity_interest_5(), e.getR24_assets(), e.getR24_liabilities(), e.getR24_revenue(),
+				e.getR24_profit_or_loss(), e.getR24_unreg_share_of_loss(), e.getR24_cumulative_unreg_share_of_loss(),
+				e.getR29_product(), e.getR29_fair_value(), e.getR35_product(), e.getR35_company(),
+				e.getR35_jurisdiction_of_incorp_1(), e.getR35_jurisdiction_of_incorp_2(), e.getR35_line_of_business(),
+				e.getR35_currency(), e.getR35_share_capital(), e.getR35_accumulated_equity_interest(),
 				e.getR36_product(), e.getR36_company(), e.getR36_jurisdiction_of_incorp_1(),
 				e.getR36_jurisdiction_of_incorp_2(), e.getR36_line_of_business(), e.getR36_currency(),
-				e.getR36_share_capital(), e.getR36_accumulated_equity_interest(),
-				e.getR37_product(), e.getR37_company(), e.getR37_jurisdiction_of_incorp_1(),
-				e.getR37_jurisdiction_of_incorp_2(), e.getR37_line_of_business(), e.getR37_currency(),
-				e.getR37_share_capital(), e.getR37_accumulated_equity_interest(),
-				e.getR38_product(), e.getR38_company(), e.getR38_jurisdiction_of_incorp_1(),
-				e.getR38_jurisdiction_of_incorp_2(), e.getR38_line_of_business(), e.getR38_currency(),
-				e.getR38_share_capital(), e.getR38_accumulated_equity_interest() };
+				e.getR36_share_capital(), e.getR36_accumulated_equity_interest(), e.getR37_product(),
+				e.getR37_company(), e.getR37_jurisdiction_of_incorp_1(), e.getR37_jurisdiction_of_incorp_2(),
+				e.getR37_line_of_business(), e.getR37_currency(), e.getR37_share_capital(),
+				e.getR37_accumulated_equity_interest(), e.getR38_product(), e.getR38_company(),
+				e.getR38_jurisdiction_of_incorp_1(), e.getR38_jurisdiction_of_incorp_2(), e.getR38_line_of_business(),
+				e.getR38_currency(), e.getR38_share_capital(), e.getR38_accumulated_equity_interest() };
 	}
 
 	private Object[] rFieldValues(M_UNCONS_INVEST_Archival_Detail_Entity e) {
@@ -269,26 +261,22 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 				e.getR15_percent_of_additional_tier_1_holding(), e.getR15_percent_of_tier_2_holding(),
 				e.getR22_product(), e.getR22_accuulated_equity_interest_5(), e.getR22_assets(), e.getR22_liabilities(),
 				e.getR22_revenue(), e.getR22_profit_or_loss(), e.getR22_unreg_share_of_loss(),
-				e.getR22_cumulative_unreg_share_of_loss(),
-				e.getR23_product(), e.getR23_accuulated_equity_interest_5(), e.getR23_assets(), e.getR23_liabilities(),
-				e.getR23_revenue(), e.getR23_profit_or_loss(), e.getR23_unreg_share_of_loss(),
-				e.getR23_cumulative_unreg_share_of_loss(),
-				e.getR24_product(), e.getR24_accuulated_equity_interest_5(), e.getR24_assets(), e.getR24_liabilities(),
-				e.getR24_revenue(), e.getR24_profit_or_loss(), e.getR24_unreg_share_of_loss(),
-				e.getR24_cumulative_unreg_share_of_loss(),
-				e.getR29_product(), e.getR29_fair_value(),
-				e.getR35_product(), e.getR35_company(), e.getR35_jurisdiction_of_incorp_1(),
-				e.getR35_jurisdiction_of_incorp_2(), e.getR35_line_of_business(), e.getR35_currency(),
-				e.getR35_share_capital(), e.getR35_accumulated_equity_interest(),
+				e.getR22_cumulative_unreg_share_of_loss(), e.getR23_product(), e.getR23_accuulated_equity_interest_5(),
+				e.getR23_assets(), e.getR23_liabilities(), e.getR23_revenue(), e.getR23_profit_or_loss(),
+				e.getR23_unreg_share_of_loss(), e.getR23_cumulative_unreg_share_of_loss(), e.getR24_product(),
+				e.getR24_accuulated_equity_interest_5(), e.getR24_assets(), e.getR24_liabilities(), e.getR24_revenue(),
+				e.getR24_profit_or_loss(), e.getR24_unreg_share_of_loss(), e.getR24_cumulative_unreg_share_of_loss(),
+				e.getR29_product(), e.getR29_fair_value(), e.getR35_product(), e.getR35_company(),
+				e.getR35_jurisdiction_of_incorp_1(), e.getR35_jurisdiction_of_incorp_2(), e.getR35_line_of_business(),
+				e.getR35_currency(), e.getR35_share_capital(), e.getR35_accumulated_equity_interest(),
 				e.getR36_product(), e.getR36_company(), e.getR36_jurisdiction_of_incorp_1(),
 				e.getR36_jurisdiction_of_incorp_2(), e.getR36_line_of_business(), e.getR36_currency(),
-				e.getR36_share_capital(), e.getR36_accumulated_equity_interest(),
-				e.getR37_product(), e.getR37_company(), e.getR37_jurisdiction_of_incorp_1(),
-				e.getR37_jurisdiction_of_incorp_2(), e.getR37_line_of_business(), e.getR37_currency(),
-				e.getR37_share_capital(), e.getR37_accumulated_equity_interest(),
-				e.getR38_product(), e.getR38_company(), e.getR38_jurisdiction_of_incorp_1(),
-				e.getR38_jurisdiction_of_incorp_2(), e.getR38_line_of_business(), e.getR38_currency(),
-				e.getR38_share_capital(), e.getR38_accumulated_equity_interest() };
+				e.getR36_share_capital(), e.getR36_accumulated_equity_interest(), e.getR37_product(),
+				e.getR37_company(), e.getR37_jurisdiction_of_incorp_1(), e.getR37_jurisdiction_of_incorp_2(),
+				e.getR37_line_of_business(), e.getR37_currency(), e.getR37_share_capital(),
+				e.getR37_accumulated_equity_interest(), e.getR38_product(), e.getR38_company(),
+				e.getR38_jurisdiction_of_incorp_1(), e.getR38_jurisdiction_of_incorp_2(), e.getR38_line_of_business(),
+				e.getR38_currency(), e.getR38_share_capital(), e.getR38_accumulated_equity_interest() };
 	}
 
 	private Object[] rFieldValues(M_UNCONS_INVEST_Resub_Summary_Entity e) {
@@ -304,26 +292,22 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 				e.getR15_percent_of_additional_tier_1_holding(), e.getR15_percent_of_tier_2_holding(),
 				e.getR22_product(), e.getR22_accuulated_equity_interest_5(), e.getR22_assets(), e.getR22_liabilities(),
 				e.getR22_revenue(), e.getR22_profit_or_loss(), e.getR22_unreg_share_of_loss(),
-				e.getR22_cumulative_unreg_share_of_loss(),
-				e.getR23_product(), e.getR23_accuulated_equity_interest_5(), e.getR23_assets(), e.getR23_liabilities(),
-				e.getR23_revenue(), e.getR23_profit_or_loss(), e.getR23_unreg_share_of_loss(),
-				e.getR23_cumulative_unreg_share_of_loss(),
-				e.getR24_product(), e.getR24_accuulated_equity_interest_5(), e.getR24_assets(), e.getR24_liabilities(),
-				e.getR24_revenue(), e.getR24_profit_or_loss(), e.getR24_unreg_share_of_loss(),
-				e.getR24_cumulative_unreg_share_of_loss(),
-				e.getR29_product(), e.getR29_fair_value(),
-				e.getR35_product(), e.getR35_company(), e.getR35_jurisdiction_of_incorp_1(),
-				e.getR35_jurisdiction_of_incorp_2(), e.getR35_line_of_business(), e.getR35_currency(),
-				e.getR35_share_capital(), e.getR35_accumulated_equity_interest(),
+				e.getR22_cumulative_unreg_share_of_loss(), e.getR23_product(), e.getR23_accuulated_equity_interest_5(),
+				e.getR23_assets(), e.getR23_liabilities(), e.getR23_revenue(), e.getR23_profit_or_loss(),
+				e.getR23_unreg_share_of_loss(), e.getR23_cumulative_unreg_share_of_loss(), e.getR24_product(),
+				e.getR24_accuulated_equity_interest_5(), e.getR24_assets(), e.getR24_liabilities(), e.getR24_revenue(),
+				e.getR24_profit_or_loss(), e.getR24_unreg_share_of_loss(), e.getR24_cumulative_unreg_share_of_loss(),
+				e.getR29_product(), e.getR29_fair_value(), e.getR35_product(), e.getR35_company(),
+				e.getR35_jurisdiction_of_incorp_1(), e.getR35_jurisdiction_of_incorp_2(), e.getR35_line_of_business(),
+				e.getR35_currency(), e.getR35_share_capital(), e.getR35_accumulated_equity_interest(),
 				e.getR36_product(), e.getR36_company(), e.getR36_jurisdiction_of_incorp_1(),
 				e.getR36_jurisdiction_of_incorp_2(), e.getR36_line_of_business(), e.getR36_currency(),
-				e.getR36_share_capital(), e.getR36_accumulated_equity_interest(),
-				e.getR37_product(), e.getR37_company(), e.getR37_jurisdiction_of_incorp_1(),
-				e.getR37_jurisdiction_of_incorp_2(), e.getR37_line_of_business(), e.getR37_currency(),
-				e.getR37_share_capital(), e.getR37_accumulated_equity_interest(),
-				e.getR38_product(), e.getR38_company(), e.getR38_jurisdiction_of_incorp_1(),
-				e.getR38_jurisdiction_of_incorp_2(), e.getR38_line_of_business(), e.getR38_currency(),
-				e.getR38_share_capital(), e.getR38_accumulated_equity_interest() };
+				e.getR36_share_capital(), e.getR36_accumulated_equity_interest(), e.getR37_product(),
+				e.getR37_company(), e.getR37_jurisdiction_of_incorp_1(), e.getR37_jurisdiction_of_incorp_2(),
+				e.getR37_line_of_business(), e.getR37_currency(), e.getR37_share_capital(),
+				e.getR37_accumulated_equity_interest(), e.getR38_product(), e.getR38_company(),
+				e.getR38_jurisdiction_of_incorp_1(), e.getR38_jurisdiction_of_incorp_2(), e.getR38_line_of_business(),
+				e.getR38_currency(), e.getR38_share_capital(), e.getR38_accumulated_equity_interest() };
 	}
 
 	private Object[] rFieldValues(M_UNCONS_INVEST_Resub_Detail_Entity e) {
@@ -339,26 +323,22 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 				e.getR15_percent_of_additional_tier_1_holding(), e.getR15_percent_of_tier_2_holding(),
 				e.getR22_product(), e.getR22_accuulated_equity_interest_5(), e.getR22_assets(), e.getR22_liabilities(),
 				e.getR22_revenue(), e.getR22_profit_or_loss(), e.getR22_unreg_share_of_loss(),
-				e.getR22_cumulative_unreg_share_of_loss(),
-				e.getR23_product(), e.getR23_accuulated_equity_interest_5(), e.getR23_assets(), e.getR23_liabilities(),
-				e.getR23_revenue(), e.getR23_profit_or_loss(), e.getR23_unreg_share_of_loss(),
-				e.getR23_cumulative_unreg_share_of_loss(),
-				e.getR24_product(), e.getR24_accuulated_equity_interest_5(), e.getR24_assets(), e.getR24_liabilities(),
-				e.getR24_revenue(), e.getR24_profit_or_loss(), e.getR24_unreg_share_of_loss(),
-				e.getR24_cumulative_unreg_share_of_loss(),
-				e.getR29_product(), e.getR29_fair_value(),
-				e.getR35_product(), e.getR35_company(), e.getR35_jurisdiction_of_incorp_1(),
-				e.getR35_jurisdiction_of_incorp_2(), e.getR35_line_of_business(), e.getR35_currency(),
-				e.getR35_share_capital(), e.getR35_accumulated_equity_interest(),
+				e.getR22_cumulative_unreg_share_of_loss(), e.getR23_product(), e.getR23_accuulated_equity_interest_5(),
+				e.getR23_assets(), e.getR23_liabilities(), e.getR23_revenue(), e.getR23_profit_or_loss(),
+				e.getR23_unreg_share_of_loss(), e.getR23_cumulative_unreg_share_of_loss(), e.getR24_product(),
+				e.getR24_accuulated_equity_interest_5(), e.getR24_assets(), e.getR24_liabilities(), e.getR24_revenue(),
+				e.getR24_profit_or_loss(), e.getR24_unreg_share_of_loss(), e.getR24_cumulative_unreg_share_of_loss(),
+				e.getR29_product(), e.getR29_fair_value(), e.getR35_product(), e.getR35_company(),
+				e.getR35_jurisdiction_of_incorp_1(), e.getR35_jurisdiction_of_incorp_2(), e.getR35_line_of_business(),
+				e.getR35_currency(), e.getR35_share_capital(), e.getR35_accumulated_equity_interest(),
 				e.getR36_product(), e.getR36_company(), e.getR36_jurisdiction_of_incorp_1(),
 				e.getR36_jurisdiction_of_incorp_2(), e.getR36_line_of_business(), e.getR36_currency(),
-				e.getR36_share_capital(), e.getR36_accumulated_equity_interest(),
-				e.getR37_product(), e.getR37_company(), e.getR37_jurisdiction_of_incorp_1(),
-				e.getR37_jurisdiction_of_incorp_2(), e.getR37_line_of_business(), e.getR37_currency(),
-				e.getR37_share_capital(), e.getR37_accumulated_equity_interest(),
-				e.getR38_product(), e.getR38_company(), e.getR38_jurisdiction_of_incorp_1(),
-				e.getR38_jurisdiction_of_incorp_2(), e.getR38_line_of_business(), e.getR38_currency(),
-				e.getR38_share_capital(), e.getR38_accumulated_equity_interest() };
+				e.getR36_share_capital(), e.getR36_accumulated_equity_interest(), e.getR37_product(),
+				e.getR37_company(), e.getR37_jurisdiction_of_incorp_1(), e.getR37_jurisdiction_of_incorp_2(),
+				e.getR37_line_of_business(), e.getR37_currency(), e.getR37_share_capital(),
+				e.getR37_accumulated_equity_interest(), e.getR38_product(), e.getR38_company(),
+				e.getR38_jurisdiction_of_incorp_1(), e.getR38_jurisdiction_of_incorp_2(), e.getR38_line_of_business(),
+				e.getR38_currency(), e.getR38_share_capital(), e.getR38_accumulated_equity_interest() };
 	}
 
 	private void saveSummary(M_UNCONS_INVEST_Summary_Entity e) {
@@ -506,10 +486,10 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 	}
 
 	public ModelAndView getM_UNCONS_INVESTView(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
+			String dtltype, Pageable pageable, String type, BigDecimal version, HttpServletRequest req1, Model md) {
 
 		ModelAndView mv = new ModelAndView();
-		
+
 		String userid = (String) req1.getSession().getAttribute("USERID");
 		System.out.println("User Id Maker and Checker: " + userid);
 		String role = userProfileRep.getUserRole(userid);
@@ -605,17 +585,31 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 
 	@Transactional
 	public void updateReport(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
-		System.out.println("Came to services 1");
+		System.out.println("Came to services 1 (M_UNCONS_INVEST)");
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
-		// 🔹 Fetch existing SUMMARY
-		List<M_UNCONS_INVEST_Summary_Entity> existingSummaryList = getSummaryByDate(updatedEntity.getReport_date());
-		if (existingSummaryList.isEmpty()) {
-			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
+
+		// 1. Fetch live summary record as baseline reference
+		List<M_UNCONS_INVEST_Summary_Entity> summaryList = getSummaryByDate(updatedEntity.getReport_date());
+		if (summaryList.isEmpty()) {
+			throw new RuntimeException("Summary record not found for REPORT_DATE: " + updatedEntity.getReport_date());
 		}
-		M_UNCONS_INVEST_Summary_Entity existingSummary = existingSummaryList.get(0);
-		// 🔹 Create Audit Copy before editing
+		M_UNCONS_INVEST_Summary_Entity liveSummary = summaryList.get(0);
+
+		// 2. Fetch existing mod record or clone from live summary
+		M_UNCONS_INVEST_Summary_Entity existingMod = findM_UNCONS_INVEST_ModRecordByReportDate(
+				updatedEntity.getReport_date());
+		final M_UNCONS_INVEST_Summary_Entity modRecord = new M_UNCONS_INVEST_Summary_Entity();
+
+		if (existingMod != null) {
+			BeanUtils.copyProperties(existingMod, modRecord);
+		} else {
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
+
+		// 3. Create a pristine independent oldcopy snapshot for audit comparison
 		M_UNCONS_INVEST_Summary_Entity oldcopy = new M_UNCONS_INVEST_Summary_Entity();
-		BeanUtils.copyProperties(existingSummary, oldcopy);
+		BeanUtils.copyProperties(modRecord, oldcopy);
+
 		// 🔹 Fetch or create DETAIL
 		List<M_UNCONS_INVEST_Detail_Entity> existingDetailList = getDetailByDate(updatedEntity.getReport_date());
 		M_UNCONS_INVEST_Detail_Entity detailEntity;
@@ -630,7 +624,6 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			// 1️⃣ Loop from R11 to R15 and copy fields
 			for (int i = 11; i <= 15; i++) {
 				String prefix = "R" + i + "_";
-
 				String[] fields = { "product", "amount", "percent_of_cet1_holding",
 						"percent_of_additional_tier_1_holding", "percent_of_tier_2_holding" };
 
@@ -641,9 +634,8 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 					try {
 						Method getter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(getterName);
 						Object newValue = getter.invoke(updatedEntity);
-						Object existingValue = getter.invoke(existingSummary);
+						Object existingValue = getter.invoke(modRecord);
 
-						// --- FIX: Normalize nulls vs empty strings to prevent audit bloat ---
 						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
 						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
 
@@ -653,7 +645,7 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 
 						Method summarySetter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(setterName,
 								getter.getReturnType());
-						summarySetter.invoke(existingSummary, newValue);
+						summarySetter.invoke(modRecord, newValue);
 
 						Method detailSetter = M_UNCONS_INVEST_Detail_Entity.class.getMethod(setterName,
 								getter.getReturnType());
@@ -676,9 +668,8 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 				try {
 					Method getter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(getterName);
 					Object newValue = getter.invoke(updatedEntity);
-					Object existingValue = getter.invoke(existingSummary);
+					Object existingValue = getter.invoke(modRecord);
 
-					// --- FIX: Normalize nulls vs empty strings ---
 					String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
 					String newValStr = (newValue == null) ? "" : newValue.toString().trim();
 
@@ -688,7 +679,7 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 
 					Method summarySetter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(setterName,
 							getter.getReturnType());
-					summarySetter.invoke(existingSummary, newValue);
+					summarySetter.invoke(modRecord, newValue);
 
 					Method detailSetter = M_UNCONS_INVEST_Detail_Entity.class.getMethod(setterName,
 							getter.getReturnType());
@@ -703,20 +694,24 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
-		// Evaluate the actual changes calculated post-normalization
-		String changes = auditService.getChanges(oldcopy, existingSummary);
-		System.out.println("M_UNCONS_INVEST Changes Length = " + changes.length());
+		// Evaluate changes against oldcopy snapshot
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		System.out.println("M_UNCONS_INVEST Changes Length = " + (changes != null ? changes.length() : 0));
 
-		System.out.println("Saving Summary & Detail tables");
+		// Set Maker-Checker Flags
+		modRecord.setEntity_flg("Y");
+		modRecord.setModify_flg("Y");
+		modRecord.setDel_flg("N");
 
-		// 💾 Save both tables
-		saveSummary(existingSummary);
+		// 💾 Save into MOD Table ONLY (+ Detail table if needed for staging)
+		saveM_UNCONS_INVEST_ModSummaryEntity(modRecord);
 		saveDetail(detailEntity);
+		System.out.println("✔ Record saved into BRRS_M_UNCONS_INVEST_MOD_SUMMARYTABLE for Checker Approval");
 
 		// Only invoke audit logger if actual physical modifications exist
 		if (changes != null && !changes.isEmpty()) {
-			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReport_date().toString(),
-					"M_UNCONS_INVEST Summary Screen", "BRRS_M_UNCONS_INVEST_SUMMARY");
+			auditService.compareEntitiesmanual(oldcopy, modRecord, updatedEntity.getReport_date().toString(),
+					"M_UNCONS_INVEST Summary Screen", "BRRS_M_UNCONS_INVEST_MOD_SUMMARYTABLE");
 		}
 
 		System.out.println("Update completed successfully");
@@ -724,19 +719,28 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 
 	@Transactional
 	public void updateReport2(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
-		System.out.println("Came to services 2");
+		System.out.println("Came to services 2 (M_UNCONS_INVEST)");
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		// 🔹 Fetch existing SUMMARY
-		List<M_UNCONS_INVEST_Summary_Entity> existingSummaryList = getSummaryByDate(updatedEntity.getReport_date());
-		if (existingSummaryList.isEmpty()) {
+		List<M_UNCONS_INVEST_Summary_Entity> summaryList = getSummaryByDate(updatedEntity.getReport_date());
+		if (summaryList.isEmpty()) {
 			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
 		}
-		M_UNCONS_INVEST_Summary_Entity existingSummary = existingSummaryList.get(0);
-		// 🔹 Create Audit Copy before editing
+		M_UNCONS_INVEST_Summary_Entity liveSummary = summaryList.get(0);
+
+		M_UNCONS_INVEST_Summary_Entity existingMod = findM_UNCONS_INVEST_ModRecordByReportDate(
+				updatedEntity.getReport_date());
+		final M_UNCONS_INVEST_Summary_Entity modRecord = new M_UNCONS_INVEST_Summary_Entity();
+
+		if (existingMod != null) {
+			BeanUtils.copyProperties(existingMod, modRecord);
+		} else {
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
+
 		M_UNCONS_INVEST_Summary_Entity oldcopy = new M_UNCONS_INVEST_Summary_Entity();
-		BeanUtils.copyProperties(existingSummary, oldcopy);
-		// 🔹 Fetch or create DETAIL
+		BeanUtils.copyProperties(modRecord, oldcopy);
+
 		List<M_UNCONS_INVEST_Detail_Entity> existingDetailList = getDetailByDate(updatedEntity.getReport_date());
 		M_UNCONS_INVEST_Detail_Entity detailEntity;
 		if (existingDetailList.isEmpty()) {
@@ -750,7 +754,6 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			// 1️⃣ Loop from R22 to R24 and copy fields
 			for (int i = 22; i <= 24; i++) {
 				String prefix = "R" + i + "_";
-
 				String[] fields = { "product", "accuulated_equity_interest_5", "assets", "liabilities", "revenue",
 						"profit_or_loss", "unreg_share_of_loss", "cumulative_unreg_share_of_loss" };
 
@@ -761,9 +764,8 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 					try {
 						Method getter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(getterName);
 						Object newValue = getter.invoke(updatedEntity);
-						Object existingValue = getter.invoke(existingSummary);
+						Object existingValue = getter.invoke(modRecord);
 
-						// --- FIX: Normalize nulls vs empty strings to prevent audit bloat ---
 						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
 						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
 
@@ -773,7 +775,7 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 
 						Method summarySetter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(setterName,
 								getter.getReturnType());
-						summarySetter.invoke(existingSummary, newValue);
+						summarySetter.invoke(modRecord, newValue);
 
 						Method detailSetter = M_UNCONS_INVEST_Detail_Entity.class.getMethod(setterName,
 								getter.getReturnType());
@@ -789,20 +791,19 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
-		// Evaluate the actual changes calculated post-normalization
-		String changes = auditService.getChanges(oldcopy, existingSummary);
-		System.out.println("M_UNCONS_INVEST Changes Length = " + changes.length());
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		System.out.println("M_UNCONS_INVEST Changes Length = " + (changes != null ? changes.length() : 0));
 
-		System.out.println("Saving Summary & Detail tables");
+		modRecord.setEntity_flg("Y");
+		modRecord.setModify_flg("Y");
+		modRecord.setDel_flg("N");
 
-		// 💾 Save both tables
-		saveSummary(existingSummary);
+		saveM_UNCONS_INVEST_ModSummaryEntity(modRecord);
 		saveDetail(detailEntity);
 
-		// Only invoke audit logger if actual physical modifications exist
 		if (changes != null && !changes.isEmpty()) {
-			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReport_date().toString(),
-					"M_UNCONS_INVEST Summary Screen", "BRRS_M_UNCONS_INVEST_SUMMARY");
+			auditService.compareEntitiesmanual(oldcopy, modRecord, updatedEntity.getReport_date().toString(),
+					"M_UNCONS_INVEST Summary Screen", "BRRS_M_UNCONS_INVEST_MOD_SUMMARYTABLE");
 		}
 
 		System.out.println("Update completed successfully");
@@ -810,20 +811,28 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 
 	@Transactional
 	public void updateReport3(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
-
-		System.out.println("Came to services 3");
+		System.out.println("Came to services 3 (M_UNCONS_INVEST)");
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		// 🔹 Fetch existing SUMMARY
-		List<M_UNCONS_INVEST_Summary_Entity> existingSummaryList = getSummaryByDate(updatedEntity.getReport_date());
-		if (existingSummaryList.isEmpty()) {
+		List<M_UNCONS_INVEST_Summary_Entity> summaryList = getSummaryByDate(updatedEntity.getReport_date());
+		if (summaryList.isEmpty()) {
 			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
 		}
-		M_UNCONS_INVEST_Summary_Entity existingSummary = existingSummaryList.get(0);
-		// 🔹 Create Audit Copy before editing
+		M_UNCONS_INVEST_Summary_Entity liveSummary = summaryList.get(0);
+
+		M_UNCONS_INVEST_Summary_Entity existingMod = findM_UNCONS_INVEST_ModRecordByReportDate(
+				updatedEntity.getReport_date());
+		final M_UNCONS_INVEST_Summary_Entity modRecord = new M_UNCONS_INVEST_Summary_Entity();
+
+		if (existingMod != null) {
+			BeanUtils.copyProperties(existingMod, modRecord);
+		} else {
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
+
 		M_UNCONS_INVEST_Summary_Entity oldcopy = new M_UNCONS_INVEST_Summary_Entity();
-		BeanUtils.copyProperties(existingSummary, oldcopy);
-		// 🔹 Fetch or create DETAIL
+		BeanUtils.copyProperties(modRecord, oldcopy);
+
 		List<M_UNCONS_INVEST_Detail_Entity> existingDetailList = getDetailByDate(updatedEntity.getReport_date());
 		M_UNCONS_INVEST_Detail_Entity detailEntity;
 		if (existingDetailList.isEmpty()) {
@@ -837,20 +846,17 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			// 🔁 LOOP FOR R29 ONLY
 			int i = 29;
 			String prefix = "R" + i + "_";
-
 			String[] fields = { "product", "fair_value" };
 
 			for (String field : fields) {
-
 				String getterName = "get" + prefix + field;
 				String setterName = "set" + prefix + field;
 
 				try {
 					Method getter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(getterName);
 					Object newValue = getter.invoke(updatedEntity);
-					Object existingValue = getter.invoke(existingSummary);
+					Object existingValue = getter.invoke(modRecord);
 
-					// --- FIX: Normalize nulls vs empty strings to prevent audit bloat ---
 					String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
 					String newValStr = (newValue == null) ? "" : newValue.toString().trim();
 
@@ -860,7 +866,7 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 
 					Method summarySetter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(setterName,
 							getter.getReturnType());
-					summarySetter.invoke(existingSummary, newValue);
+					summarySetter.invoke(modRecord, newValue);
 
 					Method detailSetter = M_UNCONS_INVEST_Detail_Entity.class.getMethod(setterName,
 							getter.getReturnType());
@@ -875,20 +881,19 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
-		// Evaluate the actual changes calculated post-normalization
-		String changes = auditService.getChanges(oldcopy, existingSummary);
-		System.out.println("M_UNCONS_INVEST Changes Length = " + changes.length());
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		System.out.println("M_UNCONS_INVEST Changes Length = " + (changes != null ? changes.length() : 0));
 
-		System.out.println("Saving Summary & Detail tables");
+		modRecord.setEntity_flg("Y");
+		modRecord.setModify_flg("Y");
+		modRecord.setDel_flg("N");
 
-		// 💾 Save both tables
-		saveSummary(existingSummary);
+		saveM_UNCONS_INVEST_ModSummaryEntity(modRecord);
 		saveDetail(detailEntity);
 
-		// Only invoke audit logger if actual physical modifications exist
 		if (changes != null && !changes.isEmpty()) {
-			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReport_date().toString(),
-					"M_UNCONS_INVEST Summary Screen", "BRRS_M_UNCONS_INVEST_SUMMARY");
+			auditService.compareEntitiesmanual(oldcopy, modRecord, updatedEntity.getReport_date().toString(),
+					"M_UNCONS_INVEST Summary Screen", "BRRS_M_UNCONS_INVEST_MOD_SUMMARYTABLE");
 		}
 
 		System.out.println("Update completed successfully");
@@ -896,19 +901,28 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 
 	@Transactional
 	public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
-		System.out.println("Came to services 4");
+		System.out.println("Came to services 4 (M_UNCONS_INVEST)");
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		// 🔹 Fetch existing SUMMARY
-		List<M_UNCONS_INVEST_Summary_Entity> existingSummaryList = getSummaryByDate(updatedEntity.getReport_date());
-		if (existingSummaryList.isEmpty()) {
+		List<M_UNCONS_INVEST_Summary_Entity> summaryList = getSummaryByDate(updatedEntity.getReport_date());
+		if (summaryList.isEmpty()) {
 			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
 		}
-		M_UNCONS_INVEST_Summary_Entity existingSummary = existingSummaryList.get(0);
-		// 🔹 Create Audit Copy before editing
+		M_UNCONS_INVEST_Summary_Entity liveSummary = summaryList.get(0);
+
+		M_UNCONS_INVEST_Summary_Entity existingMod = findM_UNCONS_INVEST_ModRecordByReportDate(
+				updatedEntity.getReport_date());
+		final M_UNCONS_INVEST_Summary_Entity modRecord = new M_UNCONS_INVEST_Summary_Entity();
+
+		if (existingMod != null) {
+			BeanUtils.copyProperties(existingMod, modRecord);
+		} else {
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
+
 		M_UNCONS_INVEST_Summary_Entity oldcopy = new M_UNCONS_INVEST_Summary_Entity();
-		BeanUtils.copyProperties(existingSummary, oldcopy);
-		// 🔹 Fetch or create DETAIL
+		BeanUtils.copyProperties(modRecord, oldcopy);
+
 		List<M_UNCONS_INVEST_Detail_Entity> existingDetailList = getDetailByDate(updatedEntity.getReport_date());
 		M_UNCONS_INVEST_Detail_Entity detailEntity;
 		if (existingDetailList.isEmpty()) {
@@ -922,7 +936,6 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			// 1️⃣ Loop from R35 to R38 and copy fields
 			for (int i = 35; i <= 38; i++) {
 				String prefix = "R" + i + "_";
-
 				String[] fields = { "product", "company", "jurisdiction_of_incorp_1", "jurisdiction_of_incorp_2",
 						"line_of_business", "currency", "share_capital", "accumulated_equity_interest" };
 
@@ -933,9 +946,8 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 					try {
 						Method getter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(getterName);
 						Object newValue = getter.invoke(updatedEntity);
-						Object existingValue = getter.invoke(existingSummary);
+						Object existingValue = getter.invoke(modRecord);
 
-						// --- FIX: Normalize nulls vs empty strings to prevent audit bloat ---
 						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
 						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
 
@@ -945,7 +957,7 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 
 						Method summarySetter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(setterName,
 								getter.getReturnType());
-						summarySetter.invoke(existingSummary, newValue);
+						summarySetter.invoke(modRecord, newValue);
 
 						Method detailSetter = M_UNCONS_INVEST_Detail_Entity.class.getMethod(setterName,
 								getter.getReturnType());
@@ -961,23 +973,188 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
-		// Evaluate the actual changes calculated post-normalization
-		String changes = auditService.getChanges(oldcopy, existingSummary);
-		System.out.println("M_UNCONS_INVEST Changes Length = " + changes.length());
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		System.out.println("M_UNCONS_INVEST Changes Length = " + (changes != null ? changes.length() : 0));
 
-		System.out.println("Saving Summary & Detail tables");
+		modRecord.setEntity_flg("Y");
+		modRecord.setModify_flg("Y");
+		modRecord.setDel_flg("N");
 
-		// 💾 Save both tables
-		saveSummary(existingSummary);
+		saveM_UNCONS_INVEST_ModSummaryEntity(modRecord);
 		saveDetail(detailEntity);
 
-		// Only invoke audit logger if actual physical modifications exist
 		if (changes != null && !changes.isEmpty()) {
-			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReport_date().toString(),
-					"M_UNCONS_INVEST Summary Screen", "BRRS_M_UNCONS_INVEST_SUMMARY");
+			auditService.compareEntitiesmanual(oldcopy, modRecord, updatedEntity.getReport_date().toString(),
+					"M_UNCONS_INVEST Summary Screen", "BRRS_M_UNCONS_INVEST_MOD_SUMMARYTABLE");
 		}
 
 		System.out.println("Update completed successfully");
+	}
+
+	public M_UNCONS_INVEST_Summary_Entity findM_UNCONS_INVEST_ModRecordByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_UNCONS_INVEST_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<M_UNCONS_INVEST_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(M_UNCONS_INVEST_Summary_Entity.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public void saveM_UNCONS_INVEST_ModSummaryEntity(M_UNCONS_INVEST_Summary_Entity entity) {
+		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
+
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_UNCONS_INVEST_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+		MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", entity.getReport_date());
+		Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
+
+		MapSqlParameterSource params = new MapSqlParameterSource().addValue("reportDate", entity.getReport_date())
+				.addValue("entity_flg", entity.getEntity_flg()).addValue("modify_flg", entity.getModify_flg())
+				.addValue("del_flg", entity.getDel_flg());
+
+		StringBuilder updateSetSql = new StringBuilder(
+				"MODIFY_FLG = :modify_flg, ENTITY_FLG = :entity_flg, DEL_FLG = :del_flg");
+		List<String> insertColumns = new ArrayList<>();
+		List<String> insertValues = new ArrayList<>();
+
+		insertColumns.add("REPORT_DATE");
+		insertValues.add(":reportDate");
+		insertColumns.add("ENTITY_FLG");
+		insertValues.add(":entity_flg");
+		insertColumns.add("MODIFY_FLG");
+		insertValues.add(":modify_flg");
+		insertColumns.add("DEL_FLG");
+		insertValues.add(":del_flg");
+
+		// Collect fields dynamically for R11-R15, R22-R24, R29, R35-R38 or handle via
+		// explicit entity mappings if preferred.
+		// Standard field collection loop covering all dynamic categories:
+		int[] ranges = { 11, 12, 13, 14, 15, 22, 23, 24, 29, 35, 36, 37, 38 };
+		for (int i : ranges) {
+			String prefix = "R" + i + "_";
+			String[] fields;
+			if (i >= 11 && i <= 15) {
+				fields = new String[] { "product", "amount", "percent_of_cet1_holding",
+						"percent_of_additional_tier_1_holding", "percent_of_tier_2_holding" };
+			} else if (i >= 22 && i <= 24) {
+				fields = new String[] { "product", "accuulated_equity_interest_5", "assets", "liabilities", "revenue",
+						"profit_or_loss", "unreg_share_of_loss", "cumulative_unreg_share_of_loss" };
+			} else if (i == 29) {
+				fields = new String[] { "product", "fair_value" };
+			} else {
+				fields = new String[] { "product", "company", "jurisdiction_of_incorp_1", "jurisdiction_of_incorp_2",
+						"line_of_business", "currency", "share_capital", "accumulated_equity_interest" };
+			}
+
+			for (String field : fields) {
+				String suffix = prefix + field;
+				String getterName = "get" + suffix;
+				String paramName = "r" + suffix.toLowerCase();
+				String columnName = suffix.toUpperCase();
+
+				try {
+					Method getter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(entity);
+
+					params.addValue(paramName, value);
+					updateSetSql.append(", ").append(columnName).append(" = :").append(paramName);
+					insertColumns.add(columnName);
+					insertValues.add(":" + paramName);
+				} catch (Exception e) {
+					// Skip if column/getter doesn't exist
+				}
+			}
+		}
+
+		if (count != null && count > 0) {
+			String updateSql = "UPDATE BRRS_M_UNCONS_INVEST_MOD_SUMMARYTABLE SET " + updateSetSql.toString()
+					+ " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+			namedParamJdbc.update(updateSql, params);
+		} else {
+			String insertSql = "INSERT INTO BRRS_M_UNCONS_INVEST_MOD_SUMMARYTABLE (" + String.join(", ", insertColumns)
+					+ ") VALUES (" + String.join(", ", insertValues) + ")";
+			namedParamJdbc.update(insertSql, params);
+		}
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		M_UNCONS_INVEST_Summary_Entity modRecord = jdbcTemplate.queryForObject(
+				"SELECT * FROM BRRS_M_UNCONS_INVEST_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				new BeanPropertyRowMapper<>(M_UNCONS_INVEST_Summary_Entity.class), reportDate);
+
+		if (modRecord == null) {
+			throw new RuntimeException("No pending modification found for approval on date: " + reportDate);
+		}
+
+		transferM_UNCONS_INVEST_Data(null);
+
+		jdbcTemplate.update(
+				"UPDATE BRRS_M_UNCONS_INVEST_MOD_SUMMARYTABLE SET MODIFY_FLG = 'N', ENTITY_FLG = 'Y' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+
+		System.out.println("✔ M_UNCONS_INVEST Checker Approved Successfully: MOD values transferred to live tables.");
+	}
+
+	private void transferM_UNCONS_INVEST_Data(AuditServicesEntity auditRecord) {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_UNCONS_INVEST_MOD_SUMMARYTABLE";
+		java.sql.Date reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified M_UNCONS_INVEST record available for transfer.");
+		}
+
+		StringBuilder setColumns = new StringBuilder();
+		StringBuilder selectColumns = new StringBuilder();
+
+		int[] ranges = { 11, 12, 13, 14, 15, 22, 23, 24, 29, 35, 36, 37, 38 };
+		for (int i : ranges) {
+			String prefix = "R" + i + "_";
+			String[] fields;
+			if (i >= 11 && i <= 15) {
+				fields = new String[] { "product", "amount", "percent_of_cet1_holding",
+						"percent_of_additional_tier_1_holding", "percent_of_tier_2_holding" };
+			} else if (i >= 22 && i <= 24) {
+				fields = new String[] { "product", "accuulated_equity_interest_5", "assets", "liabilities", "revenue",
+						"profit_or_loss", "unreg_share_of_loss", "cumulative_unreg_share_of_loss" };
+			} else if (i == 29) {
+				fields = new String[] { "product", "fair_value" };
+			} else {
+				fields = new String[] { "product", "company", "jurisdiction_of_incorp_1", "jurisdiction_of_incorp_2",
+						"line_of_business", "currency", "share_capital", "accumulated_equity_interest" };
+			}
+
+			for (String field : fields) {
+				String col = (prefix + field).toUpperCase();
+				setColumns.append(col).append(", ");
+				selectColumns.append("S.").append(col).append(", ");
+			}
+		}
+		setColumns.append("ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+		selectColumns.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+
+		String selectSubquery = " SELECT " + selectColumns.toString() + " FROM BRRS_M_UNCONS_INVEST_MOD_SUMMARYTABLE S "
+				+ " WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)";
+
+		// 1. Update live Summary table
+		String updateSummarySql = "UPDATE BRRS_M_UNCONS_INVEST_SUMMARYTABLE M SET (" + setColumns.toString() + ") = ("
+				+ selectSubquery + ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+		if (summaryUpdated == 0) {
+			throw new IllegalStateException(
+					"M_UNCONS_INVEST modification record not found in live summary table for date : " + reportDate);
+		}
+
+		// 2. Update live Detail table
+		String updateDetailSql = "UPDATE BRRS_M_UNCONS_INVEST_DETAILTABLE M SET (" + setColumns.toString() + ") = ("
+				+ selectSubquery + ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		jdbcTemplate.update(updateDetailSql, reportDate);
+
+		// 3. Mark MOD record status as approved
+		String updateModSql = "UPDATE BRRS_M_UNCONS_INVEST_MOD_SUMMARYTABLE SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		jdbcTemplate.update(updateModSql, reportDate);
+
+		System.out.println(
+				"✔ M_UNCONS_INVEST Verification and Transfer Completed Successfully across Summary & Detail tables!");
 	}
 
 	public void updateResubReport(M_UNCONS_INVEST_Resub_Summary_Entity updatedEntity) {
@@ -4283,8 +4460,8 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			}
 		}
 
-		List<M_UNCONS_INVEST_Resub_Summary_Entity> dataList = getResubSummaryByDateAndVersion(
-				dateformat.parse(todate), version);
+		List<M_UNCONS_INVEST_Resub_Summary_Entity> dataList = getResubSummaryByDateAndVersion(dateformat.parse(todate),
+				version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_UNCONS_INVEST report. Returning empty result.");
@@ -5174,8 +5351,8 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 
 		logger.info("Service: Starting Archival Email Excel generation process in memory.");
 
-		List<M_UNCONS_INVEST_Resub_Summary_Entity> dataList = getResubSummaryByDateAndVersion(
-				dateformat.parse(todate), version);
+		List<M_UNCONS_INVEST_Resub_Summary_Entity> dataList = getResubSummaryByDateAndVersion(dateformat.parse(todate),
+				version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for BRRS_M_UNCONS_INVEST report. Returning empty result.");
@@ -5810,8 +5987,7 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 	// Inner entity: M_UNCONS_INVEST_Summary_Entity
 	// =========================================================
 
-
-		public static class M_UNCONS_INVEST_Summary_Entity {
+	public static class M_UNCONS_INVEST_Summary_Entity {
 
 		// ---------------- R11 ----------------
 		private String r11_product;
@@ -6748,8 +6924,7 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 	// Inner entity: M_UNCONS_INVEST_Detail_Entity
 	// =========================================================
 
-
-		public static class M_UNCONS_INVEST_Detail_Entity {
+	public static class M_UNCONS_INVEST_Detail_Entity {
 
 		// ---------------- R11 ----------------
 		private String r11_product;
@@ -7686,2626 +7861,3344 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 	// Inner entity: M_UNCONS_INVEST_Archival_Summary_Entity
 	// =========================================================
 
-		public static class M_UNCONS_INVEST_Archival_Summary_Entity {
-		
+	public static class M_UNCONS_INVEST_Archival_Summary_Entity {
+
 		private String r11_product;
-	    private BigDecimal r11_amount;
-	    private BigDecimal r11_percent_of_cet1_holding;
-	    private BigDecimal r11_percent_of_additional_tier_1_holding;
-	    private BigDecimal r11_percent_of_tier_2_holding;
+		private BigDecimal r11_amount;
+		private BigDecimal r11_percent_of_cet1_holding;
+		private BigDecimal r11_percent_of_additional_tier_1_holding;
+		private BigDecimal r11_percent_of_tier_2_holding;
 
-	    private String r12_product;
-	    private BigDecimal r12_amount;
-	    private BigDecimal r12_percent_of_cet1_holding;
-	    private BigDecimal r12_percent_of_additional_tier_1_holding;
-	    private BigDecimal r12_percent_of_tier_2_holding;
+		private String r12_product;
+		private BigDecimal r12_amount;
+		private BigDecimal r12_percent_of_cet1_holding;
+		private BigDecimal r12_percent_of_additional_tier_1_holding;
+		private BigDecimal r12_percent_of_tier_2_holding;
 
-	    private String r13_product;
-	    private BigDecimal r13_amount;
-	    private BigDecimal r13_percent_of_cet1_holding;
-	    private BigDecimal r13_percent_of_additional_tier_1_holding;
-	    private BigDecimal r13_percent_of_tier_2_holding;
+		private String r13_product;
+		private BigDecimal r13_amount;
+		private BigDecimal r13_percent_of_cet1_holding;
+		private BigDecimal r13_percent_of_additional_tier_1_holding;
+		private BigDecimal r13_percent_of_tier_2_holding;
 
-	    private String r14_product;
-	    private BigDecimal r14_amount;
-	    private BigDecimal r14_percent_of_cet1_holding;
-	    private BigDecimal r14_percent_of_additional_tier_1_holding;
-	    private BigDecimal r14_percent_of_tier_2_holding;
+		private String r14_product;
+		private BigDecimal r14_amount;
+		private BigDecimal r14_percent_of_cet1_holding;
+		private BigDecimal r14_percent_of_additional_tier_1_holding;
+		private BigDecimal r14_percent_of_tier_2_holding;
 
-	    private String r15_product;
-	    private BigDecimal r15_amount;
-	    private BigDecimal r15_percent_of_cet1_holding;
-	    private BigDecimal r15_percent_of_additional_tier_1_holding;
-	    private BigDecimal r15_percent_of_tier_2_holding;
+		private String r15_product;
+		private BigDecimal r15_amount;
+		private BigDecimal r15_percent_of_cet1_holding;
+		private BigDecimal r15_percent_of_additional_tier_1_holding;
+		private BigDecimal r15_percent_of_tier_2_holding;
 
-	    private String r22_product;
-	    private BigDecimal r22_accuulated_equity_interest_5;
-	    private BigDecimal r22_assets;
-	    private BigDecimal r22_liabilities;
-	    private BigDecimal r22_revenue;
-	    private BigDecimal r22_profit_or_loss;
-	    private BigDecimal r22_unreg_share_of_loss;
-	    private BigDecimal r22_cumulative_unreg_share_of_loss;
+		private String r22_product;
+		private BigDecimal r22_accuulated_equity_interest_5;
+		private BigDecimal r22_assets;
+		private BigDecimal r22_liabilities;
+		private BigDecimal r22_revenue;
+		private BigDecimal r22_profit_or_loss;
+		private BigDecimal r22_unreg_share_of_loss;
+		private BigDecimal r22_cumulative_unreg_share_of_loss;
 
-	    private String r23_product;
-	    private BigDecimal r23_accuulated_equity_interest_5;
-	    private BigDecimal r23_assets;
-	    private BigDecimal r23_liabilities;
-	    private BigDecimal r23_revenue;
-	    private BigDecimal r23_profit_or_loss;
-	    private BigDecimal r23_unreg_share_of_loss;
-	    private BigDecimal r23_cumulative_unreg_share_of_loss;
+		private String r23_product;
+		private BigDecimal r23_accuulated_equity_interest_5;
+		private BigDecimal r23_assets;
+		private BigDecimal r23_liabilities;
+		private BigDecimal r23_revenue;
+		private BigDecimal r23_profit_or_loss;
+		private BigDecimal r23_unreg_share_of_loss;
+		private BigDecimal r23_cumulative_unreg_share_of_loss;
 
-	    private String r24_product;
-	    private BigDecimal r24_accuulated_equity_interest_5;
-	    private BigDecimal r24_assets;
-	    private BigDecimal r24_liabilities;
-	    private BigDecimal r24_revenue;
-	    private BigDecimal r24_profit_or_loss;
-	    private BigDecimal r24_unreg_share_of_loss;
-	    private BigDecimal r24_cumulative_unreg_share_of_loss;
+		private String r24_product;
+		private BigDecimal r24_accuulated_equity_interest_5;
+		private BigDecimal r24_assets;
+		private BigDecimal r24_liabilities;
+		private BigDecimal r24_revenue;
+		private BigDecimal r24_profit_or_loss;
+		private BigDecimal r24_unreg_share_of_loss;
+		private BigDecimal r24_cumulative_unreg_share_of_loss;
 
-	    private String r29_product;
-	    private BigDecimal r29_fair_value;
+		private String r29_product;
+		private BigDecimal r29_fair_value;
 
-	    private String r35_product;
-	    private BigDecimal r35_company;
-	    private BigDecimal r35_jurisdiction_of_incorp_1;
-	    private BigDecimal r35_jurisdiction_of_incorp_2;
-	    private BigDecimal r35_line_of_business;
-	    private BigDecimal r35_currency;
-	    private BigDecimal r35_share_capital;
-	    private BigDecimal r35_accumulated_equity_interest;
+		private String r35_product;
+		private BigDecimal r35_company;
+		private BigDecimal r35_jurisdiction_of_incorp_1;
+		private BigDecimal r35_jurisdiction_of_incorp_2;
+		private BigDecimal r35_line_of_business;
+		private BigDecimal r35_currency;
+		private BigDecimal r35_share_capital;
+		private BigDecimal r35_accumulated_equity_interest;
 
-	    private String r36_product;
-	    private BigDecimal r36_company;
-	    private BigDecimal r36_jurisdiction_of_incorp_1;
-	    private BigDecimal r36_jurisdiction_of_incorp_2;
-	    private BigDecimal r36_line_of_business;
-	    private BigDecimal r36_currency;
-	    private BigDecimal r36_share_capital;
-	    private BigDecimal r36_accumulated_equity_interest;
+		private String r36_product;
+		private BigDecimal r36_company;
+		private BigDecimal r36_jurisdiction_of_incorp_1;
+		private BigDecimal r36_jurisdiction_of_incorp_2;
+		private BigDecimal r36_line_of_business;
+		private BigDecimal r36_currency;
+		private BigDecimal r36_share_capital;
+		private BigDecimal r36_accumulated_equity_interest;
 
-	    private String r37_product;
-	    private BigDecimal r37_company;
-	    private BigDecimal r37_jurisdiction_of_incorp_1;
-	    private BigDecimal r37_jurisdiction_of_incorp_2;
-	    private BigDecimal r37_line_of_business;
-	    private BigDecimal r37_currency;
-	    private BigDecimal r37_share_capital;
-	    private BigDecimal r37_accumulated_equity_interest;
+		private String r37_product;
+		private BigDecimal r37_company;
+		private BigDecimal r37_jurisdiction_of_incorp_1;
+		private BigDecimal r37_jurisdiction_of_incorp_2;
+		private BigDecimal r37_line_of_business;
+		private BigDecimal r37_currency;
+		private BigDecimal r37_share_capital;
+		private BigDecimal r37_accumulated_equity_interest;
 
-	    private String r38_product;
-	    private BigDecimal r38_company;
-	    private BigDecimal r38_jurisdiction_of_incorp_1;
-	    private BigDecimal r38_jurisdiction_of_incorp_2;
-	    private BigDecimal r38_line_of_business;
-	    private BigDecimal r38_currency;
-	    private BigDecimal r38_share_capital;
-	    private BigDecimal r38_accumulated_equity_interest;
-	    
+		private String r38_product;
+		private BigDecimal r38_company;
+		private BigDecimal r38_jurisdiction_of_incorp_1;
+		private BigDecimal r38_jurisdiction_of_incorp_2;
+		private BigDecimal r38_line_of_business;
+		private BigDecimal r38_currency;
+		private BigDecimal r38_share_capital;
+		private BigDecimal r38_accumulated_equity_interest;
+
 		private Date reportDate;
 
 		private BigDecimal reportVersion;
 
 		private Date reportResubDate;
-		private String	report_frequency;
-		private String	report_code;
-		private String	report_desc;
-		private String	entity_flg;
-		private String	modify_flg;
-		private String	del_flg;
+		private String report_frequency;
+		private String report_code;
+		private String report_desc;
+		private String entity_flg;
+		private String modify_flg;
+		private String del_flg;
+
 		public String getR11_product() {
 			return r11_product;
 		}
+
 		public void setR11_product(String r11_product) {
 			this.r11_product = r11_product;
 		}
+
 		public BigDecimal getR11_amount() {
 			return r11_amount;
 		}
+
 		public void setR11_amount(BigDecimal r11_amount) {
 			this.r11_amount = r11_amount;
 		}
+
 		public BigDecimal getR11_percent_of_cet1_holding() {
 			return r11_percent_of_cet1_holding;
 		}
+
 		public void setR11_percent_of_cet1_holding(BigDecimal r11_percent_of_cet1_holding) {
 			this.r11_percent_of_cet1_holding = r11_percent_of_cet1_holding;
 		}
+
 		public BigDecimal getR11_percent_of_additional_tier_1_holding() {
 			return r11_percent_of_additional_tier_1_holding;
 		}
+
 		public void setR11_percent_of_additional_tier_1_holding(BigDecimal r11_percent_of_additional_tier_1_holding) {
 			this.r11_percent_of_additional_tier_1_holding = r11_percent_of_additional_tier_1_holding;
 		}
+
 		public BigDecimal getR11_percent_of_tier_2_holding() {
 			return r11_percent_of_tier_2_holding;
 		}
+
 		public void setR11_percent_of_tier_2_holding(BigDecimal r11_percent_of_tier_2_holding) {
 			this.r11_percent_of_tier_2_holding = r11_percent_of_tier_2_holding;
 		}
+
 		public String getR12_product() {
 			return r12_product;
 		}
+
 		public void setR12_product(String r12_product) {
 			this.r12_product = r12_product;
 		}
+
 		public BigDecimal getR12_amount() {
 			return r12_amount;
 		}
+
 		public void setR12_amount(BigDecimal r12_amount) {
 			this.r12_amount = r12_amount;
 		}
+
 		public BigDecimal getR12_percent_of_cet1_holding() {
 			return r12_percent_of_cet1_holding;
 		}
+
 		public void setR12_percent_of_cet1_holding(BigDecimal r12_percent_of_cet1_holding) {
 			this.r12_percent_of_cet1_holding = r12_percent_of_cet1_holding;
 		}
+
 		public BigDecimal getR12_percent_of_additional_tier_1_holding() {
 			return r12_percent_of_additional_tier_1_holding;
 		}
+
 		public void setR12_percent_of_additional_tier_1_holding(BigDecimal r12_percent_of_additional_tier_1_holding) {
 			this.r12_percent_of_additional_tier_1_holding = r12_percent_of_additional_tier_1_holding;
 		}
+
 		public BigDecimal getR12_percent_of_tier_2_holding() {
 			return r12_percent_of_tier_2_holding;
 		}
+
 		public void setR12_percent_of_tier_2_holding(BigDecimal r12_percent_of_tier_2_holding) {
 			this.r12_percent_of_tier_2_holding = r12_percent_of_tier_2_holding;
 		}
+
 		public String getR13_product() {
 			return r13_product;
 		}
+
 		public void setR13_product(String r13_product) {
 			this.r13_product = r13_product;
 		}
+
 		public BigDecimal getR13_amount() {
 			return r13_amount;
 		}
+
 		public void setR13_amount(BigDecimal r13_amount) {
 			this.r13_amount = r13_amount;
 		}
+
 		public BigDecimal getR13_percent_of_cet1_holding() {
 			return r13_percent_of_cet1_holding;
 		}
+
 		public void setR13_percent_of_cet1_holding(BigDecimal r13_percent_of_cet1_holding) {
 			this.r13_percent_of_cet1_holding = r13_percent_of_cet1_holding;
 		}
+
 		public BigDecimal getR13_percent_of_additional_tier_1_holding() {
 			return r13_percent_of_additional_tier_1_holding;
 		}
+
 		public void setR13_percent_of_additional_tier_1_holding(BigDecimal r13_percent_of_additional_tier_1_holding) {
 			this.r13_percent_of_additional_tier_1_holding = r13_percent_of_additional_tier_1_holding;
 		}
+
 		public BigDecimal getR13_percent_of_tier_2_holding() {
 			return r13_percent_of_tier_2_holding;
 		}
+
 		public void setR13_percent_of_tier_2_holding(BigDecimal r13_percent_of_tier_2_holding) {
 			this.r13_percent_of_tier_2_holding = r13_percent_of_tier_2_holding;
 		}
+
 		public String getR14_product() {
 			return r14_product;
 		}
+
 		public void setR14_product(String r14_product) {
 			this.r14_product = r14_product;
 		}
+
 		public BigDecimal getR14_amount() {
 			return r14_amount;
 		}
+
 		public void setR14_amount(BigDecimal r14_amount) {
 			this.r14_amount = r14_amount;
 		}
+
 		public BigDecimal getR14_percent_of_cet1_holding() {
 			return r14_percent_of_cet1_holding;
 		}
+
 		public void setR14_percent_of_cet1_holding(BigDecimal r14_percent_of_cet1_holding) {
 			this.r14_percent_of_cet1_holding = r14_percent_of_cet1_holding;
 		}
+
 		public BigDecimal getR14_percent_of_additional_tier_1_holding() {
 			return r14_percent_of_additional_tier_1_holding;
 		}
+
 		public void setR14_percent_of_additional_tier_1_holding(BigDecimal r14_percent_of_additional_tier_1_holding) {
 			this.r14_percent_of_additional_tier_1_holding = r14_percent_of_additional_tier_1_holding;
 		}
+
 		public BigDecimal getR14_percent_of_tier_2_holding() {
 			return r14_percent_of_tier_2_holding;
 		}
+
 		public void setR14_percent_of_tier_2_holding(BigDecimal r14_percent_of_tier_2_holding) {
 			this.r14_percent_of_tier_2_holding = r14_percent_of_tier_2_holding;
 		}
+
 		public String getR15_product() {
 			return r15_product;
 		}
+
 		public void setR15_product(String r15_product) {
 			this.r15_product = r15_product;
 		}
+
 		public BigDecimal getR15_amount() {
 			return r15_amount;
 		}
+
 		public void setR15_amount(BigDecimal r15_amount) {
 			this.r15_amount = r15_amount;
 		}
+
 		public BigDecimal getR15_percent_of_cet1_holding() {
 			return r15_percent_of_cet1_holding;
 		}
+
 		public void setR15_percent_of_cet1_holding(BigDecimal r15_percent_of_cet1_holding) {
 			this.r15_percent_of_cet1_holding = r15_percent_of_cet1_holding;
 		}
+
 		public BigDecimal getR15_percent_of_additional_tier_1_holding() {
 			return r15_percent_of_additional_tier_1_holding;
 		}
+
 		public void setR15_percent_of_additional_tier_1_holding(BigDecimal r15_percent_of_additional_tier_1_holding) {
 			this.r15_percent_of_additional_tier_1_holding = r15_percent_of_additional_tier_1_holding;
 		}
+
 		public BigDecimal getR15_percent_of_tier_2_holding() {
 			return r15_percent_of_tier_2_holding;
 		}
+
 		public void setR15_percent_of_tier_2_holding(BigDecimal r15_percent_of_tier_2_holding) {
 			this.r15_percent_of_tier_2_holding = r15_percent_of_tier_2_holding;
 		}
+
 		public String getR22_product() {
 			return r22_product;
 		}
+
 		public void setR22_product(String r22_product) {
 			this.r22_product = r22_product;
 		}
+
 		public BigDecimal getR22_accuulated_equity_interest_5() {
 			return r22_accuulated_equity_interest_5;
 		}
+
 		public void setR22_accuulated_equity_interest_5(BigDecimal r22_accuulated_equity_interest_5) {
 			this.r22_accuulated_equity_interest_5 = r22_accuulated_equity_interest_5;
 		}
+
 		public BigDecimal getR22_assets() {
 			return r22_assets;
 		}
+
 		public void setR22_assets(BigDecimal r22_assets) {
 			this.r22_assets = r22_assets;
 		}
+
 		public BigDecimal getR22_liabilities() {
 			return r22_liabilities;
 		}
+
 		public void setR22_liabilities(BigDecimal r22_liabilities) {
 			this.r22_liabilities = r22_liabilities;
 		}
+
 		public BigDecimal getR22_revenue() {
 			return r22_revenue;
 		}
+
 		public void setR22_revenue(BigDecimal r22_revenue) {
 			this.r22_revenue = r22_revenue;
 		}
+
 		public BigDecimal getR22_profit_or_loss() {
 			return r22_profit_or_loss;
 		}
+
 		public void setR22_profit_or_loss(BigDecimal r22_profit_or_loss) {
 			this.r22_profit_or_loss = r22_profit_or_loss;
 		}
+
 		public BigDecimal getR22_unreg_share_of_loss() {
 			return r22_unreg_share_of_loss;
 		}
+
 		public void setR22_unreg_share_of_loss(BigDecimal r22_unreg_share_of_loss) {
 			this.r22_unreg_share_of_loss = r22_unreg_share_of_loss;
 		}
+
 		public BigDecimal getR22_cumulative_unreg_share_of_loss() {
 			return r22_cumulative_unreg_share_of_loss;
 		}
+
 		public void setR22_cumulative_unreg_share_of_loss(BigDecimal r22_cumulative_unreg_share_of_loss) {
 			this.r22_cumulative_unreg_share_of_loss = r22_cumulative_unreg_share_of_loss;
 		}
+
 		public String getR23_product() {
 			return r23_product;
 		}
+
 		public void setR23_product(String r23_product) {
 			this.r23_product = r23_product;
 		}
+
 		public BigDecimal getR23_accuulated_equity_interest_5() {
 			return r23_accuulated_equity_interest_5;
 		}
+
 		public void setR23_accuulated_equity_interest_5(BigDecimal r23_accuulated_equity_interest_5) {
 			this.r23_accuulated_equity_interest_5 = r23_accuulated_equity_interest_5;
 		}
+
 		public BigDecimal getR23_assets() {
 			return r23_assets;
 		}
+
 		public void setR23_assets(BigDecimal r23_assets) {
 			this.r23_assets = r23_assets;
 		}
+
 		public BigDecimal getR23_liabilities() {
 			return r23_liabilities;
 		}
+
 		public void setR23_liabilities(BigDecimal r23_liabilities) {
 			this.r23_liabilities = r23_liabilities;
 		}
+
 		public BigDecimal getR23_revenue() {
 			return r23_revenue;
 		}
+
 		public void setR23_revenue(BigDecimal r23_revenue) {
 			this.r23_revenue = r23_revenue;
 		}
+
 		public BigDecimal getR23_profit_or_loss() {
 			return r23_profit_or_loss;
 		}
+
 		public void setR23_profit_or_loss(BigDecimal r23_profit_or_loss) {
 			this.r23_profit_or_loss = r23_profit_or_loss;
 		}
+
 		public BigDecimal getR23_unreg_share_of_loss() {
 			return r23_unreg_share_of_loss;
 		}
+
 		public void setR23_unreg_share_of_loss(BigDecimal r23_unreg_share_of_loss) {
 			this.r23_unreg_share_of_loss = r23_unreg_share_of_loss;
 		}
+
 		public BigDecimal getR23_cumulative_unreg_share_of_loss() {
 			return r23_cumulative_unreg_share_of_loss;
 		}
+
 		public void setR23_cumulative_unreg_share_of_loss(BigDecimal r23_cumulative_unreg_share_of_loss) {
 			this.r23_cumulative_unreg_share_of_loss = r23_cumulative_unreg_share_of_loss;
 		}
+
 		public String getR24_product() {
 			return r24_product;
 		}
+
 		public void setR24_product(String r24_product) {
 			this.r24_product = r24_product;
 		}
+
 		public BigDecimal getR24_accuulated_equity_interest_5() {
 			return r24_accuulated_equity_interest_5;
 		}
+
 		public void setR24_accuulated_equity_interest_5(BigDecimal r24_accuulated_equity_interest_5) {
 			this.r24_accuulated_equity_interest_5 = r24_accuulated_equity_interest_5;
 		}
+
 		public BigDecimal getR24_assets() {
 			return r24_assets;
 		}
+
 		public void setR24_assets(BigDecimal r24_assets) {
 			this.r24_assets = r24_assets;
 		}
+
 		public BigDecimal getR24_liabilities() {
 			return r24_liabilities;
 		}
+
 		public void setR24_liabilities(BigDecimal r24_liabilities) {
 			this.r24_liabilities = r24_liabilities;
 		}
+
 		public BigDecimal getR24_revenue() {
 			return r24_revenue;
 		}
+
 		public void setR24_revenue(BigDecimal r24_revenue) {
 			this.r24_revenue = r24_revenue;
 		}
+
 		public BigDecimal getR24_profit_or_loss() {
 			return r24_profit_or_loss;
 		}
+
 		public void setR24_profit_or_loss(BigDecimal r24_profit_or_loss) {
 			this.r24_profit_or_loss = r24_profit_or_loss;
 		}
+
 		public BigDecimal getR24_unreg_share_of_loss() {
 			return r24_unreg_share_of_loss;
 		}
+
 		public void setR24_unreg_share_of_loss(BigDecimal r24_unreg_share_of_loss) {
 			this.r24_unreg_share_of_loss = r24_unreg_share_of_loss;
 		}
+
 		public BigDecimal getR24_cumulative_unreg_share_of_loss() {
 			return r24_cumulative_unreg_share_of_loss;
 		}
+
 		public void setR24_cumulative_unreg_share_of_loss(BigDecimal r24_cumulative_unreg_share_of_loss) {
 			this.r24_cumulative_unreg_share_of_loss = r24_cumulative_unreg_share_of_loss;
 		}
+
 		public String getR29_product() {
 			return r29_product;
 		}
+
 		public void setR29_product(String r29_product) {
 			this.r29_product = r29_product;
 		}
+
 		public BigDecimal getR29_fair_value() {
 			return r29_fair_value;
 		}
+
 		public void setR29_fair_value(BigDecimal r29_fair_value) {
 			this.r29_fair_value = r29_fair_value;
 		}
+
 		public String getR35_product() {
 			return r35_product;
 		}
+
 		public void setR35_product(String r35_product) {
 			this.r35_product = r35_product;
 		}
+
 		public BigDecimal getR35_company() {
 			return r35_company;
 		}
+
 		public void setR35_company(BigDecimal r35_company) {
 			this.r35_company = r35_company;
 		}
+
 		public BigDecimal getR35_jurisdiction_of_incorp_1() {
 			return r35_jurisdiction_of_incorp_1;
 		}
+
 		public void setR35_jurisdiction_of_incorp_1(BigDecimal r35_jurisdiction_of_incorp_1) {
 			this.r35_jurisdiction_of_incorp_1 = r35_jurisdiction_of_incorp_1;
 		}
+
 		public BigDecimal getR35_jurisdiction_of_incorp_2() {
 			return r35_jurisdiction_of_incorp_2;
 		}
+
 		public void setR35_jurisdiction_of_incorp_2(BigDecimal r35_jurisdiction_of_incorp_2) {
 			this.r35_jurisdiction_of_incorp_2 = r35_jurisdiction_of_incorp_2;
 		}
+
 		public BigDecimal getR35_line_of_business() {
 			return r35_line_of_business;
 		}
+
 		public void setR35_line_of_business(BigDecimal r35_line_of_business) {
 			this.r35_line_of_business = r35_line_of_business;
 		}
+
 		public BigDecimal getR35_currency() {
 			return r35_currency;
 		}
+
 		public void setR35_currency(BigDecimal r35_currency) {
 			this.r35_currency = r35_currency;
 		}
+
 		public BigDecimal getR35_share_capital() {
 			return r35_share_capital;
 		}
+
 		public void setR35_share_capital(BigDecimal r35_share_capital) {
 			this.r35_share_capital = r35_share_capital;
 		}
+
 		public BigDecimal getR35_accumulated_equity_interest() {
 			return r35_accumulated_equity_interest;
 		}
+
 		public void setR35_accumulated_equity_interest(BigDecimal r35_accumulated_equity_interest) {
 			this.r35_accumulated_equity_interest = r35_accumulated_equity_interest;
 		}
+
 		public String getR36_product() {
 			return r36_product;
 		}
+
 		public void setR36_product(String r36_product) {
 			this.r36_product = r36_product;
 		}
+
 		public BigDecimal getR36_company() {
 			return r36_company;
 		}
+
 		public void setR36_company(BigDecimal r36_company) {
 			this.r36_company = r36_company;
 		}
+
 		public BigDecimal getR36_jurisdiction_of_incorp_1() {
 			return r36_jurisdiction_of_incorp_1;
 		}
+
 		public void setR36_jurisdiction_of_incorp_1(BigDecimal r36_jurisdiction_of_incorp_1) {
 			this.r36_jurisdiction_of_incorp_1 = r36_jurisdiction_of_incorp_1;
 		}
+
 		public BigDecimal getR36_jurisdiction_of_incorp_2() {
 			return r36_jurisdiction_of_incorp_2;
 		}
+
 		public void setR36_jurisdiction_of_incorp_2(BigDecimal r36_jurisdiction_of_incorp_2) {
 			this.r36_jurisdiction_of_incorp_2 = r36_jurisdiction_of_incorp_2;
 		}
+
 		public BigDecimal getR36_line_of_business() {
 			return r36_line_of_business;
 		}
+
 		public void setR36_line_of_business(BigDecimal r36_line_of_business) {
 			this.r36_line_of_business = r36_line_of_business;
 		}
+
 		public BigDecimal getR36_currency() {
 			return r36_currency;
 		}
+
 		public void setR36_currency(BigDecimal r36_currency) {
 			this.r36_currency = r36_currency;
 		}
+
 		public BigDecimal getR36_share_capital() {
 			return r36_share_capital;
 		}
+
 		public void setR36_share_capital(BigDecimal r36_share_capital) {
 			this.r36_share_capital = r36_share_capital;
 		}
+
 		public BigDecimal getR36_accumulated_equity_interest() {
 			return r36_accumulated_equity_interest;
 		}
+
 		public void setR36_accumulated_equity_interest(BigDecimal r36_accumulated_equity_interest) {
 			this.r36_accumulated_equity_interest = r36_accumulated_equity_interest;
 		}
+
 		public String getR37_product() {
 			return r37_product;
 		}
+
 		public void setR37_product(String r37_product) {
 			this.r37_product = r37_product;
 		}
+
 		public BigDecimal getR37_company() {
 			return r37_company;
 		}
+
 		public void setR37_company(BigDecimal r37_company) {
 			this.r37_company = r37_company;
 		}
+
 		public BigDecimal getR37_jurisdiction_of_incorp_1() {
 			return r37_jurisdiction_of_incorp_1;
 		}
+
 		public void setR37_jurisdiction_of_incorp_1(BigDecimal r37_jurisdiction_of_incorp_1) {
 			this.r37_jurisdiction_of_incorp_1 = r37_jurisdiction_of_incorp_1;
 		}
+
 		public BigDecimal getR37_jurisdiction_of_incorp_2() {
 			return r37_jurisdiction_of_incorp_2;
 		}
+
 		public void setR37_jurisdiction_of_incorp_2(BigDecimal r37_jurisdiction_of_incorp_2) {
 			this.r37_jurisdiction_of_incorp_2 = r37_jurisdiction_of_incorp_2;
 		}
+
 		public BigDecimal getR37_line_of_business() {
 			return r37_line_of_business;
 		}
+
 		public void setR37_line_of_business(BigDecimal r37_line_of_business) {
 			this.r37_line_of_business = r37_line_of_business;
 		}
+
 		public BigDecimal getR37_currency() {
 			return r37_currency;
 		}
+
 		public void setR37_currency(BigDecimal r37_currency) {
 			this.r37_currency = r37_currency;
 		}
+
 		public BigDecimal getR37_share_capital() {
 			return r37_share_capital;
 		}
+
 		public void setR37_share_capital(BigDecimal r37_share_capital) {
 			this.r37_share_capital = r37_share_capital;
 		}
+
 		public BigDecimal getR37_accumulated_equity_interest() {
 			return r37_accumulated_equity_interest;
 		}
+
 		public void setR37_accumulated_equity_interest(BigDecimal r37_accumulated_equity_interest) {
 			this.r37_accumulated_equity_interest = r37_accumulated_equity_interest;
 		}
+
 		public String getR38_product() {
 			return r38_product;
 		}
+
 		public void setR38_product(String r38_product) {
 			this.r38_product = r38_product;
 		}
+
 		public BigDecimal getR38_company() {
 			return r38_company;
 		}
+
 		public void setR38_company(BigDecimal r38_company) {
 			this.r38_company = r38_company;
 		}
+
 		public BigDecimal getR38_jurisdiction_of_incorp_1() {
 			return r38_jurisdiction_of_incorp_1;
 		}
+
 		public void setR38_jurisdiction_of_incorp_1(BigDecimal r38_jurisdiction_of_incorp_1) {
 			this.r38_jurisdiction_of_incorp_1 = r38_jurisdiction_of_incorp_1;
 		}
+
 		public BigDecimal getR38_jurisdiction_of_incorp_2() {
 			return r38_jurisdiction_of_incorp_2;
 		}
+
 		public void setR38_jurisdiction_of_incorp_2(BigDecimal r38_jurisdiction_of_incorp_2) {
 			this.r38_jurisdiction_of_incorp_2 = r38_jurisdiction_of_incorp_2;
 		}
+
 		public BigDecimal getR38_line_of_business() {
 			return r38_line_of_business;
 		}
+
 		public void setR38_line_of_business(BigDecimal r38_line_of_business) {
 			this.r38_line_of_business = r38_line_of_business;
 		}
+
 		public BigDecimal getR38_currency() {
 			return r38_currency;
 		}
+
 		public void setR38_currency(BigDecimal r38_currency) {
 			this.r38_currency = r38_currency;
 		}
+
 		public BigDecimal getR38_share_capital() {
 			return r38_share_capital;
 		}
+
 		public void setR38_share_capital(BigDecimal r38_share_capital) {
 			this.r38_share_capital = r38_share_capital;
 		}
+
 		public BigDecimal getR38_accumulated_equity_interest() {
 			return r38_accumulated_equity_interest;
 		}
+
 		public void setR38_accumulated_equity_interest(BigDecimal r38_accumulated_equity_interest) {
 			this.r38_accumulated_equity_interest = r38_accumulated_equity_interest;
 		}
+
 		public Date getReportDate() {
 			return reportDate;
 		}
+
 		public void setReportDate(Date reportDate) {
 			this.reportDate = reportDate;
 		}
+
 		public BigDecimal getReportVersion() {
 			return reportVersion;
 		}
+
 		public void setReportVersion(BigDecimal reportVersion) {
 			this.reportVersion = reportVersion;
 		}
+
 		public Date getReportResubDate() {
 			return reportResubDate;
 		}
+
 		public void setReportResubDate(Date reportResubDate) {
 			this.reportResubDate = reportResubDate;
 		}
+
 		public String getReport_frequency() {
 			return report_frequency;
 		}
+
 		public void setReport_frequency(String report_frequency) {
 			this.report_frequency = report_frequency;
 		}
+
 		public String getReport_code() {
 			return report_code;
 		}
+
 		public void setReport_code(String report_code) {
 			this.report_code = report_code;
 		}
+
 		public String getReport_desc() {
 			return report_desc;
 		}
+
 		public void setReport_desc(String report_desc) {
 			this.report_desc = report_desc;
 		}
+
 		public String getEntity_flg() {
 			return entity_flg;
 		}
+
 		public void setEntity_flg(String entity_flg) {
 			this.entity_flg = entity_flg;
 		}
+
 		public String getModify_flg() {
 			return modify_flg;
 		}
+
 		public void setModify_flg(String modify_flg) {
 			this.modify_flg = modify_flg;
 		}
+
 		public String getDel_flg() {
 			return del_flg;
 		}
+
 		public void setDel_flg(String del_flg) {
 			this.del_flg = del_flg;
 		}
+
 		public M_UNCONS_INVEST_Archival_Summary_Entity() {
 			super();
 			// TODO Auto-generated constructor stub
 		}
-		
-		
+
 	}
 	// =========================================================
 	// Inner entity: M_UNCONS_INVEST_Archival_Detail_Entity
 	// =========================================================
 
-		public static class M_UNCONS_INVEST_Archival_Detail_Entity {
-		
+	public static class M_UNCONS_INVEST_Archival_Detail_Entity {
+
 		private String r11_product;
-	    private BigDecimal r11_amount;
-	    private BigDecimal r11_percent_of_cet1_holding;
-	    private BigDecimal r11_percent_of_additional_tier_1_holding;
-	    private BigDecimal r11_percent_of_tier_2_holding;
+		private BigDecimal r11_amount;
+		private BigDecimal r11_percent_of_cet1_holding;
+		private BigDecimal r11_percent_of_additional_tier_1_holding;
+		private BigDecimal r11_percent_of_tier_2_holding;
 
-	    private String r12_product;
-	    private BigDecimal r12_amount;
-	    private BigDecimal r12_percent_of_cet1_holding;
-	    private BigDecimal r12_percent_of_additional_tier_1_holding;
-	    private BigDecimal r12_percent_of_tier_2_holding;
+		private String r12_product;
+		private BigDecimal r12_amount;
+		private BigDecimal r12_percent_of_cet1_holding;
+		private BigDecimal r12_percent_of_additional_tier_1_holding;
+		private BigDecimal r12_percent_of_tier_2_holding;
 
-	    private String r13_product;
-	    private BigDecimal r13_amount;
-	    private BigDecimal r13_percent_of_cet1_holding;
-	    private BigDecimal r13_percent_of_additional_tier_1_holding;
-	    private BigDecimal r13_percent_of_tier_2_holding;
+		private String r13_product;
+		private BigDecimal r13_amount;
+		private BigDecimal r13_percent_of_cet1_holding;
+		private BigDecimal r13_percent_of_additional_tier_1_holding;
+		private BigDecimal r13_percent_of_tier_2_holding;
 
-	    private String r14_product;
-	    private BigDecimal r14_amount;
-	    private BigDecimal r14_percent_of_cet1_holding;
-	    private BigDecimal r14_percent_of_additional_tier_1_holding;
-	    private BigDecimal r14_percent_of_tier_2_holding;
+		private String r14_product;
+		private BigDecimal r14_amount;
+		private BigDecimal r14_percent_of_cet1_holding;
+		private BigDecimal r14_percent_of_additional_tier_1_holding;
+		private BigDecimal r14_percent_of_tier_2_holding;
 
-	    private String r15_product;
-	    private BigDecimal r15_amount;
-	    private BigDecimal r15_percent_of_cet1_holding;
-	    private BigDecimal r15_percent_of_additional_tier_1_holding;
-	    private BigDecimal r15_percent_of_tier_2_holding;
+		private String r15_product;
+		private BigDecimal r15_amount;
+		private BigDecimal r15_percent_of_cet1_holding;
+		private BigDecimal r15_percent_of_additional_tier_1_holding;
+		private BigDecimal r15_percent_of_tier_2_holding;
 
-	    private String r22_product;
-	    private BigDecimal r22_accuulated_equity_interest_5;
-	    private BigDecimal r22_assets;
-	    private BigDecimal r22_liabilities;
-	    private BigDecimal r22_revenue;
-	    private BigDecimal r22_profit_or_loss;
-	    private BigDecimal r22_unreg_share_of_loss;
-	    private BigDecimal r22_cumulative_unreg_share_of_loss;
+		private String r22_product;
+		private BigDecimal r22_accuulated_equity_interest_5;
+		private BigDecimal r22_assets;
+		private BigDecimal r22_liabilities;
+		private BigDecimal r22_revenue;
+		private BigDecimal r22_profit_or_loss;
+		private BigDecimal r22_unreg_share_of_loss;
+		private BigDecimal r22_cumulative_unreg_share_of_loss;
 
-	    private String r23_product;
-	    private BigDecimal r23_accuulated_equity_interest_5;
-	    private BigDecimal r23_assets;
-	    private BigDecimal r23_liabilities;
-	    private BigDecimal r23_revenue;
-	    private BigDecimal r23_profit_or_loss;
-	    private BigDecimal r23_unreg_share_of_loss;
-	    private BigDecimal r23_cumulative_unreg_share_of_loss;
+		private String r23_product;
+		private BigDecimal r23_accuulated_equity_interest_5;
+		private BigDecimal r23_assets;
+		private BigDecimal r23_liabilities;
+		private BigDecimal r23_revenue;
+		private BigDecimal r23_profit_or_loss;
+		private BigDecimal r23_unreg_share_of_loss;
+		private BigDecimal r23_cumulative_unreg_share_of_loss;
 
-	    private String r24_product;
-	    private BigDecimal r24_accuulated_equity_interest_5;
-	    private BigDecimal r24_assets;
-	    private BigDecimal r24_liabilities;
-	    private BigDecimal r24_revenue;
-	    private BigDecimal r24_profit_or_loss;
-	    private BigDecimal r24_unreg_share_of_loss;
-	    private BigDecimal r24_cumulative_unreg_share_of_loss;
+		private String r24_product;
+		private BigDecimal r24_accuulated_equity_interest_5;
+		private BigDecimal r24_assets;
+		private BigDecimal r24_liabilities;
+		private BigDecimal r24_revenue;
+		private BigDecimal r24_profit_or_loss;
+		private BigDecimal r24_unreg_share_of_loss;
+		private BigDecimal r24_cumulative_unreg_share_of_loss;
 
-	    private String r29_product;
-	    private BigDecimal r29_fair_value;
+		private String r29_product;
+		private BigDecimal r29_fair_value;
 
-	    private String r35_product;
-	    private BigDecimal r35_company;
-	    private BigDecimal r35_jurisdiction_of_incorp_1;
-	    private BigDecimal r35_jurisdiction_of_incorp_2;
-	    private BigDecimal r35_line_of_business;
-	    private BigDecimal r35_currency;
-	    private BigDecimal r35_share_capital;
-	    private BigDecimal r35_accumulated_equity_interest;
+		private String r35_product;
+		private BigDecimal r35_company;
+		private BigDecimal r35_jurisdiction_of_incorp_1;
+		private BigDecimal r35_jurisdiction_of_incorp_2;
+		private BigDecimal r35_line_of_business;
+		private BigDecimal r35_currency;
+		private BigDecimal r35_share_capital;
+		private BigDecimal r35_accumulated_equity_interest;
 
-	    private String r36_product;
-	    private BigDecimal r36_company;
-	    private BigDecimal r36_jurisdiction_of_incorp_1;
-	    private BigDecimal r36_jurisdiction_of_incorp_2;
-	    private BigDecimal r36_line_of_business;
-	    private BigDecimal r36_currency;
-	    private BigDecimal r36_share_capital;
-	    private BigDecimal r36_accumulated_equity_interest;
+		private String r36_product;
+		private BigDecimal r36_company;
+		private BigDecimal r36_jurisdiction_of_incorp_1;
+		private BigDecimal r36_jurisdiction_of_incorp_2;
+		private BigDecimal r36_line_of_business;
+		private BigDecimal r36_currency;
+		private BigDecimal r36_share_capital;
+		private BigDecimal r36_accumulated_equity_interest;
 
-	    private String r37_product;
-	    private BigDecimal r37_company;
-	    private BigDecimal r37_jurisdiction_of_incorp_1;
-	    private BigDecimal r37_jurisdiction_of_incorp_2;
-	    private BigDecimal r37_line_of_business;
-	    private BigDecimal r37_currency;
-	    private BigDecimal r37_share_capital;
-	    private BigDecimal r37_accumulated_equity_interest;
+		private String r37_product;
+		private BigDecimal r37_company;
+		private BigDecimal r37_jurisdiction_of_incorp_1;
+		private BigDecimal r37_jurisdiction_of_incorp_2;
+		private BigDecimal r37_line_of_business;
+		private BigDecimal r37_currency;
+		private BigDecimal r37_share_capital;
+		private BigDecimal r37_accumulated_equity_interest;
 
-	    private String r38_product;
-	    private BigDecimal r38_company;
-	    private BigDecimal r38_jurisdiction_of_incorp_1;
-	    private BigDecimal r38_jurisdiction_of_incorp_2;
-	    private BigDecimal r38_line_of_business;
-	    private BigDecimal r38_currency;
-	    private BigDecimal r38_share_capital;
-	    private BigDecimal r38_accumulated_equity_interest;
-	    
+		private String r38_product;
+		private BigDecimal r38_company;
+		private BigDecimal r38_jurisdiction_of_incorp_1;
+		private BigDecimal r38_jurisdiction_of_incorp_2;
+		private BigDecimal r38_line_of_business;
+		private BigDecimal r38_currency;
+		private BigDecimal r38_share_capital;
+		private BigDecimal r38_accumulated_equity_interest;
+
 		private Date reportDate;
 
 		private BigDecimal reportVersion;
 
 		private Date reportResubDate;
-		private String	report_frequency;
-		private String	report_code;
-		private String	report_desc;
-		private String	entity_flg;
-		private String	modify_flg;
-		private String	del_flg;
+		private String report_frequency;
+		private String report_code;
+		private String report_desc;
+		private String entity_flg;
+		private String modify_flg;
+		private String del_flg;
+
 		public String getR11_product() {
 			return r11_product;
 		}
+
 		public void setR11_product(String r11_product) {
 			this.r11_product = r11_product;
 		}
+
 		public BigDecimal getR11_amount() {
 			return r11_amount;
 		}
+
 		public void setR11_amount(BigDecimal r11_amount) {
 			this.r11_amount = r11_amount;
 		}
+
 		public BigDecimal getR11_percent_of_cet1_holding() {
 			return r11_percent_of_cet1_holding;
 		}
+
 		public void setR11_percent_of_cet1_holding(BigDecimal r11_percent_of_cet1_holding) {
 			this.r11_percent_of_cet1_holding = r11_percent_of_cet1_holding;
 		}
+
 		public BigDecimal getR11_percent_of_additional_tier_1_holding() {
 			return r11_percent_of_additional_tier_1_holding;
 		}
+
 		public void setR11_percent_of_additional_tier_1_holding(BigDecimal r11_percent_of_additional_tier_1_holding) {
 			this.r11_percent_of_additional_tier_1_holding = r11_percent_of_additional_tier_1_holding;
 		}
+
 		public BigDecimal getR11_percent_of_tier_2_holding() {
 			return r11_percent_of_tier_2_holding;
 		}
+
 		public void setR11_percent_of_tier_2_holding(BigDecimal r11_percent_of_tier_2_holding) {
 			this.r11_percent_of_tier_2_holding = r11_percent_of_tier_2_holding;
 		}
+
 		public String getR12_product() {
 			return r12_product;
 		}
+
 		public void setR12_product(String r12_product) {
 			this.r12_product = r12_product;
 		}
+
 		public BigDecimal getR12_amount() {
 			return r12_amount;
 		}
+
 		public void setR12_amount(BigDecimal r12_amount) {
 			this.r12_amount = r12_amount;
 		}
+
 		public BigDecimal getR12_percent_of_cet1_holding() {
 			return r12_percent_of_cet1_holding;
 		}
+
 		public void setR12_percent_of_cet1_holding(BigDecimal r12_percent_of_cet1_holding) {
 			this.r12_percent_of_cet1_holding = r12_percent_of_cet1_holding;
 		}
+
 		public BigDecimal getR12_percent_of_additional_tier_1_holding() {
 			return r12_percent_of_additional_tier_1_holding;
 		}
+
 		public void setR12_percent_of_additional_tier_1_holding(BigDecimal r12_percent_of_additional_tier_1_holding) {
 			this.r12_percent_of_additional_tier_1_holding = r12_percent_of_additional_tier_1_holding;
 		}
+
 		public BigDecimal getR12_percent_of_tier_2_holding() {
 			return r12_percent_of_tier_2_holding;
 		}
+
 		public void setR12_percent_of_tier_2_holding(BigDecimal r12_percent_of_tier_2_holding) {
 			this.r12_percent_of_tier_2_holding = r12_percent_of_tier_2_holding;
 		}
+
 		public String getR13_product() {
 			return r13_product;
 		}
+
 		public void setR13_product(String r13_product) {
 			this.r13_product = r13_product;
 		}
+
 		public BigDecimal getR13_amount() {
 			return r13_amount;
 		}
+
 		public void setR13_amount(BigDecimal r13_amount) {
 			this.r13_amount = r13_amount;
 		}
+
 		public BigDecimal getR13_percent_of_cet1_holding() {
 			return r13_percent_of_cet1_holding;
 		}
+
 		public void setR13_percent_of_cet1_holding(BigDecimal r13_percent_of_cet1_holding) {
 			this.r13_percent_of_cet1_holding = r13_percent_of_cet1_holding;
 		}
+
 		public BigDecimal getR13_percent_of_additional_tier_1_holding() {
 			return r13_percent_of_additional_tier_1_holding;
 		}
+
 		public void setR13_percent_of_additional_tier_1_holding(BigDecimal r13_percent_of_additional_tier_1_holding) {
 			this.r13_percent_of_additional_tier_1_holding = r13_percent_of_additional_tier_1_holding;
 		}
+
 		public BigDecimal getR13_percent_of_tier_2_holding() {
 			return r13_percent_of_tier_2_holding;
 		}
+
 		public void setR13_percent_of_tier_2_holding(BigDecimal r13_percent_of_tier_2_holding) {
 			this.r13_percent_of_tier_2_holding = r13_percent_of_tier_2_holding;
 		}
+
 		public String getR14_product() {
 			return r14_product;
 		}
+
 		public void setR14_product(String r14_product) {
 			this.r14_product = r14_product;
 		}
+
 		public BigDecimal getR14_amount() {
 			return r14_amount;
 		}
+
 		public void setR14_amount(BigDecimal r14_amount) {
 			this.r14_amount = r14_amount;
 		}
+
 		public BigDecimal getR14_percent_of_cet1_holding() {
 			return r14_percent_of_cet1_holding;
 		}
+
 		public void setR14_percent_of_cet1_holding(BigDecimal r14_percent_of_cet1_holding) {
 			this.r14_percent_of_cet1_holding = r14_percent_of_cet1_holding;
 		}
+
 		public BigDecimal getR14_percent_of_additional_tier_1_holding() {
 			return r14_percent_of_additional_tier_1_holding;
 		}
+
 		public void setR14_percent_of_additional_tier_1_holding(BigDecimal r14_percent_of_additional_tier_1_holding) {
 			this.r14_percent_of_additional_tier_1_holding = r14_percent_of_additional_tier_1_holding;
 		}
+
 		public BigDecimal getR14_percent_of_tier_2_holding() {
 			return r14_percent_of_tier_2_holding;
 		}
+
 		public void setR14_percent_of_tier_2_holding(BigDecimal r14_percent_of_tier_2_holding) {
 			this.r14_percent_of_tier_2_holding = r14_percent_of_tier_2_holding;
 		}
+
 		public String getR15_product() {
 			return r15_product;
 		}
+
 		public void setR15_product(String r15_product) {
 			this.r15_product = r15_product;
 		}
+
 		public BigDecimal getR15_amount() {
 			return r15_amount;
 		}
+
 		public void setR15_amount(BigDecimal r15_amount) {
 			this.r15_amount = r15_amount;
 		}
+
 		public BigDecimal getR15_percent_of_cet1_holding() {
 			return r15_percent_of_cet1_holding;
 		}
+
 		public void setR15_percent_of_cet1_holding(BigDecimal r15_percent_of_cet1_holding) {
 			this.r15_percent_of_cet1_holding = r15_percent_of_cet1_holding;
 		}
+
 		public BigDecimal getR15_percent_of_additional_tier_1_holding() {
 			return r15_percent_of_additional_tier_1_holding;
 		}
+
 		public void setR15_percent_of_additional_tier_1_holding(BigDecimal r15_percent_of_additional_tier_1_holding) {
 			this.r15_percent_of_additional_tier_1_holding = r15_percent_of_additional_tier_1_holding;
 		}
+
 		public BigDecimal getR15_percent_of_tier_2_holding() {
 			return r15_percent_of_tier_2_holding;
 		}
+
 		public void setR15_percent_of_tier_2_holding(BigDecimal r15_percent_of_tier_2_holding) {
 			this.r15_percent_of_tier_2_holding = r15_percent_of_tier_2_holding;
 		}
+
 		public String getR22_product() {
 			return r22_product;
 		}
+
 		public void setR22_product(String r22_product) {
 			this.r22_product = r22_product;
 		}
+
 		public BigDecimal getR22_accuulated_equity_interest_5() {
 			return r22_accuulated_equity_interest_5;
 		}
+
 		public void setR22_accuulated_equity_interest_5(BigDecimal r22_accuulated_equity_interest_5) {
 			this.r22_accuulated_equity_interest_5 = r22_accuulated_equity_interest_5;
 		}
+
 		public BigDecimal getR22_assets() {
 			return r22_assets;
 		}
+
 		public void setR22_assets(BigDecimal r22_assets) {
 			this.r22_assets = r22_assets;
 		}
+
 		public BigDecimal getR22_liabilities() {
 			return r22_liabilities;
 		}
+
 		public void setR22_liabilities(BigDecimal r22_liabilities) {
 			this.r22_liabilities = r22_liabilities;
 		}
+
 		public BigDecimal getR22_revenue() {
 			return r22_revenue;
 		}
+
 		public void setR22_revenue(BigDecimal r22_revenue) {
 			this.r22_revenue = r22_revenue;
 		}
+
 		public BigDecimal getR22_profit_or_loss() {
 			return r22_profit_or_loss;
 		}
+
 		public void setR22_profit_or_loss(BigDecimal r22_profit_or_loss) {
 			this.r22_profit_or_loss = r22_profit_or_loss;
 		}
+
 		public BigDecimal getR22_unreg_share_of_loss() {
 			return r22_unreg_share_of_loss;
 		}
+
 		public void setR22_unreg_share_of_loss(BigDecimal r22_unreg_share_of_loss) {
 			this.r22_unreg_share_of_loss = r22_unreg_share_of_loss;
 		}
+
 		public BigDecimal getR22_cumulative_unreg_share_of_loss() {
 			return r22_cumulative_unreg_share_of_loss;
 		}
+
 		public void setR22_cumulative_unreg_share_of_loss(BigDecimal r22_cumulative_unreg_share_of_loss) {
 			this.r22_cumulative_unreg_share_of_loss = r22_cumulative_unreg_share_of_loss;
 		}
+
 		public String getR23_product() {
 			return r23_product;
 		}
+
 		public void setR23_product(String r23_product) {
 			this.r23_product = r23_product;
 		}
+
 		public BigDecimal getR23_accuulated_equity_interest_5() {
 			return r23_accuulated_equity_interest_5;
 		}
+
 		public void setR23_accuulated_equity_interest_5(BigDecimal r23_accuulated_equity_interest_5) {
 			this.r23_accuulated_equity_interest_5 = r23_accuulated_equity_interest_5;
 		}
+
 		public BigDecimal getR23_assets() {
 			return r23_assets;
 		}
+
 		public void setR23_assets(BigDecimal r23_assets) {
 			this.r23_assets = r23_assets;
 		}
+
 		public BigDecimal getR23_liabilities() {
 			return r23_liabilities;
 		}
+
 		public void setR23_liabilities(BigDecimal r23_liabilities) {
 			this.r23_liabilities = r23_liabilities;
 		}
+
 		public BigDecimal getR23_revenue() {
 			return r23_revenue;
 		}
+
 		public void setR23_revenue(BigDecimal r23_revenue) {
 			this.r23_revenue = r23_revenue;
 		}
+
 		public BigDecimal getR23_profit_or_loss() {
 			return r23_profit_or_loss;
 		}
+
 		public void setR23_profit_or_loss(BigDecimal r23_profit_or_loss) {
 			this.r23_profit_or_loss = r23_profit_or_loss;
 		}
+
 		public BigDecimal getR23_unreg_share_of_loss() {
 			return r23_unreg_share_of_loss;
 		}
+
 		public void setR23_unreg_share_of_loss(BigDecimal r23_unreg_share_of_loss) {
 			this.r23_unreg_share_of_loss = r23_unreg_share_of_loss;
 		}
+
 		public BigDecimal getR23_cumulative_unreg_share_of_loss() {
 			return r23_cumulative_unreg_share_of_loss;
 		}
+
 		public void setR23_cumulative_unreg_share_of_loss(BigDecimal r23_cumulative_unreg_share_of_loss) {
 			this.r23_cumulative_unreg_share_of_loss = r23_cumulative_unreg_share_of_loss;
 		}
+
 		public String getR24_product() {
 			return r24_product;
 		}
+
 		public void setR24_product(String r24_product) {
 			this.r24_product = r24_product;
 		}
+
 		public BigDecimal getR24_accuulated_equity_interest_5() {
 			return r24_accuulated_equity_interest_5;
 		}
+
 		public void setR24_accuulated_equity_interest_5(BigDecimal r24_accuulated_equity_interest_5) {
 			this.r24_accuulated_equity_interest_5 = r24_accuulated_equity_interest_5;
 		}
+
 		public BigDecimal getR24_assets() {
 			return r24_assets;
 		}
+
 		public void setR24_assets(BigDecimal r24_assets) {
 			this.r24_assets = r24_assets;
 		}
+
 		public BigDecimal getR24_liabilities() {
 			return r24_liabilities;
 		}
+
 		public void setR24_liabilities(BigDecimal r24_liabilities) {
 			this.r24_liabilities = r24_liabilities;
 		}
+
 		public BigDecimal getR24_revenue() {
 			return r24_revenue;
 		}
+
 		public void setR24_revenue(BigDecimal r24_revenue) {
 			this.r24_revenue = r24_revenue;
 		}
+
 		public BigDecimal getR24_profit_or_loss() {
 			return r24_profit_or_loss;
 		}
+
 		public void setR24_profit_or_loss(BigDecimal r24_profit_or_loss) {
 			this.r24_profit_or_loss = r24_profit_or_loss;
 		}
+
 		public BigDecimal getR24_unreg_share_of_loss() {
 			return r24_unreg_share_of_loss;
 		}
+
 		public void setR24_unreg_share_of_loss(BigDecimal r24_unreg_share_of_loss) {
 			this.r24_unreg_share_of_loss = r24_unreg_share_of_loss;
 		}
+
 		public BigDecimal getR24_cumulative_unreg_share_of_loss() {
 			return r24_cumulative_unreg_share_of_loss;
 		}
+
 		public void setR24_cumulative_unreg_share_of_loss(BigDecimal r24_cumulative_unreg_share_of_loss) {
 			this.r24_cumulative_unreg_share_of_loss = r24_cumulative_unreg_share_of_loss;
 		}
+
 		public String getR29_product() {
 			return r29_product;
 		}
+
 		public void setR29_product(String r29_product) {
 			this.r29_product = r29_product;
 		}
+
 		public BigDecimal getR29_fair_value() {
 			return r29_fair_value;
 		}
+
 		public void setR29_fair_value(BigDecimal r29_fair_value) {
 			this.r29_fair_value = r29_fair_value;
 		}
+
 		public String getR35_product() {
 			return r35_product;
 		}
+
 		public void setR35_product(String r35_product) {
 			this.r35_product = r35_product;
 		}
+
 		public BigDecimal getR35_company() {
 			return r35_company;
 		}
+
 		public void setR35_company(BigDecimal r35_company) {
 			this.r35_company = r35_company;
 		}
+
 		public BigDecimal getR35_jurisdiction_of_incorp_1() {
 			return r35_jurisdiction_of_incorp_1;
 		}
+
 		public void setR35_jurisdiction_of_incorp_1(BigDecimal r35_jurisdiction_of_incorp_1) {
 			this.r35_jurisdiction_of_incorp_1 = r35_jurisdiction_of_incorp_1;
 		}
+
 		public BigDecimal getR35_jurisdiction_of_incorp_2() {
 			return r35_jurisdiction_of_incorp_2;
 		}
+
 		public void setR35_jurisdiction_of_incorp_2(BigDecimal r35_jurisdiction_of_incorp_2) {
 			this.r35_jurisdiction_of_incorp_2 = r35_jurisdiction_of_incorp_2;
 		}
+
 		public BigDecimal getR35_line_of_business() {
 			return r35_line_of_business;
 		}
+
 		public void setR35_line_of_business(BigDecimal r35_line_of_business) {
 			this.r35_line_of_business = r35_line_of_business;
 		}
+
 		public BigDecimal getR35_currency() {
 			return r35_currency;
 		}
+
 		public void setR35_currency(BigDecimal r35_currency) {
 			this.r35_currency = r35_currency;
 		}
+
 		public BigDecimal getR35_share_capital() {
 			return r35_share_capital;
 		}
+
 		public void setR35_share_capital(BigDecimal r35_share_capital) {
 			this.r35_share_capital = r35_share_capital;
 		}
+
 		public BigDecimal getR35_accumulated_equity_interest() {
 			return r35_accumulated_equity_interest;
 		}
+
 		public void setR35_accumulated_equity_interest(BigDecimal r35_accumulated_equity_interest) {
 			this.r35_accumulated_equity_interest = r35_accumulated_equity_interest;
 		}
+
 		public String getR36_product() {
 			return r36_product;
 		}
+
 		public void setR36_product(String r36_product) {
 			this.r36_product = r36_product;
 		}
+
 		public BigDecimal getR36_company() {
 			return r36_company;
 		}
+
 		public void setR36_company(BigDecimal r36_company) {
 			this.r36_company = r36_company;
 		}
+
 		public BigDecimal getR36_jurisdiction_of_incorp_1() {
 			return r36_jurisdiction_of_incorp_1;
 		}
+
 		public void setR36_jurisdiction_of_incorp_1(BigDecimal r36_jurisdiction_of_incorp_1) {
 			this.r36_jurisdiction_of_incorp_1 = r36_jurisdiction_of_incorp_1;
 		}
+
 		public BigDecimal getR36_jurisdiction_of_incorp_2() {
 			return r36_jurisdiction_of_incorp_2;
 		}
+
 		public void setR36_jurisdiction_of_incorp_2(BigDecimal r36_jurisdiction_of_incorp_2) {
 			this.r36_jurisdiction_of_incorp_2 = r36_jurisdiction_of_incorp_2;
 		}
+
 		public BigDecimal getR36_line_of_business() {
 			return r36_line_of_business;
 		}
+
 		public void setR36_line_of_business(BigDecimal r36_line_of_business) {
 			this.r36_line_of_business = r36_line_of_business;
 		}
+
 		public BigDecimal getR36_currency() {
 			return r36_currency;
 		}
+
 		public void setR36_currency(BigDecimal r36_currency) {
 			this.r36_currency = r36_currency;
 		}
+
 		public BigDecimal getR36_share_capital() {
 			return r36_share_capital;
 		}
+
 		public void setR36_share_capital(BigDecimal r36_share_capital) {
 			this.r36_share_capital = r36_share_capital;
 		}
+
 		public BigDecimal getR36_accumulated_equity_interest() {
 			return r36_accumulated_equity_interest;
 		}
+
 		public void setR36_accumulated_equity_interest(BigDecimal r36_accumulated_equity_interest) {
 			this.r36_accumulated_equity_interest = r36_accumulated_equity_interest;
 		}
+
 		public String getR37_product() {
 			return r37_product;
 		}
+
 		public void setR37_product(String r37_product) {
 			this.r37_product = r37_product;
 		}
+
 		public BigDecimal getR37_company() {
 			return r37_company;
 		}
+
 		public void setR37_company(BigDecimal r37_company) {
 			this.r37_company = r37_company;
 		}
+
 		public BigDecimal getR37_jurisdiction_of_incorp_1() {
 			return r37_jurisdiction_of_incorp_1;
 		}
+
 		public void setR37_jurisdiction_of_incorp_1(BigDecimal r37_jurisdiction_of_incorp_1) {
 			this.r37_jurisdiction_of_incorp_1 = r37_jurisdiction_of_incorp_1;
 		}
+
 		public BigDecimal getR37_jurisdiction_of_incorp_2() {
 			return r37_jurisdiction_of_incorp_2;
 		}
+
 		public void setR37_jurisdiction_of_incorp_2(BigDecimal r37_jurisdiction_of_incorp_2) {
 			this.r37_jurisdiction_of_incorp_2 = r37_jurisdiction_of_incorp_2;
 		}
+
 		public BigDecimal getR37_line_of_business() {
 			return r37_line_of_business;
 		}
+
 		public void setR37_line_of_business(BigDecimal r37_line_of_business) {
 			this.r37_line_of_business = r37_line_of_business;
 		}
+
 		public BigDecimal getR37_currency() {
 			return r37_currency;
 		}
+
 		public void setR37_currency(BigDecimal r37_currency) {
 			this.r37_currency = r37_currency;
 		}
+
 		public BigDecimal getR37_share_capital() {
 			return r37_share_capital;
 		}
+
 		public void setR37_share_capital(BigDecimal r37_share_capital) {
 			this.r37_share_capital = r37_share_capital;
 		}
+
 		public BigDecimal getR37_accumulated_equity_interest() {
 			return r37_accumulated_equity_interest;
 		}
+
 		public void setR37_accumulated_equity_interest(BigDecimal r37_accumulated_equity_interest) {
 			this.r37_accumulated_equity_interest = r37_accumulated_equity_interest;
 		}
+
 		public String getR38_product() {
 			return r38_product;
 		}
+
 		public void setR38_product(String r38_product) {
 			this.r38_product = r38_product;
 		}
+
 		public BigDecimal getR38_company() {
 			return r38_company;
 		}
+
 		public void setR38_company(BigDecimal r38_company) {
 			this.r38_company = r38_company;
 		}
+
 		public BigDecimal getR38_jurisdiction_of_incorp_1() {
 			return r38_jurisdiction_of_incorp_1;
 		}
+
 		public void setR38_jurisdiction_of_incorp_1(BigDecimal r38_jurisdiction_of_incorp_1) {
 			this.r38_jurisdiction_of_incorp_1 = r38_jurisdiction_of_incorp_1;
 		}
+
 		public BigDecimal getR38_jurisdiction_of_incorp_2() {
 			return r38_jurisdiction_of_incorp_2;
 		}
+
 		public void setR38_jurisdiction_of_incorp_2(BigDecimal r38_jurisdiction_of_incorp_2) {
 			this.r38_jurisdiction_of_incorp_2 = r38_jurisdiction_of_incorp_2;
 		}
+
 		public BigDecimal getR38_line_of_business() {
 			return r38_line_of_business;
 		}
+
 		public void setR38_line_of_business(BigDecimal r38_line_of_business) {
 			this.r38_line_of_business = r38_line_of_business;
 		}
+
 		public BigDecimal getR38_currency() {
 			return r38_currency;
 		}
+
 		public void setR38_currency(BigDecimal r38_currency) {
 			this.r38_currency = r38_currency;
 		}
+
 		public BigDecimal getR38_share_capital() {
 			return r38_share_capital;
 		}
+
 		public void setR38_share_capital(BigDecimal r38_share_capital) {
 			this.r38_share_capital = r38_share_capital;
 		}
+
 		public BigDecimal getR38_accumulated_equity_interest() {
 			return r38_accumulated_equity_interest;
 		}
+
 		public void setR38_accumulated_equity_interest(BigDecimal r38_accumulated_equity_interest) {
 			this.r38_accumulated_equity_interest = r38_accumulated_equity_interest;
 		}
+
 		public Date getReportDate() {
 			return reportDate;
 		}
+
 		public void setReportDate(Date reportDate) {
 			this.reportDate = reportDate;
 		}
+
 		public BigDecimal getReportVersion() {
 			return reportVersion;
 		}
+
 		public void setReportVersion(BigDecimal reportVersion) {
 			this.reportVersion = reportVersion;
 		}
+
 		public Date getReportResubDate() {
 			return reportResubDate;
 		}
+
 		public void setReportResubDate(Date reportResubDate) {
 			this.reportResubDate = reportResubDate;
 		}
+
 		public String getReport_frequency() {
 			return report_frequency;
 		}
+
 		public void setReport_frequency(String report_frequency) {
 			this.report_frequency = report_frequency;
 		}
+
 		public String getReport_code() {
 			return report_code;
 		}
+
 		public void setReport_code(String report_code) {
 			this.report_code = report_code;
 		}
+
 		public String getReport_desc() {
 			return report_desc;
 		}
+
 		public void setReport_desc(String report_desc) {
 			this.report_desc = report_desc;
 		}
+
 		public String getEntity_flg() {
 			return entity_flg;
 		}
+
 		public void setEntity_flg(String entity_flg) {
 			this.entity_flg = entity_flg;
 		}
+
 		public String getModify_flg() {
 			return modify_flg;
 		}
+
 		public void setModify_flg(String modify_flg) {
 			this.modify_flg = modify_flg;
 		}
+
 		public String getDel_flg() {
 			return del_flg;
 		}
+
 		public void setDel_flg(String del_flg) {
 			this.del_flg = del_flg;
 		}
+
 		public M_UNCONS_INVEST_Archival_Detail_Entity() {
 			super();
 			// TODO Auto-generated constructor stub
 		}
-		
-		
+
 	}
 	// =========================================================
 	// Inner entity: M_UNCONS_INVEST_Resub_Summary_Entity
 	// =========================================================
 
-		public static class M_UNCONS_INVEST_Resub_Summary_Entity {
-		
+	public static class M_UNCONS_INVEST_Resub_Summary_Entity {
+
 		private String r11_product;
-	    private BigDecimal r11_amount;
-	    private BigDecimal r11_percent_of_cet1_holding;
-	    private BigDecimal r11_percent_of_additional_tier_1_holding;
-	    private BigDecimal r11_percent_of_tier_2_holding;
+		private BigDecimal r11_amount;
+		private BigDecimal r11_percent_of_cet1_holding;
+		private BigDecimal r11_percent_of_additional_tier_1_holding;
+		private BigDecimal r11_percent_of_tier_2_holding;
 
-	    private String r12_product;
-	    private BigDecimal r12_amount;
-	    private BigDecimal r12_percent_of_cet1_holding;
-	    private BigDecimal r12_percent_of_additional_tier_1_holding;
-	    private BigDecimal r12_percent_of_tier_2_holding;
+		private String r12_product;
+		private BigDecimal r12_amount;
+		private BigDecimal r12_percent_of_cet1_holding;
+		private BigDecimal r12_percent_of_additional_tier_1_holding;
+		private BigDecimal r12_percent_of_tier_2_holding;
 
-	    private String r13_product;
-	    private BigDecimal r13_amount;
-	    private BigDecimal r13_percent_of_cet1_holding;
-	    private BigDecimal r13_percent_of_additional_tier_1_holding;
-	    private BigDecimal r13_percent_of_tier_2_holding;
+		private String r13_product;
+		private BigDecimal r13_amount;
+		private BigDecimal r13_percent_of_cet1_holding;
+		private BigDecimal r13_percent_of_additional_tier_1_holding;
+		private BigDecimal r13_percent_of_tier_2_holding;
 
-	    private String r14_product;
-	    private BigDecimal r14_amount;
-	    private BigDecimal r14_percent_of_cet1_holding;
-	    private BigDecimal r14_percent_of_additional_tier_1_holding;
-	    private BigDecimal r14_percent_of_tier_2_holding;
+		private String r14_product;
+		private BigDecimal r14_amount;
+		private BigDecimal r14_percent_of_cet1_holding;
+		private BigDecimal r14_percent_of_additional_tier_1_holding;
+		private BigDecimal r14_percent_of_tier_2_holding;
 
-	    private String r15_product;
-	    private BigDecimal r15_amount;
-	    private BigDecimal r15_percent_of_cet1_holding;
-	    private BigDecimal r15_percent_of_additional_tier_1_holding;
-	    private BigDecimal r15_percent_of_tier_2_holding;
+		private String r15_product;
+		private BigDecimal r15_amount;
+		private BigDecimal r15_percent_of_cet1_holding;
+		private BigDecimal r15_percent_of_additional_tier_1_holding;
+		private BigDecimal r15_percent_of_tier_2_holding;
 
-	    private String r22_product;
-	    private BigDecimal r22_accuulated_equity_interest_5;
-	    private BigDecimal r22_assets;
-	    private BigDecimal r22_liabilities;
-	    private BigDecimal r22_revenue;
-	    private BigDecimal r22_profit_or_loss;
-	    private BigDecimal r22_unreg_share_of_loss;
-	    private BigDecimal r22_cumulative_unreg_share_of_loss;
+		private String r22_product;
+		private BigDecimal r22_accuulated_equity_interest_5;
+		private BigDecimal r22_assets;
+		private BigDecimal r22_liabilities;
+		private BigDecimal r22_revenue;
+		private BigDecimal r22_profit_or_loss;
+		private BigDecimal r22_unreg_share_of_loss;
+		private BigDecimal r22_cumulative_unreg_share_of_loss;
 
-	    private String r23_product;
-	    private BigDecimal r23_accuulated_equity_interest_5;
-	    private BigDecimal r23_assets;
-	    private BigDecimal r23_liabilities;
-	    private BigDecimal r23_revenue;
-	    private BigDecimal r23_profit_or_loss;
-	    private BigDecimal r23_unreg_share_of_loss;
-	    private BigDecimal r23_cumulative_unreg_share_of_loss;
+		private String r23_product;
+		private BigDecimal r23_accuulated_equity_interest_5;
+		private BigDecimal r23_assets;
+		private BigDecimal r23_liabilities;
+		private BigDecimal r23_revenue;
+		private BigDecimal r23_profit_or_loss;
+		private BigDecimal r23_unreg_share_of_loss;
+		private BigDecimal r23_cumulative_unreg_share_of_loss;
 
-	    private String r24_product;
-	    private BigDecimal r24_accuulated_equity_interest_5;
-	    private BigDecimal r24_assets;
-	    private BigDecimal r24_liabilities;
-	    private BigDecimal r24_revenue;
-	    private BigDecimal r24_profit_or_loss;
-	    private BigDecimal r24_unreg_share_of_loss;
-	    private BigDecimal r24_cumulative_unreg_share_of_loss;
+		private String r24_product;
+		private BigDecimal r24_accuulated_equity_interest_5;
+		private BigDecimal r24_assets;
+		private BigDecimal r24_liabilities;
+		private BigDecimal r24_revenue;
+		private BigDecimal r24_profit_or_loss;
+		private BigDecimal r24_unreg_share_of_loss;
+		private BigDecimal r24_cumulative_unreg_share_of_loss;
 
-	    private String r29_product;
-	    private BigDecimal r29_fair_value;
+		private String r29_product;
+		private BigDecimal r29_fair_value;
 
-	    private String r35_product;
-	    private BigDecimal r35_company;
-	    private BigDecimal r35_jurisdiction_of_incorp_1;
-	    private BigDecimal r35_jurisdiction_of_incorp_2;
-	    private BigDecimal r35_line_of_business;
-	    private BigDecimal r35_currency;
-	    private BigDecimal r35_share_capital;
-	    private BigDecimal r35_accumulated_equity_interest;
+		private String r35_product;
+		private BigDecimal r35_company;
+		private BigDecimal r35_jurisdiction_of_incorp_1;
+		private BigDecimal r35_jurisdiction_of_incorp_2;
+		private BigDecimal r35_line_of_business;
+		private BigDecimal r35_currency;
+		private BigDecimal r35_share_capital;
+		private BigDecimal r35_accumulated_equity_interest;
 
-	    private String r36_product;
-	    private BigDecimal r36_company;
-	    private BigDecimal r36_jurisdiction_of_incorp_1;
-	    private BigDecimal r36_jurisdiction_of_incorp_2;
-	    private BigDecimal r36_line_of_business;
-	    private BigDecimal r36_currency;
-	    private BigDecimal r36_share_capital;
-	    private BigDecimal r36_accumulated_equity_interest;
+		private String r36_product;
+		private BigDecimal r36_company;
+		private BigDecimal r36_jurisdiction_of_incorp_1;
+		private BigDecimal r36_jurisdiction_of_incorp_2;
+		private BigDecimal r36_line_of_business;
+		private BigDecimal r36_currency;
+		private BigDecimal r36_share_capital;
+		private BigDecimal r36_accumulated_equity_interest;
 
-	    private String r37_product;
-	    private BigDecimal r37_company;
-	    private BigDecimal r37_jurisdiction_of_incorp_1;
-	    private BigDecimal r37_jurisdiction_of_incorp_2;
-	    private BigDecimal r37_line_of_business;
-	    private BigDecimal r37_currency;
-	    private BigDecimal r37_share_capital;
-	    private BigDecimal r37_accumulated_equity_interest;
+		private String r37_product;
+		private BigDecimal r37_company;
+		private BigDecimal r37_jurisdiction_of_incorp_1;
+		private BigDecimal r37_jurisdiction_of_incorp_2;
+		private BigDecimal r37_line_of_business;
+		private BigDecimal r37_currency;
+		private BigDecimal r37_share_capital;
+		private BigDecimal r37_accumulated_equity_interest;
 
-	    private String r38_product;
-	    private BigDecimal r38_company;
-	    private BigDecimal r38_jurisdiction_of_incorp_1;
-	    private BigDecimal r38_jurisdiction_of_incorp_2;
-	    private BigDecimal r38_line_of_business;
-	    private BigDecimal r38_currency;
-	    private BigDecimal r38_share_capital;
-	    private BigDecimal r38_accumulated_equity_interest;
-	    
+		private String r38_product;
+		private BigDecimal r38_company;
+		private BigDecimal r38_jurisdiction_of_incorp_1;
+		private BigDecimal r38_jurisdiction_of_incorp_2;
+		private BigDecimal r38_line_of_business;
+		private BigDecimal r38_currency;
+		private BigDecimal r38_share_capital;
+		private BigDecimal r38_accumulated_equity_interest;
+
 		private Date reportDate;
 
 		private BigDecimal reportVersion;
 
 		private Date reportResubDate;
-		private String	report_frequency;
-		private String	report_code;
-		private String	report_desc;
-		private String	entity_flg;
-		private String	modify_flg;
-		private String	del_flg;
+		private String report_frequency;
+		private String report_code;
+		private String report_desc;
+		private String entity_flg;
+		private String modify_flg;
+		private String del_flg;
+
 		public String getR11_product() {
 			return r11_product;
 		}
+
 		public void setR11_product(String r11_product) {
 			this.r11_product = r11_product;
 		}
+
 		public BigDecimal getR11_amount() {
 			return r11_amount;
 		}
+
 		public void setR11_amount(BigDecimal r11_amount) {
 			this.r11_amount = r11_amount;
 		}
+
 		public BigDecimal getR11_percent_of_cet1_holding() {
 			return r11_percent_of_cet1_holding;
 		}
+
 		public void setR11_percent_of_cet1_holding(BigDecimal r11_percent_of_cet1_holding) {
 			this.r11_percent_of_cet1_holding = r11_percent_of_cet1_holding;
 		}
+
 		public BigDecimal getR11_percent_of_additional_tier_1_holding() {
 			return r11_percent_of_additional_tier_1_holding;
 		}
+
 		public void setR11_percent_of_additional_tier_1_holding(BigDecimal r11_percent_of_additional_tier_1_holding) {
 			this.r11_percent_of_additional_tier_1_holding = r11_percent_of_additional_tier_1_holding;
 		}
+
 		public BigDecimal getR11_percent_of_tier_2_holding() {
 			return r11_percent_of_tier_2_holding;
 		}
+
 		public void setR11_percent_of_tier_2_holding(BigDecimal r11_percent_of_tier_2_holding) {
 			this.r11_percent_of_tier_2_holding = r11_percent_of_tier_2_holding;
 		}
+
 		public String getR12_product() {
 			return r12_product;
 		}
+
 		public void setR12_product(String r12_product) {
 			this.r12_product = r12_product;
 		}
+
 		public BigDecimal getR12_amount() {
 			return r12_amount;
 		}
+
 		public void setR12_amount(BigDecimal r12_amount) {
 			this.r12_amount = r12_amount;
 		}
+
 		public BigDecimal getR12_percent_of_cet1_holding() {
 			return r12_percent_of_cet1_holding;
 		}
+
 		public void setR12_percent_of_cet1_holding(BigDecimal r12_percent_of_cet1_holding) {
 			this.r12_percent_of_cet1_holding = r12_percent_of_cet1_holding;
 		}
+
 		public BigDecimal getR12_percent_of_additional_tier_1_holding() {
 			return r12_percent_of_additional_tier_1_holding;
 		}
+
 		public void setR12_percent_of_additional_tier_1_holding(BigDecimal r12_percent_of_additional_tier_1_holding) {
 			this.r12_percent_of_additional_tier_1_holding = r12_percent_of_additional_tier_1_holding;
 		}
+
 		public BigDecimal getR12_percent_of_tier_2_holding() {
 			return r12_percent_of_tier_2_holding;
 		}
+
 		public void setR12_percent_of_tier_2_holding(BigDecimal r12_percent_of_tier_2_holding) {
 			this.r12_percent_of_tier_2_holding = r12_percent_of_tier_2_holding;
 		}
+
 		public String getR13_product() {
 			return r13_product;
 		}
+
 		public void setR13_product(String r13_product) {
 			this.r13_product = r13_product;
 		}
+
 		public BigDecimal getR13_amount() {
 			return r13_amount;
 		}
+
 		public void setR13_amount(BigDecimal r13_amount) {
 			this.r13_amount = r13_amount;
 		}
+
 		public BigDecimal getR13_percent_of_cet1_holding() {
 			return r13_percent_of_cet1_holding;
 		}
+
 		public void setR13_percent_of_cet1_holding(BigDecimal r13_percent_of_cet1_holding) {
 			this.r13_percent_of_cet1_holding = r13_percent_of_cet1_holding;
 		}
+
 		public BigDecimal getR13_percent_of_additional_tier_1_holding() {
 			return r13_percent_of_additional_tier_1_holding;
 		}
+
 		public void setR13_percent_of_additional_tier_1_holding(BigDecimal r13_percent_of_additional_tier_1_holding) {
 			this.r13_percent_of_additional_tier_1_holding = r13_percent_of_additional_tier_1_holding;
 		}
+
 		public BigDecimal getR13_percent_of_tier_2_holding() {
 			return r13_percent_of_tier_2_holding;
 		}
+
 		public void setR13_percent_of_tier_2_holding(BigDecimal r13_percent_of_tier_2_holding) {
 			this.r13_percent_of_tier_2_holding = r13_percent_of_tier_2_holding;
 		}
+
 		public String getR14_product() {
 			return r14_product;
 		}
+
 		public void setR14_product(String r14_product) {
 			this.r14_product = r14_product;
 		}
+
 		public BigDecimal getR14_amount() {
 			return r14_amount;
 		}
+
 		public void setR14_amount(BigDecimal r14_amount) {
 			this.r14_amount = r14_amount;
 		}
+
 		public BigDecimal getR14_percent_of_cet1_holding() {
 			return r14_percent_of_cet1_holding;
 		}
+
 		public void setR14_percent_of_cet1_holding(BigDecimal r14_percent_of_cet1_holding) {
 			this.r14_percent_of_cet1_holding = r14_percent_of_cet1_holding;
 		}
+
 		public BigDecimal getR14_percent_of_additional_tier_1_holding() {
 			return r14_percent_of_additional_tier_1_holding;
 		}
+
 		public void setR14_percent_of_additional_tier_1_holding(BigDecimal r14_percent_of_additional_tier_1_holding) {
 			this.r14_percent_of_additional_tier_1_holding = r14_percent_of_additional_tier_1_holding;
 		}
+
 		public BigDecimal getR14_percent_of_tier_2_holding() {
 			return r14_percent_of_tier_2_holding;
 		}
+
 		public void setR14_percent_of_tier_2_holding(BigDecimal r14_percent_of_tier_2_holding) {
 			this.r14_percent_of_tier_2_holding = r14_percent_of_tier_2_holding;
 		}
+
 		public String getR15_product() {
 			return r15_product;
 		}
+
 		public void setR15_product(String r15_product) {
 			this.r15_product = r15_product;
 		}
+
 		public BigDecimal getR15_amount() {
 			return r15_amount;
 		}
+
 		public void setR15_amount(BigDecimal r15_amount) {
 			this.r15_amount = r15_amount;
 		}
+
 		public BigDecimal getR15_percent_of_cet1_holding() {
 			return r15_percent_of_cet1_holding;
 		}
+
 		public void setR15_percent_of_cet1_holding(BigDecimal r15_percent_of_cet1_holding) {
 			this.r15_percent_of_cet1_holding = r15_percent_of_cet1_holding;
 		}
+
 		public BigDecimal getR15_percent_of_additional_tier_1_holding() {
 			return r15_percent_of_additional_tier_1_holding;
 		}
+
 		public void setR15_percent_of_additional_tier_1_holding(BigDecimal r15_percent_of_additional_tier_1_holding) {
 			this.r15_percent_of_additional_tier_1_holding = r15_percent_of_additional_tier_1_holding;
 		}
+
 		public BigDecimal getR15_percent_of_tier_2_holding() {
 			return r15_percent_of_tier_2_holding;
 		}
+
 		public void setR15_percent_of_tier_2_holding(BigDecimal r15_percent_of_tier_2_holding) {
 			this.r15_percent_of_tier_2_holding = r15_percent_of_tier_2_holding;
 		}
+
 		public String getR22_product() {
 			return r22_product;
 		}
+
 		public void setR22_product(String r22_product) {
 			this.r22_product = r22_product;
 		}
+
 		public BigDecimal getR22_accuulated_equity_interest_5() {
 			return r22_accuulated_equity_interest_5;
 		}
+
 		public void setR22_accuulated_equity_interest_5(BigDecimal r22_accuulated_equity_interest_5) {
 			this.r22_accuulated_equity_interest_5 = r22_accuulated_equity_interest_5;
 		}
+
 		public BigDecimal getR22_assets() {
 			return r22_assets;
 		}
+
 		public void setR22_assets(BigDecimal r22_assets) {
 			this.r22_assets = r22_assets;
 		}
+
 		public BigDecimal getR22_liabilities() {
 			return r22_liabilities;
 		}
+
 		public void setR22_liabilities(BigDecimal r22_liabilities) {
 			this.r22_liabilities = r22_liabilities;
 		}
+
 		public BigDecimal getR22_revenue() {
 			return r22_revenue;
 		}
+
 		public void setR22_revenue(BigDecimal r22_revenue) {
 			this.r22_revenue = r22_revenue;
 		}
+
 		public BigDecimal getR22_profit_or_loss() {
 			return r22_profit_or_loss;
 		}
+
 		public void setR22_profit_or_loss(BigDecimal r22_profit_or_loss) {
 			this.r22_profit_or_loss = r22_profit_or_loss;
 		}
+
 		public BigDecimal getR22_unreg_share_of_loss() {
 			return r22_unreg_share_of_loss;
 		}
+
 		public void setR22_unreg_share_of_loss(BigDecimal r22_unreg_share_of_loss) {
 			this.r22_unreg_share_of_loss = r22_unreg_share_of_loss;
 		}
+
 		public BigDecimal getR22_cumulative_unreg_share_of_loss() {
 			return r22_cumulative_unreg_share_of_loss;
 		}
+
 		public void setR22_cumulative_unreg_share_of_loss(BigDecimal r22_cumulative_unreg_share_of_loss) {
 			this.r22_cumulative_unreg_share_of_loss = r22_cumulative_unreg_share_of_loss;
 		}
+
 		public String getR23_product() {
 			return r23_product;
 		}
+
 		public void setR23_product(String r23_product) {
 			this.r23_product = r23_product;
 		}
+
 		public BigDecimal getR23_accuulated_equity_interest_5() {
 			return r23_accuulated_equity_interest_5;
 		}
+
 		public void setR23_accuulated_equity_interest_5(BigDecimal r23_accuulated_equity_interest_5) {
 			this.r23_accuulated_equity_interest_5 = r23_accuulated_equity_interest_5;
 		}
+
 		public BigDecimal getR23_assets() {
 			return r23_assets;
 		}
+
 		public void setR23_assets(BigDecimal r23_assets) {
 			this.r23_assets = r23_assets;
 		}
+
 		public BigDecimal getR23_liabilities() {
 			return r23_liabilities;
 		}
+
 		public void setR23_liabilities(BigDecimal r23_liabilities) {
 			this.r23_liabilities = r23_liabilities;
 		}
+
 		public BigDecimal getR23_revenue() {
 			return r23_revenue;
 		}
+
 		public void setR23_revenue(BigDecimal r23_revenue) {
 			this.r23_revenue = r23_revenue;
 		}
+
 		public BigDecimal getR23_profit_or_loss() {
 			return r23_profit_or_loss;
 		}
+
 		public void setR23_profit_or_loss(BigDecimal r23_profit_or_loss) {
 			this.r23_profit_or_loss = r23_profit_or_loss;
 		}
+
 		public BigDecimal getR23_unreg_share_of_loss() {
 			return r23_unreg_share_of_loss;
 		}
+
 		public void setR23_unreg_share_of_loss(BigDecimal r23_unreg_share_of_loss) {
 			this.r23_unreg_share_of_loss = r23_unreg_share_of_loss;
 		}
+
 		public BigDecimal getR23_cumulative_unreg_share_of_loss() {
 			return r23_cumulative_unreg_share_of_loss;
 		}
+
 		public void setR23_cumulative_unreg_share_of_loss(BigDecimal r23_cumulative_unreg_share_of_loss) {
 			this.r23_cumulative_unreg_share_of_loss = r23_cumulative_unreg_share_of_loss;
 		}
+
 		public String getR24_product() {
 			return r24_product;
 		}
+
 		public void setR24_product(String r24_product) {
 			this.r24_product = r24_product;
 		}
+
 		public BigDecimal getR24_accuulated_equity_interest_5() {
 			return r24_accuulated_equity_interest_5;
 		}
+
 		public void setR24_accuulated_equity_interest_5(BigDecimal r24_accuulated_equity_interest_5) {
 			this.r24_accuulated_equity_interest_5 = r24_accuulated_equity_interest_5;
 		}
+
 		public BigDecimal getR24_assets() {
 			return r24_assets;
 		}
+
 		public void setR24_assets(BigDecimal r24_assets) {
 			this.r24_assets = r24_assets;
 		}
+
 		public BigDecimal getR24_liabilities() {
 			return r24_liabilities;
 		}
+
 		public void setR24_liabilities(BigDecimal r24_liabilities) {
 			this.r24_liabilities = r24_liabilities;
 		}
+
 		public BigDecimal getR24_revenue() {
 			return r24_revenue;
 		}
+
 		public void setR24_revenue(BigDecimal r24_revenue) {
 			this.r24_revenue = r24_revenue;
 		}
+
 		public BigDecimal getR24_profit_or_loss() {
 			return r24_profit_or_loss;
 		}
+
 		public void setR24_profit_or_loss(BigDecimal r24_profit_or_loss) {
 			this.r24_profit_or_loss = r24_profit_or_loss;
 		}
+
 		public BigDecimal getR24_unreg_share_of_loss() {
 			return r24_unreg_share_of_loss;
 		}
+
 		public void setR24_unreg_share_of_loss(BigDecimal r24_unreg_share_of_loss) {
 			this.r24_unreg_share_of_loss = r24_unreg_share_of_loss;
 		}
+
 		public BigDecimal getR24_cumulative_unreg_share_of_loss() {
 			return r24_cumulative_unreg_share_of_loss;
 		}
+
 		public void setR24_cumulative_unreg_share_of_loss(BigDecimal r24_cumulative_unreg_share_of_loss) {
 			this.r24_cumulative_unreg_share_of_loss = r24_cumulative_unreg_share_of_loss;
 		}
+
 		public String getR29_product() {
 			return r29_product;
 		}
+
 		public void setR29_product(String r29_product) {
 			this.r29_product = r29_product;
 		}
+
 		public BigDecimal getR29_fair_value() {
 			return r29_fair_value;
 		}
+
 		public void setR29_fair_value(BigDecimal r29_fair_value) {
 			this.r29_fair_value = r29_fair_value;
 		}
+
 		public String getR35_product() {
 			return r35_product;
 		}
+
 		public void setR35_product(String r35_product) {
 			this.r35_product = r35_product;
 		}
+
 		public BigDecimal getR35_company() {
 			return r35_company;
 		}
+
 		public void setR35_company(BigDecimal r35_company) {
 			this.r35_company = r35_company;
 		}
+
 		public BigDecimal getR35_jurisdiction_of_incorp_1() {
 			return r35_jurisdiction_of_incorp_1;
 		}
+
 		public void setR35_jurisdiction_of_incorp_1(BigDecimal r35_jurisdiction_of_incorp_1) {
 			this.r35_jurisdiction_of_incorp_1 = r35_jurisdiction_of_incorp_1;
 		}
+
 		public BigDecimal getR35_jurisdiction_of_incorp_2() {
 			return r35_jurisdiction_of_incorp_2;
 		}
+
 		public void setR35_jurisdiction_of_incorp_2(BigDecimal r35_jurisdiction_of_incorp_2) {
 			this.r35_jurisdiction_of_incorp_2 = r35_jurisdiction_of_incorp_2;
 		}
+
 		public BigDecimal getR35_line_of_business() {
 			return r35_line_of_business;
 		}
+
 		public void setR35_line_of_business(BigDecimal r35_line_of_business) {
 			this.r35_line_of_business = r35_line_of_business;
 		}
+
 		public BigDecimal getR35_currency() {
 			return r35_currency;
 		}
+
 		public void setR35_currency(BigDecimal r35_currency) {
 			this.r35_currency = r35_currency;
 		}
+
 		public BigDecimal getR35_share_capital() {
 			return r35_share_capital;
 		}
+
 		public void setR35_share_capital(BigDecimal r35_share_capital) {
 			this.r35_share_capital = r35_share_capital;
 		}
+
 		public BigDecimal getR35_accumulated_equity_interest() {
 			return r35_accumulated_equity_interest;
 		}
+
 		public void setR35_accumulated_equity_interest(BigDecimal r35_accumulated_equity_interest) {
 			this.r35_accumulated_equity_interest = r35_accumulated_equity_interest;
 		}
+
 		public String getR36_product() {
 			return r36_product;
 		}
+
 		public void setR36_product(String r36_product) {
 			this.r36_product = r36_product;
 		}
+
 		public BigDecimal getR36_company() {
 			return r36_company;
 		}
+
 		public void setR36_company(BigDecimal r36_company) {
 			this.r36_company = r36_company;
 		}
+
 		public BigDecimal getR36_jurisdiction_of_incorp_1() {
 			return r36_jurisdiction_of_incorp_1;
 		}
+
 		public void setR36_jurisdiction_of_incorp_1(BigDecimal r36_jurisdiction_of_incorp_1) {
 			this.r36_jurisdiction_of_incorp_1 = r36_jurisdiction_of_incorp_1;
 		}
+
 		public BigDecimal getR36_jurisdiction_of_incorp_2() {
 			return r36_jurisdiction_of_incorp_2;
 		}
+
 		public void setR36_jurisdiction_of_incorp_2(BigDecimal r36_jurisdiction_of_incorp_2) {
 			this.r36_jurisdiction_of_incorp_2 = r36_jurisdiction_of_incorp_2;
 		}
+
 		public BigDecimal getR36_line_of_business() {
 			return r36_line_of_business;
 		}
+
 		public void setR36_line_of_business(BigDecimal r36_line_of_business) {
 			this.r36_line_of_business = r36_line_of_business;
 		}
+
 		public BigDecimal getR36_currency() {
 			return r36_currency;
 		}
+
 		public void setR36_currency(BigDecimal r36_currency) {
 			this.r36_currency = r36_currency;
 		}
+
 		public BigDecimal getR36_share_capital() {
 			return r36_share_capital;
 		}
+
 		public void setR36_share_capital(BigDecimal r36_share_capital) {
 			this.r36_share_capital = r36_share_capital;
 		}
+
 		public BigDecimal getR36_accumulated_equity_interest() {
 			return r36_accumulated_equity_interest;
 		}
+
 		public void setR36_accumulated_equity_interest(BigDecimal r36_accumulated_equity_interest) {
 			this.r36_accumulated_equity_interest = r36_accumulated_equity_interest;
 		}
+
 		public String getR37_product() {
 			return r37_product;
 		}
+
 		public void setR37_product(String r37_product) {
 			this.r37_product = r37_product;
 		}
+
 		public BigDecimal getR37_company() {
 			return r37_company;
 		}
+
 		public void setR37_company(BigDecimal r37_company) {
 			this.r37_company = r37_company;
 		}
+
 		public BigDecimal getR37_jurisdiction_of_incorp_1() {
 			return r37_jurisdiction_of_incorp_1;
 		}
+
 		public void setR37_jurisdiction_of_incorp_1(BigDecimal r37_jurisdiction_of_incorp_1) {
 			this.r37_jurisdiction_of_incorp_1 = r37_jurisdiction_of_incorp_1;
 		}
+
 		public BigDecimal getR37_jurisdiction_of_incorp_2() {
 			return r37_jurisdiction_of_incorp_2;
 		}
+
 		public void setR37_jurisdiction_of_incorp_2(BigDecimal r37_jurisdiction_of_incorp_2) {
 			this.r37_jurisdiction_of_incorp_2 = r37_jurisdiction_of_incorp_2;
 		}
+
 		public BigDecimal getR37_line_of_business() {
 			return r37_line_of_business;
 		}
+
 		public void setR37_line_of_business(BigDecimal r37_line_of_business) {
 			this.r37_line_of_business = r37_line_of_business;
 		}
+
 		public BigDecimal getR37_currency() {
 			return r37_currency;
 		}
+
 		public void setR37_currency(BigDecimal r37_currency) {
 			this.r37_currency = r37_currency;
 		}
+
 		public BigDecimal getR37_share_capital() {
 			return r37_share_capital;
 		}
+
 		public void setR37_share_capital(BigDecimal r37_share_capital) {
 			this.r37_share_capital = r37_share_capital;
 		}
+
 		public BigDecimal getR37_accumulated_equity_interest() {
 			return r37_accumulated_equity_interest;
 		}
+
 		public void setR37_accumulated_equity_interest(BigDecimal r37_accumulated_equity_interest) {
 			this.r37_accumulated_equity_interest = r37_accumulated_equity_interest;
 		}
+
 		public String getR38_product() {
 			return r38_product;
 		}
+
 		public void setR38_product(String r38_product) {
 			this.r38_product = r38_product;
 		}
+
 		public BigDecimal getR38_company() {
 			return r38_company;
 		}
+
 		public void setR38_company(BigDecimal r38_company) {
 			this.r38_company = r38_company;
 		}
+
 		public BigDecimal getR38_jurisdiction_of_incorp_1() {
 			return r38_jurisdiction_of_incorp_1;
 		}
+
 		public void setR38_jurisdiction_of_incorp_1(BigDecimal r38_jurisdiction_of_incorp_1) {
 			this.r38_jurisdiction_of_incorp_1 = r38_jurisdiction_of_incorp_1;
 		}
+
 		public BigDecimal getR38_jurisdiction_of_incorp_2() {
 			return r38_jurisdiction_of_incorp_2;
 		}
+
 		public void setR38_jurisdiction_of_incorp_2(BigDecimal r38_jurisdiction_of_incorp_2) {
 			this.r38_jurisdiction_of_incorp_2 = r38_jurisdiction_of_incorp_2;
 		}
+
 		public BigDecimal getR38_line_of_business() {
 			return r38_line_of_business;
 		}
+
 		public void setR38_line_of_business(BigDecimal r38_line_of_business) {
 			this.r38_line_of_business = r38_line_of_business;
 		}
+
 		public BigDecimal getR38_currency() {
 			return r38_currency;
 		}
+
 		public void setR38_currency(BigDecimal r38_currency) {
 			this.r38_currency = r38_currency;
 		}
+
 		public BigDecimal getR38_share_capital() {
 			return r38_share_capital;
 		}
+
 		public void setR38_share_capital(BigDecimal r38_share_capital) {
 			this.r38_share_capital = r38_share_capital;
 		}
+
 		public BigDecimal getR38_accumulated_equity_interest() {
 			return r38_accumulated_equity_interest;
 		}
+
 		public void setR38_accumulated_equity_interest(BigDecimal r38_accumulated_equity_interest) {
 			this.r38_accumulated_equity_interest = r38_accumulated_equity_interest;
 		}
+
 		public Date getReportDate() {
 			return reportDate;
 		}
+
 		public void setReportDate(Date reportDate) {
 			this.reportDate = reportDate;
 		}
+
 		public BigDecimal getReportVersion() {
 			return reportVersion;
 		}
+
 		public void setReportVersion(BigDecimal reportVersion) {
 			this.reportVersion = reportVersion;
 		}
+
 		public Date getReportResubDate() {
 			return reportResubDate;
 		}
+
 		public void setReportResubDate(Date reportResubDate) {
 			this.reportResubDate = reportResubDate;
 		}
+
 		public String getReport_frequency() {
 			return report_frequency;
 		}
+
 		public void setReport_frequency(String report_frequency) {
 			this.report_frequency = report_frequency;
 		}
+
 		public String getReport_code() {
 			return report_code;
 		}
+
 		public void setReport_code(String report_code) {
 			this.report_code = report_code;
 		}
+
 		public String getReport_desc() {
 			return report_desc;
 		}
+
 		public void setReport_desc(String report_desc) {
 			this.report_desc = report_desc;
 		}
+
 		public String getEntity_flg() {
 			return entity_flg;
 		}
+
 		public void setEntity_flg(String entity_flg) {
 			this.entity_flg = entity_flg;
 		}
+
 		public String getModify_flg() {
 			return modify_flg;
 		}
+
 		public void setModify_flg(String modify_flg) {
 			this.modify_flg = modify_flg;
 		}
+
 		public String getDel_flg() {
 			return del_flg;
 		}
+
 		public void setDel_flg(String del_flg) {
 			this.del_flg = del_flg;
 		}
+
 		public M_UNCONS_INVEST_Resub_Summary_Entity() {
 			super();
 			// TODO Auto-generated constructor stub
 		}
-		
-		
+
 	}
 	// =========================================================
 	// Inner entity: M_UNCONS_INVEST_Resub_Detail_Entity
 	// =========================================================
 
-		public static class M_UNCONS_INVEST_Resub_Detail_Entity {
-		
+	public static class M_UNCONS_INVEST_Resub_Detail_Entity {
+
 		private String r11_product;
-	    private BigDecimal r11_amount;
-	    private BigDecimal r11_percent_of_cet1_holding;
-	    private BigDecimal r11_percent_of_additional_tier_1_holding;
-	    private BigDecimal r11_percent_of_tier_2_holding;
+		private BigDecimal r11_amount;
+		private BigDecimal r11_percent_of_cet1_holding;
+		private BigDecimal r11_percent_of_additional_tier_1_holding;
+		private BigDecimal r11_percent_of_tier_2_holding;
 
-	    private String r12_product;
-	    private BigDecimal r12_amount;
-	    private BigDecimal r12_percent_of_cet1_holding;
-	    private BigDecimal r12_percent_of_additional_tier_1_holding;
-	    private BigDecimal r12_percent_of_tier_2_holding;
+		private String r12_product;
+		private BigDecimal r12_amount;
+		private BigDecimal r12_percent_of_cet1_holding;
+		private BigDecimal r12_percent_of_additional_tier_1_holding;
+		private BigDecimal r12_percent_of_tier_2_holding;
 
-	    private String r13_product;
-	    private BigDecimal r13_amount;
-	    private BigDecimal r13_percent_of_cet1_holding;
-	    private BigDecimal r13_percent_of_additional_tier_1_holding;
-	    private BigDecimal r13_percent_of_tier_2_holding;
+		private String r13_product;
+		private BigDecimal r13_amount;
+		private BigDecimal r13_percent_of_cet1_holding;
+		private BigDecimal r13_percent_of_additional_tier_1_holding;
+		private BigDecimal r13_percent_of_tier_2_holding;
 
-	    private String r14_product;
-	    private BigDecimal r14_amount;
-	    private BigDecimal r14_percent_of_cet1_holding;
-	    private BigDecimal r14_percent_of_additional_tier_1_holding;
-	    private BigDecimal r14_percent_of_tier_2_holding;
+		private String r14_product;
+		private BigDecimal r14_amount;
+		private BigDecimal r14_percent_of_cet1_holding;
+		private BigDecimal r14_percent_of_additional_tier_1_holding;
+		private BigDecimal r14_percent_of_tier_2_holding;
 
-	    private String r15_product;
-	    private BigDecimal r15_amount;
-	    private BigDecimal r15_percent_of_cet1_holding;
-	    private BigDecimal r15_percent_of_additional_tier_1_holding;
-	    private BigDecimal r15_percent_of_tier_2_holding;
+		private String r15_product;
+		private BigDecimal r15_amount;
+		private BigDecimal r15_percent_of_cet1_holding;
+		private BigDecimal r15_percent_of_additional_tier_1_holding;
+		private BigDecimal r15_percent_of_tier_2_holding;
 
-	    private String r22_product;
-	    private BigDecimal r22_accuulated_equity_interest_5;
-	    private BigDecimal r22_assets;
-	    private BigDecimal r22_liabilities;
-	    private BigDecimal r22_revenue;
-	    private BigDecimal r22_profit_or_loss;
-	    private BigDecimal r22_unreg_share_of_loss;
-	    private BigDecimal r22_cumulative_unreg_share_of_loss;
+		private String r22_product;
+		private BigDecimal r22_accuulated_equity_interest_5;
+		private BigDecimal r22_assets;
+		private BigDecimal r22_liabilities;
+		private BigDecimal r22_revenue;
+		private BigDecimal r22_profit_or_loss;
+		private BigDecimal r22_unreg_share_of_loss;
+		private BigDecimal r22_cumulative_unreg_share_of_loss;
 
-	    private String r23_product;
-	    private BigDecimal r23_accuulated_equity_interest_5;
-	    private BigDecimal r23_assets;
-	    private BigDecimal r23_liabilities;
-	    private BigDecimal r23_revenue;
-	    private BigDecimal r23_profit_or_loss;
-	    private BigDecimal r23_unreg_share_of_loss;
-	    private BigDecimal r23_cumulative_unreg_share_of_loss;
+		private String r23_product;
+		private BigDecimal r23_accuulated_equity_interest_5;
+		private BigDecimal r23_assets;
+		private BigDecimal r23_liabilities;
+		private BigDecimal r23_revenue;
+		private BigDecimal r23_profit_or_loss;
+		private BigDecimal r23_unreg_share_of_loss;
+		private BigDecimal r23_cumulative_unreg_share_of_loss;
 
-	    private String r24_product;
-	    private BigDecimal r24_accuulated_equity_interest_5;
-	    private BigDecimal r24_assets;
-	    private BigDecimal r24_liabilities;
-	    private BigDecimal r24_revenue;
-	    private BigDecimal r24_profit_or_loss;
-	    private BigDecimal r24_unreg_share_of_loss;
-	    private BigDecimal r24_cumulative_unreg_share_of_loss;
+		private String r24_product;
+		private BigDecimal r24_accuulated_equity_interest_5;
+		private BigDecimal r24_assets;
+		private BigDecimal r24_liabilities;
+		private BigDecimal r24_revenue;
+		private BigDecimal r24_profit_or_loss;
+		private BigDecimal r24_unreg_share_of_loss;
+		private BigDecimal r24_cumulative_unreg_share_of_loss;
 
-	    private String r29_product;
-	    private BigDecimal r29_fair_value;
+		private String r29_product;
+		private BigDecimal r29_fair_value;
 
-	    private String r35_product;
-	    private BigDecimal r35_company;
-	    private BigDecimal r35_jurisdiction_of_incorp_1;
-	    private BigDecimal r35_jurisdiction_of_incorp_2;
-	    private BigDecimal r35_line_of_business;
-	    private BigDecimal r35_currency;
-	    private BigDecimal r35_share_capital;
-	    private BigDecimal r35_accumulated_equity_interest;
+		private String r35_product;
+		private BigDecimal r35_company;
+		private BigDecimal r35_jurisdiction_of_incorp_1;
+		private BigDecimal r35_jurisdiction_of_incorp_2;
+		private BigDecimal r35_line_of_business;
+		private BigDecimal r35_currency;
+		private BigDecimal r35_share_capital;
+		private BigDecimal r35_accumulated_equity_interest;
 
-	    private String r36_product;
-	    private BigDecimal r36_company;
-	    private BigDecimal r36_jurisdiction_of_incorp_1;
-	    private BigDecimal r36_jurisdiction_of_incorp_2;
-	    private BigDecimal r36_line_of_business;
-	    private BigDecimal r36_currency;
-	    private BigDecimal r36_share_capital;
-	    private BigDecimal r36_accumulated_equity_interest;
+		private String r36_product;
+		private BigDecimal r36_company;
+		private BigDecimal r36_jurisdiction_of_incorp_1;
+		private BigDecimal r36_jurisdiction_of_incorp_2;
+		private BigDecimal r36_line_of_business;
+		private BigDecimal r36_currency;
+		private BigDecimal r36_share_capital;
+		private BigDecimal r36_accumulated_equity_interest;
 
-	    private String r37_product;
-	    private BigDecimal r37_company;
-	    private BigDecimal r37_jurisdiction_of_incorp_1;
-	    private BigDecimal r37_jurisdiction_of_incorp_2;
-	    private BigDecimal r37_line_of_business;
-	    private BigDecimal r37_currency;
-	    private BigDecimal r37_share_capital;
-	    private BigDecimal r37_accumulated_equity_interest;
+		private String r37_product;
+		private BigDecimal r37_company;
+		private BigDecimal r37_jurisdiction_of_incorp_1;
+		private BigDecimal r37_jurisdiction_of_incorp_2;
+		private BigDecimal r37_line_of_business;
+		private BigDecimal r37_currency;
+		private BigDecimal r37_share_capital;
+		private BigDecimal r37_accumulated_equity_interest;
 
-	    private String r38_product;
-	    private BigDecimal r38_company;
-	    private BigDecimal r38_jurisdiction_of_incorp_1;
-	    private BigDecimal r38_jurisdiction_of_incorp_2;
-	    private BigDecimal r38_line_of_business;
-	    private BigDecimal r38_currency;
-	    private BigDecimal r38_share_capital;
-	    private BigDecimal r38_accumulated_equity_interest;
-	    
+		private String r38_product;
+		private BigDecimal r38_company;
+		private BigDecimal r38_jurisdiction_of_incorp_1;
+		private BigDecimal r38_jurisdiction_of_incorp_2;
+		private BigDecimal r38_line_of_business;
+		private BigDecimal r38_currency;
+		private BigDecimal r38_share_capital;
+		private BigDecimal r38_accumulated_equity_interest;
+
 		private Date reportDate;
 
 		private BigDecimal reportVersion;
 
 		private Date reportResubDate;
-		private String	report_frequency;
-		private String	report_code;
-		private String	report_desc;
-		private String	entity_flg;
-		private String	modify_flg;
-		private String	del_flg;
+		private String report_frequency;
+		private String report_code;
+		private String report_desc;
+		private String entity_flg;
+		private String modify_flg;
+		private String del_flg;
+
 		public String getR11_product() {
 			return r11_product;
 		}
+
 		public void setR11_product(String r11_product) {
 			this.r11_product = r11_product;
 		}
+
 		public BigDecimal getR11_amount() {
 			return r11_amount;
 		}
+
 		public void setR11_amount(BigDecimal r11_amount) {
 			this.r11_amount = r11_amount;
 		}
+
 		public BigDecimal getR11_percent_of_cet1_holding() {
 			return r11_percent_of_cet1_holding;
 		}
+
 		public void setR11_percent_of_cet1_holding(BigDecimal r11_percent_of_cet1_holding) {
 			this.r11_percent_of_cet1_holding = r11_percent_of_cet1_holding;
 		}
+
 		public BigDecimal getR11_percent_of_additional_tier_1_holding() {
 			return r11_percent_of_additional_tier_1_holding;
 		}
+
 		public void setR11_percent_of_additional_tier_1_holding(BigDecimal r11_percent_of_additional_tier_1_holding) {
 			this.r11_percent_of_additional_tier_1_holding = r11_percent_of_additional_tier_1_holding;
 		}
+
 		public BigDecimal getR11_percent_of_tier_2_holding() {
 			return r11_percent_of_tier_2_holding;
 		}
+
 		public void setR11_percent_of_tier_2_holding(BigDecimal r11_percent_of_tier_2_holding) {
 			this.r11_percent_of_tier_2_holding = r11_percent_of_tier_2_holding;
 		}
+
 		public String getR12_product() {
 			return r12_product;
 		}
+
 		public void setR12_product(String r12_product) {
 			this.r12_product = r12_product;
 		}
+
 		public BigDecimal getR12_amount() {
 			return r12_amount;
 		}
+
 		public void setR12_amount(BigDecimal r12_amount) {
 			this.r12_amount = r12_amount;
 		}
+
 		public BigDecimal getR12_percent_of_cet1_holding() {
 			return r12_percent_of_cet1_holding;
 		}
+
 		public void setR12_percent_of_cet1_holding(BigDecimal r12_percent_of_cet1_holding) {
 			this.r12_percent_of_cet1_holding = r12_percent_of_cet1_holding;
 		}
+
 		public BigDecimal getR12_percent_of_additional_tier_1_holding() {
 			return r12_percent_of_additional_tier_1_holding;
 		}
+
 		public void setR12_percent_of_additional_tier_1_holding(BigDecimal r12_percent_of_additional_tier_1_holding) {
 			this.r12_percent_of_additional_tier_1_holding = r12_percent_of_additional_tier_1_holding;
 		}
+
 		public BigDecimal getR12_percent_of_tier_2_holding() {
 			return r12_percent_of_tier_2_holding;
 		}
+
 		public void setR12_percent_of_tier_2_holding(BigDecimal r12_percent_of_tier_2_holding) {
 			this.r12_percent_of_tier_2_holding = r12_percent_of_tier_2_holding;
 		}
+
 		public String getR13_product() {
 			return r13_product;
 		}
+
 		public void setR13_product(String r13_product) {
 			this.r13_product = r13_product;
 		}
+
 		public BigDecimal getR13_amount() {
 			return r13_amount;
 		}
+
 		public void setR13_amount(BigDecimal r13_amount) {
 			this.r13_amount = r13_amount;
 		}
+
 		public BigDecimal getR13_percent_of_cet1_holding() {
 			return r13_percent_of_cet1_holding;
 		}
+
 		public void setR13_percent_of_cet1_holding(BigDecimal r13_percent_of_cet1_holding) {
 			this.r13_percent_of_cet1_holding = r13_percent_of_cet1_holding;
 		}
+
 		public BigDecimal getR13_percent_of_additional_tier_1_holding() {
 			return r13_percent_of_additional_tier_1_holding;
 		}
+
 		public void setR13_percent_of_additional_tier_1_holding(BigDecimal r13_percent_of_additional_tier_1_holding) {
 			this.r13_percent_of_additional_tier_1_holding = r13_percent_of_additional_tier_1_holding;
 		}
+
 		public BigDecimal getR13_percent_of_tier_2_holding() {
 			return r13_percent_of_tier_2_holding;
 		}
+
 		public void setR13_percent_of_tier_2_holding(BigDecimal r13_percent_of_tier_2_holding) {
 			this.r13_percent_of_tier_2_holding = r13_percent_of_tier_2_holding;
 		}
+
 		public String getR14_product() {
 			return r14_product;
 		}
+
 		public void setR14_product(String r14_product) {
 			this.r14_product = r14_product;
 		}
+
 		public BigDecimal getR14_amount() {
 			return r14_amount;
 		}
+
 		public void setR14_amount(BigDecimal r14_amount) {
 			this.r14_amount = r14_amount;
 		}
+
 		public BigDecimal getR14_percent_of_cet1_holding() {
 			return r14_percent_of_cet1_holding;
 		}
+
 		public void setR14_percent_of_cet1_holding(BigDecimal r14_percent_of_cet1_holding) {
 			this.r14_percent_of_cet1_holding = r14_percent_of_cet1_holding;
 		}
+
 		public BigDecimal getR14_percent_of_additional_tier_1_holding() {
 			return r14_percent_of_additional_tier_1_holding;
 		}
+
 		public void setR14_percent_of_additional_tier_1_holding(BigDecimal r14_percent_of_additional_tier_1_holding) {
 			this.r14_percent_of_additional_tier_1_holding = r14_percent_of_additional_tier_1_holding;
 		}
+
 		public BigDecimal getR14_percent_of_tier_2_holding() {
 			return r14_percent_of_tier_2_holding;
 		}
+
 		public void setR14_percent_of_tier_2_holding(BigDecimal r14_percent_of_tier_2_holding) {
 			this.r14_percent_of_tier_2_holding = r14_percent_of_tier_2_holding;
 		}
+
 		public String getR15_product() {
 			return r15_product;
 		}
+
 		public void setR15_product(String r15_product) {
 			this.r15_product = r15_product;
 		}
+
 		public BigDecimal getR15_amount() {
 			return r15_amount;
 		}
+
 		public void setR15_amount(BigDecimal r15_amount) {
 			this.r15_amount = r15_amount;
 		}
+
 		public BigDecimal getR15_percent_of_cet1_holding() {
 			return r15_percent_of_cet1_holding;
 		}
+
 		public void setR15_percent_of_cet1_holding(BigDecimal r15_percent_of_cet1_holding) {
 			this.r15_percent_of_cet1_holding = r15_percent_of_cet1_holding;
 		}
+
 		public BigDecimal getR15_percent_of_additional_tier_1_holding() {
 			return r15_percent_of_additional_tier_1_holding;
 		}
+
 		public void setR15_percent_of_additional_tier_1_holding(BigDecimal r15_percent_of_additional_tier_1_holding) {
 			this.r15_percent_of_additional_tier_1_holding = r15_percent_of_additional_tier_1_holding;
 		}
+
 		public BigDecimal getR15_percent_of_tier_2_holding() {
 			return r15_percent_of_tier_2_holding;
 		}
+
 		public void setR15_percent_of_tier_2_holding(BigDecimal r15_percent_of_tier_2_holding) {
 			this.r15_percent_of_tier_2_holding = r15_percent_of_tier_2_holding;
 		}
+
 		public String getR22_product() {
 			return r22_product;
 		}
+
 		public void setR22_product(String r22_product) {
 			this.r22_product = r22_product;
 		}
+
 		public BigDecimal getR22_accuulated_equity_interest_5() {
 			return r22_accuulated_equity_interest_5;
 		}
+
 		public void setR22_accuulated_equity_interest_5(BigDecimal r22_accuulated_equity_interest_5) {
 			this.r22_accuulated_equity_interest_5 = r22_accuulated_equity_interest_5;
 		}
+
 		public BigDecimal getR22_assets() {
 			return r22_assets;
 		}
+
 		public void setR22_assets(BigDecimal r22_assets) {
 			this.r22_assets = r22_assets;
 		}
+
 		public BigDecimal getR22_liabilities() {
 			return r22_liabilities;
 		}
+
 		public void setR22_liabilities(BigDecimal r22_liabilities) {
 			this.r22_liabilities = r22_liabilities;
 		}
+
 		public BigDecimal getR22_revenue() {
 			return r22_revenue;
 		}
+
 		public void setR22_revenue(BigDecimal r22_revenue) {
 			this.r22_revenue = r22_revenue;
 		}
+
 		public BigDecimal getR22_profit_or_loss() {
 			return r22_profit_or_loss;
 		}
+
 		public void setR22_profit_or_loss(BigDecimal r22_profit_or_loss) {
 			this.r22_profit_or_loss = r22_profit_or_loss;
 		}
+
 		public BigDecimal getR22_unreg_share_of_loss() {
 			return r22_unreg_share_of_loss;
 		}
+
 		public void setR22_unreg_share_of_loss(BigDecimal r22_unreg_share_of_loss) {
 			this.r22_unreg_share_of_loss = r22_unreg_share_of_loss;
 		}
+
 		public BigDecimal getR22_cumulative_unreg_share_of_loss() {
 			return r22_cumulative_unreg_share_of_loss;
 		}
+
 		public void setR22_cumulative_unreg_share_of_loss(BigDecimal r22_cumulative_unreg_share_of_loss) {
 			this.r22_cumulative_unreg_share_of_loss = r22_cumulative_unreg_share_of_loss;
 		}
+
 		public String getR23_product() {
 			return r23_product;
 		}
+
 		public void setR23_product(String r23_product) {
 			this.r23_product = r23_product;
 		}
+
 		public BigDecimal getR23_accuulated_equity_interest_5() {
 			return r23_accuulated_equity_interest_5;
 		}
+
 		public void setR23_accuulated_equity_interest_5(BigDecimal r23_accuulated_equity_interest_5) {
 			this.r23_accuulated_equity_interest_5 = r23_accuulated_equity_interest_5;
 		}
+
 		public BigDecimal getR23_assets() {
 			return r23_assets;
 		}
+
 		public void setR23_assets(BigDecimal r23_assets) {
 			this.r23_assets = r23_assets;
 		}
+
 		public BigDecimal getR23_liabilities() {
 			return r23_liabilities;
 		}
+
 		public void setR23_liabilities(BigDecimal r23_liabilities) {
 			this.r23_liabilities = r23_liabilities;
 		}
+
 		public BigDecimal getR23_revenue() {
 			return r23_revenue;
 		}
+
 		public void setR23_revenue(BigDecimal r23_revenue) {
 			this.r23_revenue = r23_revenue;
 		}
+
 		public BigDecimal getR23_profit_or_loss() {
 			return r23_profit_or_loss;
 		}
+
 		public void setR23_profit_or_loss(BigDecimal r23_profit_or_loss) {
 			this.r23_profit_or_loss = r23_profit_or_loss;
 		}
+
 		public BigDecimal getR23_unreg_share_of_loss() {
 			return r23_unreg_share_of_loss;
 		}
+
 		public void setR23_unreg_share_of_loss(BigDecimal r23_unreg_share_of_loss) {
 			this.r23_unreg_share_of_loss = r23_unreg_share_of_loss;
 		}
+
 		public BigDecimal getR23_cumulative_unreg_share_of_loss() {
 			return r23_cumulative_unreg_share_of_loss;
 		}
+
 		public void setR23_cumulative_unreg_share_of_loss(BigDecimal r23_cumulative_unreg_share_of_loss) {
 			this.r23_cumulative_unreg_share_of_loss = r23_cumulative_unreg_share_of_loss;
 		}
+
 		public String getR24_product() {
 			return r24_product;
 		}
+
 		public void setR24_product(String r24_product) {
 			this.r24_product = r24_product;
 		}
+
 		public BigDecimal getR24_accuulated_equity_interest_5() {
 			return r24_accuulated_equity_interest_5;
 		}
+
 		public void setR24_accuulated_equity_interest_5(BigDecimal r24_accuulated_equity_interest_5) {
 			this.r24_accuulated_equity_interest_5 = r24_accuulated_equity_interest_5;
 		}
+
 		public BigDecimal getR24_assets() {
 			return r24_assets;
 		}
+
 		public void setR24_assets(BigDecimal r24_assets) {
 			this.r24_assets = r24_assets;
 		}
+
 		public BigDecimal getR24_liabilities() {
 			return r24_liabilities;
 		}
+
 		public void setR24_liabilities(BigDecimal r24_liabilities) {
 			this.r24_liabilities = r24_liabilities;
 		}
+
 		public BigDecimal getR24_revenue() {
 			return r24_revenue;
 		}
+
 		public void setR24_revenue(BigDecimal r24_revenue) {
 			this.r24_revenue = r24_revenue;
 		}
+
 		public BigDecimal getR24_profit_or_loss() {
 			return r24_profit_or_loss;
 		}
+
 		public void setR24_profit_or_loss(BigDecimal r24_profit_or_loss) {
 			this.r24_profit_or_loss = r24_profit_or_loss;
 		}
+
 		public BigDecimal getR24_unreg_share_of_loss() {
 			return r24_unreg_share_of_loss;
 		}
+
 		public void setR24_unreg_share_of_loss(BigDecimal r24_unreg_share_of_loss) {
 			this.r24_unreg_share_of_loss = r24_unreg_share_of_loss;
 		}
+
 		public BigDecimal getR24_cumulative_unreg_share_of_loss() {
 			return r24_cumulative_unreg_share_of_loss;
 		}
+
 		public void setR24_cumulative_unreg_share_of_loss(BigDecimal r24_cumulative_unreg_share_of_loss) {
 			this.r24_cumulative_unreg_share_of_loss = r24_cumulative_unreg_share_of_loss;
 		}
+
 		public String getR29_product() {
 			return r29_product;
 		}
+
 		public void setR29_product(String r29_product) {
 			this.r29_product = r29_product;
 		}
+
 		public BigDecimal getR29_fair_value() {
 			return r29_fair_value;
 		}
+
 		public void setR29_fair_value(BigDecimal r29_fair_value) {
 			this.r29_fair_value = r29_fair_value;
 		}
+
 		public String getR35_product() {
 			return r35_product;
 		}
+
 		public void setR35_product(String r35_product) {
 			this.r35_product = r35_product;
 		}
+
 		public BigDecimal getR35_company() {
 			return r35_company;
 		}
+
 		public void setR35_company(BigDecimal r35_company) {
 			this.r35_company = r35_company;
 		}
+
 		public BigDecimal getR35_jurisdiction_of_incorp_1() {
 			return r35_jurisdiction_of_incorp_1;
 		}
+
 		public void setR35_jurisdiction_of_incorp_1(BigDecimal r35_jurisdiction_of_incorp_1) {
 			this.r35_jurisdiction_of_incorp_1 = r35_jurisdiction_of_incorp_1;
 		}
+
 		public BigDecimal getR35_jurisdiction_of_incorp_2() {
 			return r35_jurisdiction_of_incorp_2;
 		}
+
 		public void setR35_jurisdiction_of_incorp_2(BigDecimal r35_jurisdiction_of_incorp_2) {
 			this.r35_jurisdiction_of_incorp_2 = r35_jurisdiction_of_incorp_2;
 		}
+
 		public BigDecimal getR35_line_of_business() {
 			return r35_line_of_business;
 		}
+
 		public void setR35_line_of_business(BigDecimal r35_line_of_business) {
 			this.r35_line_of_business = r35_line_of_business;
 		}
+
 		public BigDecimal getR35_currency() {
 			return r35_currency;
 		}
+
 		public void setR35_currency(BigDecimal r35_currency) {
 			this.r35_currency = r35_currency;
 		}
+
 		public BigDecimal getR35_share_capital() {
 			return r35_share_capital;
 		}
+
 		public void setR35_share_capital(BigDecimal r35_share_capital) {
 			this.r35_share_capital = r35_share_capital;
 		}
+
 		public BigDecimal getR35_accumulated_equity_interest() {
 			return r35_accumulated_equity_interest;
 		}
+
 		public void setR35_accumulated_equity_interest(BigDecimal r35_accumulated_equity_interest) {
 			this.r35_accumulated_equity_interest = r35_accumulated_equity_interest;
 		}
+
 		public String getR36_product() {
 			return r36_product;
 		}
+
 		public void setR36_product(String r36_product) {
 			this.r36_product = r36_product;
 		}
+
 		public BigDecimal getR36_company() {
 			return r36_company;
 		}
+
 		public void setR36_company(BigDecimal r36_company) {
 			this.r36_company = r36_company;
 		}
+
 		public BigDecimal getR36_jurisdiction_of_incorp_1() {
 			return r36_jurisdiction_of_incorp_1;
 		}
+
 		public void setR36_jurisdiction_of_incorp_1(BigDecimal r36_jurisdiction_of_incorp_1) {
 			this.r36_jurisdiction_of_incorp_1 = r36_jurisdiction_of_incorp_1;
 		}
+
 		public BigDecimal getR36_jurisdiction_of_incorp_2() {
 			return r36_jurisdiction_of_incorp_2;
 		}
+
 		public void setR36_jurisdiction_of_incorp_2(BigDecimal r36_jurisdiction_of_incorp_2) {
 			this.r36_jurisdiction_of_incorp_2 = r36_jurisdiction_of_incorp_2;
 		}
+
 		public BigDecimal getR36_line_of_business() {
 			return r36_line_of_business;
 		}
+
 		public void setR36_line_of_business(BigDecimal r36_line_of_business) {
 			this.r36_line_of_business = r36_line_of_business;
 		}
+
 		public BigDecimal getR36_currency() {
 			return r36_currency;
 		}
+
 		public void setR36_currency(BigDecimal r36_currency) {
 			this.r36_currency = r36_currency;
 		}
+
 		public BigDecimal getR36_share_capital() {
 			return r36_share_capital;
 		}
+
 		public void setR36_share_capital(BigDecimal r36_share_capital) {
 			this.r36_share_capital = r36_share_capital;
 		}
+
 		public BigDecimal getR36_accumulated_equity_interest() {
 			return r36_accumulated_equity_interest;
 		}
+
 		public void setR36_accumulated_equity_interest(BigDecimal r36_accumulated_equity_interest) {
 			this.r36_accumulated_equity_interest = r36_accumulated_equity_interest;
 		}
+
 		public String getR37_product() {
 			return r37_product;
 		}
+
 		public void setR37_product(String r37_product) {
 			this.r37_product = r37_product;
 		}
+
 		public BigDecimal getR37_company() {
 			return r37_company;
 		}
+
 		public void setR37_company(BigDecimal r37_company) {
 			this.r37_company = r37_company;
 		}
+
 		public BigDecimal getR37_jurisdiction_of_incorp_1() {
 			return r37_jurisdiction_of_incorp_1;
 		}
+
 		public void setR37_jurisdiction_of_incorp_1(BigDecimal r37_jurisdiction_of_incorp_1) {
 			this.r37_jurisdiction_of_incorp_1 = r37_jurisdiction_of_incorp_1;
 		}
+
 		public BigDecimal getR37_jurisdiction_of_incorp_2() {
 			return r37_jurisdiction_of_incorp_2;
 		}
+
 		public void setR37_jurisdiction_of_incorp_2(BigDecimal r37_jurisdiction_of_incorp_2) {
 			this.r37_jurisdiction_of_incorp_2 = r37_jurisdiction_of_incorp_2;
 		}
+
 		public BigDecimal getR37_line_of_business() {
 			return r37_line_of_business;
 		}
+
 		public void setR37_line_of_business(BigDecimal r37_line_of_business) {
 			this.r37_line_of_business = r37_line_of_business;
 		}
+
 		public BigDecimal getR37_currency() {
 			return r37_currency;
 		}
+
 		public void setR37_currency(BigDecimal r37_currency) {
 			this.r37_currency = r37_currency;
 		}
+
 		public BigDecimal getR37_share_capital() {
 			return r37_share_capital;
 		}
+
 		public void setR37_share_capital(BigDecimal r37_share_capital) {
 			this.r37_share_capital = r37_share_capital;
 		}
+
 		public BigDecimal getR37_accumulated_equity_interest() {
 			return r37_accumulated_equity_interest;
 		}
+
 		public void setR37_accumulated_equity_interest(BigDecimal r37_accumulated_equity_interest) {
 			this.r37_accumulated_equity_interest = r37_accumulated_equity_interest;
 		}
+
 		public String getR38_product() {
 			return r38_product;
 		}
+
 		public void setR38_product(String r38_product) {
 			this.r38_product = r38_product;
 		}
+
 		public BigDecimal getR38_company() {
 			return r38_company;
 		}
+
 		public void setR38_company(BigDecimal r38_company) {
 			this.r38_company = r38_company;
 		}
+
 		public BigDecimal getR38_jurisdiction_of_incorp_1() {
 			return r38_jurisdiction_of_incorp_1;
 		}
+
 		public void setR38_jurisdiction_of_incorp_1(BigDecimal r38_jurisdiction_of_incorp_1) {
 			this.r38_jurisdiction_of_incorp_1 = r38_jurisdiction_of_incorp_1;
 		}
+
 		public BigDecimal getR38_jurisdiction_of_incorp_2() {
 			return r38_jurisdiction_of_incorp_2;
 		}
+
 		public void setR38_jurisdiction_of_incorp_2(BigDecimal r38_jurisdiction_of_incorp_2) {
 			this.r38_jurisdiction_of_incorp_2 = r38_jurisdiction_of_incorp_2;
 		}
+
 		public BigDecimal getR38_line_of_business() {
 			return r38_line_of_business;
 		}
+
 		public void setR38_line_of_business(BigDecimal r38_line_of_business) {
 			this.r38_line_of_business = r38_line_of_business;
 		}
+
 		public BigDecimal getR38_currency() {
 			return r38_currency;
 		}
+
 		public void setR38_currency(BigDecimal r38_currency) {
 			this.r38_currency = r38_currency;
 		}
+
 		public BigDecimal getR38_share_capital() {
 			return r38_share_capital;
 		}
+
 		public void setR38_share_capital(BigDecimal r38_share_capital) {
 			this.r38_share_capital = r38_share_capital;
 		}
+
 		public BigDecimal getR38_accumulated_equity_interest() {
 			return r38_accumulated_equity_interest;
 		}
+
 		public void setR38_accumulated_equity_interest(BigDecimal r38_accumulated_equity_interest) {
 			this.r38_accumulated_equity_interest = r38_accumulated_equity_interest;
 		}
@@ -10313,63 +11206,80 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 		public String getReport_frequency() {
 			return report_frequency;
 		}
+
 		public void setReport_frequency(String report_frequency) {
 			this.report_frequency = report_frequency;
 		}
+
 		public String getReport_code() {
 			return report_code;
 		}
+
 		public void setReport_code(String report_code) {
 			this.report_code = report_code;
 		}
+
 		public String getReport_desc() {
 			return report_desc;
 		}
+
 		public void setReport_desc(String report_desc) {
 			this.report_desc = report_desc;
 		}
+
 		public String getEntity_flg() {
 			return entity_flg;
 		}
+
 		public void setEntity_flg(String entity_flg) {
 			this.entity_flg = entity_flg;
 		}
+
 		public String getModify_flg() {
 			return modify_flg;
 		}
+
 		public void setModify_flg(String modify_flg) {
 			this.modify_flg = modify_flg;
 		}
+
 		public String getDel_flg() {
 			return del_flg;
 		}
+
 		public void setDel_flg(String del_flg) {
 			this.del_flg = del_flg;
 		}
+
 		public M_UNCONS_INVEST_Resub_Detail_Entity() {
 			super();
 			// TODO Auto-generated constructor stub
 		}
+
 		public Date getReportDate() {
 			return reportDate;
 		}
+
 		public void setReportDate(Date reportDate) {
 			this.reportDate = reportDate;
 		}
+
 		public BigDecimal getReportVersion() {
 			return reportVersion;
 		}
+
 		public void setReportVersion(BigDecimal reportVersion) {
 			this.reportVersion = reportVersion;
 		}
+
 		public Date getReportResubDate() {
 			return reportResubDate;
 		}
+
 		public void setReportResubDate(Date reportResubDate) {
 			this.reportResubDate = reportResubDate;
 		}
-		
-		
+
 	}
 
 	class M_UNCONS_INVESTSummaryRowMapper implements RowMapper<M_UNCONS_INVEST_Summary_Entity> {
@@ -10387,27 +11297,32 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			obj.setR11_product(rs.getString("R11_PRODUCT"));
 			obj.setR11_amount(rs.getBigDecimal("R11_AMOUNT"));
 			obj.setR11_percent_of_cet1_holding(rs.getBigDecimal("R11_PERCENT_OF_CET1_HOLDING"));
-			obj.setR11_percent_of_additional_tier_1_holding(rs.getBigDecimal("R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR11_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR11_percent_of_tier_2_holding(rs.getBigDecimal("R11_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR12_product(rs.getString("R12_PRODUCT"));
 			obj.setR12_amount(rs.getBigDecimal("R12_AMOUNT"));
 			obj.setR12_percent_of_cet1_holding(rs.getBigDecimal("R12_PERCENT_OF_CET1_HOLDING"));
-			obj.setR12_percent_of_additional_tier_1_holding(rs.getBigDecimal("R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR12_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR12_percent_of_tier_2_holding(rs.getBigDecimal("R12_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR13_product(rs.getString("R13_PRODUCT"));
 			obj.setR13_amount(rs.getBigDecimal("R13_AMOUNT"));
 			obj.setR13_percent_of_cet1_holding(rs.getBigDecimal("R13_PERCENT_OF_CET1_HOLDING"));
-			obj.setR13_percent_of_additional_tier_1_holding(rs.getBigDecimal("R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR13_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR13_percent_of_tier_2_holding(rs.getBigDecimal("R13_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR14_product(rs.getString("R14_PRODUCT"));
 			obj.setR14_amount(rs.getBigDecimal("R14_AMOUNT"));
 			obj.setR14_percent_of_cet1_holding(rs.getBigDecimal("R14_PERCENT_OF_CET1_HOLDING"));
-			obj.setR14_percent_of_additional_tier_1_holding(rs.getBigDecimal("R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR14_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR14_percent_of_tier_2_holding(rs.getBigDecimal("R14_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR15_product(rs.getString("R15_PRODUCT"));
 			obj.setR15_amount(rs.getBigDecimal("R15_AMOUNT"));
 			obj.setR15_percent_of_cet1_holding(rs.getBigDecimal("R15_PERCENT_OF_CET1_HOLDING"));
-			obj.setR15_percent_of_additional_tier_1_holding(rs.getBigDecimal("R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR15_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR15_percent_of_tier_2_holding(rs.getBigDecimal("R15_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR22_product(rs.getString("R22_PRODUCT"));
 			obj.setR22_accuulated_equity_interest_5(rs.getBigDecimal("R22_ACCUULATED_EQUITY_INTEREST_5"));
@@ -10486,27 +11401,32 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			obj.setR11_product(rs.getString("R11_PRODUCT"));
 			obj.setR11_amount(rs.getBigDecimal("R11_AMOUNT"));
 			obj.setR11_percent_of_cet1_holding(rs.getBigDecimal("R11_PERCENT_OF_CET1_HOLDING"));
-			obj.setR11_percent_of_additional_tier_1_holding(rs.getBigDecimal("R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR11_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR11_percent_of_tier_2_holding(rs.getBigDecimal("R11_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR12_product(rs.getString("R12_PRODUCT"));
 			obj.setR12_amount(rs.getBigDecimal("R12_AMOUNT"));
 			obj.setR12_percent_of_cet1_holding(rs.getBigDecimal("R12_PERCENT_OF_CET1_HOLDING"));
-			obj.setR12_percent_of_additional_tier_1_holding(rs.getBigDecimal("R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR12_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR12_percent_of_tier_2_holding(rs.getBigDecimal("R12_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR13_product(rs.getString("R13_PRODUCT"));
 			obj.setR13_amount(rs.getBigDecimal("R13_AMOUNT"));
 			obj.setR13_percent_of_cet1_holding(rs.getBigDecimal("R13_PERCENT_OF_CET1_HOLDING"));
-			obj.setR13_percent_of_additional_tier_1_holding(rs.getBigDecimal("R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR13_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR13_percent_of_tier_2_holding(rs.getBigDecimal("R13_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR14_product(rs.getString("R14_PRODUCT"));
 			obj.setR14_amount(rs.getBigDecimal("R14_AMOUNT"));
 			obj.setR14_percent_of_cet1_holding(rs.getBigDecimal("R14_PERCENT_OF_CET1_HOLDING"));
-			obj.setR14_percent_of_additional_tier_1_holding(rs.getBigDecimal("R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR14_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR14_percent_of_tier_2_holding(rs.getBigDecimal("R14_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR15_product(rs.getString("R15_PRODUCT"));
 			obj.setR15_amount(rs.getBigDecimal("R15_AMOUNT"));
 			obj.setR15_percent_of_cet1_holding(rs.getBigDecimal("R15_PERCENT_OF_CET1_HOLDING"));
-			obj.setR15_percent_of_additional_tier_1_holding(rs.getBigDecimal("R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR15_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR15_percent_of_tier_2_holding(rs.getBigDecimal("R15_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR22_product(rs.getString("R22_PRODUCT"));
 			obj.setR22_accuulated_equity_interest_5(rs.getBigDecimal("R22_ACCUULATED_EQUITY_INTEREST_5"));
@@ -10586,27 +11506,32 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			obj.setR11_product(rs.getString("R11_PRODUCT"));
 			obj.setR11_amount(rs.getBigDecimal("R11_AMOUNT"));
 			obj.setR11_percent_of_cet1_holding(rs.getBigDecimal("R11_PERCENT_OF_CET1_HOLDING"));
-			obj.setR11_percent_of_additional_tier_1_holding(rs.getBigDecimal("R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR11_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR11_percent_of_tier_2_holding(rs.getBigDecimal("R11_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR12_product(rs.getString("R12_PRODUCT"));
 			obj.setR12_amount(rs.getBigDecimal("R12_AMOUNT"));
 			obj.setR12_percent_of_cet1_holding(rs.getBigDecimal("R12_PERCENT_OF_CET1_HOLDING"));
-			obj.setR12_percent_of_additional_tier_1_holding(rs.getBigDecimal("R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR12_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR12_percent_of_tier_2_holding(rs.getBigDecimal("R12_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR13_product(rs.getString("R13_PRODUCT"));
 			obj.setR13_amount(rs.getBigDecimal("R13_AMOUNT"));
 			obj.setR13_percent_of_cet1_holding(rs.getBigDecimal("R13_PERCENT_OF_CET1_HOLDING"));
-			obj.setR13_percent_of_additional_tier_1_holding(rs.getBigDecimal("R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR13_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR13_percent_of_tier_2_holding(rs.getBigDecimal("R13_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR14_product(rs.getString("R14_PRODUCT"));
 			obj.setR14_amount(rs.getBigDecimal("R14_AMOUNT"));
 			obj.setR14_percent_of_cet1_holding(rs.getBigDecimal("R14_PERCENT_OF_CET1_HOLDING"));
-			obj.setR14_percent_of_additional_tier_1_holding(rs.getBigDecimal("R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR14_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR14_percent_of_tier_2_holding(rs.getBigDecimal("R14_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR15_product(rs.getString("R15_PRODUCT"));
 			obj.setR15_amount(rs.getBigDecimal("R15_AMOUNT"));
 			obj.setR15_percent_of_cet1_holding(rs.getBigDecimal("R15_PERCENT_OF_CET1_HOLDING"));
-			obj.setR15_percent_of_additional_tier_1_holding(rs.getBigDecimal("R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR15_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR15_percent_of_tier_2_holding(rs.getBigDecimal("R15_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR22_product(rs.getString("R22_PRODUCT"));
 			obj.setR22_accuulated_equity_interest_5(rs.getBigDecimal("R22_ACCUULATED_EQUITY_INTEREST_5"));
@@ -10686,27 +11611,32 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			obj.setR11_product(rs.getString("R11_PRODUCT"));
 			obj.setR11_amount(rs.getBigDecimal("R11_AMOUNT"));
 			obj.setR11_percent_of_cet1_holding(rs.getBigDecimal("R11_PERCENT_OF_CET1_HOLDING"));
-			obj.setR11_percent_of_additional_tier_1_holding(rs.getBigDecimal("R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR11_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR11_percent_of_tier_2_holding(rs.getBigDecimal("R11_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR12_product(rs.getString("R12_PRODUCT"));
 			obj.setR12_amount(rs.getBigDecimal("R12_AMOUNT"));
 			obj.setR12_percent_of_cet1_holding(rs.getBigDecimal("R12_PERCENT_OF_CET1_HOLDING"));
-			obj.setR12_percent_of_additional_tier_1_holding(rs.getBigDecimal("R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR12_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR12_percent_of_tier_2_holding(rs.getBigDecimal("R12_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR13_product(rs.getString("R13_PRODUCT"));
 			obj.setR13_amount(rs.getBigDecimal("R13_AMOUNT"));
 			obj.setR13_percent_of_cet1_holding(rs.getBigDecimal("R13_PERCENT_OF_CET1_HOLDING"));
-			obj.setR13_percent_of_additional_tier_1_holding(rs.getBigDecimal("R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR13_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR13_percent_of_tier_2_holding(rs.getBigDecimal("R13_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR14_product(rs.getString("R14_PRODUCT"));
 			obj.setR14_amount(rs.getBigDecimal("R14_AMOUNT"));
 			obj.setR14_percent_of_cet1_holding(rs.getBigDecimal("R14_PERCENT_OF_CET1_HOLDING"));
-			obj.setR14_percent_of_additional_tier_1_holding(rs.getBigDecimal("R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR14_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR14_percent_of_tier_2_holding(rs.getBigDecimal("R14_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR15_product(rs.getString("R15_PRODUCT"));
 			obj.setR15_amount(rs.getBigDecimal("R15_AMOUNT"));
 			obj.setR15_percent_of_cet1_holding(rs.getBigDecimal("R15_PERCENT_OF_CET1_HOLDING"));
-			obj.setR15_percent_of_additional_tier_1_holding(rs.getBigDecimal("R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR15_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR15_percent_of_tier_2_holding(rs.getBigDecimal("R15_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR22_product(rs.getString("R22_PRODUCT"));
 			obj.setR22_accuulated_equity_interest_5(rs.getBigDecimal("R22_ACCUULATED_EQUITY_INTEREST_5"));
@@ -10786,27 +11716,32 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			obj.setR11_product(rs.getString("R11_PRODUCT"));
 			obj.setR11_amount(rs.getBigDecimal("R11_AMOUNT"));
 			obj.setR11_percent_of_cet1_holding(rs.getBigDecimal("R11_PERCENT_OF_CET1_HOLDING"));
-			obj.setR11_percent_of_additional_tier_1_holding(rs.getBigDecimal("R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR11_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR11_percent_of_tier_2_holding(rs.getBigDecimal("R11_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR12_product(rs.getString("R12_PRODUCT"));
 			obj.setR12_amount(rs.getBigDecimal("R12_AMOUNT"));
 			obj.setR12_percent_of_cet1_holding(rs.getBigDecimal("R12_PERCENT_OF_CET1_HOLDING"));
-			obj.setR12_percent_of_additional_tier_1_holding(rs.getBigDecimal("R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR12_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR12_percent_of_tier_2_holding(rs.getBigDecimal("R12_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR13_product(rs.getString("R13_PRODUCT"));
 			obj.setR13_amount(rs.getBigDecimal("R13_AMOUNT"));
 			obj.setR13_percent_of_cet1_holding(rs.getBigDecimal("R13_PERCENT_OF_CET1_HOLDING"));
-			obj.setR13_percent_of_additional_tier_1_holding(rs.getBigDecimal("R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR13_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR13_percent_of_tier_2_holding(rs.getBigDecimal("R13_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR14_product(rs.getString("R14_PRODUCT"));
 			obj.setR14_amount(rs.getBigDecimal("R14_AMOUNT"));
 			obj.setR14_percent_of_cet1_holding(rs.getBigDecimal("R14_PERCENT_OF_CET1_HOLDING"));
-			obj.setR14_percent_of_additional_tier_1_holding(rs.getBigDecimal("R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR14_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR14_percent_of_tier_2_holding(rs.getBigDecimal("R14_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR15_product(rs.getString("R15_PRODUCT"));
 			obj.setR15_amount(rs.getBigDecimal("R15_AMOUNT"));
 			obj.setR15_percent_of_cet1_holding(rs.getBigDecimal("R15_PERCENT_OF_CET1_HOLDING"));
-			obj.setR15_percent_of_additional_tier_1_holding(rs.getBigDecimal("R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR15_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR15_percent_of_tier_2_holding(rs.getBigDecimal("R15_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR22_product(rs.getString("R22_PRODUCT"));
 			obj.setR22_accuulated_equity_interest_5(rs.getBigDecimal("R22_ACCUULATED_EQUITY_INTEREST_5"));
@@ -10886,27 +11821,32 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			obj.setR11_product(rs.getString("R11_PRODUCT"));
 			obj.setR11_amount(rs.getBigDecimal("R11_AMOUNT"));
 			obj.setR11_percent_of_cet1_holding(rs.getBigDecimal("R11_PERCENT_OF_CET1_HOLDING"));
-			obj.setR11_percent_of_additional_tier_1_holding(rs.getBigDecimal("R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR11_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR11_percent_of_tier_2_holding(rs.getBigDecimal("R11_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR12_product(rs.getString("R12_PRODUCT"));
 			obj.setR12_amount(rs.getBigDecimal("R12_AMOUNT"));
 			obj.setR12_percent_of_cet1_holding(rs.getBigDecimal("R12_PERCENT_OF_CET1_HOLDING"));
-			obj.setR12_percent_of_additional_tier_1_holding(rs.getBigDecimal("R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR12_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR12_percent_of_tier_2_holding(rs.getBigDecimal("R12_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR13_product(rs.getString("R13_PRODUCT"));
 			obj.setR13_amount(rs.getBigDecimal("R13_AMOUNT"));
 			obj.setR13_percent_of_cet1_holding(rs.getBigDecimal("R13_PERCENT_OF_CET1_HOLDING"));
-			obj.setR13_percent_of_additional_tier_1_holding(rs.getBigDecimal("R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR13_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR13_percent_of_tier_2_holding(rs.getBigDecimal("R13_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR14_product(rs.getString("R14_PRODUCT"));
 			obj.setR14_amount(rs.getBigDecimal("R14_AMOUNT"));
 			obj.setR14_percent_of_cet1_holding(rs.getBigDecimal("R14_PERCENT_OF_CET1_HOLDING"));
-			obj.setR14_percent_of_additional_tier_1_holding(rs.getBigDecimal("R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR14_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR14_percent_of_tier_2_holding(rs.getBigDecimal("R14_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR15_product(rs.getString("R15_PRODUCT"));
 			obj.setR15_amount(rs.getBigDecimal("R15_AMOUNT"));
 			obj.setR15_percent_of_cet1_holding(rs.getBigDecimal("R15_PERCENT_OF_CET1_HOLDING"));
-			obj.setR15_percent_of_additional_tier_1_holding(rs.getBigDecimal("R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR15_percent_of_additional_tier_1_holding(
+					rs.getBigDecimal("R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
 			obj.setR15_percent_of_tier_2_holding(rs.getBigDecimal("R15_PERCENT_OF_TIER_2_HOLDING"));
 			obj.setR22_product(rs.getString("R22_PRODUCT"));
 			obj.setR22_accuulated_equity_interest_5(rs.getBigDecimal("R22_ACCUULATED_EQUITY_INTEREST_5"));
