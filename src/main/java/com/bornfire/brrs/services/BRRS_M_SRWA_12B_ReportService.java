@@ -12296,7 +12296,7 @@ return new byte[0];
 			numberStyle.setFont(font);
 //			 --- End of Style Definitions ---
 			
-			if("email".equalsIgnoreCase(format)) {
+			if("email".equalsIgnoreCase(format) || (filename != null && filename.toUpperCase().contains("EMAIL"))) {
 				
 				if (!dataList1.isEmpty()) {
 					populateEntity1Data_Email(sheet, dataList1.get(0), textStyle, numberStyle,dateStyle);
@@ -12398,7 +12398,7 @@ return new byte[0];
 		
 		
 		//ROW 14
-		row = sheet.getRow(13);
+		row = sheet.getRow(13) != null ? sheet.getRow(13) : sheet.createRow(13);
 
 		
 		

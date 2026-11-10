@@ -10550,7 +10550,7 @@ public class RegulatoryReportServices {
 		case "M_SRWA_12B":
 			try {
 				excelBytes = brrs_m_srwa_12b_reportservice.getM_SRWA_12BExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, "RBS", "excel", null);
+						currency, dtltype, "RBS", "email", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("EMAIL_M_SRWA_12B: No Excel data found for PDF generation → todate={}", todate);
