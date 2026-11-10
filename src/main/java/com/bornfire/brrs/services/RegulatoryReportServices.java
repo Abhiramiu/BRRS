@@ -6935,6 +6935,9 @@ public class RegulatoryReportServices {
 		}
 		for (int c = 0; c < maxCol; c++) {
 			dest.setColumnWidth(c, src.getColumnWidth(c));
+			if (src.isColumnHidden(c)) {
+				dest.setColumnHidden(c, true);
+			}
 		}
 	}
 
@@ -13079,6 +13082,9 @@ public class RegulatoryReportServices {
 		// Copy column widths
 		for (int c = 0; c < maxCols; c++) {
 			targetSheet.setColumnWidth(c, srcSheet.getColumnWidth(c));
+			if (srcSheet.isColumnHidden(c)) {
+				targetSheet.setColumnHidden(c, true);
+			}
 		}
 	}
 
