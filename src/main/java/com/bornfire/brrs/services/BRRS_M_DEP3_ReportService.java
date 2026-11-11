@@ -2928,7 +2928,7 @@ public class BRRS_M_DEP3_ReportService {
 							row = sheet.createRow(startRow + i);
 						}
 //EMAIL
-						Cell R12Cell = row.createCell(3);
+						Cell R12Cell = row.createCell(2);
 
 						if (record.getReportDate() != null) {
 

@@ -1529,24 +1529,37 @@ public class BRRS_M_AIDP_ReportService {
 				 * ROW 6 / COLUMN B =========================================================
 				 */
 
-				Row row = sheet.getRow(6); // Row 6 (0-based index)
+				try {
 
-				if (row == null) {
-					row = sheet.createRow(6);
-				}
+					// Row 5 = Excel row 6
+					Row dateRow = sheet.getRow(6);
 
-				Cell cell = row.getCell(1); // Column B
+					if (dateRow == null) {
+						dateRow = sheet.createRow(6);
+					}
 
-				if (cell == null) {
-					cell = row.createCell(1);
-				}
+					// Column 0 = Excel column A
+					Cell dateCell = dateRow.getCell(1);
 
-				if (parsedDate != null) {
-					cell.setCellValue(parsedDate);
-					cell.setCellStyle(dateStyle);
-				} else {
-					cell.setCellValue("");
-					cell.setCellStyle(textStyle);
+					if (dateCell == null) {
+						dateCell = dateRow.createCell(1);
+					}
+
+					// Date conversion
+					SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MMM-yyyy");
+
+					SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+					Date reportDateValue = inputFormat.parse(todate);
+
+					// Set formatted date
+					dateCell.setCellValue(outputFormat.format(reportDateValue));
+
+					dateCell.setCellStyle(textStyle);
+
+				} catch (ParseException e) {
+
+					logger.error("Error parsing todate: {}", todate, e);
 				}
 
 				/* ================= ARRAYS ================= */

@@ -15457,7 +15457,38 @@ public class BRRS_M_LIQGAP_ReportService {
 			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
 			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
 			// --- End of Style Definitions ---
+			try {
 
+				// Row 5 = Excel row 6
+				Row dateRow = sheet.getRow(6);
+
+				if (dateRow == null) {
+					dateRow = sheet.createRow(6);
+				}
+
+				// Column 0 = Excel column A
+				Cell dateCell = dateRow.getCell(1);
+
+				if (dateCell == null) {
+					dateCell = dateRow.createCell(1);
+				}
+
+				// Date conversion
+				SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MMM-yyyy");
+
+				SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+				Date reportDateValue = inputFormat.parse(todate);
+
+				// Set formatted date
+				dateCell.setCellValue(outputFormat.format(reportDateValue));
+
+				dateCell.setCellStyle(textStyle);
+
+			} catch (ParseException e) {
+
+				logger.error("Error parsing todate: {}", todate, e);
+			}
 			int startRow = 6;
 
 			if (!dataList.isEmpty() || !dataList1.isEmpty()) {
@@ -15470,24 +15501,10 @@ public class BRRS_M_LIQGAP_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 
-					// REPORT_DATE
-					row = sheet.getRow(6);
-					Cell cell1 = row.getCell(1);
-					if (cell1 == null) {
-						cell1 = row.createCell(1);
-					}
-
-					if (record.getReportDate() != null) {
-						cell1.setCellValue(record.getReportDate()); // java.util.Date
-						cell1.setCellStyle(dateStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
 					// ========== CELL 1 ==========
 
 					row = sheet.getRow(10);
+					Cell cell1 = row.getCell(1);
 					if (cell1 == null)
 						cell1 = row.createCell(1);
 

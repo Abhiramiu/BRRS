@@ -6410,11 +6410,11 @@ public class RegulatoryReportServices {
 							currency, dtltype, type, version);
 
 				case "M_DEP1":
-					return BRRS_M_DEP1_reportservice.BRRS_M_DEP1Excel("M_DEP1.xlsx", reportName, fromdate, todate,
+					return BRRS_M_DEP1_reportservice.BRRS_M_DEP1Excel("EMAIL_M_DEP1.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, version);
 
 				case "M_DEP2":
-					return BRRS_M_DEP2_reportservice.BRRS_M_DEP2Excel("M_DEP2.xlsx", reportName, fromdate, todate,
+					return BRRS_M_DEP2_reportservice.BRRS_M_DEP2Excel("EMAIL_M_DEP2.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, version);
 
 				case "M_DEP3":
@@ -6782,14 +6782,24 @@ public class RegulatoryReportServices {
 		Map<CellStyle, CellStyle> styleMap = new HashMap<>();
 		Workbook destWB = dest.getWorkbook();
 
-		int rowCount = 0;
-		for (Row srcRow : src) {
-			if (srcRow == null)
+		int maxCol = 0;
+		for (int r = 0; r <= src.getLastRowNum(); r++) {
+			Row srcRow = src.getRow(r);
+			if (srcRow == null) {
 				continue;
-			Row destRow = dest.createRow(rowCount++);
+			}
+			Row destRow = dest.createRow(r);
+			destRow.setHeight(srcRow.getHeight());
+			if (srcRow.getZeroHeight()) {
+				destRow.setZeroHeight(true);
+			}
 			short lastCell = srcRow.getLastCellNum();
-			if (lastCell < 0)
+			if (lastCell < 0) {
 				continue; // no cells in this row
+			}
+			if (lastCell > maxCol) {
+				maxCol = lastCell;
+			}
 
 			for (int i = 0; i < lastCell; i++) {
 				Cell srcCell = srcRow.getCell(i);
@@ -6927,12 +6937,6 @@ public class RegulatoryReportServices {
 		}
 
 		// Optionally copy column widths
-		int maxCol = 0;
-		for (Row row : src) {
-			if (row != null && row.getLastCellNum() > maxCol) {
-				maxCol = row.getLastCellNum();
-			}
-		}
 		for (int c = 0; c < maxCol; c++) {
 			dest.setColumnWidth(c, src.getColumnWidth(c));
 			if (src.isColumnHidden(c)) {
@@ -13086,6 +13090,9 @@ public class RegulatoryReportServices {
 
 			Row targetRow = targetSheet.createRow(r);
 			targetRow.setHeight(srcRow.getHeight());
+			if (srcRow.getZeroHeight()) {
+				targetRow.setZeroHeight(true);
+			}
 
 			if (srcRow.getLastCellNum() > maxCols) {
 				maxCols = srcRow.getLastCellNum();
