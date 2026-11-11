@@ -13,10 +13,14 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Temporal;
@@ -60,7 +64,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
+
 import com.bornfire.brrs.entities.UserProfileRep;
+import com.bornfire.brrs.services.BRRS_M_SRWA_12A_ReportService.M_SRWA_12A_Summary_M_Entity;
+import com.fasterxml.jackson.databind.annotation.JsonAppend.Prop;
 
 
 @Service
@@ -105724,1018 +105731,279 @@ public class BRRS_M_SRWA_12A_ReportService {
 	    							}
 	    						}	
 	    						
-	    						
-	    						@Transactional
-	    						public void updateReport1(M_SRWA_12A_Summary_Entity1 updatedEntity) {
-
-	    						    System.out.println("Came to services");
-	    						    System.out.println("Report Date: " + updatedEntity.getReport_date());
-
-	    						    // 🔹 Use TRUNC-based query instead of findById
-	    						    List<M_SRWA_12A_Summary_Entity1> existingList = getSummary1DataByDate(updatedEntity.getReport_date());
-
-	    						    if (existingList.isEmpty()) {
-	    						        throw new RuntimeException(
-	    						                "Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
-	    						    }
-
-	    						    M_SRWA_12A_Summary_Entity1 existing = existingList.get(0);
-
-	    						    // ====================================================
-	    						    // OLD COPY FOR AUDIT
-	    						    // ====================================================
-	    						    M_SRWA_12A_Summary_Entity1 oldcopy = new M_SRWA_12A_Summary_Entity1();
-	    						    BeanUtils.copyProperties(existing, oldcopy);
-
-	    						    List<String> setClauses = new ArrayList<>();
-	    						    List<Object> params = new ArrayList<>();
-
-	    						    try {
-
-	    						        for (int i = 19; i <= 57; i++) {
-
-	    						            String prefix = "R" + i + "_";
-
-	    						            String[] fields = {
-	    						                    "exposure_class",
-	    						                    "expo_crm",
-	    						                    "spe_pro_expo",
-	    						                    "amt_elig_sht_net",
-	    						                    "tot_expo_net_spe",
-	    						                    "crm_sub_elig_sub_app",
-	    						                    "crm_sub_non_col_guar",
-	    						                    "crm_sub_non_col_cre_der",
-	    						                    "crm_sub_col_elig_cash",
-	    						                    "crm_sub_col_elig_trea_bills",
-	    						                    "crm_sub_col_elig_deb_sec",
-	    						                    "crm_sub_col_elig_equi",
-	    						                    "crm_sub_col_elig_unit_tru",
-	    						                    "crm_sub_col_exp_cov",
-	    						                    "crm_sub_col_elig_exp_not_cov",
-	    						                    "crm_sub_rwa_ris_crm",
-	    						                    "crm_sub_rwa_cov_crm",
-	    						                    "crm_sub_rwa_org_cou",
-	    						                    "crm_sub_rwa_not_cov_crm",
-	    						                    "crm_comp_col_expo_elig",
-	    						                    "crm_comp_col_elig_expo_vol_adj",
-	    						                    "crm_comp_col_elig_fin_hai",
-	    						                    "crm_comp_col_expo_val",
-	    						                    "rwa_elig_expo_not_cov_crm",
-	    						                    "rwa_unsec_expo_cre_ris",
-	    						                    "rwa_unsec_expo",
-	    						                    "rwa_tot_ris_wei_ass"
-	    						            };
-
-	    						            for (String field : fields) {
-
-	    						                String getterName = "get" + prefix + field;
-	    						                String setterName = "set" + prefix + field;
-	    						                String columnName = (prefix + field).toLowerCase();
-
-	    						                try {
-	    						                    Method getter = M_SRWA_12A_Summary_Entity1.class.getMethod(getterName);
-	    						                    Method setter = M_SRWA_12A_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
-
-	    						                    Object newValue = getter.invoke(updatedEntity);
-	    						                    setter.invoke(existing, newValue);
-
-	    						                    setClauses.add(columnName + " = ?");
-	    						                    params.add(newValue);
-
-	    						                } catch (NoSuchMethodException e) {
-	    						                    continue;
-	    						                }
-	    						            }
-	    						        }
-
-	    						    } catch (Exception e) {
-	    						        throw new RuntimeException("Error while updating report fields", e);
-	    						    }
-
-	    						    // ====================================================
-	    						    // UPDATE VIA JDBC (repo.save replaced)
-	    						    // ====================================================
-	    						    if (!setClauses.isEmpty()) {
-	    						        String updateSql = "UPDATE BRRS_M_SRWA_12A_SUMMARYTABLE1 SET "
-	    						                + String.join(", ", setClauses)
-	    						                + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-	    						        params.add(updatedEntity.getReport_date());
-	    						        jdbcTemplate.update(updateSql, params.toArray());
-	    						    }
-
-	    						    // ====================================================
-	    						    // NEW COPY FOR AUDIT
-	    						    // ====================================================
-	    						    M_SRWA_12A_Summary_Entity1 newcopy = getSummary1DataByDate(updatedEntity.getReport_date()).get(0);
-
-	    						    // ====================================================
-	    						    // FIELD LEVEL AUDIT
-	    						    // ====================================================
-	    						    auditService.compareEntitiesmanual(
-	    						            oldcopy,
-	    						            newcopy,
-	    						            updatedEntity.getReport_date().toString(),
-	    						            "M SRWA 12A Summary Screen",
-	    						            "BRRS_M_SRWA_12A_SUMMARYTABLE1"
-	    						    );
-
-	    						    System.out.println("M_SRWA_12A Summary Updated Successfully");
+	    						// ---------- field lists (same as the old code) ----------
+	    						private static final String[] ON_BAL_FIELDS = {
+	    								"exposure_class", "expo_crm", "spe_pro_expo", "amt_elig_sht_net", "tot_expo_net_spe",
+	    								"crm_sub_elig_sub_app", "crm_sub_non_col_guar", "crm_sub_non_col_cre_der", "crm_sub_col_elig_cash",
+	    								"crm_sub_col_elig_trea_bills", "crm_sub_col_elig_deb_sec", "crm_sub_col_elig_equi",
+	    								"crm_sub_col_elig_unit_tru", "crm_sub_col_exp_cov", "crm_sub_col_elig_exp_not_cov",
+	    								"crm_sub_rwa_ris_crm", "crm_sub_rwa_cov_crm", "crm_sub_rwa_org_cou", "crm_sub_rwa_not_cov_crm",
+	    								"crm_comp_col_expo_elig", "crm_comp_col_elig_expo_vol_adj", "crm_comp_col_elig_fin_hai",
+	    								"crm_comp_col_expo_val", "rwa_elig_expo_not_cov_crm", "rwa_unsec_expo_cre_ris", "rwa_unsec_expo",
+	    								"rwa_tot_ris_wei_ass" };
+	    						 
+	    						private static final String[] OFF_BAL_FIELDS = {
+	    								"exposure_class_off_bal", "nom_pri_amt", "ccf", "cea", "cea_elig_coun_bilt_net", "cea_aft_net",
+	    								"crm_sub_app_cea_elig", "crm_sub_app_non_col_guar_elig", "crm_sub_app_non_col_cre_der",
+	    								"crm_sub_app_col_elig_cash", "crm_sub_app_col_elig_tre_bills", "crm_sub_app_col_elig_deb_sec",
+	    								"crm_sub_app_col_elig_euiq", "crm_sub_app_col_elig_uni_tru", "crm_sub_app_col_cea_cov",
+	    								"crm_sub_app_col_cea_not_cov", "crm_sub_app_rwa_ris_wei_crm", "crm_sub_app_rwa_ris_cea_cov",
+	    								"crm_sub_app_rwa_appl_org_coun", "crm_sub_app_rwa_ris_cea_not_cov", "crm_com_app_col_cea_elig_crm",
+	    								"crm_com_app_col_elig_cea_vol_adj", "crm_com_app_col_elig_fin_hai", "crm_com_app_col_cea_val_aft_crm",
+	    								"rwa_elig_cea_not_cov", "rwa_unsec_cea_sub_cre_ris", "rwa_unsec_cea", "rwa_tot_ris_wei_ass" };
+	    						 
+	    						private static int[] range(int from, int to) {
+	    							int[] r = new int[to - from + 1];
+	    							for (int i = 0; i < r.length; i++) r[i] = from + i;
+	    							return r;
 	    						}
-	    						
-	    						
-	    							
-	    						@Transactional
-	    						public void updateReport2(M_SRWA_12A_Summary_Entity2 updatedEntity) {
-
-	    						    System.out.println("Came to services");
-	    						    System.out.println("Report Date: " + updatedEntity.getReport_date());
-
-	    						    // ====================================================
-	    						    // FETCH EXISTING RECORD VIA JDBC (repo replaced)
-	    						    // ====================================================
-	    						    List<M_SRWA_12A_Summary_Entity2> existingList = getSummary2DataByDate(updatedEntity.getReport_date());
-
-	    						    if (existingList.isEmpty()) {
-	    						        throw new RuntimeException(
-	    						                "Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
-	    						    }
-	    						    M_SRWA_12A_Summary_Entity2 existing = existingList.get(0);
-
-	    						    // ====================================================
-	    						    // OLD COPY FOR AUDIT
-	    						    // ====================================================
-	    						    M_SRWA_12A_Summary_Entity2 oldcopy = new M_SRWA_12A_Summary_Entity2();
-	    						    BeanUtils.copyProperties(existing, oldcopy);
-
-	    						    List<String> setClauses = new ArrayList<>();
-	    						    List<Object> params = new ArrayList<>();
-
-	    						    try {
-
-	    						        // 1️⃣ Loop from R60 to R99, build values + SET clause via reflection
-
-	    						        for (int i = 60; i <= 99; i++) {
-
-	    						            String prefix = "R" + i + "_";
-
-	    						            String[] fields = {
-	    						                    "exposure_class",
-	    						                    "expo_crm",
-	    						                    "spe_pro_expo",
-	    						                    "amt_elig_sht_net",
-	    						                    "tot_expo_net_spe",
-	    						                    "crm_sub_elig_sub_app",
-	    						                    "crm_sub_non_col_guar",
-	    						                    "crm_sub_non_col_cre_der",
-	    						                    "crm_sub_col_elig_cash",
-	    						                    "crm_sub_col_elig_trea_bills",
-	    						                    "crm_sub_col_elig_deb_sec",
-	    						                    "crm_sub_col_elig_equi",
-	    						                    "crm_sub_col_elig_unit_tru",
-	    						                    "crm_sub_col_exp_cov",
-	    						                    "crm_sub_col_elig_exp_not_cov",
-	    						                    "crm_sub_rwa_ris_crm",
-	    						                    "crm_sub_rwa_cov_crm",
-	    						                    "crm_sub_rwa_org_cou",
-	    						                    "crm_sub_rwa_not_cov_crm",
-	    						                    "crm_comp_col_expo_elig",
-	    						                    "crm_comp_col_elig_expo_vol_adj",
-	    						                    "crm_comp_col_elig_fin_hai",
-	    						                    "crm_comp_col_expo_val",
-	    						                    "rwa_elig_expo_not_cov_crm",
-	    						                    "rwa_unsec_expo_cre_ris",
-	    						                    "rwa_unsec_expo",
-	    						                    "rwa_tot_ris_wei_ass"
-	    						            };
-
-	    						            for (String field : fields) {
-
-	    						                String getterName = "get" + prefix + field;
-	    						                String setterName = "set" + prefix + field;
-	    						                String columnName = (prefix + field).toLowerCase(); // matches RowMapper column naming
-
-	    						                try {
-	    						                    Method getter = M_SRWA_12A_Summary_Entity2.class.getMethod(getterName);
-	    						                    Method setter = M_SRWA_12A_Summary_Entity2.class.getMethod(setterName, getter.getReturnType());
-
-	    						                    Object newValue = getter.invoke(updatedEntity);
-	    						                    setter.invoke(existing, newValue);
-
-	    						                    setClauses.add(columnName + " = ?");
-	    						                    params.add(newValue);
-
-	    						                } catch (NoSuchMethodException e) {
-	    						                    continue;
-	    						                }
-	    						            }
-	    						        }
-
-	    						    } catch (Exception e) {
-	    						        throw new RuntimeException("Error while updating report fields", e);
-	    						    }
-
-	    						    // ====================================================
-	    						    // UPDATE VIA JDBC (repo.save replaced)
-	    						    // ====================================================
-	    						    if (!setClauses.isEmpty()) {
-	    						        String updateSql = "UPDATE BRRS_M_SRWA_12A_SUMMARYTABLE2 SET "
-	    						                + String.join(", ", setClauses)
-	    						                + " WHERE REPORT_DATE = ?";
-	    						        params.add(updatedEntity.getReport_date());
-	    						        jdbcTemplate.update(updateSql, params.toArray());
-	    						    }
-
-	    						    // ====================================================
-	    						    // NEW COPY FOR AUDIT (re-fetch via JDBC)
-	    						    // ====================================================
-	    						    List<M_SRWA_12A_Summary_Entity2> newList = getSummary2DataByDate(updatedEntity.getReport_date());
-	    						    if (newList.isEmpty()) {
-	    						        throw new RuntimeException("Record not found after update");
-	    						    }
-	    						    M_SRWA_12A_Summary_Entity2 newcopy = newList.get(0);
-
-	    						    // ====================================================
-	    						    // FIELD LEVEL AUDIT
-	    						    // ====================================================
-	    						    auditService.compareEntitiesmanual(
-	    						            oldcopy,
-	    						            newcopy,
-	    						            updatedEntity.getReport_date().toString(),
-	    						            "M SRWA 12A Summary Screen 2",
-	    						            "BRRS_M_SRWA_12A_SUMMARYTABLE2"
-	    						    );
-
-	    						    System.out.println("M_SRWA_12A Summary 2 Updated Successfully");
+	    						 
+	    						// ---------- reflection is resolved ONCE per table and cached ----------
+	    						private static final class Prop {
+	    							final String column;
+	    							final Method getter;
+	    							final Method setter;
+	    						 
+	    							Prop(String column, Method getter, Method setter) {
+	    								this.column = column;
+	    								this.getter = getter;
+	    								this.setter = setter;
+	    							}
 	    						}
-	    						
-	    						
-	    						
-	    						
-	    						@Transactional
-	    						public void updateReport3(M_SRWA_12A_Summary_Entity3 updatedEntity) {
-
-	    						    System.out.println("Came to services");
-	    						    System.out.println("Report Date: " + updatedEntity.getReport_date());
-
-	    						    // ====================================================
-	    						    // FETCH EXISTING RECORD VIA JDBC (repo replaced)
-	    						    // ====================================================
-	    						    List<M_SRWA_12A_Summary_Entity3> existingList = getSummary3DataByDate(updatedEntity.getReport_date());
-
-	    						    if (existingList.isEmpty()) {
-	    						        throw new RuntimeException(
-	    						                "Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
-	    						    }
-	    						    M_SRWA_12A_Summary_Entity3 existing = existingList.get(0);
-
-	    						    // ====================================================
-	    						    // OLD COPY FOR AUDIT
-	    						    // ====================================================
-	    						    M_SRWA_12A_Summary_Entity3 oldcopy = new M_SRWA_12A_Summary_Entity3();
-	    						    BeanUtils.copyProperties(existing, oldcopy);
-
-	    						    List<String> setClauses = new ArrayList<>();
-	    						    List<Object> params = new ArrayList<>();
-
-	    						    try {
-
-	    						        // 1️⃣ Loop from R100 to R133 and build values + SET clause via reflection
-
-	    						        for (int i = 100; i <= 133; i++) {
-
-	    						            String prefix = "R" + i + "_";
-
-	    						            String[] fields = {
-	    						                    "exposure_class",
-	    						                    "expo_crm",
-	    						                    "spe_pro_expo",
-	    						                    "amt_elig_sht_net",
-	    						                    "tot_expo_net_spe",
-	    						                    "crm_sub_elig_sub_app",
-	    						                    "crm_sub_non_col_guar",
-	    						                    "crm_sub_non_col_cre_der",
-	    						                    "crm_sub_col_elig_cash",
-	    						                    "crm_sub_col_elig_trea_bills",
-	    						                    "crm_sub_col_elig_deb_sec",
-	    						                    "crm_sub_col_elig_equi",
-	    						                    "crm_sub_col_elig_unit_tru",
-	    						                    "crm_sub_col_exp_cov",
-	    						                    "crm_sub_col_elig_exp_not_cov",
-	    						                    "crm_sub_rwa_ris_crm",
-	    						                    "crm_sub_rwa_cov_crm",
-	    						                    "crm_sub_rwa_org_cou",
-	    						                    "crm_sub_rwa_not_cov_crm",
-	    						                    "crm_comp_col_expo_elig",
-	    						                    "crm_comp_col_elig_expo_vol_adj",
-	    						                    "crm_comp_col_elig_fin_hai",
-	    						                    "crm_comp_col_expo_val",
-	    						                    "rwa_elig_expo_not_cov_crm",
-	    						                    "rwa_unsec_expo_cre_ris",
-	    						                    "rwa_unsec_expo",
-	    						                    "rwa_tot_ris_wei_ass"
-	    						            };
-
-	    						            for (String field : fields) {
-
-	    						                String getterName = "get" + prefix + field;
-	    						                String setterName = "set" + prefix + field;
-	    						                String columnName = (prefix + field).toLowerCase();
-
-	    						                try {
-	    						                    Method getter = M_SRWA_12A_Summary_Entity3.class.getMethod(getterName);
-	    						                    Method setter = M_SRWA_12A_Summary_Entity3.class.getMethod(setterName, getter.getReturnType());
-
-	    						                    Object newValue = getter.invoke(updatedEntity);
-	    						                    setter.invoke(existing, newValue);
-
-	    						                    setClauses.add(columnName + " = ?");
-	    						                    params.add(newValue);
-
-	    						                } catch (NoSuchMethodException e) {
-	    						                    continue;
-	    						                }
-	    						            }
-	    						        }
-
-	    						    } catch (Exception e) {
-	    						        throw new RuntimeException("Error while updating report fields", e);
-	    						    }
-
-	    						    // ====================================================
-	    						    // UPDATE VIA JDBC (repo.save replaced)
-	    						    // ====================================================
-	    						    if (!setClauses.isEmpty()) {
-	    						        String updateSql = "UPDATE BRRS_M_SRWA_12A_SUMMARYTABLE3 SET "
-	    						                + String.join(", ", setClauses)
-	    						                + " WHERE REPORT_DATE = ?";
-	    						        params.add(updatedEntity.getReport_date());
-	    						        jdbcTemplate.update(updateSql, params.toArray());
-	    						    }
-
-	    						    // ====================================================
-	    						    // NEW COPY FOR AUDIT (re-fetch via JDBC)
-	    						    // ====================================================
-	    						    List<M_SRWA_12A_Summary_Entity3> newList = getSummary3DataByDate(updatedEntity.getReport_date());
-	    						    if (newList.isEmpty()) {
-	    						        throw new RuntimeException("Record not found after update");
-	    						    }
-	    						    M_SRWA_12A_Summary_Entity3 newcopy = newList.get(0);
-
-	    						    // ====================================================
-	    						    // FIELD LEVEL AUDIT
-	    						    // ====================================================
-	    						    auditService.compareEntitiesmanual(
-	    						            oldcopy,
-	    						            newcopy,
-	    						            updatedEntity.getReport_date().toString(),
-	    						            "M SRWA 12A Summary Screen 3",
-	    						            "BRRS_M_SRWA_12A_SUMMARYTABLE3"
-	    						    );
-
-	    						    System.out.println("M_SRWA_12A Summary 3 Updated Successfully");
+	    						 
+	    						private final Map<String, List<Prop>> propCache = new ConcurrentHashMap<>();
+	    						 
+	    						private List<Prop> resolveProps(String cacheKey, Class<?> cls, int[] rows, String[] fields, Set<String> skip) {
+	    							return propCache.computeIfAbsent(cacheKey, k -> {
+	    								List<Prop> list = new ArrayList<>();
+	    								for (int row : rows) {
+	    									for (String f : fields) {
+	    										String key = "R" + row + "_" + f;
+	    										if (skip.contains(key)) continue;
+	    										try {
+	    											Method g = cls.getMethod("get" + key);
+	    											Method s = cls.getMethod("set" + key, g.getReturnType());
+	    											list.add(new Prop(key.toLowerCase(), g, s));
+	    										} catch (NoSuchMethodException ignore) {
+	    											// column not present on this entity – same behaviour as before
+	    										}
+	    									}
+	    								}
+	    								return list;
+	    							});
 	    						}
-	    						
-	    						
+	    						 
+	    						private static boolean sameValue(Object a, Object b) {
+	    							if (a instanceof String && ((String) a).isEmpty()) a = null;   // Oracle treats '' as NULL
+	    							if (b instanceof String && ((String) b).isEmpty()) b = null;
+	    							if (a == null || b == null) return a == b;
+	    							if (a instanceof BigDecimal && b instanceof BigDecimal) return ((BigDecimal) a).compareTo((BigDecimal) b) == 0;
+	    							return java.util.Objects.equals(a, b);
+	    						}
+	    						 
+	    						/**
+	    						 * Generic fast update:
+	    						 *  - reflection cached (no getMethod / NoSuchMethodException per field per request)
+	    						 *  - only CHANGED columns go into the UPDATE; nothing changed => no SQL, no audit
+	    						 *  - no re-SELECT after the update ("existing" already holds the new values)
+	    						 */
+	    						private <T> void fastUpdate(T updated, java.util.function.Supplier<T> existingLoader, Date reportDate, Class<T> cls, java.util.function.Supplier<T> factory, String cacheKey, int[] rows,
+	    								String[] fields, Set<String> skip, Set<String> sent, String table, String whereClause, String screen, String auditTable) {
+	    						 
+	    							try {
+	    								// 1) only the columns the browser actually sent (sent == null -> all, old behaviour)
+	    								List<Prop> todo = new ArrayList<>();
+	    								for (Prop p : resolveProps(cacheKey, cls, rows, fields, skip)) {
+	    									if (sent == null || sent.contains(p.column)) todo.add(p);
+	    								}
+	    								// 2) nothing for this table -> no SELECT, no UPDATE, no audit
+	    								if (todo.isEmpty()) {
+	    									logger.info("{} : nothing sent", table);
+	    									return;
+	    								}
+	    						 
+	    								T existing = existingLoader.get();
+	    								T oldcopy = factory.get();
+	    								BeanUtils.copyProperties(existing, oldcopy);
+	    						 
+	    								List<String> setClauses = new ArrayList<>();
+	    								List<Object> params = new ArrayList<>();
+	    						 
+	    								for (Prop p : todo) {
+	    									Object newValue = p.getter.invoke(updated);
+	    									Object oldValue = p.getter.invoke(existing);
+	    									if (sameValue(newValue, oldValue)) continue;
+	    									p.setter.invoke(existing, newValue);
+	    									setClauses.add(p.column + " = ?");
+	    									params.add(newValue);
+	    								}
+	    						 
+	    								if (setClauses.isEmpty()) {
+	    									logger.info("{} : no changes", table);
+	    									return;
+	    								}
+	    						 
+	    								params.add(reportDate);
+	    								jdbcTemplate.update("UPDATE " + table + " SET " + String.join(", ", setClauses) + " WHERE " + whereClause,
+	    										params.toArray());
+	    						 
+	    								auditService.compareEntitiesmanual(oldcopy, existing, reportDate.toString(), screen, auditTable);
+	    								logger.info("{} : {} column(s) updated", table, setClauses.size());
+	    						 
+	    							} catch (RuntimeException e) {
+	    								throw e;
+	    							} catch (Exception e) {
+	    								throw new RuntimeException("Error while updating " + table, e);
+	    							}
+	    						}
+	    						 
+	    						private static final Set<String> NO_SKIP = Collections.emptySet();
+	    						 
+	    						private <T> T firstOrFail(List<T> list, Date d) {
+	    							if (list.isEmpty()) throw new RuntimeException("Record not found for REPORT_DATE: " + d);
+	    							return list.get(0);
+	    						}
+	    						 
+	    						// ---------- the 8 per-table updates (signatures unchanged) ----------
+	    						public void updateReport1(M_SRWA_12A_Summary_Entity1 u, Set<String> sent) {
+	    							Date d = u.getReport_date();
+	    							fastUpdate(u, () -> firstOrFail(getSummary1DataByDate(d), d), d, M_SRWA_12A_Summary_Entity1.class, M_SRWA_12A_Summary_Entity1::new, "T1",
+	    									range(19, 57), ON_BAL_FIELDS, NO_SKIP, sent, "BRRS_M_SRWA_12A_SUMMARYTABLE1", "TRUNC(REPORT_DATE) = TRUNC(?)",
+	    									"M SRWA 12A Summary Screen", "BRRS_M_SRWA_12A_SUMMARYTABLE1");
+	    						}
+	    						 
+	    						public void updateReport2(M_SRWA_12A_Summary_Entity2 u, Set<String> sent) {
+	    							Date d = u.getReport_date();
+	    							fastUpdate(u, () -> firstOrFail(getSummary2DataByDate(d), d), d, M_SRWA_12A_Summary_Entity2.class, M_SRWA_12A_Summary_Entity2::new, "T2",
+	    									range(60, 99), ON_BAL_FIELDS, NO_SKIP, sent, "BRRS_M_SRWA_12A_SUMMARYTABLE2", "REPORT_DATE = ?",
+	    									"M SRWA 12A Summary Screen 2", "BRRS_M_SRWA_12A_SUMMARYTABLE2");
+	    						}
+	    						 
+	    						public void updateReport3(M_SRWA_12A_Summary_Entity3 u, Set<String> sent) {
+	    							Date d = u.getReport_date();
+	    							fastUpdate(u, () -> firstOrFail(getSummary3DataByDate(d), d), d, M_SRWA_12A_Summary_Entity3.class, M_SRWA_12A_Summary_Entity3::new, "T3",
+	    									range(100, 133), ON_BAL_FIELDS, NO_SKIP, sent, "BRRS_M_SRWA_12A_SUMMARYTABLE3", "REPORT_DATE = ?",
+	    									"M SRWA 12A Summary Screen 3", "BRRS_M_SRWA_12A_SUMMARYTABLE3");
+	    						}
+	    						 
+	    						public void updateReport4(M_SRWA_12A_Summary_Entity4 u, Set<String> sent) {
+	    							Date d = u.getReport_date();
+	    							fastUpdate(u, () -> firstOrFail(getSummary4DataByDate(d), d), d, M_SRWA_12A_Summary_Entity4.class, M_SRWA_12A_Summary_Entity4::new, "T4",
+	    									range(145, 178), OFF_BAL_FIELDS, NO_SKIP, sent, "BRRS_M_SRWA_12A_SUMMARYTABLE4", "REPORT_DATE = ?",
+	    									"M SRWA 12A Summary Screen 4", "BRRS_M_SRWA_12A_SUMMARYTABLE4");
+	    						}
+	    						 
+	    						public void updateReport5(M_SRWA_12A_Summary_Entity5 u, Set<String> sent) {
+	    							Date d = u.getReport_date();
+	    							fastUpdate(u, () -> firstOrFail(getSummary5DataByDate(d), d), d, M_SRWA_12A_Summary_Entity5.class, M_SRWA_12A_Summary_Entity5::new, "T5",
+	    									range(179, 212), OFF_BAL_FIELDS, NO_SKIP, sent, "BRRS_M_SRWA_12A_SUMMARYTABLE5", "REPORT_DATE = ?",
+	    									"M SRWA 12A Summary 5 Screen", "BRRS_M_SRWA_12A_SUMMARY5");
+	    						}
+	    						 
+	    						public void updateReport6(M_SRWA_12A_Summary_Entity6 u, Set<String> sent) {
+	    							Date d = u.getReport_date();
+	    							fastUpdate(u, () -> firstOrFail(getSummary6DataByDate(d), d), d, M_SRWA_12A_Summary_Entity6.class, M_SRWA_12A_Summary_Entity6::new, "T6",
+	    									range(213, 246), OFF_BAL_FIELDS, NO_SKIP, sent, "BRRS_M_SRWA_12A_SUMMARYTABLE6", "REPORT_DATE = ?",
+	    									"M SRWA 12A Summary 6 Screen", "BRRS_M_SRWA_12A_SUMMARY6");
+	    						}
+	    						 
+	    						public void updateReport7(M_SRWA_12A_Summary_Entity7 u, Set<String> sent) {
+	    							Date d = u.getReport_date();
+	    							// R247–R253 (all off-balance fields) + only R254_rwa_tot_ris_wei_ass  (same as old code)
+	    							Set<String> skip = new HashSet<>();
+	    							// rows list = 247..254, but for 254 only rwa_tot_ris_wei_ass is allowed
+	    							for (String f : OFF_BAL_FIELDS) {
+	    								if (!f.equals("rwa_tot_ris_wei_ass")) skip.add("R254_" + f);
+	    							}
+	    							fastUpdate(u, () -> firstOrFail(getSummary7DataByDate(d), d), d, M_SRWA_12A_Summary_Entity7.class, M_SRWA_12A_Summary_Entity7::new, "T7",
+	    									range(247, 254), OFF_BAL_FIELDS, skip, sent, "BRRS_M_SRWA_12A_SUMMARYTABLE7", "REPORT_DATE = ?",
+	    									"M SRWA 12A Summary 7 Screen", "BRRS_M_SRWA_12A_SUMMARY7");
+	    						}
+	    						 
+	    						private static final int[] M_ROWS_ON_BAL = { 17, 18, 30, 31, 45, 46, 58, 59, 71, 72, 83, 84, 94, 95, 103, 104, 115,
+	    								116, 123, 134, 135, 136 };
+	    						private static final int[] M_ROWS_OFF_BAL = { 144, 251, 252, 254 };
+	    						 
+	    						public void updateReport8(M_SRWA_12A_Summary_M_Entity u, Set<String> sent) {
+	    							Date d = u.getReport_date();
+	    							// Summary-M uses two (rows x fields) groups, so it needs its own prop list
+	    							// NOTE: no nested computeIfAbsent (resolveProps also uses propCache) - that can hang/throw "Recursive update"
+	    							List<Prop> props = propCache.get("TM");
+	    							if (props == null) {
+	    								List<Prop> l = new ArrayList<>();
+	    								l.addAll(resolveProps("TM_ON", M_SRWA_12A_Summary_M_Entity.class, M_ROWS_ON_BAL, ON_BAL_FIELDS, NO_SKIP));
+	    								l.addAll(resolveProps("TM_OFF", M_SRWA_12A_Summary_M_Entity.class, M_ROWS_OFF_BAL, OFF_BAL_FIELDS,
+	    										Collections.singleton("R254_rwa_tot_ris_wei_ass")));
+	    								propCache.put("TM", l);
+	    								props = l;
+	    							}
+	    						 
+	    							// only the columns the browser actually sent; nothing for this table -> no SELECT/UPDATE/audit
+	    							if (sent != null) {
+	    								List<Prop> filtered = new ArrayList<>();
+	    								for (Prop p : props) if (sent.contains(p.column)) filtered.add(p);
+	    								props = filtered;
+	    							}
+	    							if (props.isEmpty()) return;
+	    						 
+	    							M_SRWA_12A_Summary_M_Entity existing = firstOrFail(getSummaryMDataByDate(d), d);
+	    							M_SRWA_12A_Summary_M_Entity oldcopy = new M_SRWA_12A_Summary_M_Entity();
+	    							BeanUtils.copyProperties(existing, oldcopy);
+	    						 
+	    							try {
+	    								List<String> setClauses = new ArrayList<>();
+	    								List<Object> params = new ArrayList<>();
+	    								for (Prop p : props) {
+	    									Object newValue = p.getter.invoke(u);
+	    									if (sameValue(newValue, p.getter.invoke(existing))) continue;
+	    									p.setter.invoke(existing, newValue);
+	    									setClauses.add(p.column + " = ?");
+	    									params.add(newValue);
+	    								}
+	    								if (setClauses.isEmpty()) return;
+	    						 
+	    								params.add(d);
+	    								jdbcTemplate.update("UPDATE BRRS_M_SRWA_12A_SUMMARYTABLE_M SET " + String.join(", ", setClauses)
+	    										+ " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", params.toArray());
+	    						 
+	    								auditService.compareEntitiesmanual(oldcopy, existing, d.toString(), "M SRWA 12A Summary M Screen",
+	    										"BRRS_M_SRWA_12A_SUMMARY_M");
+	    							} catch (Exception e) {
+	    								throw new RuntimeException("Error while updating BRRS_M_SRWA_12A_SUMMARYTABLE_M", e);
+	    							}
+	    						}
+	    						 
 	    						@Transactional
-	    						public void updateReport4(M_SRWA_12A_Summary_Entity4 updatedEntity) {
+	    						public void updateAllReports(Date asondate, Set<String> sent, M_SRWA_12A_Summary_Entity1 r1, M_SRWA_12A_Summary_Entity2 r2,
+	    								M_SRWA_12A_Summary_Entity3 r3, M_SRWA_12A_Summary_Entity4 r4, M_SRWA_12A_Summary_Entity5 r5,
+	    								M_SRWA_12A_Summary_Entity6 r6, M_SRWA_12A_Summary_Entity7 r7, M_SRWA_12A_Summary_M_Entity r8) {
 
-	    						    System.out.println("Came to services");
-	    						    System.out.println("Report Date: " + updatedEntity.getReport_date());
+	    							if (asondate == null) throw new IllegalArgumentException("asondate is null");
+	    							r1.setReport_date(asondate);
+	    							r2.setReport_date(asondate);
+	    							r3.setReport_date(asondate);
+	    							r4.setReport_date(asondate);
+	    							r5.setReport_date(asondate);
+	    							r6.setReport_date(asondate);
+	    							r7.setReport_date(asondate);
+	    							r8.setReport_date(asondate);
 
-	    						    List<M_SRWA_12A_Summary_Entity4> existingList = getSummary4DataByDate(updatedEntity.getReport_date());
-	    						    if (existingList.isEmpty()) {
-	    						        throw new RuntimeException(
-	    						                "Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
-	    						    }
-	    						    M_SRWA_12A_Summary_Entity4 existing = existingList.get(0);
-
-	    						    // ====================================================
-	    						    // OLD COPY FOR AUDIT
-	    						    // ====================================================
-	    						    M_SRWA_12A_Summary_Entity4 oldcopy = new M_SRWA_12A_Summary_Entity4();
-	    						    BeanUtils.copyProperties(existing, oldcopy);
-
-	    						    List<String> setClauses = new ArrayList<>();
-	    						    List<Object> params = new ArrayList<>();
-
-	    						    try {
-
-	    						        // 1️⃣ Loop from R145 to R178 and build values + SET clause
-
-	    						        for (int i = 145; i <= 178; i++) {
-
-	    						            String prefix = "R" + i + "_";
-
-	    						            String[] fields = {
-	    						                    "exposure_class_off_bal",
-	    						                    "nom_pri_amt",
-	    						                    "ccf",
-	    						                    "cea",
-	    						                    "cea_elig_coun_bilt_net",
-	    						                    "cea_aft_net",
-	    						                    "crm_sub_app_cea_elig",
-	    						                    "crm_sub_app_non_col_guar_elig",
-	    						                    "crm_sub_app_non_col_cre_der",
-	    						                    "crm_sub_app_col_elig_cash",
-	    						                    "crm_sub_app_col_elig_tre_bills",
-	    						                    "crm_sub_app_col_elig_deb_sec",
-	    						                    "crm_sub_app_col_elig_euiq",
-	    						                    "crm_sub_app_col_elig_uni_tru",
-	    						                    "crm_sub_app_col_cea_cov",
-	    						                    "crm_sub_app_col_cea_not_cov",
-	    						                    "crm_sub_app_rwa_ris_wei_crm",
-	    						                    "crm_sub_app_rwa_ris_cea_cov",
-	    						                    "crm_sub_app_rwa_appl_org_coun",
-	    						                    "crm_sub_app_rwa_ris_cea_not_cov",
-	    						                    "crm_com_app_col_cea_elig_crm",
-	    						                    "crm_com_app_col_elig_cea_vol_adj",
-	    						                    "crm_com_app_col_elig_fin_hai",
-	    						                    "crm_com_app_col_cea_val_aft_crm",
-	    						                    "rwa_elig_cea_not_cov",
-	    						                    "rwa_unsec_cea_sub_cre_ris",
-	    						                    "rwa_unsec_cea",
-	    						                    "rwa_tot_ris_wei_ass"
-	    						            };
-
-	    						            for (String field : fields) {
-
-	    						                String getterName = "get" + prefix + field;
-	    						                String setterName = "set" + prefix + field;
-	    						                String columnName = (prefix + field).toLowerCase();
-
-	    						                try {
-	    						                    Method getter = M_SRWA_12A_Summary_Entity4.class.getMethod(getterName);
-	    						                    Method setter = M_SRWA_12A_Summary_Entity4.class.getMethod(setterName, getter.getReturnType());
-
-	    						                    Object newValue = getter.invoke(updatedEntity);
-	    						                    setter.invoke(existing, newValue);
-
-	    						                    setClauses.add(columnName + " = ?");
-	    						                    params.add(newValue);
-
-	    						                } catch (NoSuchMethodException e) {
-	    						                    continue;
-	    						                }
-	    						            }
-	    						        }
-
-	    						    } catch (Exception e) {
-	    						        throw new RuntimeException("Error while updating report fields", e);
-	    						    }
-
-	    						    // ====================================================
-	    						    // UPDATE VIA JDBC (repo.save replaced)
-	    						    // ====================================================
-	    						    if (!setClauses.isEmpty()) {
-	    						        String updateSql = "UPDATE BRRS_M_SRWA_12A_SUMMARYTABLE4 SET "
-	    						                + String.join(", ", setClauses)
-	    						                + " WHERE REPORT_DATE = ?";
-	    						        params.add(updatedEntity.getReport_date());
-	    						        jdbcTemplate.update(updateSql, params.toArray());
-	    						    }
-
-	    						    // ====================================================
-	    						    // NEW COPY FOR AUDIT
-	    						    // ====================================================
-	    						    List<M_SRWA_12A_Summary_Entity4> newList = getSummary4DataByDate(updatedEntity.getReport_date());
-	    						    if (newList.isEmpty()) {
-	    						        throw new RuntimeException("Record not found after update");
-	    						    }
-	    						    M_SRWA_12A_Summary_Entity4 newcopy = newList.get(0);
-
-	    						    auditService.compareEntitiesmanual(
-	    						            oldcopy,
-	    						            newcopy,
-	    						            updatedEntity.getReport_date().toString(),
-	    						            "M SRWA 12A Summary Screen 4",
-	    						            "BRRS_M_SRWA_12A_SUMMARYTABLE4"
-	    						    );
-
-	    						    System.out.println("M_SRWA_12A Summary 4 Updated Successfully");
+	    							long t = System.currentTimeMillis();
+	    							updateReport1(r1, sent); t = lap("T1", t);
+	    							updateReport2(r2, sent); t = lap("T2", t);
+	    							updateReport3(r3, sent); t = lap("T3", t);
+	    							updateReport4(r4, sent); t = lap("T4", t);
+	    							updateReport5(r5, sent); t = lap("T5", t);
+	    							updateReport6(r6, sent); t = lap("T6", t);
+	    							updateReport7(r7, sent); t = lap("T7", t);
+	    							updateReport8(r8, sent); t = lap("TM", t);
 	    						}
 
-
-	    						@Transactional
-	    						public void updateReport5(M_SRWA_12A_Summary_Entity5 updatedEntity) {
-
-	    						    System.out.println("Came to services");
-	    						    System.out.println("Report Date: " + updatedEntity.getReport_date());
-
-	    						    List<M_SRWA_12A_Summary_Entity5> existingList = getSummary5DataByDate(updatedEntity.getReport_date());
-	    						    if (existingList.isEmpty()) {
-	    						        throw new RuntimeException(
-	    						                "Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
-	    						    }
-	    						    M_SRWA_12A_Summary_Entity5 existing = existingList.get(0);
-
-	    						    M_SRWA_12A_Summary_Entity5 oldcopy = new M_SRWA_12A_Summary_Entity5();
-	    						    BeanUtils.copyProperties(existing, oldcopy);
-
-	    						    List<String> setClauses = new ArrayList<>();
-	    						    List<Object> params = new ArrayList<>();
-
-	    						    try {
-
-	    						        for (int i = 179; i <= 212; i++) {
-
-	    						            String prefix = "R" + i + "_";
-
-	    						            String[] fields = {
-	    						                    "exposure_class_off_bal",
-	    						                    "nom_pri_amt",
-	    						                    "ccf",
-	    						                    "cea",
-	    						                    "cea_elig_coun_bilt_net",
-	    						                    "cea_aft_net",
-	    						                    "crm_sub_app_cea_elig",
-	    						                    "crm_sub_app_non_col_guar_elig",
-	    						                    "crm_sub_app_non_col_cre_der",
-	    						                    "crm_sub_app_col_elig_cash",
-	    						                    "crm_sub_app_col_elig_tre_bills",
-	    						                    "crm_sub_app_col_elig_deb_sec",
-	    						                    "crm_sub_app_col_elig_euiq",
-	    						                    "crm_sub_app_col_elig_uni_tru",
-	    						                    "crm_sub_app_col_cea_cov",
-	    						                    "crm_sub_app_col_cea_not_cov",
-	    						                    "crm_sub_app_rwa_ris_wei_crm",
-	    						                    "crm_sub_app_rwa_ris_cea_cov",
-	    						                    "crm_sub_app_rwa_appl_org_coun",
-	    						                    "crm_sub_app_rwa_ris_cea_not_cov",
-	    						                    "crm_com_app_col_cea_elig_crm",
-	    						                    "crm_com_app_col_elig_cea_vol_adj",
-	    						                    "crm_com_app_col_elig_fin_hai",
-	    						                    "crm_com_app_col_cea_val_aft_crm",
-	    						                    "rwa_elig_cea_not_cov",
-	    						                    "rwa_unsec_cea_sub_cre_ris",
-	    						                    "rwa_unsec_cea",
-	    						                    "rwa_tot_ris_wei_ass"
-	    						            };
-
-	    						            for (String field : fields) {
-
-	    						                String getterName = "get" + prefix + field;
-	    						                String setterName = "set" + prefix + field;
-	    						                String columnName = (prefix + field).toLowerCase();
-
-	    						                try {
-	    						                    Method getter = M_SRWA_12A_Summary_Entity5.class.getMethod(getterName);
-	    						                    Method setter = M_SRWA_12A_Summary_Entity5.class.getMethod(setterName, getter.getReturnType());
-
-	    						                    Object newValue = getter.invoke(updatedEntity);
-	    						                    setter.invoke(existing, newValue);
-
-	    						                    setClauses.add(columnName + " = ?");
-	    						                    params.add(newValue);
-
-	    						                } catch (NoSuchMethodException e) {
-	    						                    continue;
-	    						                }
-	    						            }
-	    						        }
-
-	    						    } catch (Exception e) {
-	    						        throw new RuntimeException("Error while updating report fields", e);
-	    						    }
-
-	    						    if (!setClauses.isEmpty()) {
-	    						        String updateSql = "UPDATE BRRS_M_SRWA_12A_SUMMARYTABLE5 SET "
-	    						                + String.join(", ", setClauses)
-	    						                + " WHERE REPORT_DATE = ?";
-	    						        params.add(updatedEntity.getReport_date());
-	    						        jdbcTemplate.update(updateSql, params.toArray());
-	    						    }
-
-	    						    List<M_SRWA_12A_Summary_Entity5> newList = getSummary5DataByDate(updatedEntity.getReport_date());
-	    						    if (newList.isEmpty()) {
-	    						        throw new RuntimeException("Record not found after update");
-	    						    }
-	    						    M_SRWA_12A_Summary_Entity5 newcopy = newList.get(0);
-
-	    						    auditService.compareEntitiesmanual(
-	    						            oldcopy,
-	    						            newcopy,
-	    						            updatedEntity.getReport_date().toString(),
-	    						            "M SRWA 12A Summary 5 Screen",
-	    						            "BRRS_M_SRWA_12A_SUMMARY5"
-	    						    );
-
-	    						    System.out.println("Update Completed Successfully");
+	    						private long lap(String name, long start) {
+	    							long now = System.currentTimeMillis();
+	    							logger.info("SRWA12A update {} took {} ms", name, (now - start));
+	    							return now;
 	    						}
-
-
-	    						@Transactional
-	    						public void updateReport6(M_SRWA_12A_Summary_Entity6 updatedEntity) {
-
-	    						    System.out.println("Came to services");
-	    						    System.out.println("Report Date: " + updatedEntity.getReport_date());
-
-	    						    List<M_SRWA_12A_Summary_Entity6> existingList = getSummary6DataByDate(updatedEntity.getReport_date());
-	    						    if (existingList.isEmpty()) {
-	    						        throw new RuntimeException(
-	    						                "Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
-	    						    }
-	    						    M_SRWA_12A_Summary_Entity6 existing = existingList.get(0);
-
-	    						    M_SRWA_12A_Summary_Entity6 oldcopy = new M_SRWA_12A_Summary_Entity6();
-	    						    BeanUtils.copyProperties(existing, oldcopy);
-
-	    						    List<String> setClauses = new ArrayList<>();
-	    						    List<Object> params = new ArrayList<>();
-
-	    						    try {
-
-	    						        // 1️⃣ Loop from R213 to R246
-
-	    						        for (int i = 213; i <= 246; i++) {
-
-	    						            String prefix = "R" + i + "_";
-
-	    						            String[] fields = {
-	    						                    "exposure_class_off_bal",
-	    						                    "nom_pri_amt",
-	    						                    "ccf",
-	    						                    "cea",
-	    						                    "cea_elig_coun_bilt_net",
-	    						                    "cea_aft_net",
-	    						                    "crm_sub_app_cea_elig",
-	    						                    "crm_sub_app_non_col_guar_elig",
-	    						                    "crm_sub_app_non_col_cre_der",
-	    						                    "crm_sub_app_col_elig_cash",
-	    						                    "crm_sub_app_col_elig_tre_bills",
-	    						                    "crm_sub_app_col_elig_deb_sec",
-	    						                    "crm_sub_app_col_elig_euiq",
-	    						                    "crm_sub_app_col_elig_uni_tru",
-	    						                    "crm_sub_app_col_cea_cov",
-	    						                    "crm_sub_app_col_cea_not_cov",
-	    						                    "crm_sub_app_rwa_ris_wei_crm",
-	    						                    "crm_sub_app_rwa_ris_cea_cov",
-	    						                    "crm_sub_app_rwa_appl_org_coun",
-	    						                    "crm_sub_app_rwa_ris_cea_not_cov",
-	    						                    "crm_com_app_col_cea_elig_crm",
-	    						                    "crm_com_app_col_elig_cea_vol_adj",
-	    						                    "crm_com_app_col_elig_fin_hai",
-	    						                    "crm_com_app_col_cea_val_aft_crm",
-	    						                    "rwa_elig_cea_not_cov",
-	    						                    "rwa_unsec_cea_sub_cre_ris",
-	    						                    "rwa_unsec_cea",
-	    						                    "rwa_tot_ris_wei_ass"
-	    						            };
-
-	    						            for (String field : fields) {
-
-	    						                String getterName = "get" + prefix + field;
-	    						                String setterName = "set" + prefix + field;
-	    						                String columnName = (prefix + field).toLowerCase();
-
-	    						                try {
-	    						                    Method getter = M_SRWA_12A_Summary_Entity6.class.getMethod(getterName);
-	    						                    Method setter = M_SRWA_12A_Summary_Entity6.class.getMethod(setterName, getter.getReturnType());
-
-	    						                    Object newValue = getter.invoke(updatedEntity);
-	    						                    setter.invoke(existing, newValue);
-
-	    						                    setClauses.add(columnName + " = ?");
-	    						                    params.add(newValue);
-
-	    						                } catch (NoSuchMethodException e) {
-	    						                    continue;
-	    						                }
-	    						            }
-	    						        }
-
-	    						    } catch (Exception e) {
-	    						        throw new RuntimeException("Error while updating report fields", e);
-	    						    }
-
-	    						    if (!setClauses.isEmpty()) {
-	    						        String updateSql = "UPDATE BRRS_M_SRWA_12A_SUMMARYTABLE6 SET "
-	    						                + String.join(", ", setClauses)
-	    						                + " WHERE REPORT_DATE = ?";
-	    						        params.add(updatedEntity.getReport_date());
-	    						        jdbcTemplate.update(updateSql, params.toArray());
-	    						    }
-
-	    						    List<M_SRWA_12A_Summary_Entity6> newList = getSummary6DataByDate(updatedEntity.getReport_date());
-	    						    if (newList.isEmpty()) {
-	    						        throw new RuntimeException("Record not found after update");
-	    						    }
-	    						    M_SRWA_12A_Summary_Entity6 newcopy = newList.get(0);
-
-	    						    auditService.compareEntitiesmanual(
-	    						            oldcopy,
-	    						            newcopy,
-	    						            updatedEntity.getReport_date().toString(),
-	    						            "M SRWA 12A Summary 6 Screen",
-	    						            "BRRS_M_SRWA_12A_SUMMARY6"
-	    						    );
-
-	    						    System.out.println("Update Completed Successfully");
-	    						}
-
-
-	    						@Transactional
-	    						public void updateReport7(M_SRWA_12A_Summary_Entity7 updatedEntity) {
-
-	    						    System.out.println("Came to services");
-	    						    System.out.println("Report Date: " + updatedEntity.getReport_date());
-
-	    						    List<M_SRWA_12A_Summary_Entity7> existingList = getSummary7DataByDate(updatedEntity.getReport_date());
-	    						    if (existingList.isEmpty()) {
-	    						        throw new RuntimeException(
-	    						                "Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
-	    						    }
-	    						    M_SRWA_12A_Summary_Entity7 existing = existingList.get(0);
-
-	    						    M_SRWA_12A_Summary_Entity7 oldcopy = new M_SRWA_12A_Summary_Entity7();
-	    						    BeanUtils.copyProperties(existing, oldcopy);
-
-	    						    List<String> setClauses = new ArrayList<>();
-	    						    List<Object> params = new ArrayList<>();
-
-	    						    try {
-
-	    						        // ===============================
-	    						        // LOOP R247 TO R253
-	    						        // ===============================
-
-	    						        for (int i = 247; i <= 253; i++) {
-
-	    						            String prefix = "R" + i + "_";
-
-	    						            String[] fields = {
-	    						                    "exposure_class_off_bal",
-	    						                    "nom_pri_amt",
-	    						                    "ccf",
-	    						                    "cea",
-	    						                    "cea_elig_coun_bilt_net",
-	    						                    "cea_aft_net",
-	    						                    "crm_sub_app_cea_elig",
-	    						                    "crm_sub_app_non_col_guar_elig",
-	    						                    "crm_sub_app_non_col_cre_der",
-	    						                    "crm_sub_app_col_elig_cash",
-	    						                    "crm_sub_app_col_elig_tre_bills",
-	    						                    "crm_sub_app_col_elig_deb_sec",
-	    						                    "crm_sub_app_col_elig_euiq",
-	    						                    "crm_sub_app_col_elig_uni_tru",
-	    						                    "crm_sub_app_col_cea_cov",
-	    						                    "crm_sub_app_col_cea_not_cov",
-	    						                    "crm_sub_app_rwa_ris_wei_crm",
-	    						                    "crm_sub_app_rwa_ris_cea_cov",
-	    						                    "crm_sub_app_rwa_appl_org_coun",
-	    						                    "crm_sub_app_rwa_ris_cea_not_cov",
-	    						                    "crm_com_app_col_cea_elig_crm",
-	    						                    "crm_com_app_col_elig_cea_vol_adj",
-	    						                    "crm_com_app_col_elig_fin_hai",
-	    						                    "crm_com_app_col_cea_val_aft_crm",
-	    						                    "rwa_elig_cea_not_cov",
-	    						                    "rwa_unsec_cea_sub_cre_ris",
-	    						                    "rwa_unsec_cea",
-	    						                    "rwa_tot_ris_wei_ass"
-	    						            };
-
-	    						            for (String field : fields) {
-
-	    						                String getterName = "get" + prefix + field;
-	    						                String setterName = "set" + prefix + field;
-	    						                String columnName = (prefix + field).toLowerCase();
-
-	    						                try {
-	    						                    Method getter = M_SRWA_12A_Summary_Entity7.class.getMethod(getterName);
-	    						                    Method setter = M_SRWA_12A_Summary_Entity7.class.getMethod(setterName, getter.getReturnType());
-
-	    						                    Object newValue = getter.invoke(updatedEntity);
-	    						                    setter.invoke(existing, newValue);
-
-	    						                    setClauses.add(columnName + " = ?");
-	    						                    params.add(newValue);
-
-	    						                } catch (NoSuchMethodException e) {
-	    						                    continue;
-	    						                }
-	    						            }
-	    						        }
-
-	    						        // ===============================
-	    						        // ONLY R254_rwa_tot_ris_wei_ass
-	    						        // ===============================
-
-	    						        try {
-	    						            Method getter = M_SRWA_12A_Summary_Entity7.class.getMethod("getR254_rwa_tot_ris_wei_ass");
-	    						            Method setter = M_SRWA_12A_Summary_Entity7.class.getMethod("setR254_rwa_tot_ris_wei_ass", getter.getReturnType());
-
-	    						            Object newValue = getter.invoke(updatedEntity);
-	    						            setter.invoke(existing, newValue);
-
-	    						            setClauses.add("r254_rwa_tot_ris_wei_ass = ?");
-	    						            params.add(newValue);
-
-	    						        } catch (NoSuchMethodException e) {
-	    						            // Skip missing field
-	    						        }
-
-	    						    } catch (Exception e) {
-	    						        throw new RuntimeException("Error while updating report fields", e);
-	    						    }
-
-	    						    if (!setClauses.isEmpty()) {
-	    						        String updateSql = "UPDATE BRRS_M_SRWA_12A_SUMMARYTABLE7 SET "
-	    						                + String.join(", ", setClauses)
-	    						                + " WHERE REPORT_DATE = ?";
-	    						        params.add(updatedEntity.getReport_date());
-	    						        jdbcTemplate.update(updateSql, params.toArray());
-	    						    }
-
-	    						    List<M_SRWA_12A_Summary_Entity7> newList = getSummary7DataByDate(updatedEntity.getReport_date());
-	    						    if (newList.isEmpty()) {
-	    						        throw new RuntimeException("Record not found after update");
-	    						    }
-	    						    M_SRWA_12A_Summary_Entity7 newcopy = newList.get(0);
-
-	    						    auditService.compareEntitiesmanual(
-	    						            oldcopy,
-	    						            newcopy,
-	    						            updatedEntity.getReport_date().toString(),
-	    						            "M SRWA 12A Summary 7 Screen",
-	    						            "BRRS_M_SRWA_12A_SUMMARY7"
-	    						    );
-
-	    						    System.out.println("Update Completed Successfully");
-	    						}
-
-
-	    						@Transactional
-	    						public void updateReport8(M_SRWA_12A_Summary_M_Entity updatedEntity) {
-
-	    						    System.out.println("Came to services");
-	    						    System.out.println("Report Date: " + updatedEntity.getReport_date());
-
-	    						    List<M_SRWA_12A_Summary_M_Entity> existingList = getSummaryMDataByDate(updatedEntity.getReport_date());
-
-	    						    if (existingList.isEmpty()) {
-	    						        throw new RuntimeException(
-	    						                "Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
-	    						    }
-
-	    						    M_SRWA_12A_Summary_M_Entity existing = existingList.get(0);
-
-	    						    M_SRWA_12A_Summary_M_Entity oldcopy = new M_SRWA_12A_Summary_M_Entity();
-	    						    BeanUtils.copyProperties(existing, oldcopy);
-
-	    						    List<String> setClauses = new ArrayList<>();
-	    						    List<Object> params = new ArrayList<>();
-
-	    						    try {
-
-	    						        // ===============================
-	    						        // PART 1 : BALANCE SHEET ROWS
-	    						        // ===============================
-
-	    						        int[] rows1 = {
-	    						                17,18,30,31,45,46,58,59,71,72,83,84,94,95,
-	    						                103,104,115,116,123,134,135,136
-	    						        };
-
-	    						        String[] fields1 = {
-	    						                "exposure_class","expo_crm","spe_pro_expo","amt_elig_sht_net",
-	    						                "tot_expo_net_spe","crm_sub_elig_sub_app","crm_sub_non_col_guar",
-	    						                "crm_sub_non_col_cre_der","crm_sub_col_elig_cash",
-	    						                "crm_sub_col_elig_trea_bills","crm_sub_col_elig_deb_sec",
-	    						                "crm_sub_col_elig_equi","crm_sub_col_elig_unit_tru",
-	    						                "crm_sub_col_exp_cov","crm_sub_col_elig_exp_not_cov",
-	    						                "crm_sub_rwa_ris_crm","crm_sub_rwa_cov_crm","crm_sub_rwa_org_cou",
-	    						                "crm_sub_rwa_not_cov_crm","crm_comp_col_expo_elig",
-	    						                "crm_comp_col_elig_expo_vol_adj","crm_comp_col_elig_fin_hai",
-	    						                "crm_comp_col_expo_val","rwa_elig_expo_not_cov_crm",
-	    						                "rwa_unsec_expo_cre_ris","rwa_unsec_expo","rwa_tot_ris_wei_ass"
-	    						        };
-
-	    						        for (int row : rows1) {
-
-	    						            String prefix = "R" + row + "_";
-
-	    						            for (String field : fields1) {
-
-	    						                String getterName = "get" + prefix + field;
-	    						                String setterName = "set" + prefix + field;
-	    						                String columnName = (prefix + field).toLowerCase();
-
-	    						                try {
-	    						                    Method getter = M_SRWA_12A_Summary_M_Entity.class.getMethod(getterName);
-	    						                    Method setter = M_SRWA_12A_Summary_M_Entity.class.getMethod(setterName, getter.getReturnType());
-
-	    						                    Object newValue = getter.invoke(updatedEntity);
-	    						                    setter.invoke(existing, newValue);
-
-	    						                    setClauses.add(columnName + " = ?");
-	    						                    params.add(newValue);
-
-	    						                } catch (NoSuchMethodException e) {
-	    						                    continue;
-	    						                }
-	    						            }
-	    						        }
-
-	    						        // ===============================
-	    						        // PART 2 : OFF BALANCE SHEET ROWS
-	    						        // ===============================
-
-	    						        int[] rows2 = {144,251,252,254};
-
-	    						        String[] fields2 = {
-	    						                "exposure_class_off_bal",
-	    						                "nom_pri_amt",
-	    						                "ccf",
-	    						                "cea",
-	    						                "cea_elig_coun_bilt_net",
-	    						                "cea_aft_net",
-	    						                "crm_sub_app_cea_elig",
-	    						                "crm_sub_app_non_col_guar_elig",
-	    						                "crm_sub_app_non_col_cre_der",
-	    						                "crm_sub_app_col_elig_cash",
-	    						                "crm_sub_app_col_elig_tre_bills",
-	    						                "crm_sub_app_col_elig_deb_sec",
-	    						                "crm_sub_app_col_elig_euiq",
-	    						                "crm_sub_app_col_elig_uni_tru",
-	    						                "crm_sub_app_col_cea_cov",
-	    						                "crm_sub_app_col_cea_not_cov",
-	    						                "crm_sub_app_rwa_ris_wei_crm",
-	    						                "crm_sub_app_rwa_ris_cea_cov",
-	    						                "crm_sub_app_rwa_appl_org_coun",
-	    						                "crm_sub_app_rwa_ris_cea_not_cov",
-	    						                "crm_com_app_col_cea_elig_crm",
-	    						                "crm_com_app_col_elig_cea_vol_adj",
-	    						                "crm_com_app_col_elig_fin_hai",
-	    						                "crm_com_app_col_cea_val_aft_crm",
-	    						                "rwa_elig_cea_not_cov",
-	    						                "rwa_unsec_cea_sub_cre_ris",
-	    						                "rwa_unsec_cea",
-	    						                "rwa_tot_ris_wei_ass"
-	    						        };
-
-	    						        for (int row : rows2) {
-
-	    						            String prefix = "R" + row + "_";
-
-	    						            for (String field : fields2) {
-
-	    						                if (row == 254 && field.equals("rwa_tot_ris_wei_ass")) {
-	    						                    continue;
-	    						                }
-
-	    						                String getterName = "get" + prefix + field;
-	    						                String setterName = "set" + prefix + field;
-	    						                String columnName = (prefix + field).toLowerCase();
-
-	    						                try {
-	    						                    Method getter = M_SRWA_12A_Summary_M_Entity.class.getMethod(getterName);
-	    						                    Method setter = M_SRWA_12A_Summary_M_Entity.class.getMethod(setterName, getter.getReturnType());
-
-	    						                    Object newValue = getter.invoke(updatedEntity);
-	    						                    setter.invoke(existing, newValue);
-
-	    						                    setClauses.add(columnName + " = ?");
-	    						                    params.add(newValue);
-
-	    						                } catch (NoSuchMethodException e) {
-	    						                    continue;
-	    						                }
-	    						            }
-	    						        }
-
-	    						    } catch (Exception e) {
-	    						        throw new RuntimeException("Error while updating report fields", e);
-	    						    }
-
-	    						    // ====================================================
-	    						    // UPDATE VIA JDBC (repo.save replaced) — TRUNC based, like SummaryM fetch
-	    						    // ====================================================
-	    						    if (!setClauses.isEmpty()) {
-	    						        String updateSql = "UPDATE BRRS_M_SRWA_12A_SUMMARYTABLE_M SET "
-	    						                + String.join(", ", setClauses)
-	    						                + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-	    						        params.add(updatedEntity.getReport_date());
-	    						        jdbcTemplate.update(updateSql, params.toArray());
-	    						    }
-
-	    						    // ====================================================
-	    						    // NEW COPY FOR AUDIT
-	    						    // ====================================================
-	    						    M_SRWA_12A_Summary_M_Entity newcopy = new M_SRWA_12A_Summary_M_Entity();
-	    						    BeanUtils.copyProperties(existing, newcopy);
-
-	    						    auditService.compareEntitiesmanual(
-	    						            oldcopy,
-	    						            newcopy,
-	    						            updatedEntity.getReport_date().toString(),
-	    						            "M SRWA 12A Summary M Screen",
-	    						            "BRRS_M_SRWA_12A_SUMMARY_M"
-	    						    );
-
-	    						    System.out.println("M_SRWA_12A Summary M Updated Successfully");
-	    						}
-
-	    						
-
 	    						public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
 	    						    ModelAndView mv = new ModelAndView("BRRS/M_SRWA_12A"); 
 

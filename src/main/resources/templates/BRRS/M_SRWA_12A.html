@@ -1173,407 +1173,391 @@ PURPOSE		: BRRS REPORT
 
 
 
-	<SCRIPT>
+	<script>
+	$(document).ready(function () {
 
-		$(document).ready(function () {
+		// ---------- DOM cache: each element is looked up once ----------
+		const cache = Object.create(null);
+		function $id(id) {
+			if (!(id in cache)) cache[id] = document.getElementById(id);
+			return cache[id];
+		}
 
-			// ---------- Helpers ----------
-			function formatNumber(num) {
-				return num.toLocaleString('en-US', {maximumFractionDigits: 0});
+		// ---------- Helpers ----------
+		function formatNumber(n) {
+			if (!isFinite(n)) n = 0;
+			let s = n.toLocaleString('en-US', {maximumFractionDigits: 0});
+			return s === '-0' ? '0' : s;
+		}
+		function readRaw(id) {
+			const el = $id(id);
+			if (!el) return '';
+			return el.tagName === 'INPUT' ? el.value : el.textContent;
+		}
+		function num(id) {
+			return parseFloat(String(readRaw(id)).replace(/,/g, '')) || 0;
+		}
+		function rate(id) {
+			const raw = String(readRaw(id)).trim();
+			if (!raw) return 0;
+			const cleaned = raw.replace(/,/g, '').replace(/\s+/g, '');
+			if (cleaned.endsWith('%')) {
+				const n = parseFloat(cleaned.slice(0, -1));
+				return isNaN(n) ? 0 : n;
 			}
+			const n = parseFloat(cleaned);
+			return isNaN(n) ? 0 : n;
+		}
+		function setVal(id, v) {
+			const el = $id(id);
+			if (!el || el.tagName !== 'INPUT') return;
+			const s = formatNumber(v);
+			if (el.value !== s) el.value = s;   // skip DOM write if unchanged
+		}
 
-			// ✅ UPDATED — works for both <input> and <td> (DB values safe)
-			function parseNum(selector) {
-				const $el = $(selector);
-				if (!$el.length) return 0;
+		// ---------- Row ranges ----------
+		const dataRowRanges = [
+			[19, 28], [32, 41], [44, 44], [47, 56],
+			[60, 69], [73, 81], [85, 91], [96, 101],
+			[105, 113], [117, 121], [124, 131]
+		];
+		const skipRows = new Set([25, 38, 53, 66, 78, 89, 98, 108]);
 
-				const val = $el.is('input') ? $el.val() : $el.text();
-				return parseFloat(val?.toString().replace(/,/g, "")) || 0;
-			}
+		const S_percent = {
+			19: 0.00, 20: 0.00, 21: 0.20, 22: 0.50, 23: 1.00, 24: 1.50, 25: 0.00, 26: 1.50, 27: 1.00, 28: 0.50,
+			32: 0.20, 33: 0.20, 34: 0.50, 35: 0.50, 36: 1.00, 37: 1.50, 38: 0.00, 39: 1.50, 40: 1.00, 41: 0.50,
+			47: 0.0, 48: 0.2, 49: 0.5, 50: 0.5, 51: 1.0, 52: 1.5, 53: 0.0, 54: 1.5, 55: 0.5, 56: 0.5,
+			60: 0.2, 61: 0.2, 62: 0.5, 63: 1.0, 64: 1.0, 65: 1.5, 66: 0.0, 67: 1.5, 68: 1.0, 69: 0.5, 70: 0.0,
+			73: 0.2, 74: 0.5, 75: 1.0, 76: 1.5, 77: 1.0, 78: 0.0, 79: 1.5, 80: 1.0, 81: 0.5,
+			85: 0.2, 86: 0.5, 87: 1.0, 88: 1.5, 89: 0.0, 90: 1.5, 91: 1.0, 92: 0.5,
+			96: 0.75, 97: 1.0, 98: 0.0, 99: 1.5, 100: 1.0, 101: 0.5,
+			105: 0.35, 106: 0.75, 107: 0.75, 108: 0.0, 109: 1.0, 110: 0.5, 111: 1.5, 112: 1.0, 113: 0.5,
+			117: 1.0, 118: 1.5, 119: 1.0, 120: 0.5, 121: 0.0,
+			124: 0.0, 125: 0.2, 126: 1.5, 127: 2.5, 128: 2.5, 129: 2.5, 130: 12.5, 131: 1.0
+		};
 
-			function parseRate(selector) {
-				const $el = $(selector);
-				const raw = $el.is('input') ? $el.val()?.toString().trim() : $el.text()?.toString().trim();
+		const ccfRanges = [
+			{range: [146, 152], value: 0.20}, {range: [154, 161], value: 0.50},
+			{range: [162, 162], value: 0.00}, {range: [164, 170], value: 1.00},
+			{range: [172, 178], value: 1.00}, {range: [180, 186], value: 1.00},
+			{range: [188, 194], value: 1.00}, {range: [196, 202], value: 1.00},
+			{range: [204, 210], value: 1.00}, {range: [212, 218], value: 1.00},
+			{range: [220, 226], value: 0.50}, {range: [228, 234], value: 0.50},
+			{range: [236, 242], value: 0.20}, {range: [244, 250], value: 1.00}
+		];
+		function getCcfValue(row) {
+			for (const b of ccfRanges) if (row >= b.range[0] && row <= b.range[1]) return b.value;
+			return 0;
+		}
 
-				if (!raw) return 0;
+		const rwaPercentages_R = {};
+		for (let i = 145; i <= 250; i++) rwaPercentages_R[i] = 0;
+		rwaPercentages_R[158] = 1;
+		rwaPercentages_R[240] = 1;
 
-				const cleaned = raw.replace(/,/g, "").replace(/\s+/g, "");
+		const rwaPercentages_T = {};
+		for (let i = 145; i <= 250; i++) rwaPercentages_T[i] = 0;
+		rwaPercentages_T[150] = 1;
+		rwaPercentages_T[151] = 0.75;
+		rwaPercentages_T[158] = 1;
+		rwaPercentages_T[168] = 1;
+		rwaPercentages_T[240] = 1;
 
-				// If value ends with %, convert properly
-				if (cleaned.endsWith("%")) {
-					const n = parseFloat(cleaned.slice(0, -1));
-					return isNaN(n) ? 0 : n;   // ← no division by 100 unless YOU want percentage
+		// ---------- static column lists (built once, not per run) ----------
+		const subtotalBlocks = [
+			{start: 19, end: 28, total: 29}, {start: 32, end: 41, total: 42},
+			{start: 47, end: 56, total: 57}, {start: 60, end: 69, total: 70},
+			{start: 73, end: 81, total: 82}, {start: 85, end: 91, total: 93},
+			{start: 96, end: 101, total: 102}, {start: 105, end: 113, total: 114},
+			{start: 117, end: 121, total: 122}, {start: 124, end: 131, total: 132}
+		];
+		const cols = [
+			"expo_crm", "spe_pro_expo", "amt_elig_sht_net", "tot_expo_net_spe",
+			"crm_sub_elig_sub_app", "crm_sub_non_col_guar", "crm_sub_non_col_cre_der",
+			"crm_sub_col_elig_cash", "crm_sub_col_elig_trea_bills",
+			"crm_sub_col_elig_deb_sec", "crm_sub_col_elig_equi", "crm_sub_col_elig_unit_tru",
+			"crm_sub_col_exp_cov", "crm_sub_col_elig_exp_not_cov",
+			"crm_sub_rwa_cov_crm", "crm_sub_rwa_not_cov_crm",
+			"crm_comp_col_expo_elig", "crm_comp_col_elig_expo_vol_adj",
+			"crm_comp_col_elig_fin_hai", "crm_comp_col_expo_val",
+			"rwa_elig_expo_not_cov_crm", "rwa_unsec_expo_cre_ris",
+			"rwa_unsec_expo", "rwa_tot_ris_wei_ass"
+		];
+		const totalRows = [29, 42, 43, 57, 70, 82, 93, 102, 114, 122, 132];
+
+		const ceaRanges = [
+			[146, 152], [154, 162], [164, 170], [172, 178], [180, 186],
+			[188, 194], [196, 202], [204, 210], [212, 218],
+			[220, 226], [228, 234], [236, 242], [244, 250]
+		];
+		const ceaSubtotalBlocks = [
+			{total: 145, start: 146, end: 152}, {total: 153, start: 154, end: 161},
+			{total: 163, start: 164, end: 170}, {total: 171, start: 172, end: 178},
+			{total: 179, start: 180, end: 186}, {total: 187, start: 188, end: 194},
+			{total: 195, start: 196, end: 202}, {total: 203, start: 204, end: 210},
+			{total: 211, start: 212, end: 218}, {total: 219, start: 220, end: 226},
+			{total: 227, start: 228, end: 234}, {total: 235, start: 236, end: 242},
+			{total: 243, start: 244, end: 250}
+		];
+		const ceaCols = [
+			"nom_pri_amt", "cea", "cea_elig_coun_bilt_net",
+			"cea_aft_net", "crm_sub_app_cea_elig", "crm_sub_app_non_col_guar_elig",
+			"crm_sub_app_non_col_cre_der", "crm_sub_app_col_elig_cash",
+			"crm_sub_app_col_elig_tre_bills", "crm_sub_app_col_elig_deb_sec",
+			"crm_sub_app_col_elig_euiq", "crm_sub_app_col_elig_uni_tru",
+			"crm_sub_app_col_cea_cov", "crm_sub_app_col_cea_not_cov",
+			"crm_sub_app_rwa_ris_cea_cov", "crm_sub_app_rwa_ris_cea_not_cov",
+			"crm_com_app_col_cea_elig_crm", "crm_com_app_col_elig_cea_vol_adj",
+			"crm_com_app_col_elig_fin_hai", "crm_com_app_col_cea_val_aft_crm",
+			"rwa_elig_cea_not_cov", "rwa_unsec_cea_sub_cre_ris",
+			"rwa_unsec_cea", "rwa_tot_ris_wei_ass"
+		];
+		const ceaTotalRows = [145, 153, 162, 163, 171, 179, 187, 195, 203, 211, 219, 227, 235, 243];
+		const ceaColsForTotal = ceaCols.filter(c => c !== "rwa_tot_ris_wei_ass");
+		const AC1TotalRows = [145, 153, 162, 163, 171, 179, 187, 195, 203, 211, 219, 227, 235, 243, 251, 252];
+
+		// ---------- Main calculation ----------
+		function calculateAll() {
+
+			// 1) data rows 19–131
+			dataRowRanges.forEach(([start, end]) => {
+				for (let i = start; i <= end; i++) {
+					if (skipRows.has(i)) continue;
+					const p = "r" + i + "_";
+
+					const C = num(p + "expo_crm");
+					const D = num(p + "spe_pro_expo");
+					const E = num(p + "amt_elig_sht_net");
+					const F = C - D - E;
+					setVal(p + "tot_expo_net_spe", F);
+
+					const G = F;
+					setVal(p + "crm_sub_elig_sub_app", G);
+
+					const O = num(p + "crm_sub_non_col_guar") + num(p + "crm_sub_non_col_cre_der")
+						+ num(p + "crm_sub_col_elig_cash") + num(p + "crm_sub_col_elig_trea_bills")
+						+ num(p + "crm_sub_col_elig_deb_sec") + num(p + "crm_sub_col_elig_equi")
+						+ num(p + "crm_sub_col_elig_unit_tru");
+					setVal(p + "crm_sub_col_exp_cov", O);
+
+					const P = F - O;
+					setVal(p + "crm_sub_col_elig_exp_not_cov", P);
+
+					const Q = rate(p + "crm_sub_rwa_ris_crm");
+					const R = (i >= 47 && i <= 56) ? 0 : O * Q;
+					setVal(p + "crm_sub_rwa_cov_crm", R);
+
+					const S = S_percent[i] || num(p + "crm_sub_rwa_org_cou");
+					const T = P * S;
+					setVal(p + "crm_sub_rwa_not_cov_crm", T);
+
+					const X = num(p + "crm_comp_col_elig_expo_vol_adj") - num(p + "crm_comp_col_elig_fin_hai");
+					setVal(p + "crm_comp_col_expo_val", X);
+
+					const Y = X * S;
+					setVal(p + "rwa_elig_expo_not_cov_crm", Y);
+
+					const U = num(p + "crm_comp_col_expo_elig");
+					const Z = F - G - U;
+					setVal(p + "rwa_unsec_expo_cre_ris", Z);
+
+					const AA = Z * S;
+					setVal(p + "rwa_unsec_expo", AA);
+
+					setVal(p + "rwa_tot_ris_wei_ass", R + T + Y + AA);
 				}
+			});
 
-				const num = parseFloat(cleaned);
-				return isNaN(num) ? 0 : num;  // ← return exact value
-			}
-			// ---------- Row ranges ----------
-			const dataRowRanges = [
-				[19, 28], [32, 41], [44, 44], [47, 56],
-				[60, 69], [73, 81], [85, 91], [96, 101],
-				[105, 113], [117, 121], [124, 131]
-			];
+			// 2) subtotals
+			subtotalBlocks.forEach(block => {
+				cols.forEach(col => {
+					let sum = 0;
+					for (let i = block.start; i <= block.end; i++) sum += num("r" + i + "_" + col);
+					setVal("r" + block.total + "_" + col, sum);
+				});
+			});
 
-			const skipRows = [25, 38, 53, 66, 78, 89, 98, 108];
+			cols.forEach(col => setVal("r43_" + col, num("r44_" + col)));
 
-			// ---------- S_percent for T column ----------
-			const S_percent = {
-				19: 0.00, 20: 0.00, 21: 0.20, 22: 0.50, 23: 1.00, 24: 1.50, 25: 0.00, 26: 1.50, 27: 1.00, 28: 0.50,
-				32: 0.20, 33: 0.20, 34: 0.50, 35: 0.50, 36: 1.00, 37: 1.50, 38: 0.00, 39: 1.50, 40: 1.00, 41: 0.50,
-				47: 0.0, 48: 0.2, 49: 0.5, 50: 0.5, 51: 1.0, 52: 1.5, 53: 0.0, 54: 1.5, 55: 0.5, 56: 0.5,
-				60: 0.2, 61: 0.2, 62: 0.5, 63: 1.0, 64: 1.0, 65: 1.5, 66: 0.0, 67: 1.5, 68: 1.0, 69: 0.5, 70: 0.0,
-				73: 0.2, 74: 0.5, 75: 1.0, 76: 1.5, 77: 1.0, 78: 0.0, 79: 1.5, 80: 1.0, 81: 0.5,
-				85: 0.2, 86: 0.5, 87: 1.0, 88: 1.5, 89: 0.0, 90: 1.5, 91: 1.0, 92: 0.5,
-				96: 0.75, 97: 1.0, 98: 0.0, 99: 1.5, 100: 1.0, 101: 0.5,
-				105: 0.35, 106: 0.75, 107: 0.75, 108: 0.0, 109: 1.0, 110: 0.5, 111: 1.5, 112: 1.0, 113: 0.5,
-				117: 1.0, 118: 1.5, 119: 1.0, 120: 0.5, 121: 0.0,
-				124: 0.0, 125: 0.2, 126: 1.5, 127: 2.5, 128: 2.5, 129: 2.5, 130: 12.5, 131: 1.0
-			};
+			cols.forEach(col => {
+				let g = 0;
+				totalRows.forEach(r => { g += num("r" + r + "_" + col); });
+				setVal("r133_" + col, g);
+			});
 
-			// ---------- D1 (CCF %) Mapping ----------
-			const ccfRanges = [
-				{range: [146, 152], value: 0.20},
-				{range: [154, 161], value: 0.50},
-				{range: [162, 162], value: 0.00},
-				{range: [164, 170], value: 1.00},
-				{range: [172, 178], value: 1.00},
-				{range: [180, 186], value: 1.00},
-				{range: [188, 194], value: 1.00},
-				{range: [196, 202], value: 1.00},
-				{range: [204, 210], value: 1.00},
-				{range: [212, 218], value: 1.00},
-				{range: [220, 226], value: 0.50},
-				{range: [228, 234], value: 0.50},
-				{range: [236, 242], value: 0.20},
-				{range: [244, 250], value: 1.00}
-			];
+			// 3) CEA block
+			ceaRanges.forEach(([start, end]) => {
+				for (let i = start; i <= end; i++) {
+					const p = "r" + i + "_";
 
-			function getCcfValue(row) {
-				for (const block of ccfRanges) {
-					if (row >= block.range[0] && row <= block.range[1]) {
-						return block.value;
-					}
+					const C1 = num(p + "nom_pri_amt");
+					const D1 = getCcfValue(i);
+					const E1 = C1 * D1;
+					setVal(p + "cea", E1);
+
+					const F1 = num(p + "cea_elig_coun_bilt_net");
+					const G1 = E1 - F1;
+					setVal(p + "cea_aft_net", G1);
+
+					const H1 = G1;
+					setVal(p + "crm_sub_app_cea_elig", H1);
+
+					const I1 = num(p + "crm_sub_app_non_col_guar_elig");
+					const J1 = num(p + "crm_sub_app_non_col_cre_der");
+
+					let K1;
+					if (i === 158) K1 = H1 * 1.0;
+					else K1 = num(p + "crm_sub_app_col_elig_cash");
+					setVal(p + "crm_sub_app_col_elig_cash", K1);
+
+					const L1 = num(p + "crm_sub_app_col_elig_tre_bills");
+					const M1 = num(p + "crm_sub_app_col_elig_deb_sec");
+					const N1 = num(p + "crm_sub_app_col_elig_euiq");
+					const O1 = num(p + "crm_sub_app_col_elig_uni_tru");
+
+					const P1 = I1 + J1 + K1 + L1 + M1 + N1 + O1;
+					setVal(p + "crm_sub_app_col_cea_cov", P1);
+
+					const Q1 = H1 - P1;
+					setVal(p + "crm_sub_app_col_cea_not_cov", Q1);
+
+					const R1 = rwaPercentages_R[i];
+					const S1 = P1 * R1;
+					setVal(p + "crm_sub_app_rwa_ris_cea_cov", S1);
+
+					const T1 = rwaPercentages_T[i] || 0;
+					const U1 = Q1 * T1;
+					setVal(p + "crm_sub_app_rwa_ris_cea_not_cov", U1);
+
+					const W1 = num(p + "crm_com_app_col_elig_cea_vol_adj");
+					const X1 = num(p + "crm_com_app_col_elig_fin_hai");
+					const Y1 = W1 - X1;
+					setVal(p + "crm_com_app_col_cea_val_aft_crm", Y1);
+
+					const Z1 = Y1 * T1;
+					setVal(p + "rwa_elig_cea_not_cov", Z1);
+
+					const V1 = num(p + "crm_com_app_col_cea_elig_crm");
+					const AA1 = G1 - H1 - V1;
+					setVal(p + "rwa_unsec_cea_sub_cre_ris", AA1);
+
+					const AB1 = AA1 * T1;
+					setVal(p + "rwa_unsec_cea", AB1);
+
+					setVal(p + "rwa_tot_ris_wei_ass", S1 + U1 + Z1 + AB1);
 				}
-				return 0;
-			}
+			});
 
-			// ---------- R1 Percentages for S1 ----------
-			const rwaPercentages_R = {};
-			for (let i = 145; i <= 250; i++) rwaPercentages_R[i] = 0;
-			rwaPercentages_R[158] = 1;
-			rwaPercentages_R[240] = 1;
-
-			// ---------- T1 Percentages for U1 ----------
-			const rwaPercentages_T = {};
-			for (let i = 145; i <= 250; i++) rwaPercentages_T[i] = 0;
-			rwaPercentages_T[150] = 1;
-			rwaPercentages_T[151] = 0.75;
-			rwaPercentages_T[158] = 1;
-			rwaPercentages_T[168] = 1;
-			rwaPercentages_T[240] = 1;
-
-			// ---------- Main Calculation Function ----------
-			function calculateAll() {
-				// 1️⃣ --- Existing Data Calculations (19–131) ---
-				dataRowRanges.forEach(([start, end]) => {
-					for (let i = start; i <= end; i++) {
-						if (skipRows.includes(i)) continue;
-
-						let C = parseNum(`#r${i}_expo_crm`);
-						let D = parseNum(`#r${i}_spe_pro_expo`);
-						let E = parseNum(`#r${i}_amt_elig_sht_net`);
-						let F = C - D - E;
-						$("#r" + i + "_tot_expo_net_spe").val(formatNumber(F));
-
-						let G = F;
-						$("#r" + i + "_crm_sub_elig_sub_app").val(formatNumber(G));
-
-						let H = parseNum(`#r${i}_crm_sub_non_col_guar`);
-						let I = parseNum(`#r${i}_crm_sub_non_col_cre_der`);
-						let J = parseNum(`#r${i}_crm_sub_col_elig_cash`);
-						let K = parseNum(`#r${i}_crm_sub_col_elig_trea_bills`);
-						let L = parseNum(`#r${i}_crm_sub_col_elig_deb_sec`);
-						let M = parseNum(`#r${i}_crm_sub_col_elig_equi`);
-						let N = parseNum(`#r${i}_crm_sub_col_elig_unit_tru`);
-						let O = H + I + J + K + L + M + N;
-						$("#r" + i + "_crm_sub_col_exp_cov").val(formatNumber(O));
-
-						let P = F - O;
-						$("#r" + i + "_crm_sub_col_elig_exp_not_cov").val(formatNumber(P));
-
-						let Q = parseRate(`#r${i}_crm_sub_rwa_ris_crm`);
-						let R = (i >= 47 && i <= 56) ? 0 : O * Q;
-						$("#r" + i + "_crm_sub_rwa_cov_crm").val(formatNumber(R));
-
-						let S = S_percent[i] || parseNum(`#r${i}_crm_sub_rwa_org_cou`);
-						let T = P * S;
-						$("#r" + i + "_crm_sub_rwa_not_cov_crm").val(formatNumber(T));
-
-						let V = parseNum(`#r${i}_crm_comp_col_elig_expo_vol_adj`);
-						let W = parseNum(`#r${i}_crm_comp_col_elig_fin_hai`);
-						let X = V - W;
-						$("#r" + i + "_crm_comp_col_expo_val").val(formatNumber(X));
-
-						let Y = X * S;
-						$("#r" + i + "_rwa_elig_expo_not_cov_crm").val(formatNumber(Y));
-
-						let U = parseNum(`#r${i}_crm_comp_col_expo_elig`);
-						let Z = F - G - U;
-						$("#r" + i + "_rwa_unsec_expo_cre_ris").val(formatNumber(Z));
-
-						let AA = Z * S;
-						$("#r" + i + "_rwa_unsec_expo").val(formatNumber(AA));
-
-						let AB = R + T + Y + AA;
-						$("#r" + i + "_rwa_tot_ris_wei_ass").val(formatNumber(AB));
-					}
+			// 4) CEA subtotals
+			ceaSubtotalBlocks.forEach(block => {
+				ceaCols.forEach(col => {
+					let sum = 0;
+					for (let i = block.start; i <= block.end; i++) sum += num("r" + i + "_" + col);
+					setVal("r" + block.total + "_" + col, sum);
 				});
+			});
 
-				// 2️⃣ --- Subtotals (19–132) ---
-				const subtotalBlocks = [
-					{start: 19, end: 28, total: 29},
-					{start: 32, end: 41, total: 42},
-					{start: 47, end: 56, total: 57},
-					{start: 60, end: 69, total: 70},
-					{start: 73, end: 81, total: 82},
-					{start: 85, end: 91, total: 93},
-					{start: 96, end: 101, total: 102},
-					{start: 105, end: 113, total: 114},
-					{start: 117, end: 121, total: 122},
-					{start: 124, end: 131, total: 132}
-				];
+			ceaColsForTotal.forEach(col => {
+				let g = 0;
+				ceaTotalRows.forEach(r => { g += num("r" + r + "_" + col); });
+				setVal("r253_" + col, g);
+			});
 
-				const cols = [
-					"expo_crm", "spe_pro_expo", "amt_elig_sht_net", "tot_expo_net_spe",
-					"crm_sub_elig_sub_app", "crm_sub_non_col_guar", "crm_sub_non_col_cre_der",
-					"crm_sub_col_elig_cash", "crm_sub_col_elig_trea_bills",
-					"crm_sub_col_elig_deb_sec", "crm_sub_col_elig_equi", "crm_sub_col_elig_unit_tru",
-					"crm_sub_col_exp_cov", "crm_sub_col_elig_exp_not_cov",
-					"crm_sub_rwa_cov_crm", "crm_sub_rwa_not_cov_crm",
-					"crm_comp_col_expo_elig", "crm_comp_col_elig_expo_vol_adj",
-					"crm_comp_col_elig_fin_hai", "crm_comp_col_expo_val",
-					"rwa_elig_expo_not_cov_crm", "rwa_unsec_expo_cre_ris",
-					"rwa_unsec_expo", "rwa_tot_ris_wei_ass"
-				];
+			let AC1GrandTotal = 0;
+			AC1TotalRows.forEach(r => { AC1GrandTotal += num("r" + r + "_rwa_tot_ris_wei_ass"); });
+			setVal("r253_rwa_tot_ris_wei_ass", AC1GrandTotal);
 
-				subtotalBlocks.forEach(block => {
-					cols.forEach(col => {
-						let sum = 0;
-						for (let i = block.start; i <= block.end; i++) {
-							sum += parseNum(`#r${i}_${col}`);
-						}
-						$("#r" + block.total + "_" + col).val(formatNumber(sum));
-					});
-				});
+			setVal("r254_rwa_tot_ris_wei_ass",
+				num("r133_rwa_tot_ris_wei_ass") + num("r253_rwa_tot_ris_wei_ass"));
+		}
+		window.calculateAll = calculateAll;
 
-				// Combine r43 with r44
-				cols.forEach(col => {
-					let val44 = parseNum("#r44_" + col);
-					$("#r43_" + col).val(formatNumber(val44));
-				});
+		// ---------- baseline of every named input (comma-stripped) ----------
+		window.snapshotSrwaBaseline = function () {
+			const base = {};
+			document.querySelectorAll('#fileupload input[name]:not(:disabled)').forEach(function (el) {
+				base[el.name] = el.value.replace(/,/g, '');
+			});
+			window.__srwaBaseline = base;
+		};
 
-				// Grand totals to r133
-				const totalRows = [29, 42, 43, 57, 70, 82, 93, 102, 114, 122, 132];
-				cols.forEach(col => {
-					let grandSum = 0;
-					totalRows.forEach(r => {
-						grandSum += parseNum(`#r${r}_${col}`);
-					});
-					$("#r133_" + col).val(formatNumber(grandSum));
-				});
+		// ---------- run once, snapshot, then recalc only after the user pauses ----------
+		calculateAll();
+		window.snapshotSrwaBaseline();
 
-				// 3️⃣ --- CEA Block Calculations (145–250) ---
-				const ceaRanges = [
-					[146, 152], [154, 162], [164, 170], [172, 178], [180, 186],
-					[188, 194], [196, 202], [204, 210], [212, 218],
-					[220, 226], [228, 234], [236, 242], [244, 250]
-				];
-
-				ceaRanges.forEach(([start, end]) => {
-					for (let i = start; i <= end; i++) {
-
-						// --- C1 = nom_pri_amt ---
-						let C1 = parseNum(`#r${i}_nom_pri_amt`);
-
-						// --- D1 = CCF % (from helper) ---
-						let D1 = getCcfValue(i);
-
-						// --- E1 = cea = nom_pri_amt * ccf ---
-						let E1 = C1 * D1;
-						$("#r" + i + "_cea").val(formatNumber(E1));
-
-						// --- F1 = cea_elig_coun_bilt_net ---
-						let F1 = parseNum(`#r${i}_cea_elig_coun_bilt_net`);
-
-						// --- G1 = cea_aft_net = E1 - F1 ---
-						let G1 = E1 - F1;
-						$("#r" + i + "_cea_aft_net").val(formatNumber(G1));
-
-						// --- H1 = crm_sub_app_cea_elig = G1 ---
-						let H1 = G1;
-						$("#r" + i + "_crm_sub_app_cea_elig").val(formatNumber(H1));
+		window.__calcTimer = null;
+		$("#fileupload").on("input", "input", function () {
+			clearTimeout(window.__calcTimer);
+			window.__calcTimer = setTimeout(calculateAll, 120);
+		});
+	});
 
 
-						// --- I1 to O1 = various CRM collateral eligibles ---
-						let I1 = parseNum(`#r${i}_crm_sub_app_non_col_guar_elig`);
-						let J1 = parseNum(`#r${i}_crm_sub_app_non_col_cre_der`);
+	// ---------- close modal + reload (unchanged) ----------
+	function closemodels() {
+		$("#resultModal").modal("hide");
+		setTimeout(function () { location.reload(); }, 300);
+	}
 
-						// --- Special case for R158 ---
-						let K1;
-						if (i === 158) {
-							// K1 = H1 * 100%
-							K1 = H1 * 1.0; // same value (100% of H1)
-							// If you meant multiply by 100, use: K1 = H1 * 100;
-						} else {
-							K1 = parseNum(`#r${i}_crm_sub_app_col_elig_cash`);
-						}
+	function showResult(title, msg) {
+		$("#resultModalLabel").text(title);
+		$("#resultModalBody").text(msg);
+		$("#resultModal").modal("show");
+	}
 
-						$("#r" + i + "_crm_sub_app_col_elig_cash").val(formatNumber(K1));
-						let L1 = parseNum(`#r${i}_crm_sub_app_col_elig_tre_bills`);
-						let M1 = parseNum(`#r${i}_crm_sub_app_col_elig_deb_sec`);
-						let N1 = parseNum(`#r${i}_crm_sub_app_col_elig_euiq`);
-						let O1 = parseNum(`#r${i}_crm_sub_app_col_elig_uni_tru`);
+	// ---------- SUBMIT: sends only the changed fields, no loader modal ----------
+	function fileuploads(btn) {
+		var asondate = btn.getAttribute("data-todate");
+		if (!asondate) {
+			alert("Report date missing on Submit button (data-todate is empty)");
+			return;
+		}
+		if (btn.disabled) return;
 
-						// --- P1 = crm_sub_app_col_cea_cov = SUM(I1:O1) ---
-						let P1 = I1 + J1 + K1 + L1 + M1 + N1 + O1;
-						$("#r" + i + "_crm_sub_app_col_cea_cov").val(formatNumber(P1));
+		// make sure calculated cells are current (cheap now), cancel the pending debounce
+		clearTimeout(window.__calcTimer);
+		window.calculateAll();
 
-						// --- Q1 = crm_sub_app_col_cea_not_cov = H1 - P1 ---
-						let Q1 = H1 - P1;
-						$("#r" + i + "_crm_sub_app_col_cea_not_cov").val(formatNumber(Q1));
+		var payload = { asondate: asondate };
+		var changed = 0;
+		var base = window.__srwaBaseline;   // undefined => send everything (safe fallback)
 
-
-						// --- R1 = crm_sub_app_rwa_ris_wei_crm ---
-						let R1 = rwaPercentages_R[i]; // 0% default, 100% for 158 & 240
-
-						// --- S1 = crm_sub_app_rwa_ris_cea_cov ---
-						let S1 = P1 * R1;
-						$("#r" + i + "_crm_sub_app_rwa_ris_cea_cov").val(formatNumber(S1));
-
-
-						// Inside the CEA loop:
-						let T1_percent = rwaPercentages_T[i] || 0;
-						let U1 = Q1 * T1_percent;
-						$("#r" + i + "_crm_sub_app_rwa_ris_cea_not_cov").val(formatNumber(U1));
-
-						// --- Y1 = crm_com_app_col_cea_val_aft_crm ---
-						let W1 = parseNum(`#r${i}_crm_com_app_col_elig_cea_vol_adj`);
-						let X1 = parseNum(`#r${i}_crm_com_app_col_elig_fin_hai`);
-						let Y1 = W1 - X1;
-						$("#r" + i + "_crm_com_app_col_cea_val_aft_crm").val(formatNumber(Y1));
-
-						// --- Z1 = rwa_elig_cea_not_cov ---
-						let Z1 = Y1 * T1_percent;
-						$("#r" + i + "_rwa_elig_cea_not_cov").val(formatNumber(Z1));
-
-						// --- AA1 = rwa_unsec_cea_sub_cre_ris ---
-						let V1 = parseNum(`#r${i}_crm_com_app_col_cea_elig_crm`);
-						let AA1 = G1 - H1 - V1;
-						$("#r" + i + "_rwa_unsec_cea_sub_cre_ris").val(formatNumber(AA1));
-
-						// --- AB1 = rwa_unsec_cea ---
-						let AB1 = AA1 * T1_percent;
-						$("#r" + i + "_rwa_unsec_cea").val(formatNumber(AB1));
-
-						// --- AC1 = rwa_tot_ris_wei_ass ---
-						let AC1 = S1 + U1 + Z1 + AB1;
-						$("#r" + i + "_rwa_tot_ris_wei_ass").val(formatNumber(AC1));
-
-					}
-				});
-
-
-				// 4️⃣ --- CEA Subtotals (145–250) ---
-				const ceaSubtotalBlocks = [
-					{total: 145, start: 146, end: 152},
-					{total: 153, start: 154, end: 161},
-					{total: 163, start: 164, end: 170},
-					{total: 171, start: 172, end: 178},
-					{total: 179, start: 180, end: 186},
-					{total: 187, start: 188, end: 194},
-					{total: 195, start: 196, end: 202},
-					{total: 203, start: 204, end: 210},
-					{total: 211, start: 212, end: 218},
-					{total: 219, start: 220, end: 226},
-					{total: 227, start: 228, end: 234},
-					{total: 235, start: 236, end: 242},
-					{total: 243, start: 244, end: 250}
-				];
-
-				const ceaCols = [
-					"nom_pri_amt", "cea", "cea_elig_coun_bilt_net",
-					"cea_aft_net", "crm_sub_app_cea_elig", "crm_sub_app_non_col_guar_elig",
-					"crm_sub_app_non_col_cre_der", "crm_sub_app_col_elig_cash",
-					"crm_sub_app_col_elig_tre_bills", "crm_sub_app_col_elig_deb_sec",
-					"crm_sub_app_col_elig_euiq", "crm_sub_app_col_elig_uni_tru",
-					"crm_sub_app_col_cea_cov", "crm_sub_app_col_cea_not_cov",
-					"crm_sub_app_rwa_ris_cea_cov", "crm_sub_app_rwa_ris_cea_not_cov",
-					"crm_com_app_col_cea_elig_crm", "crm_com_app_col_elig_cea_vol_adj",
-					"crm_com_app_col_elig_fin_hai", "crm_com_app_col_cea_val_aft_crm",
-					"rwa_elig_cea_not_cov", "rwa_unsec_cea_sub_cre_ris",
-					"rwa_unsec_cea", "rwa_tot_ris_wei_ass"
-				];
-
-				ceaSubtotalBlocks.forEach(block => {
-					ceaCols.forEach(col => {
-						let sum = 0;
-						for (let i = block.start; i <= block.end; i++) {
-							sum += parseNum(`#r${i}_${col}`);
-						}
-						$("#r" + block.total + "_" + col).val(formatNumber(sum));
-					});
-				});
-
-
-				//  ADD GRAND TOTAL (r253) HERE
-				const ceaTotalRows = [145, 153, 162, 163, 171, 179, 187, 195, 203, 211, 219, 227, 235, 243];
-				const ceaColsForTotal = [
-					"nom_pri_amt", "cea", "cea_elig_coun_bilt_net", "cea_aft_net",
-					"crm_sub_app_cea_elig", "crm_sub_app_non_col_guar_elig", "crm_sub_app_non_col_cre_der",
-					"crm_sub_app_col_elig_cash", "crm_sub_app_col_elig_tre_bills", "crm_sub_app_col_elig_deb_sec",
-					"crm_sub_app_col_elig_euiq", "crm_sub_app_col_elig_uni_tru", "crm_sub_app_col_cea_cov",
-					"crm_sub_app_col_cea_not_cov", "crm_sub_app_rwa_ris_cea_cov", "crm_sub_app_rwa_ris_cea_not_cov",
-					"crm_com_app_col_cea_elig_crm", "crm_com_app_col_elig_cea_vol_adj", "crm_com_app_col_elig_fin_hai",
-					"crm_com_app_col_cea_val_aft_crm", "rwa_elig_cea_not_cov", "rwa_unsec_cea_sub_cre_ris", "rwa_unsec_cea"
-				];
-
-				ceaColsForTotal.forEach(col => {
-					let grandSum = 0;
-					ceaTotalRows.forEach(r => {
-						grandSum += parseNum(`#r${r}_${col}`);
-					});
-					$("#r253_" + col).val(formatNumber(grandSum));
-				});
-
-				// ✅ AC1 (rwa_tot_ris_wei_ass) Grand Total for r253
-				const AC1TotalRows = [145, 153, 162, 163, 171, 179, 187, 195, 203, 211, 219, 227, 235, 243, 251, 252];
-				let AC1GrandTotal = 0;
-				AC1TotalRows.forEach(r => {
-					AC1GrandTotal += parseNum(`#r${r}_rwa_tot_ris_wei_ass`);
-				});
-				$("#r253_rwa_tot_ris_wei_ass").val(formatNumber(AC1GrandTotal));
-
-				let AB133 = parseNum("#r133_rwa_tot_ris_wei_ass"); // correct!
-				let AC253 = parseNum("#r253_rwa_tot_ris_wei_ass"); // AC1 253
-				let AC254 = AB133 + AC253;
-				$("#r254_rwa_tot_ris_wei_ass").val(formatNumber(AC254));
-			}
-
-
-			// ---------- Run Calculations ----------
-			calculateAll();
-			$("input").on("input", calculateAll);
-			window.calculateAll = calculateAll;
-
+		document.querySelectorAll('#fileupload input[name]:not(:disabled)').forEach(function (el) {
+			var v = el.value.replace(/,/g, '');
+			if (base && Object.prototype.hasOwnProperty.call(base, el.name) && base[el.name] === v) return;
+			payload[el.name] = v;
+			changed++;
 		});
 
+		if (changed === 0) {
+			showResult("BRRS", "No changes to submit.");
+			return;
+		}
 
+		var oldLabel = btn.innerHTML;
+		btn.disabled = true;
+		btn.innerHTML = "Submitting...";
 
-
-
-
-	</SCRIPT>
+		$.ajax({
+			url: './M_SRWA_12AupdateAll',
+			type: 'POST',
+			data: payload,
+			dataType: 'text',
+			success: function (msg) {
+				window.snapshotSrwaBaseline();   // current screen is now the saved state
+				showResult("BRRS", msg || "Modified Successfully.");
+			},
+			error: function (jqXHR) {
+				console.error("Error response:", jqXHR.responseText);
+				showResult("Error", "Update failed. " + (jqXHR.responseText || "Check console for details."));
+			},
+			complete: function () {
+				btn.disabled = false;
+				btn.innerHTML = oldLabel;
+			}
+		});
+	}
+	</script>
 
 
 
@@ -1594,69 +1578,137 @@ PURPOSE		: BRRS REPORT
 		}
 
 
-		function fileuploads(btn) {
-			const asondate = btn.getAttribute("data-todate");
-			const type = btn.getAttribute("data-type");
-
-			$('#loader').modal('show');
-
-
-			// ✅ Step 1: Calculate totals
-			calculateAll();
-
-			// ✅ Step 2: Remove commas from inputs
-			$("#fileupload input[type='text']").each(function () {
-				$(this).val($(this).val().replace(/,/g, ''));
-			});
-
-			// ✅ Step 3: Validate form
-			if (!$("#fileupload").valid()) {
-				$('#loader').modal('hide');
-				return;
-			}
-
-			// ✅ Step 4: Build one FormData object for all entities
-			const formData = new FormData();
-			formData.append("asondate", asondate);
-			formData.append("type", type);
-
-
-			// Append all inputs
-			$('#fileupload').find(':input').each(function () {
-				const name = $(this).attr('name');
-				if (name) {
-					formData.append(name, $(this).val());
-				}
-			});
-
-			// ✅ Step 5: Send single Ajax request
-			$.ajax({
-				url: './M_SRWA_12AupdateAll',
-				type: 'POST',
-				data: formData,
-				processData: false,
-				contentType: false,
-				dataType: 'text',
-				success: function () {
-					$("#resultModalLabel").text("BRRS");
-					$("#resultModalBody").text(" Modified Successfully.");
-					$("#resultModal").modal("show");
-				},
-				error: function (jqXHR) {
-					console.error("Error response:", jqXHR.responseText);
-					$("#resultModalLabel").text("Error");
-					$("#resultModalBody").text("Update failed. Check console for details.");
-					$("#resultModal").modal("show");
-				},
-				complete: function () {
-					$('#loader').modal('hide');
-				}
-			});
-		}
-
+		
 	</script>
 
+	<script>
+	/* ---------- loader helpers (fix for "only loading") ---------- */
+	var loaderShown = false;
 
+	function showLoader() {
+		loaderShown = false;
+		$('#loader').one('shown.bs.modal', function () { loaderShown = true; });
+		$('#loader').modal('show');
+	}
+
+	// hides the loader even if the fade-in animation has not finished yet,
+	// then runs the callback once it is fully hidden
+	function hideLoader(callback) {
+		var $l = $('#loader');
+		var doHide = function () {
+			$l.one('hidden.bs.modal', function () { if (callback) callback(); });
+			$l.modal('hide');
+		};
+		if (loaderShown || $l.hasClass('show') || $l.hasClass('in')) {
+			doHide();
+		} else {
+			$l.one('shown.bs.modal', doHide);   // wait until it has finished opening
+			// safety net: if it was never opened, still run callback
+			setTimeout(function () {
+				if (!$l.is(':visible') && callback && !$l.data('cb-done')) { $l.data('cb-done', true); callback(); }
+			}, 1500);
+		}
+	}
+
+	/* ===== (1) In the FIRST <SCRIPT> (the one with calculateAll), replace the last lines ===== */
+	/*
+				// ---------- Run Calculations ----------
+				calculateAll();
+				$("input").on("input", calculateAll);
+				window.calculateAll = calculateAll;
+	   WITH:
+	*/
+				// ---------- Run Calculations ----------
+				calculateAll();
+				// recalc once the user pauses typing instead of on every keystroke (6000+ inputs)
+				var calcTimer = null;
+				$("#fileupload").on("input", "input", function () {
+					clearTimeout(calcTimer);
+					calcTimer = setTimeout(calculateAll, 150);
+				});
+				window.calculateAll = calculateAll;
+				// remember what the screen looked like after the first calculation, so Submit can send only the changes
+				setTimeout(function () { window.snapshotSrwaBaseline && window.snapshotSrwaBaseline(); }, 0);
+
+
+	/* ===== (2) In the SECOND <script> (loader helpers): replace the whole fileuploads() function ===== */
+
+		// ---- baseline of every named input (comma-stripped), taken once after the page is ready ----
+		window.snapshotSrwaBaseline = function () {
+			var base = {};
+			document.querySelectorAll('#fileupload input[name]:not(:disabled)').forEach(function (el) {
+				base[el.name] = el.value.replace(/,/g, '');
+			});
+			window.__srwaBaseline = base;
+		};
+
+		function fileuploads(btn) {
+			var asondate = btn.getAttribute("data-todate");
+			if (!asondate) {
+				alert("Report date missing on Submit button (data-todate is empty)");
+				return;
+			}
+			if (btn.disabled) return;
+
+			btn.disabled = true;
+			showLoader();
+
+			// let the loader paint first, then do the work
+			setTimeout(function () {
+				var payload = { asondate: asondate };
+				var changed = 0;
+				try {
+					calculateAll();   // make sure calculated cells are current
+
+					var base = window.__srwaBaseline;   // undefined => send everything (safe fallback)
+					document.querySelectorAll('#fileupload input[name]:not(:disabled)').forEach(function (el) {
+						var v = el.value.replace(/,/g, '');          // no DOM writes, commas stay on screen
+						if (base && Object.prototype.hasOwnProperty.call(base, el.name) && base[el.name] === v) return;
+						payload[el.name] = v;
+						changed++;
+					});
+				} catch (err) {
+					console.error(err);
+					btn.disabled = false;
+					hideLoader();
+					return;
+				}
+
+				if (changed === 0) {
+					btn.disabled = false;
+					hideLoader(function () {
+						$("#resultModalLabel").text("BRRS");
+						$("#resultModalBody").text(" No changes to submit.");
+						$("#resultModal").modal("show");
+					});
+					return;
+				}
+
+				$.ajax({
+					url: './M_SRWA_12AupdateAll',
+					type: 'POST',
+					data: payload,                 // small urlencoded body (changed fields only), not 6000-part multipart
+					dataType: 'text',
+					success: function () {
+						hideLoader(function () {
+							$("#resultModalLabel").text("BRRS");
+							$("#resultModalBody").text(" Modified Successfully.");
+							$("#resultModal").modal("show");
+						});
+					},
+					error: function (jqXHR) {
+						console.error("Error response:", jqXHR.responseText);
+						hideLoader(function () {
+							$("#resultModalLabel").text("Error");
+							$("#resultModalBody").text("Update failed. " + (jqXHR.responseText || "Check console for details."));
+							$("#resultModal").modal("show");
+						});
+					},
+					complete: function () { btn.disabled = false; }
+				});
+			}, 30);
+		}
+</script>
 
 
 	<script th:inline="javascript">
@@ -1861,7 +1913,7 @@ PURPOSE		: BRRS REPORT
 
 
 
-<title>BRRS</title>
+<title>M_SRWA_12A</title>
 
 <body>
 	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
@@ -18377,10 +18429,9 @@ PURPOSE		: BRRS REPORT
 
 										<tr style="background-color: #ffef00">
 
-											<td style="background-color: #FFFFFFF"></td>
+											<td style="background-color: white"></td>
 
-											<th
-												style="text-align: center; background-color: #FFFFFFF; font-weight: bold">
+											<th style="text-align: center; background-color: white; font-weight: bold">
 												Performing
 												Loans</th>
 
@@ -20749,10 +20800,9 @@ PURPOSE		: BRRS REPORT
 
 										<tr style="background-color: #ffef00">
 
-											<td style="text-align: center; background-color: #FFFFFFF;">66</td>
+											<td style="text-align: center; background-color: white;">66</td>
 
-											<th
-												style="text-align: left; background-color: #FFFFFFF; font-weight: bold;">
+											<th style="text-align: left; background-color: white; font-weight: bold;">
 												Portfoli VIII: Claims Included in the Retail Portfolios</th>
 
 											<!-- C -->
@@ -21003,10 +21053,9 @@ PURPOSE		: BRRS REPORT
 
 										<tr style="background-color: #ffef00">
 
-											<td style="background-color: #FFFFFFF;"></td>
+											<td style="background-color: white;"></td>
 
-											<th
-												style="text-align: center; background-color: #FFFFFFF; font-weight: bold;">
+											<th style="text-align: center; background-color: white; font-weight: bold;">
 												Performing
 												Loans</th>
 
@@ -22906,10 +22955,9 @@ PURPOSE		: BRRS REPORT
 
 										<tr style="background-color: #ffef00">
 
-											<td style="text-align: center; background-color: #FFFFFFF;">73</td>
+											<td style="text-align: center; background-color: white;">73</td>
 
-											<th
-												style="text-align: left; background-color: #FFFFFFF; font-weight: bold;">
+											<th style="text-align: left; background-color: white; font-weight: bold;">
 												Portfoli IX: Claims Secured by Residential Mortgage Property
 											</th>
 
@@ -23161,10 +23209,9 @@ PURPOSE		: BRRS REPORT
 
 										<tr style="background-color: #ffef00">
 
-											<td style="background-color: #FFFFFFF;"></td>
+											<td style="background-color: white;"></td>
 
-											<th
-												style="text-align: center; background-color: #FFFFFFF; font-weight: bold;">
+											<th style="text-align: center; background-color: white; font-weight: bold;">
 												Performing
 												Loans</th>
 											<!-- C -->
@@ -25770,10 +25817,9 @@ PURPOSE		: BRRS REPORT
 
 										<tr style="background-color: #ffef00">
 
-											<td style="text-align: center; background-color: #FFFFFFF;">80</td>
+											<td style="text-align: center; background-color: white;">80</td>
 
-											<th
-												style="text-align: left; background-color: #FFFFFFF; font-weight: bold;">
+											<th style="text-align: left; background-color: white; font-weight: bold;">
 												Portfolio X: Claims Secured by Commercial Real Estate</th>
 
 											<!-- C -->
@@ -26026,10 +26072,9 @@ PURPOSE		: BRRS REPORT
 
 										<tr style="background-color: #ffef00">
 
-											<td style="background-color: #FFFFFFF;"></td>
+											<td style="background-color: white;"></td>
 
-											<th
-												style="text-align: center; background-color: #FFFFFFF; font-weight: bold;">
+											<th style="text-align: center; background-color: white; font-weight: bold;">
 												Performing
 												Loans</th>
 
@@ -27689,10 +27734,9 @@ PURPOSE		: BRRS REPORT
 
 										<tr style="background-color: #ffef00">
 
-											<td style="text-align: center; background-color: #FFFFFFF;">86</td>
+											<td style="text-align: center; background-color: white;">86</td>
 
-											<th
-												style="text-align: left; background-color: #FFFFFFF; font-weight: bold;">
+											<th style="text-align: left; background-color: white; font-weight: bold;">
 												Portfolio XI: Other Assets</th>
 
 											<!-- C -->
@@ -29865,10 +29909,9 @@ PURPOSE		: BRRS REPORT
 
 										<tr style="background-color: #ffef00">
 
-											<td style="text-align: center; background-color: #FFFFFFF;">94</td>
+											<td style="text-align: center; background-color: white;">94</td>
 
-											<th
-												style="text-align: left; background-color: #FFFFFFF; font-weight: bold;">
+											<th style="text-align: left; background-color: white; font-weight: bold;">
 												Past due exposure where specific provision is less than 20% of the loan.
 											</th>
 
@@ -30122,10 +30165,9 @@ PURPOSE		: BRRS REPORT
 
 										<tr style="background-color: #ffef00">
 
-											<td style="text-align: center; background-color: #FFFFFFF;">95</td>
+											<td style="text-align: center; background-color: white;">95</td>
 
-											<th
-												style="text-align: left; background-color: #FFFFFFF; font-weight: bold;">
+											<th style="text-align: left; background-color: white; font-weight: bold;">
 												Past due exposure where specific provision is equal to or greater than
 												20% but less than 50% of the loan.
 											</th>
@@ -30380,10 +30422,9 @@ PURPOSE		: BRRS REPORT
 
 										<tr style="background-color: #ffef00">
 
-											<td style="text-align: center; background-color: #FFFFFFF;">96</td>
+											<td style="text-align: center; background-color: white;">96</td>
 
-											<th
-												style="text-align: left; background-color: #FFFFFFF; font-weight: bold;">
+											<th style="text-align: left; background-color: white; font-weight: bold;">
 												Past due exposure where specific provision is equal to 50% or more of
 												the loan.
 											</th>

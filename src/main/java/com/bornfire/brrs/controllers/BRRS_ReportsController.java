@@ -12,10 +12,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.servlet.ServletOutputStream;
@@ -3466,11 +3468,11 @@ public class BRRS_ReportsController {
 	@Autowired
 	BRRS_M_SRWA_12A_ReportService brrs_m_srwa_12a_reportservice;
 
-	@RequestMapping(value = "/M_SRWA_12AupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@PostMapping("/M_SRWA_12AupdateAll")
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-
+			@RequestParam Map<String, String> allParams,
 			@ModelAttribute BRRS_M_SRWA_12A_ReportService.M_SRWA_12A_Summary_Entity1 request1,
 			@ModelAttribute BRRS_M_SRWA_12A_ReportService.M_SRWA_12A_Summary_Entity2 request2,
 			@ModelAttribute BRRS_M_SRWA_12A_ReportService.M_SRWA_12A_Summary_Entity3 request3,
@@ -3479,30 +3481,20 @@ public class BRRS_ReportsController {
 			@ModelAttribute BRRS_M_SRWA_12A_ReportService.M_SRWA_12A_Summary_Entity6 request6,
 			@ModelAttribute BRRS_M_SRWA_12A_ReportService.M_SRWA_12A_Summary_Entity7 request7,
 			@ModelAttribute BRRS_M_SRWA_12A_ReportService.M_SRWA_12A_Summary_M_Entity request8) {
+
+		if (asondate == null) {
+			return ResponseEntity.badRequest().body("Update Failed: report date (asondate) was not received.");
+		}
 		try {
-			System.out.println("Came to single controller");
-
-			request1.setReport_date(asondate);
-			request2.setReport_date(asondate);
-			request3.setReport_date(asondate);
-			request4.setReport_date(asondate);
-			request5.setReport_date(asondate);
-			request6.setReport_date(asondate);
-			request7.setReport_date(asondate);
-			request8.setReport_date(asondate);
-
-			brrs_m_srwa_12a_reportservice.updateReport1(request1);
-			brrs_m_srwa_12a_reportservice.updateReport2(request2);
-			brrs_m_srwa_12a_reportservice.updateReport3(request3);
-			brrs_m_srwa_12a_reportservice.updateReport4(request4);
-			brrs_m_srwa_12a_reportservice.updateReport5(request5);
-			brrs_m_srwa_12a_reportservice.updateReport6(request6);
-			brrs_m_srwa_12a_reportservice.updateReport7(request7);
-			brrs_m_srwa_12a_reportservice.updateReport8(request8);
-
+			Set<String> sent = new HashSet<>();
+			for (String k : allParams.keySet()) {
+				if (!"asondate".equalsIgnoreCase(k)) sent.add(k.toLowerCase());
+			}
+			brrs_m_srwa_12a_reportservice.updateAllReports(asondate, sent, request1, request2, request3,
+					request4, request5, request6, request7, request8);
 			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("M_SRWA_12A update failed", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
@@ -4132,7 +4124,9 @@ public class BRRS_ReportsController {
 		try {
 			System.out.println("came to single controller");
 
-			// ? set the asondate into entity request.setReport_date(asondate);
+			// ? set the asondate into entity 
+			
+			request.setReport_date(asondate);
 
 			BRRS_Q_SMME_DEP_ReportService.updateQSmmeDepReport(request);
 
