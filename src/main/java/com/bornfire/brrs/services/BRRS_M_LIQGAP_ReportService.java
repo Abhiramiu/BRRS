@@ -8429,12 +8429,11 @@ public class BRRS_M_LIQGAP_ReportService {
 	}
 
 	@Transactional
-	public void updateReport(M_LIQGAP_Manual_Summary_Entity request) {
+	public boolean updateReport(M_LIQGAP_Manual_Summary_Entity request) {
 
-		System.out.println("Entered updateReport service");
+		System.out.println("Entered updateReport service (MAKER)");
 		System.out.println("Report Date: " + request.getReportDate());
 
-		// ✅ JDBC method - getManualSummaryDataByDate
 		List<M_LIQGAP_Manual_Summary_Entity> list = getManualSummaryDataByDate(request.getReportDate());
 
 		if (list.isEmpty()) {
@@ -8443,88 +8442,96 @@ public class BRRS_M_LIQGAP_ReportService {
 
 		M_LIQGAP_Manual_Summary_Entity existing = list.get(0);
 
-		// Audit old copy
 		M_LIQGAP_Manual_Summary_Entity oldcopy = new M_LIQGAP_Manual_Summary_Entity();
 		BeanUtils.copyProperties(existing, oldcopy);
 
 		try {
-
 			int[] rows = { 21, 32, 33, 34 };
 
 			for (int row : rows) {
-
 				String prefix = "R" + row + "_";
-
 				String[] fields;
 
 				if (row == 21 || row == 32) {
-
 					fields = new String[] { "non_interest_bearing" };
-
 				} else if (row == 33) {
-
 					fields = new String[] { "non_interest_bearing", "third_month", "last_month", "first_year",
 							"fifth_year" };
-
 				} else if (row == 34) {
-
 					fields = new String[] { "first_month" };
-
 				} else {
 					continue;
 				}
 
 				for (String field : fields) {
-
 					String getterName = "get" + prefix + field;
 					String setterName = "set" + prefix + field;
-
 					try {
-
 						Method getter = M_LIQGAP_Manual_Summary_Entity.class.getMethod(getterName);
-
 						Method setter = M_LIQGAP_Manual_Summary_Entity.class.getMethod(setterName,
 								getter.getReturnType());
-
 						Object newValue = getter.invoke(request);
-
-						System.out.println("Updating: " + prefix + field + " = " + newValue);
-
 						setter.invoke(existing, newValue);
-
 					} catch (NoSuchMethodException e) {
-
 						System.out.println("Field NOT FOUND: " + prefix + field);
 					}
 				}
 			}
-
 		} catch (Exception e) {
-
 			throw new RuntimeException("Error while updating LIQGAP report fields", e);
 		}
 
-		// ✅ Audit & Save only if changes exist
 		String changes = auditService.getChanges(oldcopy, existing);
-
-		if (!changes.isEmpty()) {
-
-			// ✅ UPDATE using JDBC - Direct SQL update
-			String sql = "UPDATE BRRS_M_LIQGAP_MANUAL_SUMMARYTABLE SET " + "R21_NON_INTEREST_BEARING = ?, "
-					+ "R32_NON_INTEREST_BEARING = ?, " + "R33_THIRD_MONTH = ?, " + "R33_LAST_MONTH = ?, "
-					+ "R33_FIRST_YEAR = ?, " + "R33_FIFTH_YEAR = ?, " + "R33_NON_INTEREST_BEARING = ?, "
-					+ "R34_FIRST_MONTH = ? " + "WHERE REPORT_DATE = ?";
-
-			jdbcTemplate.update(sql, existing.getR21_non_interest_bearing(), existing.getR32_non_interest_bearing(),
-					existing.getR33_third_month(), existing.getR33_last_month(), existing.getR33_first_year(),
-					existing.getR33_fifth_year(), existing.getR33_non_interest_bearing(), existing.getR34_first_month(),
-					existing.getReportDate());
-
-			auditService.compareEntitiesmanual(oldcopy, existing, request.getReportDate().toString(),
-					"M LIQGAP Manual Summary Screen", "BRRS_M_LIQGAP_MANUAL_SUMMARY");
-
-			System.out.println("LIQGAP report updated successfully.");
+		if (changes == null || changes.isEmpty()) {
+			System.out.println("LIQGAP: no changes detected, nothing sent for approval.");
+			return false;
 		}
+
+		auditService.compareEntitiesmanual(oldcopy, existing, request.getReportDate().toString(),
+				"M LIQGAP Manual Summary Screen", "BRRS_M_LIQGAP_MOD_MANUAL_SUMMARYTABLE");
+
+		existing.setEntity_flg("Y");
+		existing.setModify_flg("Y");
+		existing.setDel_flg("N");
+
+		saveModManualSummaryEntity(existing);
+
+		System.out.println("LIQGAP saved to BRRS_M_LIQGAP_MOD_MANUAL_SUMMARYTABLE for Checker approval.");
+		return true;
+	}
+
+	public void saveModManualSummaryEntity(M_LIQGAP_Manual_Summary_Entity e) {
+
+		String sql = "MERGE INTO BRRS_M_LIQGAP_MOD_MANUAL_SUMMARYTABLE dest "
+				+ "USING (SELECT ? AS report_date FROM dual) src "
+				+ "ON (TRUNC(dest.REPORT_DATE) = TRUNC(src.report_date)) " + "WHEN MATCHED THEN UPDATE SET "
+				+ "  R21_NON_INTEREST_BEARING = ?, R32_NON_INTEREST_BEARING = ?, "
+				+ "  R33_THIRD_MONTH = ?, R33_LAST_MONTH = ?, R33_FIRST_YEAR = ?, R33_FIFTH_YEAR = ?, "
+				+ "  R33_NON_INTEREST_BEARING = ?, R34_FIRST_MONTH = ?, "
+				+ "  REPORT_FREQUENCY = ?, REPORT_CODE = ?, REPORT_DESC = ?, "
+				+ "  ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? " + "WHEN NOT MATCHED THEN INSERT ("
+				+ "  REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+				+ "  R21_NON_INTEREST_BEARING, R32_NON_INTEREST_BEARING, "
+				+ "  R33_THIRD_MONTH, R33_LAST_MONTH, R33_FIRST_YEAR, R33_FIFTH_YEAR, R33_NON_INTEREST_BEARING, "
+				+ "  R34_FIRST_MONTH, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+		String version = e.getReportVersion() != null ? e.getReportVersion().toPlainString() : null;
+
+		Object[] params = {
+
+				e.getReportDate(),
+
+				e.getR21_non_interest_bearing(), e.getR32_non_interest_bearing(), e.getR33_third_month(),
+				e.getR33_last_month(), e.getR33_first_year(), e.getR33_fifth_year(), e.getR33_non_interest_bearing(),
+				e.getR34_first_month(), e.getReport_frequency(), e.getReport_code(), e.getReport_desc(),
+				e.getEntity_flg(), e.getModify_flg(), e.getDel_flg(), e.getReportDate(), version,
+				e.getReport_frequency(), e.getReport_code(), e.getReport_desc(), e.getR21_non_interest_bearing(),
+				e.getR32_non_interest_bearing(), e.getR33_third_month(), e.getR33_last_month(), e.getR33_first_year(),
+				e.getR33_fifth_year(), e.getR33_non_interest_bearing(), e.getR34_first_month(), e.getEntity_flg(),
+				e.getModify_flg(), e.getDel_flg() };
+
+		jdbcTemplate.update(sql, params);
 	}
 
 	public byte[] getBRRS_M_LIQGAPExcel(String filename, String reportId, String fromdate, String todate,

@@ -837,20 +837,57 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			// ✅ Use the service's inner class type
-			@ModelAttribute BRRS_M_LIQGAP_ReportService.M_LIQGAP_Manual_Summary_Entity request1) {
+			@ModelAttribute BRRS_M_LIQGAP_ReportService.M_LIQGAP_Manual_Summary_Entity request1,
+			HttpServletRequest req) {
 		try {
-			System.out.println("Came to single controller");
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
 
-			// set date into entities
+			// MAN / ADMIN allowed - a Manager acts as both Maker and Checker
+			if (!isMaker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Maker (or MAN/ADMIN) can submit M_LIQGAP modifications. Current role: " + role);
+			}
+
+			if (asondate == null) {
+				return ResponseEntity.badRequest().body("asondate is required.");
+			}
+
+			System.out.println("Came to LIQGAPupdateAll (MAKER) for date: " + asondate);
 			request1.setReportDate(asondate);
-			// call services
-			brrs_m_liqgap_reportservice.updateReport(request1);
 
-			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
+			boolean submitted = brrs_m_liqgap_reportservice.updateReport(request1);
+
+			if (!submitted) {
+				return ResponseEntity.ok("No changes detected — nothing sent for Checker approval.");
+			}
+			return ResponseEntity.ok("Modified successfully — pending Checker approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+
+	@RequestMapping(value = "/verifyAuditLIQGAP", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> verifyAuditLIQGAP(@RequestParam("auditId") Long auditId, HttpServletRequest req) {
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
+
+			if (!isChecker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Checker (or MAN/ADMIN) can verify M_LIQGAP. Current role: " + role);
+			}
+
+			System.out.println("Came to verifyAuditLIQGAP (CHECKER) for auditId=" + auditId + ", role=" + role);
+
+			auditService.verifyAndTransferReport(auditId);
+
+			return ResponseEntity.ok("Verified and transferred successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Verify Failed: " + e.getMessage());
 		}
 	}
 
@@ -3488,10 +3525,11 @@ public class BRRS_ReportsController {
 		try {
 			Set<String> sent = new HashSet<>();
 			for (String k : allParams.keySet()) {
-				if (!"asondate".equalsIgnoreCase(k)) sent.add(k.toLowerCase());
+				if (!"asondate".equalsIgnoreCase(k))
+					sent.add(k.toLowerCase());
 			}
-			brrs_m_srwa_12a_reportservice.updateAllReports(asondate, sent, request1, request2, request3,
-					request4, request5, request6, request7, request8);
+			brrs_m_srwa_12a_reportservice.updateAllReports(asondate, sent, request1, request2, request3, request4,
+					request5, request6, request7, request8);
 			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			logger.error("M_SRWA_12A update failed", e);
@@ -4124,8 +4162,8 @@ public class BRRS_ReportsController {
 		try {
 			System.out.println("came to single controller");
 
-			// ? set the asondate into entity 
-			
+			// ? set the asondate into entity
+
 			request.setReport_date(asondate);
 
 			BRRS_Q_SMME_DEP_ReportService.updateQSmmeDepReport(request);
@@ -4666,7 +4704,7 @@ public class BRRS_ReportsController {
 			if (asondate != null) {
 				request1.setReport_date(asondate);
 			}
-			
+
 			QBRANCHNET_service.updateQBranchnetReport(request1); //
 //			  QBRANCHNET_service.QBranchnetUpdate2(request1); //
 //			  QBRANCHNET_service.QBranchnetUpdate3(request1); //
@@ -5129,43 +5167,41 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/M_GMIRTupdate", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
-	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	        @ModelAttribute M_GMIRT_Summary_Entity summary,
-	        @ModelAttribute M_GMIRT_Detail_Entity detail,
-	        HttpServletRequest req) {
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_GMIRT_Summary_Entity summary, @ModelAttribute M_GMIRT_Detail_Entity detail,
+			HttpServletRequest req) {
 
-	    try {
-	        String userid = (String) req.getSession().getAttribute("USERID");
-	        String role   = userProfileRep.getUserRole(userid);
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
 
-	        // ✅ MAKER gate — MAN/ADMIN allowed (dual-role, same policy as M-FAS/M-SIR/etc.)
-	        if (!isMaker(role)) {
-	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-	                    .body("Only Maker (or MAN/ADMIN) can submit M_GMIRT modifications. Current role: " + role);
-	        }
-	        if (asondate == null) {
-	            return ResponseEntity.badRequest().body("asondate is required.");
-	        }
+			// ✅ MAKER gate — MAN/ADMIN allowed (dual-role, same policy as M-FAS/M-SIR/etc.)
+			if (!isMaker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Maker (or MAN/ADMIN) can submit M_GMIRT modifications. Current role: " + role);
+			}
+			if (asondate == null) {
+				return ResponseEntity.badRequest().body("asondate is required.");
+			}
 
-	        System.out.println("M_GMIRT MAKER controller — date=" + asondate + ", role=" + role);
+			System.out.println("M_GMIRT MAKER controller — date=" + asondate + ", role=" + role);
 
-	        summary.setReport_date(asondate);
-	        detail.setReport_date(asondate);
+			summary.setReport_date(asondate);
+			detail.setReport_date(asondate);
 
-	        // Maker writes to MOD (BRRS_M_GMIRT_MOD_SUMMARYTABLE) only.
-	        // Live summary is untouched until the Checker verifies.
-	        brrs_m_gmirt_reportservice.updateReport(summary);
+			// Maker writes to MOD (BRRS_M_GMIRT_MOD_SUMMARYTABLE) only.
+			// Live summary is untouched until the Checker verifies.
+			brrs_m_gmirt_reportservice.updateReport(summary);
 
-	        // Detail remains a direct mirror (no Maker–Checker on detail for GMIRT).
-	        brrs_m_gmirt_reportservice.updateDetail(detail);
+			// Detail remains a direct mirror (no Maker–Checker on detail for GMIRT).
+			brrs_m_gmirt_reportservice.updateDetail(detail);
 
-	        return ResponseEntity.ok("Modification saved. Pending Checker verification.");
+			return ResponseEntity.ok("Modification saved. Pending Checker verification.");
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Update Failed: " + e.getMessage());
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
 	}
 
 	// ─────────────────────────────────────────────────────────
@@ -5174,33 +5210,30 @@ public class BRRS_ReportsController {
 	// ─────────────────────────────────────────────────────────
 	@RequestMapping(value = "/verifyAuditM_GMIRT", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public ResponseEntity<String> verifyAuditM_GMIRT(
-	        @RequestParam("auditId") Long auditId,
-	        HttpServletRequest req) {
+	public ResponseEntity<String> verifyAuditM_GMIRT(@RequestParam("auditId") Long auditId, HttpServletRequest req) {
 
-	    try {
-	        String userid = (String) req.getSession().getAttribute("USERID");
-	        String role   = userProfileRep.getUserRole(userid);
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
 
-	        // ✅ CHECKER gate — MAN/ADMIN allowed (dual-role, same policy)
-	        if (!isChecker(role)) {
-	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-	                    .body("Only Checker (or MAN/ADMIN) can verify M_GMIRT. Current role: " + role);
-	        }
+			// ✅ CHECKER gate — MAN/ADMIN allowed (dual-role, same policy)
+			if (!isChecker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Checker (or MAN/ADMIN) can verify M_GMIRT. Current role: " + role);
+			}
 
-	        System.out.println("M_GMIRT CHECKER verify — auditId=" + auditId + ", role=" + role);
+			System.out.println("M_GMIRT CHECKER verify — auditId=" + auditId + ", role=" + role);
 
-	        // Dispatches to AuditService.transferGMIRTData(auditRecord):
-	        //   MOD → live summary, flip MOD flags, run procedure (or inline recompute)
-	        auditService.verifyAndTransferReport(auditId);
+			// Dispatches to AuditService.transferGMIRTData(auditRecord):
+			// MOD → live summary, flip MOD flags, run procedure (or inline recompute)
+			auditService.verifyAndTransferReport(auditId);
 
-	        return ResponseEntity.ok("Verified and transferred successfully.");
+			return ResponseEntity.ok("Verified and transferred successfully.");
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Verify Failed: " + e.getMessage());
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Verify Failed: " + e.getMessage());
+		}
 	}
 
 	@RequestMapping(value = "/UpdateM_GMIRT_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
@@ -6034,7 +6067,7 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
-	
+
 	@RequestMapping(value = "/approveM_SIR", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> approveM_SIR(
@@ -6069,7 +6102,7 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Approval Failed: " + e.getMessage());
 		}
 	}
-	
+
 	@RequestMapping(value = "/verifyAuditM_SIR", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> verifyAuditM_SIR(
