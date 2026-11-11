@@ -756,8 +756,8 @@ PURPOSE		: BRRS_M_CA2REPORT
 			if ($(btn).is(":hidden")) return;
 
 			const readonlyIds = [
-				"r22_gross_income", "r35_gross_income", "r48_gross_income", "r50_aggregate_gross_income", "r52_aggregate_gross_income",
-				"r54_aggregate_gross_income", "r56_risk_weight_factor"
+			    "r22_gross_income", "r35_gross_income", "r48_gross_income", "r50_aggregate_gross_income", "r52_aggregate_gross_income",
+			    "r54_aggregate_gross_income", "r56_risk_weight_factor"
 			];
 
 			// ✅ Enable editing for all inputs except formula ones + paint YELLOW
@@ -2332,12 +2332,11 @@ PURPOSE		: BRRS_M_CA2REPORT
 													th:text="${report.r55_aggregate_gross_income}"></td>
 												<td
 													style="background-color:#BEBEBE; font-weight: bold;text-align:right;">
-													<input class="display-input Show_inputnonEditable" type="text"
-														th:value="${report.r55_risk_weight_factor != null and report.r55_risk_weight_factor != 0 ?
-                      #numbers.formatDecimal(report.r55_risk_weight_factor, 1,'COMMA', 1, 'POINT') :
-                      '6.7'}" id="r55_risk_weight_factor" name="r55_risk_weight_factor"
-														style="background-color:#BEBEBE; height:28px; border-color:transparent; text-align:right;"
-														readonly />
+													<input class="display-input Show_input" type="text"
+													    th:value="${report.r55_risk_weight_factor != null and report.r55_risk_weight_factor != 0 ?
+													    #numbers.formatDecimal(report.r55_risk_weight_factor, 1,'COMMA', 1, 'POINT') :
+													    '6.7'}" id="r55_risk_weight_factor" name="r55_risk_weight_factor"
+													    style="background-color:#BEBEBE; height:28px; border-color:transparent; text-align:right;" />
 												</td>
 											</tr>
 
