@@ -814,10 +814,12 @@ PURPOSE		: BWRBRREPORT
 			var readonlyIds = ["R101_TOTAL_AMOUNT_DEMAND_NOSTRO", "R101_TOTAL_AMOUNT_TIME_NOSTRO", "R101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO", "R101_TOTAL_AMOUNT_DEMAND_VOSTRO", "R101_TOTAL_AMOUNT_TIME_VOSTRO", "R101_TOTAL_AMOUNT_DEMAND_NOSTRO1", "R101_TOTAL_AMOUNT_TIME_NOSTRO1", "R101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO1",
 				"R101_TOTAL_AMOUNT_DEMAND_VOSTRO1", "R101_TOTAL_AMOUNT_TIME_VOSTRO1"];
 
-			for (let i = 1; i <= 10; i++) {
-				readonlyIds.push("R" + i + "_RISK_WEIGHTED_AMOUNT_NOSTRO");
-				readonlyIds.push("R" + i + "_RISK_WEIGHTED_AMOUNT_NOSTRO1");
-			}
+				for (let i = 1; i <= 10; i++) {
+				    readonlyIds.push("R" + i + "_RISK_WEIGHTED_AMOUNT_NOSTRO");
+				    readonlyIds.push("R" + i + "_RISK_WEIGHTED_AMOUNT_NOSTRO1");
+				}
+				// Row 11 (DUE FROM RELATED FOREIGN BANKS): calculated cell stays locked
+				readonlyIds.push("R11_RISK_WEIGHTED_AMOUNT_NOSTRO1");
 
 			$(".Show_input").each(function () {
 				if (!readonlyIds.includes(this.id)) {
@@ -909,6 +911,17 @@ PURPOSE		: BWRBRREPORT
 					}
 				});
 			}
+
+			// Row 11 – DUE FROM RELATED FOREIGN BANKS: show dropdowns, hide text versions
+			$("#R11_TYPE_OF_ACCOUNT_NOSTRO1_TEXT, #R11_PURPOSE_NOSTRO1_TEXT, #R11_CURRENCY_NOSTRO1_TEXT").hide();
+			$("#R11_TYPE_OF_ACCOUNT_NOSTRO1, #R11_PURPOSE_NOSTRO1, #R11_CURRENCY_NOSTRO1").show();
+
+			// Row 11 – yellow manual-entry highlight (same as rows 1-10)
+			["NAME_OF_BANK_NOSTRO1", "TYPE_OF_ACCOUNT_NOSTRO1", "PURPOSE_NOSTRO1", "CURRENCY_NOSTRO1",
+			 "SOVEREIGN_RATING_NOSTRO1", "RISK_WEIGHT_NOSTRO1", "AMOUNT_DEMAND_NOSTRO1", "AMOUNT_TIME_NOSTRO1"
+			].forEach(function (f) {
+			    $("#R11_" + f).css({"background-color": "#FFF59D"});
+			});
 
 			$("#R1_DUE_FROM_DOMESTIC_NAME_OF_BANK").show();
 			$("#R1_DUE_FROM_DOMESTIC_ACCT_TYPE").show();
@@ -1424,9 +1437,23 @@ PURPOSE		: BWRBRREPORT
 				totalAmountDemandVostro += amountDemandVostro;
 				totalAmountTimeVostro += amountTimeVostro;
 
-				totalAmountDemandVostro1 += amountDemandVostro1;
-				totalAmountTimeVostro1 += amountTimeVostro1;
-			}
+				    totalAmountDemandVostro1 += amountDemandVostro1;
+				    totalAmountTimeVostro1 += amountTimeVostro1;
+				}
+
+				// Row 11 – DUE FROM RELATED FOREIGN BANKS (NOSTRO1)
+				(function () {
+				    const num = id => parseFloat(($(id).val() || "").replace(/,/g, "")) || 0;
+				    let w  = num("#R11_RISK_WEIGHT_NOSTRO1");
+				    let d  = num("#R11_AMOUNT_DEMAND_NOSTRO1");
+				    let t  = num("#R11_AMOUNT_TIME_NOSTRO1");
+				    let rw = (w * d + w * t) / 100;
+
+				    $("#R11_RISK_WEIGHTED_AMOUNT_NOSTRO1").val(rw.toFixed(0));
+				    totalAmountDemandNostro1 += d;
+				    totalAmountTimeNostro1 += t;
+				    totalRiskWeightedAmountNostro1 += rw;
+				})();
 
 			// Set totals
 			$("#R101_TOTAL_AMOUNT_DEMAND_NOSTRO").val(totalAmountDemandNostro.toLocaleString('en-IN', {maximumFractionDigits: 0}));

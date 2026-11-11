@@ -202679,7 +202679,8 @@ public class BRRS_M_NOSVOS_ReportService {
 	        String[] fields = null;
 	        String[] totalFields = null;
 	        String[] fromFields = null;
-	        String[] toFields = null;
+String[] toFields = null;
+int endRow = 10;          // default for P1, P2, P4
 
 	        // ========================================================
 	        // P1 - NOSTRO
@@ -202749,7 +202750,9 @@ public class BRRS_M_NOSVOS_ReportService {
 
 	            records = p3_getDataByDate(reportDate);
 
-	            tableName = "BRRS_M_NOSVOS_P3";
+	            // P3 branch
+tableName = "BRRS_M_NOSVOS_P3";
+endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 	            detailTable = "BRRS_M_NOSVOS_DETAIL_P3";
 	            screenName = "M NOSVOS P3 Screen";
 
@@ -202894,9 +202897,7 @@ public class BRRS_M_NOSVOS_ReportService {
 
 	        if (fields != null) {
 
-	            appendNosvosUpdateFields(
-	                sql, params, request1, fields, 1, 10
-	            );
+	            appendNosvosUpdateFields(sql, params, request1, fields, 1, endRow);
 
 	            if (totalFields != null) {
 
