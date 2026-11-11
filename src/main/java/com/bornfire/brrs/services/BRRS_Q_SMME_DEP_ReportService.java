@@ -32569,9 +32569,9 @@ public class BRRS_Q_SMME_DEP_ReportService {
 		try {
 			for (int i = 11; i <= 48; i++) {
 				// Skip rows 27–31
-				if (i >= 27 && i <= 31) {
-					continue;
-				}
+//				if (i >= 27 && i <= 31) {
+//					continue;
+//				}
 
 				for (String field : fields) {
 					String getterName = "getR" + i + "_" + field;
@@ -32663,9 +32663,7 @@ public class BRRS_Q_SMME_DEP_ReportService {
 		insertValues.add(":del_flg");
 
 		for (int i = 11; i <= 48; i++) {
-			if (i >= 27 && i <= 31) {
-				continue;
-			}
+	
 			for (String field : fields) {
 				String getterName = "getR" + i + "_" + field;
 				String paramName = "r" + i + "_" + field.toLowerCase();
@@ -32743,9 +32741,7 @@ public class BRRS_Q_SMME_DEP_ReportService {
 				"1_2M_FD", "4_6M_FD", "7_12M_FD", "13_18M_FD", "19_24M_FD", "OVER24_FD", "TOTAL", "NOACC" };
 
 		for (int i = 11; i <= 48; i++) {
-			if (i >= 27 && i <= 31) {
-				continue;
-			}
+		
 			for (String field : fields) {
 				String prefix = "R" + i + "_";
 				String getterName = "get" + prefix + field;
