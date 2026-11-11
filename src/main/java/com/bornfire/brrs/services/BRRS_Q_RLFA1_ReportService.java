@@ -30,10 +30,12 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15744,7 +15746,11 @@ public class BRRS_Q_RLFA1_ReportService {
 			}
 		} else {
 
-			if ("email".equalsIgnoreCase(format) && version == null) {
+			// email layout is chosen by format OR by the template file name
+			// (EMAIL_Q_RLFA1.xlsx)
+			boolean isEmailFile = filename != null && filename.toUpperCase().startsWith("EMAIL_");
+
+			if (("email".equalsIgnoreCase(format) || isEmailFile) && version == null) {
 				logger.info("Got format as Email");
 				logger.info("Service: Generating Email report for version {}", version);
 				return BRRS_Q_RLFA1EmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
@@ -17319,6 +17325,82 @@ public class BRRS_Q_RLFA1_ReportService {
 					return out.toByteArray();
 				}
 			}
+		}
+	}
+
+	private void prepareQ_RLFA1Sheet(Workbook workbook, boolean isEmail) {
+		try {
+			Sheet sheet = workbook.getSheetAt(0);
+
+			if (isEmail) {
+				// 1. FIRST remove the big C17:F39 merge (0-based rows 16..38, cols 2..5)
+				for (int i = sheet.getNumMergedRegions() - 1; i >= 0; i--) {
+					CellRangeAddress r = sheet.getMergedRegion(i);
+					if (r.getFirstRow() == 16 && r.getLastRow() == 38 && r.getFirstColumn() == 2
+							&& r.getLastColumn() == 5) {
+						sheet.removeMergedRegion(i);
+					}
+				}
+
+				// 2. THEN re-create D:E merge on rows 17..39, only if that row has no merge yet
+	            // 1b. rows 17..39: service wrote "No. of a/c's" into column E; move it to column F
+	            for (int r = 16; r <= 38; r++) {
+	                Row row = sheet.getRow(r);
+	                if (row == null) {
+	                    continue;
+	                }
+	                Cell e = row.getCell(4);
+	                if (e == null) {
+	                    continue;
+	                }
+	                Cell f = row.getCell(5);
+	                if (f == null) {
+	                    f = row.createCell(5);
+	                }
+	                int type = e.getCellType();
+	                if (type == Cell.CELL_TYPE_NUMERIC) {
+	                    f.setCellValue(e.getNumericCellValue());
+	                } else if (type == Cell.CELL_TYPE_STRING) {
+	                    f.setCellValue(e.getStringCellValue());
+	                }
+	                f.setCellStyle(e.getCellStyle());
+	                row.removeCell(e);
+	            }
+
+				// 3. borders for any cell in that block that is still empty (never touches
+				// cells holding values)
+				CellStyle borderStyle = workbook.createCellStyle();
+				borderStyle.setBorderTop(BorderStyle.THIN);
+				borderStyle.setBorderBottom(BorderStyle.THIN);
+				borderStyle.setBorderLeft(BorderStyle.THIN);
+				borderStyle.setBorderRight(BorderStyle.THIN);
+				for (int r = 16; r <= 38; r++) {
+					Row row = sheet.getRow(r);
+					if (row == null) {
+						row = sheet.createRow(r);
+					}
+					for (int c : new int[] { 2, 3, 5 }) {
+						if (row.getCell(c) == null) {
+							row.createCell(c).setCellStyle(borderStyle);
+						}
+					}
+				}
+				workbook.setPrintArea(0, 1, 5, 2, 63); // B3:F64
+			} else {
+				workbook.setPrintArea(0, 0, 3, 0, 65); // A1:D66
+			}
+
+			sheet.setFitToPage(true);
+			PrintSetup ps = sheet.getPrintSetup();
+			ps.setPaperSize(PrintSetup.A4_PAPERSIZE);
+			ps.setLandscape(false);
+			ps.setFitWidth((short) 1);
+			ps.setFitHeight((short) 1);
+			sheet.setHorizontallyCenter(true);
+
+		} catch (Exception e) {
+			// never block the report because of layout tweaks
+			logger.error("Q_RLFA1: prepareQ_RLFA1Sheet failed, continuing without layout fix", e);
 		}
 	}
 
@@ -18958,7 +19040,8 @@ public class BRRS_Q_RLFA1_ReportService {
 						}
 
 					}
-					workbook.setForceFormulaRecalculation(true);
+					prepareQ_RLFA1Sheet(workbook, true); // <-- ADD THIS LINE
+					workbook.write(out);
 				} else {
 
 				}

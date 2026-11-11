@@ -791,6 +791,23 @@ PURPOSE		: BRRSREPORT
 				$('#loader').modal('hide');
 			}, 2000);
 		}
+		function emailDownloadSummaryPdf(element) {
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
+
+			$('#loader').modal('show');
+
+			var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
+
+			window.location.href = url;
+
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
+		}
 
 		function editRecord() {
 			showResultModal("Alert", "Development in progress");

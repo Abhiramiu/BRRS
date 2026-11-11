@@ -6473,7 +6473,7 @@ public class RegulatoryReportServices {
 							todate, currency, dtltype, type, format, version);
 
 				case "Q_SMME":
-					return BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("EMAIL_Q_SMME_INT.xlsx", reportName,
+					return BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("EMAIL_Q_SMME.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, format, version);
 				case "Q_SMME_LA":
 					return BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel("EMAIL_Q_SMME_LA.xlsx", reportName,
@@ -8848,7 +8848,7 @@ public class RegulatoryReportServices {
 		case "Q_SMME":
 			try {
 				if ("EMAIL_Q_SMME.xlsx".equals(filename)) {
-					excelBytes = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("EMAIL_Q_SMME_INT.xlsx",
+					excelBytes = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("EMAIL_Q_SMME.xlsx",
 							reportId, fromdate, todate, currency, dtltype, null, "email", null);
 				} else {
 					excelBytes = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("Q_SMME_INT.xlsx", reportId,
@@ -8878,19 +8878,28 @@ public class RegulatoryReportServices {
 
 		case "Q_SMME_LA":
 			try {
-				excelBytes = BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel(filename, reportId, fromdate,
-						todate, currency, dtltype, null, // type
-						null, null// version
-				);
+				if ("EMAIL_Q_SMME_LA.xlsx".equals(filename)) {
+					excelBytes = BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel("EMAIL_Q_SMME_LA.xlsx",
+							reportId, fromdate, todate, currency, dtltype, null, "email", null);
+				} else {
+					excelBytes = BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel(
+							"Q_SMME_LA.xlsx", reportId, fromdate, todate, currency, dtltype, null, "excel", null);
+				}
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("Q_SMME_LOANS: No Excel data found for PDF generation → todate={}", todate);
 					return new byte[0];
 				}
 
-				logger.info("Q_SMME_LOANS: Excel generated → {} bytes", excelBytes.length);
+				// Using table range 0, 45 for email or 0, 80 for standard based on filename/type check,
+				// or matching your specific requirements for normal vs email:
+				List<int[]> tableRanges;
+				if ("EMAIL_Q_SMME_LA.xlsx".equals(filename)) {
+					tableRanges = Arrays.asList(new int[] { 0, 45 });
+				} else {
+					tableRanges = Arrays.asList(new int[] { 0, 80 });
+				}
 
-				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
 				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
 				if (pdfBytes == null || pdfBytes.length == 0) {
@@ -8905,7 +8914,6 @@ public class RegulatoryReportServices {
 				logger.error("Q_SMME_LOANS: PDF generation failed", e);
 				return new byte[0];
 			}
-
 		case "M_LIQ":
 			try {
 				if ("EMAIL_M_LIQ.xlsx".equals(filename)) {
@@ -11645,6 +11653,79 @@ public class RegulatoryReportServices {
 
 				logger.error("Q_RLFA2: PDF generation failed", e);
 
+				return new byte[0];
+			}
+		case "Q_SMME":
+			try {
+
+				excelBytes = BRRS_Q_SMME_Intrest_Income_ReportService.BRRS_Q_SMME_Intrest_Income_EmailExcel("EMAIL_Q_SMME.xlsx", reportId, fromdate,
+						todate, currency, dtltype, null, null, null);
+
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
+
+					logger.warn("Q_SMME: No Excel data found for PDF generation → todate={}", todate);
+
+					return new byte[0];
+				}
+
+				logger.info("Q_SMME: Excel generated → {} bytes", excelBytes.length);
+
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 } // adjust range if required
+				);
+
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
+
+					logger.error("Q_SMME: PDF conversion returned empty bytes");
+
+					return new byte[0];
+				}
+
+				logger.info("Q_SMME: PDF conversion successful → {} bytes", pdfBytes.length);
+
+				return pdfBytes;
+
+			} catch (Exception e) {
+
+				logger.error("Q_SMME: PDF generation failed", e);
+
+				return new byte[0];
+			}
+		case "Q_SMME_LA":
+			try {
+				boolean isEmail = "EMAIL_Q_SMME_LA.xlsx".equals(filename);
+
+				if (isEmail) {
+					excelBytes = BRRS_Q_SMME_loans_Advances_reportService.BRRS_Q_SMME_loans_Advances_EmailExcel(
+							"EMAIL_Q_SMME_LA.xlsx", reportId, fromdate, todate, currency, dtltype, null, null);
+				} else {
+					excelBytes = BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel(
+							"Q_SMME_LA.xlsx", reportId, fromdate, todate, currency, dtltype, null, "excel", null);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("Q_SMME_LA: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+				logger.info("Q_SMME_LA: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(isEmail ? new int[] { 0, 45 } : new int[] { 0, 80 });
+
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("Q_SMME_LA: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+				logger.info("Q_SMME_LA: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("Q_SMME_LA: PDF generation failed", e);
 				return new byte[0];
 			}
 

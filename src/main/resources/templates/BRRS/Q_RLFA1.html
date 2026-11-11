@@ -647,6 +647,7 @@ PURPOSE		: BRRS REPORT
 			}, 2000);
 		}
 
+
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
 
@@ -1235,36 +1236,36 @@ PURPOSE		: BRRS REPORT
 
 
 
+
 						<button type="button" class="custom-tab-btn" id="btn-format" onclick="downloadfile(this)"
 							th:if="${(displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub') and role != 'M'}"
 							th:attr="data-reportid=${reportid},
-						                   data-asondate=${asondate},
-						                   data-fromdate=${fromdate},
-						                   data-todate=${todate},
-						                   data-currency=${currency}, 
-						                   data-dtltype=${dtltype},
-						                   data-filename='Q_RLFA1.xlsx',
-						                   data-type=${type},
-						                   data-version=${version != null ? version : ''}"
-							style="font-family: Arial; font-weight: bold;">
+													           data-asondate=${asondate},
+													           data-fromdate=${fromdate},
+													           data-todate=${todate},
+													           data-currency=${currency}, 
+													           data-dtltype=${dtltype},
+													           data-filename='Q_RLFA1.xlsx',
+													           data-type=${type},
+													           data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Format
 						</button>
 
 						<button type="button" class="custom-tab-btn" id="btn-email" onclick="downloadfile(this)"
 							th:if="${(displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub') and role != 'M'}"
 							th:attr="data-reportid=${reportid},
-						            data-asondate=${asondate},
-						            data-fromdate=${fromdate},
-						            data-todate=${todate},
-						            data-currency=${currency}, 
-						            data-dtltype=${dtltype},
-						            data-filename='EMAIL_Q_RLFA1.xlsx',
-						            data-type=${type},
-						            data-format='email',
-						            data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
+													    data-asondate=${asondate},
+													    data-fromdate=${fromdate},
+													    data-todate=${todate},
+													    data-currency=${currency}, 
+													    data-dtltype=${dtltype},
+													    data-filename='EMAIL_Q_RLFA1.xlsx',
+													    data-type=${type},
+													    data-format='email',
+													    data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Email
-						</button>
 
+						</button>
 
 						<div class="nav-item dropdown PDF-download-menu"
 							style="list-style: none; display: inline-block;"

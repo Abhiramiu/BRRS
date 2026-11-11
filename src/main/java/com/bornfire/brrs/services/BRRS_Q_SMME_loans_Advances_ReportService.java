@@ -13,7 +13,9 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -49,7 +51,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
 import org.springframework.expression.ParseException;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -63,7 +64,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.UserProfileRep;
-import com.bornfire.brrs.services.BRRS_Q_SMME_Intrest_Income_ReportService.Q_SMME_Intrest_Income_Archival_Summary_Entity;
 
 @Service
 @Transactional
@@ -4246,6 +4246,9 @@ public class BRRS_Q_SMME_loans_Advances_ReportService {
 				numberStyle.setBorderLeft(BorderStyle.THIN);
 				numberStyle.setBorderRight(BorderStyle.THIN);
 				numberStyle.setFont(font);
+				dateStyle.setAlignment(HorizontalAlignment.RIGHT);
+				textStyle.setAlignment(HorizontalAlignment.RIGHT);
+				numberStyle.setAlignment(HorizontalAlignment.RIGHT);
 				// --- End of Style Definitions ---
 
 				int startRow = 6;
@@ -4882,6 +4885,9 @@ public class BRRS_Q_SMME_loans_Advances_ReportService {
 			numberStyle.setBorderLeft(BorderStyle.THIN);
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
+			dateStyle.setAlignment(HorizontalAlignment.RIGHT);
+			textStyle.setAlignment(HorizontalAlignment.RIGHT);
+			numberStyle.setAlignment(HorizontalAlignment.RIGHT);
 			// --- End of Style Definitions ---
 
 			int startRow = 6;
@@ -5461,7 +5467,26 @@ public class BRRS_Q_SMME_loans_Advances_ReportService {
 
 		return resubList;
 	}
-
+	// Right-align every cell in the given columns/rows while keeping its existing style
+	private static void rightAlignRange(Workbook wb, Sheet sheet, int firstRow, int lastRow, int... cols) {
+		Map<Short, CellStyle> cache = new HashMap<>(); // reuse styles; Excel limits the style count
+		for (int r = firstRow; r <= lastRow; r++) {
+			Row row = sheet.getRow(r);
+			if (row == null) continue;
+			for (int c : cols) {
+				Cell cell = row.getCell(c);
+				if (cell == null) continue;
+				CellStyle orig = cell.getCellStyle();
+				CellStyle right = cache.computeIfAbsent(orig.getIndex(), k -> {
+					CellStyle s = wb.createCellStyle();
+					s.cloneStyleFrom(orig);
+					s.setAlignment(HorizontalAlignment.RIGHT);
+					return s;
+				});
+				cell.setCellStyle(right);
+			}
+		}
+	}
 	// Normal Email Excel
 	public byte[] BRRS_Q_SMME_loans_Advances_EmailExcel(String filename, String reportId, String fromdate,
 			String todate, String currency, String dtltype, String type, BigDecimal version) throws Exception {
@@ -5526,6 +5551,9 @@ public class BRRS_Q_SMME_loans_Advances_ReportService {
 			numberStyle.setBorderLeft(BorderStyle.THIN);
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
+			dateStyle.setAlignment(HorizontalAlignment.RIGHT);
+			textStyle.setAlignment(HorizontalAlignment.RIGHT);
+			numberStyle.setAlignment(HorizontalAlignment.RIGHT);
 			// --- End of Style Definitions ---
 
 			int startRow = 6;
@@ -6081,6 +6109,7 @@ public class BRRS_Q_SMME_loans_Advances_ReportService {
 					// 44 is Calculation Part
 
 				}
+				rightAlignRange(workbook, sheet, 13, 39, 5, 6);
 				workbook.setForceFormulaRecalculation(true);
 			} else {
 
@@ -6169,6 +6198,9 @@ public class BRRS_Q_SMME_loans_Advances_ReportService {
 			numberStyle.setBorderLeft(BorderStyle.THIN);
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
+			dateStyle.setAlignment(HorizontalAlignment.RIGHT);
+			textStyle.setAlignment(HorizontalAlignment.RIGHT);
+			numberStyle.setAlignment(HorizontalAlignment.RIGHT);
 			// --- End of Style Definitions ---
 
 			int startRow = 6;

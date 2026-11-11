@@ -33,10 +33,12 @@ import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -49,7 +51,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
 import org.springframework.expression.ParseException;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -3768,6 +3769,53 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 		}
 	}
 
+	private void prepareQ_SMMESheet(Workbook workbook, boolean isEmail) {
+    try {
+        Sheet sheet = workbook.getSheetAt(0);
+
+        if (isEmail) {
+            // 1. E6 is an external-workbook link formula -> remove it
+            Row r6 = sheet.getRow(5);
+            if (r6 != null && r6.getCell(4) != null) {
+                r6.removeCell(r6.getCell(4));
+            }
+
+            // 2. (removed) headers are now in the template: C13 / G13 / H13, no vertical merges
+
+            // 3. remove stale sample data / scratch cells: column F and J:L (rows 14..40)
+            for (int r = 13; r <= 39; r++) {
+                Row row = sheet.getRow(r);
+                if (row == null) continue;
+                for (int c : new int[] { 5, 9, 10, 11 }) {
+                    Cell cell = row.getCell(c);
+                    if (cell != null) row.removeCell(cell);
+                }
+            }
+            workbook.setPrintArea(0, 2, 7, 2, 41); // C3:H42
+
+        } else {
+            // normal template already has no vertical merges; just set the print area
+            workbook.setPrintArea(0, 0, 2, 0, 46); // A1:C47
+        }
+
+        try {
+            workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+        } catch (Exception ex) {
+            logger.warn("Q_SMME: formula evaluation skipped: {}", ex.getMessage());
+        }
+
+        sheet.setFitToPage(true);
+        PrintSetup ps = sheet.getPrintSetup();
+        ps.setPaperSize(PrintSetup.A4_PAPERSIZE);
+        ps.setLandscape(false);
+        ps.setFitWidth((short) 1);
+        ps.setFitHeight((short) 1);
+        sheet.setHorizontallyCenter(true);
+
+    } catch (Exception e) {
+        logger.error("Q_SMME: prepareQ_SMMESheet failed, continuing without layout fix", e);
+    }
+}
 	public byte[] getQ_SMMEExcel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, String format, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.Q_SMME_Intrest_Income");
@@ -5023,6 +5071,7 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 			}
 
 			// Write the final workbook content to the in-memory stream.
+			prepareQ_SMMESheet(workbook, false); // <-- ADD THIS LINE
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
@@ -5130,6 +5179,9 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 			numberStyle.setBorderLeft(BorderStyle.THIN);
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
+			dateStyle.setAlignment(HorizontalAlignment.RIGHT);
+			textStyle.setAlignment(HorizontalAlignment.RIGHT);
+			numberStyle.setAlignment(HorizontalAlignment.RIGHT);
 			// --- End of Style Definitions ---
 
 			int startRow = 5;
@@ -5690,7 +5742,8 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 
 			}
 
-			// Write the final workbook content to the in-memory stream.
+			// in BRRS_Q_SMME_Intrest_Income_EmailExcel(...) (email)
+			prepareQ_SMMESheet(workbook, true);
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
