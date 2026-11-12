@@ -629,23 +629,15 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 
 
 		function showmodify(btn) {
+		    // Only the 9 confirmed manual-entry cells (R14 and R42 are mapping cells — never editable)
+		    $("#R34_MONTH_END, #R37_MONTH_END, #R39_MONTH_END, #R43_MONTH_END, "
+		    + "#R50_MONTH_END, #R51_MONTH_END, #R52_MONTH_END, #R57_MONTH_END, #R59_MONTH_END")
+		        .css({ "background-color": "#FFF59D" })
+		        .prop("readonly", false);
 
-			$("#R14_MONTH_END, #R34_MONTH_END, #R37_MONTH_END, #R39_MONTH_END, #R42_MONTH_END,#R43_MONTH_END, #R50_MONTH_END, #R51_MONTH_END, #R52_MONTH_END, #R57_MONTH_END, #R59_MONTH_END").css({
-				"background-color": "#FFF59D"
-			}).prop("readonly", false);
-
-			$("#R14_MONTH_END, #R34_MONTH_END, #R37_MONTH_END, #R39_MONTH_END,#R42_MONTH_END, #R43_MONTH_END, #R50_MONTH_END, #R51_MONTH_END, #R52_MONTH_END, #R57_MONTH_END, #R59_MONTH_END").css({
-				"background-color": "#FFF59D"
-			});
-
-			// Toggle buttons
-			$("#submitButton").show();
-
-			// Show Cancel button only when Modify is clicked
-			$("#cancelRecord").show();
-
-			// Optionally hide the clicked Modify button
-			$(btn).hide();
+		    $("#submitButton").show();
+		    $("#cancelRecord").show();
+		    $(btn).hide();
 		}
 
 		//Cancel / Reset function
@@ -1637,16 +1629,16 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 										</tr>
 
 										<tr>
-											<td style="padding-left: 30px;" th:text="${report.r14_product}"></td>
-											<td th:text="${report.r14_cross_ref}" style="text-align: left; "></td>
-											<td style="padding-left: 20px; text-align: right;"
-												th:text="${#numbers.formatDecimal(report.r14_month_end, 0, 'COMMA', 0, 'POINT')}"
-												id="R14_month_end" name="R14_month_end"></td>
-
-
-											<td th:text="${#numbers.formatDecimal(report.r14_average, 0, 'COMMA', 0, 'POINT')}"
-												lick="showdetailsbyRowAndColumn(this)" style="text-align: right; ">
-											</td>
+										    <td style="padding-left: 30px;" th:text="${report.r14_product}"></td>
+										    <td th:text="${report.r14_cross_ref}" style="text-align: left; "></td>
+										    <td th:text="${#numbers.formatDecimal(report.r14_month_end, 0, 'COMMA', 0, 'POINT')}"
+										        th:attr="RowId='R14', ColumnId='C3'" id="r14_month_end"
+										        style="text-align: right; ">
+										    </td>
+										    <td th:text="${#numbers.formatDecimal(report.r14_average, 0, 'COMMA', 0, 'POINT')}"
+										        onclick="showdetailsbyRowAndColumn(this)"
+										        style="text-align: right; ">
+										    </td>
 										</tr>
 
 										<tr>
@@ -1952,16 +1944,20 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 										</tr>
 
 										<tr>
-											<td style="padding-left: 4px;" th:text="${report.r39_product}"></td>
-											<td th:text="${report.r39_cross_ref}" style="text-align: left; "></td>
-
-											<td th:text="${#numbers.formatDecimal(report.r39_month_end, 0, 'COMMA', 0, 'POINT')}"
-												th:attr="RowId='R39', ColumnId='C3'" id="r39_month_end"
-												style="text-align: right; background-color: rgb(107, 122, 143);color: white;">
-											</td>
-											<td th:text="${#numbers.formatDecimal(report.r39_average, 0, 'COMMA', 0, 'POINT')}"
-												style="text-align: right; ">
-											</td>
+										    <td style="padding-left: 4px;" th:text="${report.r39_product}"></td>
+										    <td th:text="${report.r39_cross_ref}" style="text-align: left; "></td>
+										    <td id="ROW39" style="padding-left: 20px; font-weight: bold; text-align: right;">
+										        <input class="display-input Show_input" type="text"
+										               th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R39_MONTH_END != null 
+										                   ? #numbers.formatDecimal(reportsummary1[0].R39_MONTH_END, 1,'COMMA', 0, 'POINT') 
+										                   : '0'}"
+										               id="R39_MONTH_END" name="R39_MONTH_END"
+										               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+										               readonly />
+										    </td>
+										    <td th:text="${#numbers.formatDecimal(report.r39_average, 0, 'COMMA', 0, 'POINT')}"
+										        style="text-align: right; ">
+										    </td>
 										</tr>
 
 										<tr>
@@ -1990,18 +1986,15 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 										</tr>
 
 										<tr>
-											<td style="padding-left: 30px;" th:text="${report.r42_product}"></td>
-											<td th:text="${report.r42_cross_ref}" style="text-align: left; "></td>
-											<td id="ROW42" style=" font-weight: bold;text-align: right;">
-												<input class="display-input Show_input" type="text" th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R42_MONTH_END != null 
-										? #numbers.formatDecimal(reportsummary1[0].R42_MONTH_END, 1,'COMMA', 0, 'POINT') 
-										: '0'}" id="R42_MONTH_END" name="R42_MONTH_END"
-													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-													readonly />
-											</td>
-											<td th:text="${#numbers.formatDecimal(report.r42_average, 0, 'COMMA', 0, 'POINT')}"
-												style="text-align: right; ">
-											</td>
+										    <td style="padding-left: 30px;" th:text="${report.r42_product}"></td>
+										    <td th:text="${report.r42_cross_ref}" style="text-align: left; "></td>
+										    <td th:text="${#numbers.formatDecimal(report.r42_month_end, 0, 'COMMA', 0, 'POINT')}"
+										        th:attr="RowId='R42', ColumnId='C3'" id="r42_month_end"
+										        style="text-align: right; font-weight: bold;">
+										    </td>
+										    <td th:text="${#numbers.formatDecimal(report.r42_average, 0, 'COMMA', 0, 'POINT')}"
+										        style="text-align: right; ">
+										    </td>
 										</tr>
 
 										<tr>

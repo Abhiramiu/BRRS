@@ -2727,22 +2727,125 @@ public class BRRS_ReportsController {
 
 	@RequestMapping(value = "/MSFINP1updateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public ResponseEntity<String> updateReport(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	public ResponseEntity<String> updateReport(@RequestParam(value = "asondate", required = false) String asondateStr,
+			@RequestParam(value = "todate", required = false) String todateStr,
+			@RequestParam(value = "type", required = false) String type,
+			@RequestParam(value = "version", required = false) String version,
+			@RequestParam(value = "entry", required = false) String entry,
+			@ModelAttribute M_SFINP1_Summary_Manual_Entity request1, HttpServletRequest req) {
 
-			@ModelAttribute M_SFINP1_Summary_Manual_Entity request1) {
 		try {
-			System.out.println("Came to single controller");
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
 
-			// set date into all 4 entities
-			request1.setREPORT_DATE(asondate);
+			if (!isMaker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Maker (or MAN/ADMIN) can submit M_SFINP1 modifications. Current role: " + role);
+			}
 
-			M_SFINP1_ReportService.updateReport(request1);
+			System.out.println("Came to MSFINP1updateAll (MAKER): type=" + type + ", version=" + version + ", entry="
+					+ entry + ", asondate=" + asondateStr + ", role=" + role);
 
-			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
+			Date parsedDate = null;
+			String dateStr = (asondateStr != null && !asondateStr.trim().isEmpty()) ? asondateStr : todateStr;
+			if (dateStr == null || dateStr.trim().isEmpty()) {
+				dateStr = req.getParameter("asondate");
+			}
+			if (dateStr != null && !dateStr.trim().isEmpty()) {
+				String[] patterns = { "dd/MM/yyyy", "dd-MMM-yyyy", "dd-MM-yyyy", "yyyy-MM-dd" };
+				for (String pattern : patterns) {
+					try {
+						parsedDate = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(dateStr.trim());
+						break;
+					} catch (Exception ignored) {
+					}
+				}
+			}
+
+			if (parsedDate == null) {
+				return ResponseEntity.badRequest().body("Invalid or missing asondate: " + dateStr);
+			}
+
+			request1.setREPORT_DATE(parsedDate);
+
+			if (version != null && !version.isEmpty()) {
+				try {
+					request1.setREPORT_VERSION(new BigDecimal(version));
+				} catch (Exception ex) {
+
+				}
+			}
+
+			ResponseEntity<?> response = M_SFINP1_ReportService.updateReport(request1, type, version, entry);
+
+			return ResponseEntity.status(response.getStatusCode()).body(String.valueOf(response.getBody()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+
+	@RequestMapping(value = "/verifyAuditSFINP1", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> verifyAuditSFINP1(@RequestParam("auditId") Long auditId, HttpServletRequest req) {
+
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
+
+			if (!isChecker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Checker (or MAN/ADMIN) can verify M_SFINP1. Current role: " + role);
+			}
+
+			System.out.println("Came to verifyAuditSFINP1 (CHECKER) for auditId=" + auditId + ", role=" + role);
+
+			auditService.verifyAndTransferReport(auditId);
+
+			return ResponseEntity.ok("Verified and transferred successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Verify Failed: " + e.getMessage());
+		}
+	}
+
+	@RequestMapping(value = "/approveSFINP1", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> approveSFINP1(@RequestParam(value = "asondate", required = false) String asondateStr,
+			HttpServletRequest req) {
+
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
+
+			if (!isChecker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Checker (or MAN/ADMIN) can approve M_SFINP1. Current role: " + role);
+			}
+
+			Date parsedDate = null;
+			if (asondateStr != null && !asondateStr.trim().isEmpty()) {
+				String[] patterns = { "dd/MM/yyyy", "dd-MMM-yyyy", "dd-MM-yyyy", "yyyy-MM-dd" };
+				for (String pattern : patterns) {
+					try {
+						parsedDate = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(asondateStr.trim());
+						break;
+					} catch (Exception ignored) {
+					}
+				}
+			}
+			if (parsedDate == null) {
+				return ResponseEntity.badRequest().body("Invalid or missing asondate: " + asondateStr);
+			}
+
+			System.out.println("Came to approveSFINP1 (CHECKER) for date: " + parsedDate + ", role=" + role);
+
+			M_SFINP1_ReportService.approveReport(parsedDate);
+
+			return ResponseEntity.ok("Approved successfully — MOD values transferred to live tables.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Approval Failed: " + e.getMessage());
 		}
 	}
 

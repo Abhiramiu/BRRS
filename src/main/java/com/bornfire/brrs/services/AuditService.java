@@ -1448,6 +1448,8 @@ public class AuditService {
 
 		if (upperTable.contains("SFINP2")) {
 			transferSfinp2Data(auditRecord);
+		} else if (upperTable.contains("M_SFINP1")) {
+			transferSFINP1Data(auditRecord);
 		} else if (upperTable.contains("FAS")) {
 			transferFASData(auditRecord);
 		} else if (upperTable.contains("DEP3")) {
@@ -1915,6 +1917,175 @@ public class AuditService {
 		jdbcTemplate.update("BEGIN BRRS_M_FAS_SUMMARY_PROCEDURE(?); END;", formattedDate);
 
 		System.out.println("M_FAS Verification and Procedure Execution Completed Successfully");
+	}
+
+	private BigDecimal sfinp1AbsValue(Object value) {
+		return value == null ? BigDecimal.ZERO : new BigDecimal(value.toString()).abs();
+	}
+
+	private void transferSFINP1Data(AuditServicesEntity auditRecord) {
+
+		final String liveTable = "BRRS_M_SFINP1_SUMMARYTABLE_MANUAL";
+		final String modTable = "BRRS_M_SFINP1_MOD_SUMMARYTABLE_MANUAL";
+		final String summaryTable = "BRRS_M_SFINP1_SUMMARYTABLE";
+		final String archivalTable = "BRRS_M_SFINP1_ARCHIVALTABLE_SUMMARY_MANUAL";
+
+		final String[] manualRows = { "R34", "R37", "R39", "R43", "R50", "R51", "R52", "R57", "R59" };
+
+		final String[] averageRows = { "R34", "R37", "R43", "R42", "R50", "R51", "R52", "R57", "R59" };
+
+		java.sql.Date reportDate = resolveSFINP1ReportDate(auditRecord, modTable);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No pending M_SFINP1 modification available for verification.");
+		}
+		System.out.println("M_SFINP1 Report Date : " + reportDate);
+
+		StringBuilder colList = new StringBuilder();
+		StringBuilder srcList = new StringBuilder();
+		for (String r : manualRows) {
+			colList.append(r).append("_MONTH_END, ");
+			srcList.append("S.").append(r).append("_MONTH_END, ");
+		}
+		colList.append("ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+		srcList.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+
+		String updateSql = "UPDATE " + liveTable + " M SET (" + colList + ") = (SELECT " + srcList + " FROM " + modTable
+				+ " S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) " + "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+		int updatedLive = jdbcTemplate.update(updateSql, reportDate);
+
+		if (updatedLive == 0) {
+			throw new IllegalStateException("M_SFINP1 live manual record not found for date : " + reportDate);
+		}
+		System.out.println("M_SFINP1 Main Updated : " + updatedLive);
+
+		java.util.Calendar cal = java.util.Calendar.getInstance();
+		cal.setTime(reportDate);
+		cal.add(java.util.Calendar.MONTH, -1);
+		java.util.Date previousMonthDate = cal.getTime();
+
+		StringBuilder avgCols = new StringBuilder();
+		for (String r : averageRows) {
+			if (avgCols.length() > 0) {
+				avgCols.append(", ");
+			}
+			avgCols.append(r).append("_MONTH_END");
+		}
+
+		List<java.util.Map<String, Object>> currRows = jdbcTemplate.queryForList(
+				"SELECT " + avgCols + " FROM " + liveTable + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate);
+		List<java.util.Map<String, Object>> prevRows = jdbcTemplate.queryForList(
+				"SELECT " + avgCols + " FROM " + archivalTable + " WHERE REPORT_DATE = ?", previousMonthDate);
+
+		java.util.Map<String, Object> curr = currRows.isEmpty() ? null : currRows.get(0);
+		java.util.Map<String, Object> prev = prevRows.isEmpty() ? null : prevRows.get(0);
+
+		StringBuilder setClause = new StringBuilder();
+		List<Object> params = new java.util.ArrayList<Object>();
+		for (String r : averageRows) {
+			String col = r + "_MONTH_END";
+			BigDecimal c = sfinp1AbsValue(curr == null ? null : curr.get(col));
+			BigDecimal p = sfinp1AbsValue(prev == null ? null : prev.get(col));
+			BigDecimal avg = c.add(p).divide(BigDecimal.valueOf(2), 0, java.math.RoundingMode.HALF_UP);
+
+			if (setClause.length() > 0) {
+				setClause.append(", ");
+			}
+			setClause.append(r).append("_AVERAGE = ?");
+			params.add(avg);
+		}
+		params.add(reportDate);
+
+		int updatedSummary = jdbcTemplate.update(
+				"UPDATE " + summaryTable + " SET " + setClause + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				params.toArray());
+		if (updatedSummary == 0) {
+			throw new IllegalStateException("M_SFINP1 summary record not found for date : " + reportDate);
+		}
+		System.out.println("M_SFINP1 Averages Updated : " + updatedSummary);
+
+		java.util.Map<String, Object> sumRow = jdbcTemplate
+				.queryForList("SELECT * FROM " + summaryTable + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate)
+				.get(0);
+
+		BigDecimal[] me = new BigDecimal[62];
+		BigDecimal[] av = new BigDecimal[62];
+		for (int r = 10; r <= 61; r++) {
+			me[r] = sfinp1Num(sumRow.get("R" + r + "_MONTH_END"));
+			av[r] = sfinp1Num(sumRow.get("R" + r + "_AVERAGE"));
+		}
+
+		for (String r : manualRows) {
+			if (!"R39".equals(r)) {
+				me[Integer.parseInt(r.substring(1))] = sfinp1Num(curr == null ? null : curr.get(r + "_MONTH_END"));
+			}
+		}
+
+		for (BigDecimal[] a : new BigDecimal[][] { me, av }) {
+			a[35] = a[36].add(a[37]);
+			a[40] = a[41].add(a[42]).add(a[43]);
+			a[38] = a[39].subtract(a[40]);
+			a[49] = a[50].add(a[51]).add(a[52]);
+			a[56] = a[57].add(a[58]).add(a[59]).add(a[60]);
+			BigDecimal total = BigDecimal.ZERO;
+			for (int r : new int[] { 10, 11, 12, 17, 18, 19, 20, 27, 31, 34, 35, 38, 44, 49, 53, 54, 55, 56 }) {
+				total = total.add(a[r]);
+			}
+			a[61] = total;
+		}
+
+		StringBuilder subSet = new StringBuilder();
+		List<Object> subParams = new java.util.ArrayList<Object>();
+		for (int r : new int[] { 35, 38, 40, 49, 56, 61 }) {
+			if (subSet.length() > 0) {
+				subSet.append(", ");
+			}
+			subSet.append("R").append(r).append("_MONTH_END = ?, R").append(r).append("_AVERAGE = ?");
+			subParams.add(me[r]);
+			subParams.add(av[r]);
+		}
+		subParams.add(reportDate);
+		jdbcTemplate.update("UPDATE " + summaryTable + " SET " + subSet + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				subParams.toArray());
+		System.out.println("M_SFINP1 Subtotals Updated");
+
+		int updatedMod = jdbcTemplate.update(
+				"UPDATE " + modTable + " SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				reportDate);
+		System.out.println("M_SFINP1 MOD Updated : " + updatedMod);
+	}
+
+	private BigDecimal sfinp1Num(Object value) {
+		return value == null ? BigDecimal.ZERO : new BigDecimal(value.toString());
+	}
+
+	private java.sql.Date resolveSFINP1ReportDate(AuditServicesEntity auditRecord, String modTable) {
+		java.util.Date parsed = null;
+		String raw = auditRecord.getChange_details();
+		if (raw != null && !raw.trim().isEmpty()) {
+			String[] patterns = { "EEE MMM dd HH:mm:ss zzz yyyy", "yyyy-MM-dd HH:mm:ss.S", "yyyy-MM-dd HH:mm:ss",
+					"yyyy-MM-dd", "dd-MM-yyyy", "dd/MM/yyyy", "dd-MMM-yyyy" };
+			for (String pattern : patterns) {
+				try {
+					parsed = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(raw.trim());
+					break;
+				} catch (Exception ignored) {
+				}
+			}
+		}
+		if (parsed != null) {
+			java.sql.Date d = new java.sql.Date(parsed.getTime());
+			Integer pending = jdbcTemplate.queryForObject(
+					"SELECT COUNT(*) FROM " + modTable + " WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+					Integer.class, d);
+			if (pending == null || pending == 0) {
+				throw new IllegalStateException(
+						"No pending M_SFINP1 modification for " + raw.trim() + " (already verified?).");
+			}
+			return d;
+		}
+		return jdbcTemplate.queryForObject("SELECT MAX(REPORT_DATE) FROM " + modTable + " WHERE MODIFY_FLG = 'Y'",
+				java.sql.Date.class);
 	}
 
 	private void transferDEP3Data(AuditServicesEntity auditRecord) {
