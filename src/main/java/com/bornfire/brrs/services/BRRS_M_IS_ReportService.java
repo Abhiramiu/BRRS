@@ -8905,6 +8905,7 @@ public class BRRS_M_IS_ReportService {
 			throw new IllegalStateException("No pending M_IS modification found for date : " + reportDate);
 		}
 
+		// BRRS_M_IS_ReportService.java — approveReport()
 		// Copy/Merge MOD values into the LIVE summary tables
 		if (!mod1.isEmpty()) {
 			upsertIsSummary(mod1.get(0), M_IS_Summary_Entity1.class, IS_LIVE_TABLE1, isTable1Columns());
@@ -8919,11 +8920,8 @@ public class BRRS_M_IS_ReportService {
 		jdbcTemplate.update("UPDATE " + IS_MOD_TABLE2 + " SET MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
 				reportDate);
 
-		String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
-
-		// Run procedure after approval
-		jdbcTemplate.update("BEGIN BRRS_M_IS_SUMMARY_PROCEDURE(?); END;", formattedDate);
-
+		// ❌ REMOVE: jdbcTemplate.update("BEGIN BRRS_M_IS_SUMMARY_PROCEDURE(?); END;",
+		// formattedDate);
 		System.out.println("M_IS Checker Approved Successfully");
 	}
 
