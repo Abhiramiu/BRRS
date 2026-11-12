@@ -6161,7 +6161,7 @@ public class RegulatoryReportServices {
 						type, format, version);
 				System.out.println(fileData + "    fileData");
 
-				if (fileData != null) {
+				if (fileData != null && fileData.length > 0) {
 					try (Workbook reportWorkbook = new XSSFWorkbook(new java.io.ByteArrayInputStream(fileData))) {// Copy
 																													// the
 																													// first

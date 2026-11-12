@@ -1214,9 +1214,18 @@ return BRRS_M_PDEmailExcel(filename, reportId, fromdate, todate, currency, dtlty
 List<M_PD_Summary_Entity> dataList1 = getSummaryByDate(dateformat.parse(todate));
 List<M_PD_Manual_Summary_Entity> dataList2 = getManualSummaryByDate(dateformat.parse(todate));
 
-if (dataList1.isEmpty() || dataList2.isEmpty()) {
+logger.info("M_PD dataList1 (summary) size: {}, dataList2 (manual) size: {}", dataList1.size(), dataList2.size());
+
+if (dataList1.isEmpty() && dataList2.isEmpty()) {
 logger.warn("Service: No data found for M_PD report. Returning empty result.");
 return new byte[0];
+}
+
+if (dataList1.isEmpty()) {
+dataList1.add(new M_PD_Summary_Entity());
+}
+if (dataList2.isEmpty()) {
+dataList2.add(new M_PD_Manual_Summary_Entity());
 }
 
 String templateDir = env.getProperty("output.exportpathtemp");
@@ -1275,12 +1284,13 @@ numberStyle.setBorderRight(BorderStyle.THIN);
 numberStyle.setFont(font);
 //--- End of Style Definitions ---
 
-int startRow = 3;
+int startRow = 4;
 
 if (!dataList1.isEmpty() || !dataList2.isEmpty()) {
-for (int i = 0; i < dataList1.size(); i++) {
-M_PD_Summary_Entity record1 = dataList1.get(i);
-M_PD_Manual_Summary_Entity record = dataList2.get(i);
+int maxRows = Math.max(dataList1.size(), dataList2.size());
+for (int i = 0; i < maxRows; i++) {
+M_PD_Summary_Entity record1 = (i < dataList1.size()) ? dataList1.get(i) : new M_PD_Summary_Entity();
+M_PD_Manual_Summary_Entity record = (i < dataList2.size()) ? dataList2.get(i) : new M_PD_Manual_Summary_Entity();
 System.out.println("rownumber=" + startRow + i);
 Row row = sheet.getRow(startRow + i);	
 
@@ -1290,9 +1300,15 @@ row = sheet.createRow(startRow + i);
 
 //row4
 // Column B
-Cell cellBdate = row.createCell(3);
-if (record.getReport_date() != null) {
-	cellBdate.setCellValue(record.getReport_date());
+Cell cellBdate = row.createCell(1);
+Date repDate = record.getReport_date() != null ? record.getReport_date() : record1.getReport_date();
+if (repDate == null) {
+	try {
+		repDate = dateformat.parse(todate);
+	} catch (Exception ignored) {}
+}
+if (repDate != null) {
+	cellBdate.setCellValue(repDate);
 	cellBdate.setCellStyle(dateStyle);
 } else {
 	cellBdate.setCellValue("");
@@ -7072,9 +7088,18 @@ else {
 List<M_PD_Summary_Entity> dataList1 = getSummaryByDate(dateformat.parse(todate));
 List<M_PD_Manual_Summary_Entity> dataList2 = getManualSummaryByDate(dateformat.parse(todate));
 
-if (dataList1.isEmpty() || dataList2.isEmpty()) {
+logger.info("M_PD dataList1 (summary) size: {}, dataList2 (manual) size: {}", dataList1.size(), dataList2.size());
+
+if (dataList1.isEmpty() && dataList2.isEmpty()) {
 logger.warn("Service: No data found for M_PD report. Returning empty result.");
 return new byte[0];
+}
+
+if (dataList1.isEmpty()) {
+dataList1.add(new M_PD_Summary_Entity());
+}
+if (dataList2.isEmpty()) {
+dataList2.add(new M_PD_Manual_Summary_Entity());
 }
 
 String templateDir = env.getProperty("output.exportpathtemp");
@@ -7136,9 +7161,10 @@ numberStyle.setFont(font);
 int startRow = 3;
 
 if (!dataList1.isEmpty() || !dataList2.isEmpty()) {
-for (int i = 0; i < dataList1.size(); i++) {
-M_PD_Summary_Entity record1 = dataList1.get(i);
-M_PD_Manual_Summary_Entity record = dataList2.get(i);
+int maxRows = Math.max(dataList1.size(), dataList2.size());
+for (int i = 0; i < maxRows; i++) {
+M_PD_Summary_Entity record1 = (i < dataList1.size()) ? dataList1.get(i) : new M_PD_Summary_Entity();
+M_PD_Manual_Summary_Entity record = (i < dataList2.size()) ? dataList2.get(i) : new M_PD_Manual_Summary_Entity();
 System.out.println("rownumber=" + startRow + i);
 Row row = sheet.getRow(startRow + i);	
 
@@ -7148,9 +7174,15 @@ row = sheet.createRow(startRow + i);
 
 //row4
 //Column B
-Cell cellBdate = row.createCell(3);
-if (record.getReport_date() != null) {
-	cellBdate.setCellValue(record.getReport_date());
+Cell cellBdate = row.createCell(1);
+Date repDate = record.getReport_date() != null ? record.getReport_date() : record1.getReport_date();
+if (repDate == null) {
+	try {
+		repDate = dateformat.parse(todate);
+	} catch (Exception ignored) {}
+}
+if (repDate != null) {
+	cellBdate.setCellValue(repDate);
 	cellBdate.setCellStyle(dateStyle);
 } else {
 	cellBdate.setCellValue("");
