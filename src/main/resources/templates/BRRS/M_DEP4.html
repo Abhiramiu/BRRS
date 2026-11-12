@@ -514,6 +514,14 @@ PURPOSE		: BRRSREPORT
 					var secid = button.getAttribute('data-secid');
 					var dtltype = button.getAttribute('data-dtltype');
 					var filename = button.getAttribute('data-filename');
+					var type = button.getAttribute('data-type');
+					var version = button.getAttribute('data-version');
+					var format = button.getAttribute('data-format');
+
+					if (format === null) {
+						format = '';
+					}
+
 					$('#loader').modal('show');
 					$.ajax({
 						url: './downloadExcel?reportid=' + reportid +
@@ -523,7 +531,10 @@ PURPOSE		: BRRSREPORT
 							'&currency=' + currency +
 							'&subreportid=' + subreportid +
 							'&secid=' + secid +
-							'&filename=' + filename,
+							'&filename=' + filename +
+							'&type=' + type +
+							'&version=' + version +
+							'&format=' + format,
 						type: 'GET',
 						xhrFields: {
 							responseType: 'blob'

@@ -205225,6 +205225,26 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 
 	private void populateEmailP1(Sheet sheet, List<BrrsMNosvosP1> dataList, CellStyle numberStyle,
 			CellStyle textStyle) {
+		Row row = sheet.getRow(5);
+		if (row == null) {
+			row = sheet.createRow(5);
+		}
+
+		Cell cell = row.getCell(1); // FIXED: Column B is index 1, not 2
+		if (cell == null) {
+			cell = row.createCell(1);
+		}
+
+		Date reportDate = (dataList != null && !dataList.isEmpty()) ? dataList.get(0).getREPORT_DATE() : null;
+		if (reportDate != null) {
+			String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+			cell.setCellValue(formattedDate);
+			cell.setCellStyle(textStyle);
+		} else {
+			cell.setCellValue("");
+			cell.setCellStyle(textStyle);
+		}
+
 	    String[] rowCodes = new String[101];
 	    for (int i = 10; i <= 18; i++) {
 	        rowCodes[i - 1] = "R" + i;
@@ -205326,7 +205346,8 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 		}
 
 		if (record.getREPORT_DATE() != null) {
-			reportDateCell.setCellValue(record.getREPORT_DATE());
+			String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(record.getREPORT_DATE());
+			reportDateCell.setCellValue(formattedDate);
 			reportDateCell.setCellStyle(textStyle);
 		} else {
 			reportDateCell.setCellValue("");
@@ -205334,16 +205355,17 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 		}
 
 		// =========================================================
-		// P1 fields (9 fields per row)
+		// P1 fields (7 fields per row - email format skips combined amount at col 6)
 		// =========================================================
 		String[] p1Fields = { "NAME_OF_BANK_AND_COUNTRY_NOSTRO", "TYPE_OF_ACCOUNT_NOSTRO", "PURPOSE_NOSTRO",
-				"CURRENCY_NOSTRO", "SOVEREIGN_RATING_AAA_AA_A1_NOSTRO", "RISK_WEIGHT_NOSTRO", "AMOUNT_DEMAND_NOSTRO",
-				"AMOUNT_TIME_NOSTRO", "RISK_WEIGHTED_AMOUNT_NOSTRO" };
+				"CURRENCY_NOSTRO", "SOVEREIGN_RATING_AAA_AA_A1_NOSTRO", "RISK_WEIGHT_NOSTRO", "RISK_WEIGHTED_AMOUNT_NOSTRO" };
 
-		// R1 starts at row 10 (index 10), R101 at row 110 (index 110)
-		for (int i = 1; i <= 101; i++) {
+		// R1 starts at row 10 (index 10), R9 at row 18 (index 18)
+		for (int i = 1; i <= 9; i++) {
 			int rowIndex = 9 + i;
+			String rowPrefix = "R" + i;
 			populateResubP1Row(sheet, rowIndex, record, "R" + i, p1Fields, numberStyle, textStyle);
+			writeCombinedAmountCell(sheet, rowIndex, record, rowPrefix, "NOSTRO", 6, numberStyle);
 		}
 	}
 
@@ -205359,10 +205381,13 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 			row = sheet.createRow(rowIndex);
 		}
 
+		// P1 uses Columns A-I (0-8)
+		int[] colMap = { 0, 1, 2, 3, 4, 5, 7 }; // A B C D E F [G skipped] H
 		for (int i = 0; i < fields.length; i++) {
-			Cell cell = row.getCell(i);
+			int col = colMap[i];
+			Cell cell = row.getCell(col);
 			if (cell == null) {
-				cell = row.createCell(i);
+				cell = row.createCell(col);
 			}
 
 			String methodName = "get" + rowPrefix + "_" + fields[i];
@@ -205416,14 +205441,16 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 
 		BrrsMNosvosP2ResbuSummaryEntity record = dataList.get(0);
 
-		// P2 fields (6 fields per row)
+		// P2 fields (4 fields per row)
 		String[] p2Fields = { "NAME_OF_BANK_AND_COUNTRY_VOSTRO", "TYPE_OF_ACCOUNT_VOSTRO", "PURPOSE_VOSTRO",
-				"CURRENCY_VOSTRO", "AMOUNT_DEMAND_VOSTRO", "AMOUNT_TIME_VOSTRO" };
+				"CURRENCY_VOSTRO" };
 
-		// P2 starts at row 23 (index 23), ends at row 123 (index 123)
-		for (int i = 1; i <= 101; i++) {
-			int rowIndex = 22 + i; // R1=23, R101=123
+		// P2 starts at row 23 (index 23), ends at row 30 (index 30)
+		for (int i = 1; i <= 8; i++) {
+			int rowIndex = 22 + i; // R1=23, R8=30
+			String rowPrefix = "R" + i;
 			populateResubP2Row(sheet, rowIndex, record, "R" + i, p2Fields, numberStyle, textStyle);
+			writeCombinedAmountCell(sheet, rowIndex, record, rowPrefix, "VOSTRO", 6, numberStyle);
 		}
 	}
 
@@ -205439,32 +205466,16 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 			row = sheet.createRow(rowIndex);
 		}
 
-		// P2 starts at Column A (index 0) for first 4 fields, then Column G (index 6)
-		// for amounts
-		// Field mapping:
-		// Column A (0) - NAME_OF_BANK_AND_COUNTRY_VOSTRO
-		// Column B (1) - TYPE_OF_ACCOUNT_VOSTRO
-		// Column C (2) - PURPOSE_VOSTRO
-		// Column D (3) - CURRENCY_VOSTRO
-		// Column G (6) - AMOUNT_DEMAND_VOSTRO
-		// Column H (7) - AMOUNT_TIME_VOSTRO
-
+		// Columns A-D (0-3) for String fields
 		for (int i = 0; i < fields.length; i++) {
-			String methodName = "get" + rowPrefix + "_" + fields[i];
-
-			// Map column positions (P2 specific)
-			int colIndex;
-			if (i <= 3) {
-				colIndex = i; // Columns A-D (0-3)
-			} else {
-				colIndex = i + 2; // Columns G-H (6-7)
-			}
+			int colIndex = i; // A-D only now
 
 			Cell cell = row.getCell(colIndex);
 			if (cell == null) {
 				cell = row.createCell(colIndex);
 			}
 
+			String methodName = "get" + rowPrefix + "_" + fields[i];
 			try {
 				Method method = record.getClass().getMethod(methodName);
 				Object value = method.invoke(record);
@@ -205516,15 +205527,16 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 
 		BrrsMNosvosP3ResbuSummaryEntity record = dataList.get(0);
 
-		// P3 fields (9 fields per row)
+		// P3 fields (7 fields per row - email format skips combined amount at col 6)
 		String[] p3Fields = { "NAME_OF_BANK_NOSTRO1", "TYPE_OF_ACCOUNT_NOSTRO1", "PURPOSE_NOSTRO1", "CURRENCY_NOSTRO1",
-				"SOVEREIGN_RATING_NOSTRO1", "RISK_WEIGHT_NOSTRO1", "AMOUNT_DEMAND_NOSTRO1", "AMOUNT_TIME_NOSTRO1",
-				"RISK_WEIGHTED_AMOUNT_NOSTRO1" };
+				"SOVEREIGN_RATING_NOSTRO1", "RISK_WEIGHT_NOSTRO1", "RISK_WEIGHTED_AMOUNT_NOSTRO1" };
 
-		// P3 starts at row 36 (index 36), ends at row 136 (index 136)
-		for (int i = 1; i <= 101; i++) {
-			int rowIndex = 35 + i; // R1=36, R101=136
+		// P3 starts at row 36 (index 36), ends at row 46 (index 46)
+		for (int i = 1; i <= 11; i++) {
+			int rowIndex = 35 + i; // R1=36, R11=46
+			String rowPrefix = "R" + i;
 			populateResubP3Row(sheet, rowIndex, record, "R" + i, p3Fields, numberStyle, textStyle);
+			writeCombinedAmountCell(sheet, rowIndex, record, rowPrefix, "NOSTRO1", 6, numberStyle);
 		}
 	}
 
@@ -205537,10 +205549,12 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 		}
 
 		// P3 uses Columns A-I (0-8)
+		int[] colMap = { 0, 1, 2, 3, 4, 5, 7 }; // A B C D E F [G skipped] H
 		for (int i = 0; i < fields.length; i++) {
-			Cell cell = row.getCell(i);
+			int col = colMap[i];
+			Cell cell = row.getCell(col);
 			if (cell == null) {
-				cell = row.createCell(i);
+				cell = row.createCell(col);
 			}
 
 			String methodName = "get" + rowPrefix + "_" + fields[i];
@@ -205594,14 +205608,15 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 
 		BrrsMNosvosP4ResbuSummaryEntity record = dataList.get(0);
 
-		// P4 fields (6 fields per row)
-		String[] p4Fields = { "NAME_OF_BANK_VOSTRO1", "TYPE_OF_ACCOUNT_VOSTRO1", "PURPOSE_VOSTRO1", "CURRENCY_VOSTRO1",
-				"AMOUNT_DEMAND_VOSTRO1", "AMOUNT_TIME_VOSTRO1" };
+		// P4 fields (4 fields per row)
+		String[] p4Fields = { "NAME_OF_BANK_VOSTRO1", "TYPE_OF_ACCOUNT_VOSTRO1", "PURPOSE_VOSTRO1", "CURRENCY_VOSTRO1" };
 
-		// P4 starts at row 51 (index 51), ends at row 151 (index 151)
-		for (int i = 1; i <= 101; i++) {
-			int rowIndex = 50 + i; // R1=51, R101=151
+		// P4 starts at row 51 (index 51), ends at row 57 (index 57)
+		for (int i = 1; i <= 7; i++) {
+			int rowIndex = 50 + i; // R1=51, R7=57
+			String rowPrefix = "R" + i;
 			populateResubP4Row(sheet, rowIndex, record, "R" + i, p4Fields, numberStyle, textStyle);
+			writeCombinedAmountCell(sheet, rowIndex, record, rowPrefix, "VOSTRO1", 6, numberStyle);
 		}
 	}
 
@@ -205613,15 +205628,9 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 			row = sheet.createRow(rowIndex);
 		}
 
-		// P4 starts at Column A (index 0) for first 4 fields, then Column G (index 6)
-		// for amounts
+		// Columns A-D (0-3) for String fields
 		for (int i = 0; i < fields.length; i++) {
-			int colIndex;
-			if (i <= 3) {
-				colIndex = i; // Columns A-D (0-3)
-			} else {
-				colIndex = i + 2; // Columns G-H (6-7)
-			}
+			int colIndex = i; // A-D only now
 
 			Cell cell = row.getCell(colIndex);
 			if (cell == null) {
@@ -205823,16 +205832,17 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 		setArchivalReportDate(sheet, record, numberStyle, textStyle);
 
 		// =========================================================
-		// P1 fields (9 fields per row)
+		// P1 fields (7 fields per row - email format skips combined amount at col 6)
 		// =========================================================
 		String[] p1Fields = { "NAME_OF_BANK_AND_COUNTRY_NOSTRO", "TYPE_OF_ACCOUNT_NOSTRO", "PURPOSE_NOSTRO",
-				"CURRENCY_NOSTRO", "SOVEREIGN_RATING_AAA_AA_A1_NOSTRO", "RISK_WEIGHT_NOSTRO", "AMOUNT_DEMAND_NOSTRO",
-				"AMOUNT_TIME_NOSTRO", "RISK_WEIGHTED_AMOUNT_NOSTRO" };
+				"CURRENCY_NOSTRO", "SOVEREIGN_RATING_AAA_AA_A1_NOSTRO", "RISK_WEIGHT_NOSTRO", "RISK_WEIGHTED_AMOUNT_NOSTRO" };
 
-		// R1 starts at row 10 (index 10), R101 at row 110 (index 110)
-		for (int i = 1; i <= 101; i++) {
+		// R1 starts at row 10 (index 10), R9 at row 18 (index 18)
+		for (int i = 1; i <= 9; i++) {
 			int rowIndex = 9 + i;
+			String rowPrefix = "R" + i;
 			populateArchivalP1Row(sheet, rowIndex, record, "R" + i, p1Fields, numberStyle, textStyle);
+			writeCombinedAmountCell(sheet, rowIndex, record, rowPrefix, "NOSTRO", 6, numberStyle);
 		}
 	}
 
@@ -205849,10 +205859,12 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 		}
 
 		// P1 uses Columns A-I (0-8)
+		int[] colMap = { 0, 1, 2, 3, 4, 5, 7 }; // A B C D E F [G skipped] H
 		for (int i = 0; i < fields.length; i++) {
-			Cell cell = row.getCell(i);
+			int col = colMap[i];
+			Cell cell = row.getCell(col);
 			if (cell == null) {
-				cell = row.createCell(i);
+				cell = row.createCell(col);
 			}
 
 			String methodName = "get" + rowPrefix + "_" + fields[i];
@@ -205908,8 +205920,9 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 		}
 
 		if (record.getREPORT_DATE() != null) {
-			cell.setCellValue(record.getREPORT_DATE());
-			cell.setCellStyle(numberStyle);
+			String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(record.getREPORT_DATE());
+			cell.setCellValue(formattedDate);
+			cell.setCellStyle(textStyle);
 		} else {
 			cell.setCellValue("");
 			cell.setCellStyle(textStyle);
@@ -205932,15 +205945,16 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 
 		BrrsMNosvosP2Archival record = dataList.get(0);
 
-		// P2 fields (6 fields per row)
+		// P2 fields (4 fields per row)
 		String[] p2Fields = { "NAME_OF_BANK_AND_COUNTRY_VOSTRO", "TYPE_OF_ACCOUNT_VOSTRO", "PURPOSE_VOSTRO",
-				"CURRENCY_VOSTRO", "AMOUNT_DEMAND_VOSTRO", "AMOUNT_TIME_VOSTRO" };
+				"CURRENCY_VOSTRO" };
 
-		// P2 starts at row 23 (index 23), ends at row 123 (index 123)
-		// R1=23, R101=123
-		for (int i = 1; i <= 101; i++) {
+		// P2 starts at row 23 (index 23), ends at row 30 (index 30)
+		for (int i = 1; i <= 8; i++) {
 			int rowIndex = 22 + i;
+			String rowPrefix = "R" + i;
 			populateArchivalP2Row(sheet, rowIndex, record, "R" + i, p2Fields, numberStyle, textStyle);
+			writeCombinedAmountCell(sheet, rowIndex, record, rowPrefix, "VOSTRO", 6, numberStyle);
 		}
 	}
 
@@ -205956,17 +205970,9 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 			row = sheet.createRow(rowIndex);
 		}
 
-		// P2 column mapping:
 		// Columns A-D (0-3) for String fields
-		// Columns G-H (6-7) for Amount fields
 		for (int i = 0; i < fields.length; i++) {
-			// Map column positions
-			int colIndex;
-			if (i <= 3) {
-				colIndex = i; // Columns A-D (0-3)
-			} else {
-				colIndex = i + 2; // Columns G-H (6-7)
-			}
+			int colIndex = i; // A-D only now
 
 			Cell cell = row.getCell(colIndex);
 			if (cell == null) {
@@ -206024,16 +206030,16 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 
 		BrrsMNosvosP3Archival record = dataList.get(0);
 
-		// P3 fields (9 fields per row)
+		// P3 fields (7 fields per row - email format skips combined amount at col 6)
 		String[] p3Fields = { "NAME_OF_BANK_NOSTRO1", "TYPE_OF_ACCOUNT_NOSTRO1", "PURPOSE_NOSTRO1", "CURRENCY_NOSTRO1",
-				"SOVEREIGN_RATING_NOSTRO1", "RISK_WEIGHT_NOSTRO1", "AMOUNT_DEMAND_NOSTRO1", "AMOUNT_TIME_NOSTRO1",
-				"RISK_WEIGHTED_AMOUNT_NOSTRO1" };
+				"SOVEREIGN_RATING_NOSTRO1", "RISK_WEIGHT_NOSTRO1", "RISK_WEIGHTED_AMOUNT_NOSTRO1" };
 
-		// P3 starts at row 36 (index 36), ends at row 136 (index 136)
-		// R1=36, R101=136
-		for (int i = 1; i <= 101; i++) {
+		// P3 starts at row 36 (index 36), ends at row 46 (index 46)
+		for (int i = 1; i <= 11; i++) {
 			int rowIndex = 35 + i;
+			String rowPrefix = "R" + i;
 			populateArchivalP3Row(sheet, rowIndex, record, "R" + i, p3Fields, numberStyle, textStyle);
+			writeCombinedAmountCell(sheet, rowIndex, record, rowPrefix, "NOSTRO1", 6, numberStyle);
 		}
 	}
 
@@ -206050,10 +206056,12 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 		}
 
 		// P3 uses Columns A-I (0-8)
+		int[] colMap = { 0, 1, 2, 3, 4, 5, 7 }; // A B C D E F [G skipped] H
 		for (int i = 0; i < fields.length; i++) {
-			Cell cell = row.getCell(i);
+			int col = colMap[i];
+			Cell cell = row.getCell(col);
 			if (cell == null) {
-				cell = row.createCell(i);
+				cell = row.createCell(col);
 			}
 
 			String methodName = "get" + rowPrefix + "_" + fields[i];
@@ -206107,15 +206115,15 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 
 		BrrsMNosvosP4Archival record = dataList.get(0);
 
-		// P4 fields (6 fields per row)
-		String[] p4Fields = { "NAME_OF_BANK_VOSTRO1", "TYPE_OF_ACCOUNT_VOSTRO1", "PURPOSE_VOSTRO1", "CURRENCY_VOSTRO1",
-				"AMOUNT_DEMAND_VOSTRO1", "AMOUNT_TIME_VOSTRO1" };
+		// P4 fields (4 fields per row)
+		String[] p4Fields = { "NAME_OF_BANK_VOSTRO1", "TYPE_OF_ACCOUNT_VOSTRO1", "PURPOSE_VOSTRO1", "CURRENCY_VOSTRO1" };
 
-		// P4 starts at row 51 (index 51), ends at row 151 (index 151)
-		// R1=51, R101=151
-		for (int i = 1; i <= 101; i++) {
+		// P4 starts at row 51 (index 51), ends at row 57 (index 57)
+		for (int i = 1; i <= 7; i++) {
 			int rowIndex = 50 + i;
+			String rowPrefix = "R" + i;
 			populateArchivalP4Row(sheet, rowIndex, record, "R" + i, p4Fields, numberStyle, textStyle);
+			writeCombinedAmountCell(sheet, rowIndex, record, rowPrefix, "VOSTRO1", 6, numberStyle);
 		}
 	}
 
@@ -206131,17 +206139,9 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 			row = sheet.createRow(rowIndex);
 		}
 
-		// P4 column mapping:
 		// Columns A-D (0-3) for String fields
-		// Columns G-H (6-7) for Amount fields
 		for (int i = 0; i < fields.length; i++) {
-			// Map column positions
-			int colIndex;
-			if (i <= 3) {
-				colIndex = i; // Columns A-D (0-3)
-			} else {
-				colIndex = i + 2; // Columns G-H (6-7)
-			}
+			int colIndex = i; // A-D only now
 
 			Cell cell = row.getCell(colIndex);
 			if (cell == null) {
@@ -206359,8 +206359,9 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 		}
 
 		if (record.getREPORT_DATE() != null) {
-			reportDateCell.setCellValue(record.getREPORT_DATE());
-			reportDateCell.setCellStyle(textStyle); // Should use dateStyle, but textStyle is acceptable
+			String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(record.getREPORT_DATE());
+			reportDateCell.setCellValue(formattedDate);
+			reportDateCell.setCellStyle(textStyle);
 		} else {
 			reportDateCell.setCellValue("");
 			reportDateCell.setCellStyle(textStyle);
@@ -207261,8 +207262,9 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 			}
 
 			if (reportDate != null) {
-				cell.setCellValue(reportDate);
-				cell.setCellStyle(dateStyle);
+				String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+				cell.setCellValue(formattedDate);
+				cell.setCellStyle(textStyle);
 			} else {
 				cell.setCellValue("");
 				cell.setCellStyle(textStyle);
@@ -207271,7 +207273,8 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 			// =========================================================
 			// CHECK FOR EMAIL FORMAT
 			// =========================================================
-			boolean isEmail = "email_report".equalsIgnoreCase(dtltype);
+			boolean isEmail = "email_report".equalsIgnoreCase(dtltype)
+					|| (filename != null && filename.toUpperCase().contains("EMAIL"));
 
 			// =========================================================
 			// ROW CODES (R1-R101)
@@ -207492,8 +207495,9 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 			}
 
 			if (reportDate != null) {
-				cell.setCellValue(reportDate);
-				cell.setCellStyle(dateStyle);
+				String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+				cell.setCellValue(formattedDate);
+				cell.setCellStyle(textStyle);
 			} else {
 				cell.setCellValue("");
 				cell.setCellStyle(textStyle);
@@ -207502,7 +207506,8 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 			// =========================================================
 			// 5c. CHECK FOR EMAIL FORMAT
 			// =========================================================
-			boolean isEmail = "email_report".equalsIgnoreCase(dtltype);
+			boolean isEmail = "email_report".equalsIgnoreCase(dtltype)
+					|| (filename != null && filename.toUpperCase().contains("EMAIL"));
 
 			// =========================================================
 			// 5d. ROW CODES (R1-R101)

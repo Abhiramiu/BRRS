@@ -16077,10 +16077,12 @@ public class BRRS_M_DEP4_ReportService {
 	// ------------------------------
 	public byte[] getExcelM_DEP4ARCHIVAL(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
+		logger.info("Service: Starting Excel generation process in memory in Archival.");
 
-		if (type.equals("ARCHIVAL") & version != null) {
-
+		if ("email".equalsIgnoreCase(format) && version != null) {
+			logger.info("Service: Redirecting to Archival Email Excel for version {}", version);
+			return BRRS_M_DEP4ArchivalEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
+					version);
 		}
 //   List<M_DEP4_Archival_Summary_Entity1> T1Master = BRRS_M_DEP4_Archival_Summary_Repo1
 
@@ -37241,9 +37243,9 @@ public class BRRS_M_DEP4_ReportService {
 					if (row == null) {
 						row = sheet.createRow(6);
 					}
-					Cell cell1 = row.getCell(1);
+					Cell cell1 = row.getCell(2);
 					if (cell1 == null) {
-						cell1 = row.createCell(1);
+						cell1 = row.createCell(2);
 					}
 
 					if (record1.getReportDate() != null) {
@@ -54415,9 +54417,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					// REPORT_DATE
 					row = sheet.getRow(6);
-					Cell cell1 = row.getCell(1);
+					Cell cell1 = row.getCell(2);
 					if (cell1 == null) {
-						cell1 = row.createCell(1);
+						cell1 = row.createCell(2);
 					}
 
 					if (record1.getReportDate() != null) {
@@ -56340,30 +56342,30 @@ public class BRRS_M_DEP4_ReportService {
 					// R61
 					row = sheet.getRow(60);
 
-					cell1 = row.getCell(2);
-					if (record1.getR61_institutional_sector() != null)
-						cell1.setCellValue(record1.getR61_institutional_sector());
-					else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell1 = row.getCell(3);
-					if (record1.getR61_type_of_account() != null)
-						cell1.setCellValue(record1.getR61_type_of_account());
-					else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell1 = row.getCell(4);
-					if (record1.getR61_interest_rate() != null) {
-						cell1.setCellValue(record1.getR61_interest_rate().doubleValue());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+//					cell1 = row.getCell(2);
+//					if (record1.getR61_institutional_sector() != null)
+//						cell1.setCellValue(record1.getR61_institutional_sector());
+//					else {
+//						cell1.setCellValue("");
+//						cell1.setCellStyle(textStyle);
+//					}
+//
+//					cell1 = row.getCell(3);
+//					if (record1.getR61_type_of_account() != null)
+//						cell1.setCellValue(record1.getR61_type_of_account());
+//					else {
+//						cell1.setCellValue("");
+//						cell1.setCellStyle(textStyle);
+//					}
+//
+//					cell1 = row.getCell(4);
+//					if (record1.getR61_interest_rate() != null) {
+//						cell1.setCellValue(record1.getR61_interest_rate().doubleValue());
+//						cell1.setCellStyle(numberStyle);
+//					} else {
+//						cell1.setCellValue("");
+//						cell1.setCellStyle(textStyle);
+//					}
 
 					cell1 = row.getCell(5);
 					if (record1.getR61_amount() != null) {
@@ -56377,39 +56379,39 @@ public class BRRS_M_DEP4_ReportService {
 					// R62
 					row = sheet.getRow(61);
 
-					cell1 = row.getCell(2);
-					if (record1.getR62_institutional_sector() != null)
-						cell1.setCellValue(record1.getR62_institutional_sector());
-					else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+//					cell1 = row.getCell(2);
+//					if (record1.getR62_institutional_sector() != null)
+//						cell1.setCellValue(record1.getR62_institutional_sector());
+//					else {
+//						cell1.setCellValue("");
+//						cell1.setCellStyle(textStyle);
+//					}
+//
+//					cell1 = row.getCell(3);
+//					if (record1.getR62_type_of_account() != null)
+//						cell1.setCellValue(record1.getR62_type_of_account());
+//					else {
+//						cell1.setCellValue("");
+//						cell1.setCellStyle(textStyle);
+//					}
+//
+//					cell1 = row.getCell(4);
+//					if (record1.getR62_interest_rate() != null) {
+//						cell1.setCellValue(record1.getR62_interest_rate().doubleValue());
+//						cell1.setCellStyle(numberStyle);
+//					} else {
+//						cell1.setCellValue("");
+//						cell1.setCellStyle(textStyle);
+//					}
 
-					cell1 = row.getCell(3);
-					if (record1.getR62_type_of_account() != null)
-						cell1.setCellValue(record1.getR62_type_of_account());
-					else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell1 = row.getCell(4);
-					if (record1.getR62_interest_rate() != null) {
-						cell1.setCellValue(record1.getR62_interest_rate().doubleValue());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell1 = row.getCell(5);
-					if (record1.getR62_amount() != null) {
-						cell1.setCellValue(record1.getR62_amount().doubleValue());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+//					cell1 = row.getCell(5);
+//					if (record1.getR62_amount() != null) {
+//						cell1.setCellValue(record1.getR62_amount().doubleValue());
+//						cell1.setCellStyle(numberStyle);
+//					} else {
+//						cell1.setCellValue("");
+//						cell1.setCellStyle(textStyle);
+//					}
 
 				}
 
