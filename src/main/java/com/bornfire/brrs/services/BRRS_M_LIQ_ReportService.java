@@ -4127,10 +4127,10 @@ public class BRRS_M_LIQ_ReportService {
 				}
 
 				// Column 4 = Excel column D
-				Cell dateCell = dateRow.getCell(3);
+				Cell dateCell = dateRow.getCell(1);
 
 				if (dateCell == null) {
-					dateCell = dateRow.createCell(3);
+					dateCell = dateRow.createCell(1);
 				}
 
 				// Date conversion

@@ -8507,10 +8507,10 @@ public class BRRS_M_CA4_ReportService {
 				}
 
 				// Column 2 = Excel column C
-				Cell dateCell = dateRow.getCell(2);
+				Cell dateCell = dateRow.getCell(1);
 
 				if (dateCell == null) {
-					dateCell = dateRow.createCell(2);
+					dateCell = dateRow.createCell(1);
 				}
 
 				// Date conversion
@@ -13080,10 +13080,10 @@ public class BRRS_M_CA4_ReportService {
 				}
 
 				// Column 2 = Excel column C
-				Cell dateCell = dateRow.getCell(2);
+				Cell dateCell = dateRow.getCell(1);
 
 				if (dateCell == null) {
-					dateCell = dateRow.createCell(2);
+					dateCell = dateRow.createCell(1);
 				}
 
 				// Date conversion
