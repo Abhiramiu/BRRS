@@ -13869,7 +13869,7 @@ numberStyle.setBorderRight(BorderStyle.THIN);
 numberStyle.setFont(font);
 //--- End of Style Definitions ---
 
-int startRow = 3;
+int startRow = 4;
 
 if (!dataList1.isEmpty() || !dataList2.isEmpty()) {
 for (int i = 0; i < dataList1.size(); i++) {
@@ -13884,7 +13884,7 @@ row = sheet.createRow(startRow + i);
 
 //row4
 //Column B
-Cell cellBdate = row.createCell(3);
+Cell cellBdate = row.createCell(1);
 if (record.getReport_date() != null) {
 	cellBdate.setCellValue(record.getReport_date());
 	cellBdate.setCellStyle(dateStyle);
@@ -19741,7 +19741,7 @@ row = sheet.createRow(startRow + i);
 
 //row4
 //Column B
-Cell cellBdate = row.createCell(3);
+Cell cellBdate = row.createCell(1);
 if (record.getReport_date() != null) {
 	cellBdate.setCellValue(record.getReport_date());
 	cellBdate.setCellStyle(dateStyle);
@@ -26428,7 +26428,7 @@ numberStyle.setBorderRight(BorderStyle.THIN);
 numberStyle.setFont(font);
 //--- End of Style Definitions ---
 
-int startRow = 3;
+int startRow = 4;
 
 if (!dataList1.isEmpty() || !dataList2.isEmpty()) {
 for (int i = 0; i < dataList1.size(); i++) {
@@ -26443,7 +26443,7 @@ row = sheet.createRow(startRow + i);
 
 //row4
 //Column B
-Cell cellBdate = row.createCell(3);
+Cell cellBdate = row.createCell(1);
 if (record.getReport_date() != null) {
 	cellBdate.setCellValue(record.getReport_date());
 	cellBdate.setCellStyle(dateStyle);
@@ -32281,7 +32281,7 @@ row = sheet.createRow(startRow + i);
 
 //row4
 //Column B
-Cell cellBdate = row.createCell(3);
+Cell cellBdate = row.createCell(1);
 if (record.getReport_date() != null) {
 	cellBdate.setCellValue(record.getReport_date());
 	cellBdate.setCellStyle(dateStyle);

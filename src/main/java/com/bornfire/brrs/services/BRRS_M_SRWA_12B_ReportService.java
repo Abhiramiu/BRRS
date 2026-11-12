@@ -12296,7 +12296,7 @@ return new byte[0];
 			numberStyle.setFont(font);
 //			 --- End of Style Definitions ---
 			
-			if("email".equalsIgnoreCase(format) || (filename != null && filename.toUpperCase().contains("EMAIL"))) {
+			if ("email".equalsIgnoreCase(format) || "email".equalsIgnoreCase(dtltype) || "email_report".equalsIgnoreCase(dtltype) || (filename != null && filename.toUpperCase().contains("EMAIL"))) {
 				
 				if (!dataList1.isEmpty()) {
 					populateEntity1Data_Email(sheet, dataList1.get(0), textStyle, numberStyle,dateStyle);
@@ -94095,7 +94095,7 @@ return new byte[0];
 			numberStyle.setFont(font);
 //			 --- End of Style Definitions ---
 			
-			if("email_report".equalsIgnoreCase(dtltype)) {
+			if ("email_report".equalsIgnoreCase(dtltype) || "email".equalsIgnoreCase(dtltype) || "email".equalsIgnoreCase(format) || (filename != null && filename.toUpperCase().contains("EMAIL"))) {
 				
 				if (!dataList1.isEmpty()) {
 					populateExcelEntity1Data_Email(sheet, dataList1.get(0), textStyle, numberStyle ,dateStyle);
@@ -176031,7 +176031,7 @@ public byte[] BRRS_M_SRWA_12BResubExcel(String filename, String reportId, String
 		numberStyle.setFont(font);
 //		 --- End of Style Definitions ---
 		
-		if("email_report".equalsIgnoreCase(dtltype)) {
+		if ("email_report".equalsIgnoreCase(dtltype) || "email".equalsIgnoreCase(dtltype) || (filename != null && filename.toUpperCase().contains("EMAIL"))) {
 			
 			if (!dataList1.isEmpty()) {
 				populateResubEntity1Data_Email(sheet, dataList1.get(0), textStyle, numberStyle , dateStyle);
