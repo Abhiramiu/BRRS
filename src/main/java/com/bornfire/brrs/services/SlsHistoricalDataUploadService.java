@@ -7,9 +7,9 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -25,6 +25,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,9 +40,18 @@ import com.bornfire.brrs.entities.SlsHistoricalDataRepository;
  *   Month | (blank = "JUNE 2023") | CA | CALL | SB | FDR | Total Dep | BC |
  *   Other Liability | Other Asset | OD | Loan | TOTAL LOAN | CD RATIO
  *
- * Behaviour: UPSERT by year-month. The file is a rolling window of history, so
- * months already in the table are updated and new months are inserted. The whole
- * upload is one transaction - if any row is invalid nothing is saved.
+ * Behaviour (SHIFT-UP): the table always keeps MAX_MONTHS rows. On upload the
+ * existing data is shifted up inside the SAME rows (same IDs, same physical
+ * positions): row 1 gets row 2's data, row 2 gets row 3's data ... and the LAST
+ * row gets the new data. The oldest month simply drops out. Nothing is deleted
+ * and re-inserted, so the new month always stays at the bottom, both by ID and
+ * in the SQL Developer grid.
+ *
+ * If the table has fewer than MAX_MONTHS rows, the new rows are inserted as new
+ * rows (highest IDs). If it has more than MAX_MONTHS rows, the extra oldest
+ * rows are deleted.
+ *
+ * The whole upload is one transaction - if any row is invalid nothing is changed.
  */
 @Service
 public class SlsHistoricalDataUploadService {
@@ -49,11 +59,13 @@ public class SlsHistoricalDataUploadService {
 	private static final Logger logger = LoggerFactory.getLogger(SlsHistoricalDataUploadService.class);
 
 	/**
-	 * How NEW months are stored in MONTH_YEAR: true = last day of month
+	 * How months are stored in MONTH_YEAR: true = last day of month
 	 * (JUNE 2023 -> 30-JUN-2023), false = first day (01-JUN-2023).
-	 * Months that already exist keep whatever MONTH_YEAR value they have.
 	 */
 	private static final boolean STORE_MONTH_END = true;
+
+	/** The table always keeps only 36 rows. */
+	private static final int MAX_MONTHS = 36;
 
 	private static final String[] REQUIRED_HEADERS = { "CA", "CALL", "SB", "FDR", "TOTALDEP", "BC", "OTHERLIABILITY",
 			"OTHERASSET", "OD", "LOAN", "TOTALLOAN", "CDRATIO" };
@@ -65,7 +77,8 @@ public class SlsHistoricalDataUploadService {
 	// with the wrong year. Trying "dd-MMM-yy" first lets SimpleDateFormat apply
 	// its proper 2-digit-year windowing (e.g. 26 -> 2026) instead.
 	private static final String[] MONTH_YEAR_PATTERNS = { "MMMM yyyy", "MMM yyyy", "MMMM-yyyy", "MMM-yyyy", "MM/yyyy",
-			"yyyy-MM", "dd-MMM-yy", "dd-MMM-yyyy", "dd/MM/yy", "dd/MM/yyyy", "yyyy-MM-dd" };
+			"yyyy-MM", "MMM-yy", "MMMM-yy", "MMM yy", "MMMM yy", "dd-MMM-yy", "dd-MMM-yyyy", "dd/MM/yy", "dd/MM/yyyy",
+			"yyyy-MM-dd" };
 
 	@Autowired
 	private SlsHistoricalDataRepository repository;
@@ -82,11 +95,12 @@ public class SlsHistoricalDataUploadService {
 			throw new IllegalArgumentException("Invalid file! Please upload an Excel file (.xls or .xlsx).");
 		}
 		if (!fileName.contains("sls")) {
-			throw new IllegalArgumentException("Invalid file! File name must contain 'SLS' (e.g. SLS_HISTORICAL_DATA_MAY_2026.xls).");
+			throw new IllegalArgumentException(
+					"Invalid file! File name must contain 'SLS' (e.g. SLS_HISTORICAL_DATA_MAY_2026.xls).");
 		}
 
-		// 2. Parse the sheet into transient entities, keyed by year-month (yyyy-MM)
-		Map<String, SlsHistoricalDataEntity> incoming = new LinkedHashMap<>();
+		// 2. Parse the sheet into transient entities
+		List<SlsHistoricalDataEntity> incoming = new ArrayList<>();
 		List<String> errors = new ArrayList<>();
 
 		try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
@@ -143,7 +157,8 @@ public class SlsHistoricalDataUploadService {
 
 				LocalDate monthDate = parseMonthYear(row.getCell(monthYearCol));
 				if (monthDate == null || monthDate.getYear() < 2000 || monthDate.getYear() > 2100) {
-					errors.add("Row " + excelRow + ": Month/Year is missing or not recognised.");
+					errors.add("Row " + excelRow + ": Month/Year '" + getStringValue(row.getCell(monthYearCol))
+							+ "' is missing or not recognised.");
 					continue;
 				}
 
@@ -188,14 +203,11 @@ public class SlsHistoricalDataUploadService {
 				e.setMonthYear(java.sql.Date.valueOf(stored));
 				e.setDelFlg("N");
 
-				String key = YearMonth.from(monthDate).toString(); // yyyy-MM
-				if (incoming.put(key, e) != null) {
-					logger.warn("SLS upload: month {} appears more than once in the file, last row wins.", key);
-				}
+				incoming.add(e);
 			}
 		}
 
-		// 3. All-or-nothing: report every bad row, save nothing
+		// 3. All-or-nothing: report every bad row, change nothing
 		if (!errors.isEmpty()) {
 			int shown = Math.min(errors.size(), 10);
 			String msg = String.join("\n", errors.subList(0, shown));
@@ -208,54 +220,84 @@ public class SlsHistoricalDataUploadService {
 			throw new IllegalArgumentException("The uploaded SLS file contains no valid records to process.");
 		}
 
-		// 4. Upsert by year-month
-		Map<String, SlsHistoricalDataEntity> existingByMonth = new HashMap<>();
-		for (SlsHistoricalDataEntity ex : repository.findAll()) {
-			if (ex.getMonthYear() != null) {
-				existingByMonth.put(YearMonth.from(toLocalDate(ex.getMonthYear())).toString(), ex);
-			}
+		// 4. Existing rows, oldest first (lowest ID)
+		List<SlsHistoricalDataEntity> existing = new ArrayList<>(repository.findAll());
+		existing.sort(
+				Comparator.comparing(SlsHistoricalDataEntity::getId, Comparator.nullsLast(Comparator.naturalOrder())));
+
+		// 5. Final data = old data + new data, keeping only the LAST MAX_MONTHS.
+		//    Copies are used so overwriting the existing rows below cannot corrupt the source data.
+		List<SlsHistoricalDataEntity> all = new ArrayList<>();
+		for (SlsHistoricalDataEntity e : existing) {
+			all.add(copyOf(e));
+		}
+		for (SlsHistoricalDataEntity e : incoming) {
+			all.add(copyOf(e));
+		}
+		int dropCount = Math.max(0, all.size() - MAX_MONTHS);
+		List<SlsHistoricalDataEntity> finalData = new ArrayList<>(all.subList(dropCount, all.size()));
+
+		// 6. Write the final data back INTO the existing rows (IDs and physical positions stay the same).
+		//    The LAST existing rows are used, so the newest month always ends in the last row.
+		int slotsToUse = Math.min(existing.size(), finalData.size());
+		int firstSlot = existing.size() - slotsToUse;
+
+		// extra old rows that are not needed any more (only when the table had more than MAX_MONTHS rows)
+		List<SlsHistoricalDataEntity> toDelete = new ArrayList<>(existing.subList(0, firstSlot));
+		if (!toDelete.isEmpty()) {
+			repository.deleteAll(toDelete);
 		}
 
-		int inserted = 0;
-		int updated = 0;
 		List<SlsHistoricalDataEntity> toSave = new ArrayList<>();
-		for (Map.Entry<String, SlsHistoricalDataEntity> entry : incoming.entrySet()) {
-			SlsHistoricalDataEntity src = entry.getValue();
-			SlsHistoricalDataEntity target = existingByMonth.get(entry.getKey());
-			if (target == null) {
-				toSave.add(src);
-				inserted++;
-			} else {
-				// keep the existing ID and MONTH_YEAR, refresh everything else
-				copyValues(src, target);
-				toSave.add(target);
-				updated++;
-			}
+		for (int i = 0; i < slotsToUse; i++) {
+			SlsHistoricalDataEntity slot = existing.get(firstSlot + i);
+			copyData(finalData.get(i), slot); // overwrite the slot with the shifted data
+			toSave.add(slot);
+		}
+		// if the table had fewer than MAX_MONTHS rows, the remaining data goes in as new rows (new highest IDs)
+		for (int i = slotsToUse; i < finalData.size(); i++) {
+			toSave.add(finalData.get(i));
 		}
 		repository.saveAll(toSave);
 
-		logger.info("SLS historical upload done: {} inserted, {} updated.", inserted, updated);
-		return "SLS historical data uploaded successfully. Months processed: " + toSave.size() + " (new: " + inserted
-				+ ", updated: " + updated + ")";
+		int removed = dropCount;
+		logger.info("SLS historical upload done: {} new row(s) uploaded, {} oldest month(s) dropped, {} extra row(s) deleted.",
+				incoming.size(), removed, toDelete.size());
+		return "SLS historical data uploaded successfully. Rows added: " + incoming.size()
+				+ ", oldest rows removed: " + removed;
+	}
+
+	/** Use this wherever the SLS history is read: rows always come back in ID order (oldest first, newest last). */
+	public List<SlsHistoricalDataEntity> getAllOrdered() {
+		return repository.findAll(Sort.by(Sort.Direction.ASC, "id"));
 	}
 
 	// --- Helpers ---
 
-	private void copyValues(SlsHistoricalDataEntity s, SlsHistoricalDataEntity t) {
-		t.setMonthNo(s.getMonthNo());
-		t.setCa(s.getCa());
-		t.setCall(s.getCall());
-		t.setSb(s.getSb());
-		t.setFdr(s.getFdr());
-		t.setTotalDep(s.getTotalDep());
-		t.setBc(s.getBc());
-		t.setOtherLiability(s.getOtherLiability());
-		t.setOtherAsset(s.getOtherAsset());
-		t.setOd(s.getOd());
-		t.setLoan(s.getLoan());
-		t.setTotalLoan(s.getTotalLoan());
-		t.setCdRatio(s.getCdRatio());
-		t.setDelFlg("N");
+	/** Detached copy of the data columns (ID is not copied). */
+	private SlsHistoricalDataEntity copyOf(SlsHistoricalDataEntity s) {
+		SlsHistoricalDataEntity t = new SlsHistoricalDataEntity();
+		copyData(s, t);
+		return t;
+	}
+
+	/** Copies every column except ID. Add any extra entity columns here. */
+	private void copyData(SlsHistoricalDataEntity from, SlsHistoricalDataEntity to) {
+		to.setMonthNo(from.getMonthNo());
+		to.setMonthYear(from.getMonthYear());
+		to.setCa(from.getCa());
+		to.setCall(from.getCall());
+		to.setSb(from.getSb());
+		to.setFdr(from.getFdr());
+		to.setTotalDep(from.getTotalDep());
+		to.setBc(from.getBc());
+		to.setOtherLiability(from.getOtherLiability());
+		to.setOtherAsset(from.getOtherAsset());
+		to.setOd(from.getOd());
+		to.setLoan(from.getLoan());
+		to.setTotalLoan(from.getTotalLoan());
+		to.setCdRatio(from.getCdRatio());
+		to.setDelFlg(from.getDelFlg());
 	}
 
 	@SafeVarargs
@@ -322,6 +364,9 @@ public class SlsHistoricalDataUploadService {
 		} else {
 			String s = getStringValue(cell);
 			if (s == null) return null;
+			if (s.matches("\\d{5}")) { // plain Excel date number e.g. 46265
+				return toLocalDate(DateUtil.getJavaDate(Double.parseDouble(s)));
+			}
 			s = s.trim().replaceAll("\\s+", " ");
 			for (String pattern : MONTH_YEAR_PATTERNS) {
 				SimpleDateFormat parser = new SimpleDateFormat(pattern, Locale.ENGLISH);
@@ -330,8 +375,8 @@ public class SlsHistoricalDataUploadService {
 				Date parsed = parser.parse(s, pos);
 				if (parsed != null && pos.getIndex() == s.length()) { // whole text must match
 					// Defense in depth: a "yyyy" pattern can still match a 2-digit
-					// year (e.g. "26" parsed literally as year 26 AD) if the string
-					// happens to fit. Reject that case and keep trying patterns.
+					// year (e.g. "26" parsed literally as year 26 AD). Reject that
+					// case and keep trying patterns.
 					if (pattern.contains("yyyy") && toLocalDate(parsed).getYear() < 1000) {
 						continue;
 					}

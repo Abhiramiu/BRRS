@@ -22,19 +22,10 @@ PURPOSE		: BRRS_M_PLLREPORT
 	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
 
 	<!-- JavaScript -->
-	<!-- jQuery core (required first) -->
-
-
-	<!-- ✅ Your manually placed jQuery validation
-	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-	 <script th:src="/jquery/jquery.validate.min.js"></script>
-	 -->
-
 	<!-- jQuery (required first) -->
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
 
-	<!-- ✅ jQuery Validation -->
+	<!-- jQuery Validation -->
 	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
 		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
 
@@ -81,7 +72,6 @@ PURPOSE		: BRRS_M_PLLREPORT
 		.show>.btn-primary.dropdown-toggle {
 			color: #fff;
 			background-color: #cc0000;
-			/* fixed from #cc000000 (too many zeros) */
 			border-color: #161617;
 		}
 
@@ -237,13 +227,11 @@ PURPOSE		: BRRS_M_PLLREPORT
 		/* Hover effect when the input/select is focused */
 		.form-control:focus:hover~.form-legend {
 			color: #0056b3;
-			/* Darker shade of blue on hover */
 		}
 
 		/* Ensure the label returns to the normal color after focus or hover is removed */
 		.form-control:not(:focus)~.form-legend {
 			color: #aaa;
-			/* Normal label color */
 		}
 	</style>
 
@@ -301,9 +289,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 		.table-cell tbody td:hover {
 			background-color: #f0f0f0;
-			/* Hover color for cell */
 			cursor: pointer;
-			/* Optional: pointer cursor */
 		}
 	</style>
 	<style>
@@ -349,7 +335,6 @@ PURPOSE		: BRRS_M_PLLREPORT
 				url: "/BRRS/getUserRole",
 				type: "GET",
 				success: function (roleId) {
-					// console.log("User Role ID:", roleId);
 
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
@@ -420,12 +405,6 @@ PURPOSE		: BRRS_M_PLLREPORT
 		}
 
 		window.onload = function () {
-			/* setTimeout(function() {
-				var selectedTab = document.getElementById("selectedTab").value;
-				alert(selectedTab);
-				activateTab(selectedTab);
-			}, 10000); */ // 10,000 milliseconds = 10 seconds
-
 			var selectedTab = document.getElementById("selectedTab").value;
 			activateTab(selectedTab);
 		};
@@ -478,7 +457,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 			$('#loader').modal('show');
 
-			// ✅ Build URL safely
+			// Build URL safely
 			var url = './downloadExcel?reportid=' + reportid +
 				'&fromdate=' + fromdate +
 				'&asondate=' + asondate +
@@ -489,7 +468,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 				'&filename=' + filename +
 				'&type=' + type;
 
-			// ✅ Append version ONLY if valid
+			// Append version ONLY if valid
 			if (version && version.trim() !== '') {
 				url += '&version=' + version;
 			}
@@ -529,7 +508,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 				},
 
 				complete: function () {
-					// 🔥 Always hide loader (success / error)
+					// Always hide loader (success / error)
 					$('#loader').modal('hide');
 				}
 			});
@@ -602,7 +581,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 				'&dtltype=' + encodeURIComponent(dtltype) +
 				'&type=' + encodeURIComponent(type) +
 				'&version=' + encodeURIComponent(version);
-			fetch(downloadUrl)  // ✅ no invalid characters now
+			fetch(downloadUrl)
 				.then(res => res.text())
 				.then(jobId => {
 
@@ -645,8 +624,6 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 		function downloadDetailfile(jobId, filename) {
 
-			//$('#loader').modal('show');
-
 			$.ajax({
 				url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
 					'&filename=' + filename,
@@ -684,7 +661,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 
 	</script>
-	
+
 	<script>
 		// Toggle the details table into edit mode.
 		// NOTE: hooks up to the existing /BRRS/... updateDetailEdit endpoint on submit;
@@ -713,10 +690,6 @@ PURPOSE		: BRRS_M_PLLREPORT
 			});
 		}
 	</script>
-	  
-
-	
-	
 
 	<script th:inline="javascript">
 		function showdetailsbyRowAndColumn(a) {
@@ -750,7 +723,6 @@ PURPOSE		: BRRS_M_PLLREPORT
 					location.href = Callurl;
 				};
 			} else {
-				// Use your custom alert modal instead of window.alert
 				showResultModal("Alert", "No Records available for this selected cell.");
 			}
 		}
@@ -810,32 +782,26 @@ PURPOSE		: BRRS_M_PLLREPORT
 				lengthChange: false,
 				ordering: true,
 				pageLength: 100,
-				fixedHeader: true, // ✅ You can simply set it to true
-				// ✅ Column width settings
+				fixedHeader: true,
 				columnDefs: [
-					{width: "60px", targets: 0},   // Edit icon column
-					{width: "150px", targets: 1},  // S No column
-					{width: "300px", targets: 7}    // S No column
+					{width: "60px", targets: 0},
+					{width: "150px", targets: 1},
+					{width: "300px", targets: 7}
 				],
 
 				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
 			});
 
-			// ✅ Fix alignment on resize / zoom
+			// Fix alignment on resize / zoom
 			$(window).on('resize', function () {
 				table.columns.adjust().draw(false);
 			});
 
-			// ✅ Fix initial misalignment if loaded at non-100% zoom
+			// Fix initial misalignment if loaded at non-100% zoom
 			setTimeout(function () {
 				table.columns.adjust().draw(false);
 			}, 500);
 		});
-	</script>
-
-
-
-
 	</script>
 
 
@@ -851,7 +817,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 			cursor: pointer;
 		}
 
-		/* 🚌 Bus display style box */
+		/* Bus display style box */
 		.boards {
 			transform: translateY(6px);
 			background-color: rgb(107, 122, 143);
@@ -861,13 +827,12 @@ PURPOSE		: BRRS_M_PLLREPORT
 			overflow: hidden;
 			white-space: nowrap;
 			flex: 1;
-			/* ✅ makes it take available space dynamically */
 			min-width: 200px;
 			box-shadow: 0 0 10px rgb(107, 122, 143);
 			position: relative;
 		}
 
-		/* ✨ Scrolling animation */
+		/* Scrolling animation */
 		.scrolling-text {
 			display: inline-block;
 			font-family: "Courier New", monospace;
@@ -926,8 +891,6 @@ PURPOSE		: BRRS_M_PLLREPORT
 			const acctNo = elem.getAttribute("data-acctNo");
 			const asondate = elem.getAttribute("data-asondate");
 
-			// Use the 'reportId' variable initialized above
-			// Use backticks (`) for a template literal to easily include the variable
 			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
 		}
 	</script>
@@ -937,10 +900,10 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 	<script>
 		function submitMPLLUpdate() {
-			const formData = $('#mpllDetailForm').serialize(); // Ensure correct form ID
+			const formData = $('#mpllDetailForm').serialize();
 
-			// ✅ Store the previous page URL
-			const previousUrl = document.referrer; // same as going back once in history
+			// Store the previous page URL
+			const previousUrl = document.referrer;
 
 			// Show loader while processing
 			$('#loader').modal('show');
@@ -959,12 +922,11 @@ PURPOSE		: BRRS_M_PLLREPORT
 						showResultModal('Information', response || 'No data updated.');
 					}
 
-					// ✅ Redirect back to the previous page after short delay
+					// Redirect back to the previous page after short delay
 					setTimeout(() => {
 						if (previousUrl) {
 							window.location.href = previousUrl;
 						} else {
-							// fallback: just go back if referrer not found
 							window.history.back();
 						}
 					}, 1500);
@@ -975,7 +937,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 					showResultModal('Error', 'Failed to update record. Please try again.');
 
-					// ✅ On error also return to previous page after delay
+					// On error also return to previous page after delay
 					setTimeout(() => {
 						if (previousUrl) {
 							window.location.href = previousUrl;
@@ -1019,20 +981,17 @@ PURPOSE		: BRRS_M_PLLREPORT
 				type: "POST",
 				url: "/BRRS/Reports/M-PLL/trigger",
 				data: {
-					reportDate: reportDate // Send the date as a request parameter
+					reportDate: reportDate
 				},
 				success: function (response) {
 					showResultModal('Success', response);
-					// Optionally, refresh the page after a delay to show the new data
 					setTimeout(() => {location.reload();}, 2000);
 				},
 				error: function (xhr, status, error) {
-					// Use the error message from the server if available
 					const errorMessage = xhr.responseText || "An unknown error occurred.";
 					showResultModal('Error', 'Failed to trigger report generation: ' + errorMessage);
 				},
 				complete: function () {
-					// Always hide the loader
 					$('#loader').modal('hide');
 				}
 			});
@@ -1041,8 +1000,6 @@ PURPOSE		: BRRS_M_PLLREPORT
 </head>
 
 
-
-<title>SLS</title>
 
 <body>
 	<div class="container-fluid" style="padding-left:0px; padding-right:0px;">
@@ -1054,7 +1011,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 				<div class="card-header"
 					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
 					<div style="display: flex; align-items: center;" onclick="back();">
-						<!-- ⬅️ Left circular arrow -->
+						<!-- Left circular arrow -->
 						<div class="left-arrow-circle">
 							<i class="fa fa-arrow-left"></i>
 						</div>
@@ -1074,16 +1031,11 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
-						<!-- 📅 Date -->
+						<!-- Date -->
 						<span class="white-text"
 							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
 							Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
-						<!--	<button type="button" class="custom-tab-btn" id="triggerReportBtn"
-						           onclick="triggerReportGeneration();"
-						           >
-						       <i class="fa fa-play"></i> Trigger
-						   </button>   -->
 
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
@@ -1097,45 +1049,31 @@ PURPOSE		: BRRS_M_PLLREPORT
 							<i class="fa fa-upload"></i> Upload Excel
 						</button>
 
+						<!-- Download button - Summary -->
+						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary' and role != 'M'}" th:attr="data-reportid=${reportid}, 
+				                     data-asondate=${asondate}, 
+				                     data-fromdate=${fromdate}, 
+				                     data-todate=${todate}, 
+				                     data-currency=${currency},  
+				                     data-dtltype=${dtltype}, 
+				                     data-filename='SLS_WORKING.xlsx',
+				                     data-type=${type},
+				                     data-version=${version}" onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>
+						</button>
 
-
-							<!-- Modify -->
-																				<!--<button class="custom-tab-btn" onclick="showmodify(this);" title="Click to EDIT Records"
-																					th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
-																					th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
-																					id="addRecord">Modify</button>
-
-																				 Cancel 
-																				<button class="custom-tab-btn" style="display:none;" title="Cancel editing" id="cancelRecord"
-																					onclick="cancelModify();">
-																					Cancel
-																				</button>-->
-
-																				<!-- Download button - Summary -->
-																				<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary' and role != 'M'}" th:attr="data-reportid=${reportid}, 
-														                     data-asondate=${asondate}, 
-														                     data-fromdate=${fromdate}, 
-														                     data-todate=${todate}, 
-														                     data-currency=${currency},  
-														                     data-dtltype=${dtltype}, 
-														                     data-filename='SLS_WORKING.xlsx',
-														                     data-type=${type},
-														                     data-version=${version}" onclick="downloadfile(this);">
-																					<i class="fa fa-download"></i>
-																				</button>
-
-																				<!-- Download button - Details -->
-																				<button type="button" class="custom-tab-btn" th:if="${displaymode == 'Details' and role != 'M'}" th:attr="data-reportid=${reportid}, 
-														                     data-asondate=${asondate}, 
-														                     data-fromdate=${fromdate}, 
-														                     data-todate=${todate}, 
-														                     data-currency=${currency},  
-														                     data-dtltype=${dtltype}, 
-														                     data-filename='SLS_WORKINGDetail',
-														                     data-type=${type},
-														                     data-version=${version}" onclick="startReport(this)">
-																					<i class="fa fa-download"></i>
-																				</button>
+						<!-- Download button - Details -->
+						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'Details' and role != 'M'}" th:attr="data-reportid=${reportid}, 
+				                     data-asondate=${asondate}, 
+				                     data-fromdate=${fromdate}, 
+				                     data-todate=${todate}, 
+				                     data-currency=${currency},  
+				                     data-dtltype=${dtltype}, 
+				                     data-filename='SLS_WORKINGDetail',
+				                     data-type=${type},
+				                     data-version=${version}" onclick="startReport(this)">
+							<i class="fa fa-download"></i>
+						</button>
 					</div>
 				</div>
 			</div>
@@ -1144,32 +1082,28 @@ PURPOSE		: BRRS_M_PLLREPORT
 			<div th:if="${displaymode == 'summary'}">
 				<div class="row">
 					<div class="col-sm-12">
-						<!-- <h5 style = "font-weight:bold;color:black;">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT<br>(1) MONTHLY SCHEDULE M-SP: STATEMENT OF FINANCIAL POSITION AS AT<br>(P'000)<br> </h5> -->
 						<div class="table-wrapper table-responsive scrollable-table-container"
 							style="border-right: 1px solid #dee2e6;max-height:700px; overflow-y: auto;">
 						<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reports">
 							<thead>
-								
 								<tr>
-																	<th colspan="4" style="text-align: center; width:150px; "></th>
-																	<th style="text-align: center; ">Pula in 1000</th>
-																	<th style="text-align: center;background-color:goldenrod ">USD Millions</th>
-<th style="text-align: center;background-color:yellow;color:red ">0.0762</th>																	<th style="text-align: center; "></th>
-																	<th style="text-align: center;  ">Bucketing</th>
-																	<th style="text-align: center;  "></th>
-																	<th style="text-align: center;background-color:goldenrod  ">DEP TOTAL</th>
-																	<th style="text-align: center; background-color:goldenrod ">ADV TOTAL</th>
-																	<th style="text-align: center;  "></th>
-																	<th style="text-align: center;  "></th>
-																	<th style="text-align: center;  "></th>
-																	<th style="text-align: center; "></th>
-																	<th style="text-align: center; "></th>
-
-																</tr>
+									<th colspan="4" style="text-align: center; width:150px; "></th>
+									<th style="text-align: center; ">Pula in 1000</th>
+									<th style="text-align: center;background-color:goldenrod ">USD Millions</th>
+									<th style="text-align: center;background-color:yellow;color:red ">0.0762</th>
+									<th style="text-align: center; "></th>
+									<th style="text-align: center;  ">Bucketing</th>
+									<th style="text-align: center;  "></th>
+									<th style="text-align: center;background-color:goldenrod  ">DEP TOTAL</th>
+									<th style="text-align: center; background-color:goldenrod ">ADV TOTAL</th>
+									<th style="text-align: center;  "></th>
+									<th style="text-align: center;  "></th>
+									<th style="text-align: center;  "></th>
+									<th style="text-align: center; "></th>
+									<th style="text-align: center; "></th>
+								</tr>
 							</thead>
 							<tbody th:each="report: ${reportsummary}" th:with="report1=${!#lists.isEmpty(reportsummary1)} ? ${reportsummary1[0]} : null" style="font-family: Arial;">
-									
-								
 								<tr>
 									<td Style="text-align: center;">2</td>
 									<td colspan="3" Style="text-align: left;" th:text="${report.R2_COLUMN_A}"></td>
@@ -2003,751 +1937,704 @@ PURPOSE		: BRRS_M_PLLREPORT
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R50_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R50_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
-								```html
 								<tr>
-								    <td Style="text-align: center;">51</td>
-								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R51_COLUMN_A}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R51_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R51_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R51_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
-								</tr>
-
-								<tr>
-								    <td Style="text-align: center;">52</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report.R52_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R52_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R52_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
-								</tr>
-
-								<tr>
-								    <td Style="text-align: center;">53</td>
-								    <td colspan="3" Style="text-align: left;background-color:yellow" th:text="${report.R53_COLUMN_A}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R53_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R53_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
-								</tr>
-
-								<tr>
-								    <td Style="text-align: center;">54</td>
-								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R54_COLUMN_A}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R54_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R54_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R54_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
-								</tr>
-
-								<tr>
-								    <td Style="text-align: center;">55</td>
-								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R55_COLUMN_A}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R55_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R55_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R55_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
-								</tr>
-
-								<tr>
-								    <td Style="text-align: center;">56</td>
-								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R56_COLUMN_A}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R56_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R56_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R56_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
-								</tr>
-
-								<tr>
-								    <td Style="text-align: center;">57</td>
-								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R57_COLUMN_A}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R57_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R57_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R57_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
-								</tr>
-
-								<tr>
-								    <td Style="text-align: center;">58</td>
-								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R58_COLUMN_A}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R58_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R58_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R58_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
-								</tr>
-
-								<tr>
-								    <td Style="text-align: center;">59</td>
-								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R59_COLUMN_A}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R59_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R59_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R59_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
-								</tr>
-
-								<tr>
-								    <td Style="text-align: center;">60</td>
-								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R60_COLUMN_A}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R60_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R60_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R60_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R60_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R60_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R60_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R60_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R60_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R60_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R60_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R60_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R60_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R60_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
-								</tr>
-
-								<tr>
-								    <td Style="text-align: center;">61</td>
-								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R61_COLUMN_A}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R61_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R61_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R61_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
-								</tr>
-
-								<tr>
-								    <td Style="text-align: center;">62</td>
-								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R62_COLUMN_A}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R62_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R62_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R62_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
-								</tr>
-
-								<tr>
-								    <td Style="text-align: center;">63</td>
-								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R63_COLUMN_A}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R63_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R63_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R63_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
-								</tr>
-
-								<tr>
-								    <td Style="text-align: center;">64</td>
-								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R64_COLUMN_A}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R64_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R64_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R64_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
-								</tr>
-
-								<tr>
-								    <td Style="text-align: center;">65</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report.R65_COLUMN_A}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R65_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R65_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R65_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
-								</tr>
-
-								<tr>
-								    <td Style="text-align: center;">66</td>
-								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R66_COLUMN_A}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R66_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R66_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R66_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R66_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
-								</tr>
-
-								<tr>
-								    <td Style="text-align: center;">67</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report.R67_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R67_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R67_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
-								</tr>
-
-								<tr>
-								    <td Style="text-align: center;">68</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report.R68_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R68_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R68_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
-								</tr>
-
-								<tr>
-								    <td Style="text-align: center;">69</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report.R69_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R69_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R69_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
-								</tr>
-
-								<tr>
-								    <td Style="text-align: center;">70</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report.R70_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R70_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R70_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
-								</tr>
-
-								<tr>
-								    <td Style="text-align: center;">71</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report1.R71_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td Style="text-align: center;">51</td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R51_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R51_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R51_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R51_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
 								<tr>
-								    <td Style="text-align: center;">72</td>
-								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report1.R72_COLUMN_A}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td Style="text-align: center;">52</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report.R52_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R52_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R52_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R52_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
-
 								<tr>
-								    <td Style="text-align: center;">73</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report1.R73_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td Style="text-align: center;">53</td>
+									<td colspan="3" Style="text-align: left;background-color:yellow" th:text="${report.R53_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R53_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R53_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
-
 								<tr>
-								    <td Style="text-align: center;">74</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report1.R74_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td Style="text-align: center;">54</td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R54_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R54_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R54_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R54_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
-
 								<tr>
-								    <td Style="text-align: center;">75</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report1.R75_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td Style="text-align: center;">55</td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R55_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R55_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R55_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R55_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
-
 								<tr>
-								    <td Style="text-align: center;">76</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report1.R76_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td Style="text-align: center;">56</td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R56_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R56_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R56_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R56_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
-
 								<tr>
-								    <td Style="text-align: center;">77</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report1.R77_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td Style="text-align: center;">57</td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R57_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R57_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R57_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R57_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
-
 								<tr>
-								    <td Style="text-align: center;">78</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report1.R78_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td Style="text-align: center;">58</td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R58_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R58_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R58_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R58_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
-
 								<tr>
-								    <td Style="text-align: center;">79</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report1.R79_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td Style="text-align: center;">59</td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R59_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R59_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R59_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R59_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
-
 								<tr>
-								    <td Style="text-align: center;">80</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report1.R80_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td Style="text-align: center;">60</td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R60_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R60_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R60_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R60_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R60_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R60_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R60_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R60_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R60_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R60_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R60_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R60_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R60_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R60_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
-
 								<tr>
-								    <td Style="text-align: center;">81</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report1.R81_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td Style="text-align: center;">61</td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R61_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R61_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R61_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R61_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
-
 								<tr>
-								    <td Style="text-align: center;">82</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report1.R82_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td Style="text-align: center;">62</td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R62_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R62_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R62_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R62_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
-
 								<tr>
-								    <td Style="text-align: center;">83</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report1.R83_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td Style="text-align: center;">63</td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R63_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R63_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R63_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R63_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
-
 								<tr>
-								    <td Style="text-align: center;">84</td>
-								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report1.R84_COLUMN_A}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td Style="text-align: center;">64</td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R64_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R64_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R64_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R64_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
-
 								<tr>
-								    <td Style="text-align: center;">85</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report1.R85_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td Style="text-align: center;">65</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report.R65_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R65_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R65_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R65_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
-
 								<tr>
-								    <td Style="text-align: center;">86</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report1.R86_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td Style="text-align: center;">66</td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R66_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R66_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R66_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R66_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R66_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
-
 								<tr>
-								    <td Style="text-align: center;">87</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report1.R87_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td Style="text-align: center;">67</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report.R67_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R67_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R67_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R67_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
-
 								<tr>
-								    <td Style="text-align: center;">88</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report1.R88_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td Style="text-align: center;">68</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report.R68_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R68_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R68_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R68_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
-
 								<tr>
-								    <td Style="text-align: center;">89</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report1.R89_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td Style="text-align: center;">69</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report.R69_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R69_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R69_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R69_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
-
 								<tr>
-								    <td Style="text-align: center;">90</td>
-								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report1.R90_COLUMN_A}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td Style="text-align: center;">70</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report.R70_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R70_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R70_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R70_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
-
 								<tr>
-								    <td Style="text-align: center;">91</td>
-								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report1.R91_COLUMN_A}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td Style="text-align: center;">71</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report1.R71_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R71_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
-								
-
-
-																	
-									<!-- <tr Style="width:100px;">
-												  							<td  Style="text-align: left;background-color:#b3b6b9;width:10px;font-size:10px;">Note : This statement is required to be prepared country wise. Banks should also report figures in respect of subsidiaries/joint ventures in the same format on a stand-alone basis, i.e. these figures should not be reckoned while preparing country-wise reports. In respect of joint ventures where more than one bank has equity stake, the bank having the largest stake only need to report the figures. If, however, banks have equal stake, the responsibility for filing the return would rest with the bank having the largest presence in the region. All amounts to be indicated in US dollars. For uniformity, banks should use the London Inter branch closing rate on the last working day of the reporting quarter for their currency conversion. However, in the absence London Inter branch closing rate, banks may use other rates like Reuters / Bloomberg trading screen exchange rate.</td>
-												  							</tr>	 -->
-								</tbody>
+								<tr>
+									<td Style="text-align: center;">72</td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report1.R72_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								</tr>
+								<tr>
+									<td Style="text-align: center;">73</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report1.R73_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R73_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								</tr>
+								<tr>
+									<td Style="text-align: center;">74</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report1.R74_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R74_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								</tr>
+								<tr>
+									<td Style="text-align: center;">75</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report1.R75_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R75_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								</tr>
+								<tr>
+									<td Style="text-align: center;">76</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report1.R76_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								</tr>
+								<tr>
+									<td Style="text-align: center;">77</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report1.R77_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R77_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								</tr>
+								<tr>
+									<td Style="text-align: center;">78</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report1.R78_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R78_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								</tr>
+								<tr>
+									<td Style="text-align: center;">79</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report1.R79_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R79_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								</tr>
+								<tr>
+									<td Style="text-align: center;">80</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report1.R80_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R80_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								</tr>
+								<tr>
+									<td Style="text-align: center;">81</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report1.R81_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R81_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								</tr>
+								<tr>
+									<td Style="text-align: center;">82</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report1.R82_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R82_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								</tr>
+								<tr>
+									<td Style="text-align: center;">83</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report1.R83_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R83_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								</tr>
+								<tr>
+									<td Style="text-align: center;">84</td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report1.R84_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								</tr>
+								<tr>
+									<td Style="text-align: center;">85</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report1.R85_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R85_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								</tr>
+								<tr>
+									<td Style="text-align: center;">86</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report1.R86_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R86_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								</tr>
+								<tr>
+									<td Style="text-align: center;">87</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report1.R87_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R87_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								</tr>
+								<tr>
+									<td Style="text-align: center;">88</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report1.R88_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R88_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								</tr>
+								<tr>
+									<td Style="text-align: center;">89</td>
+									<td colspan="3" Style="text-align: left;" th:text="${report1.R89_COLUMN_A}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R89_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								</tr>
+								<tr>
+									<td Style="text-align: center;">90</td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report1.R90_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								</tr>
+								<tr>
+									<td Style="text-align: center;">91</td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report1.R91_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								</tr>
+							</tbody>
 						</table>
 						</div>
 
@@ -2786,8 +2673,6 @@ PURPOSE		: BRRS_M_PLLREPORT
 												</i>
 											</a>
 										</td>
-
-
 
 										<td th:text="${srlno.index + 1}"></td>
 										<td th:text="${report.CUST_ID}"></td>
@@ -2917,11 +2802,10 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 
 
-	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<!-- Custom Alert/Result Modal -->
 	<div class="modal fade" id="resultModal">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
-				<!-- Your custom styled header -->
 				<div class="menu-title-header">
 					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
 						<!-- Title will be set by JavaScript -->
@@ -2929,7 +2813,6 @@ PURPOSE		: BRRS_M_PLLREPORT
 				</div>
 				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody"></p>
-					<!-- Your custom styled button -->
 					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-dismiss="modal">OK</button>
 				</div>
 			</div>
@@ -2941,7 +2824,6 @@ PURPOSE		: BRRS_M_PLLREPORT
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 
-				<!-- Custom header -->
 				<div class="menu-title-header"
 					style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
 					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
@@ -2978,6 +2860,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 						<small class="form-text text-muted">
 							File name must contain <code>SLS</code> (e.g. <code>SLS_HISTORICAL_DATA_MAY_2026.xls</code>).
 							Months already in the system are updated and new months are added.
+							Only the latest 36 months are kept - the oldest month is removed when a new one is added.
 						</small>
 					</div>
 				</div>
@@ -3071,17 +2954,13 @@ PURPOSE		: BRRS_M_PLLREPORT
 		width: 100% !important;
 	}
 
-	/* Your existing CSS - this is the correct approach */
 	.scrollable-table-container {
-		/* This is the key: it creates the scroll context */
 		max-height: 700px;
-		/* Or a suitable height like 80vh for responsive design */
 		overflow-y: auto;
 		overflow-x: hidden;
 		border: 1px solid #ccc;
 	}
 
-	/* Your existing sticky header CSS, targeting the tr elements within the thead */
 	.scrollable-table-container thead tr:nth-child(1) {
 		position: sticky;
 		top: 0;
@@ -3092,7 +2971,6 @@ PURPOSE		: BRRS_M_PLLREPORT
 	.scrollable-table-container thead tr:nth-child(2) {
 		position: sticky;
 		top: 36px;
-		/* adjust based on row height */
 		background-color: #b3b6b9;
 		z-index: 4;
 	}
@@ -3100,7 +2978,6 @@ PURPOSE		: BRRS_M_PLLREPORT
 	.scrollable-table-container thead tr:nth-child(3) {
 		position: sticky;
 		top: 72px;
-		/* Adjust based on row height */
 		background-color: #b3b6b9;
 		z-index: 3;
 	}
@@ -3108,7 +2985,6 @@ PURPOSE		: BRRS_M_PLLREPORT
 	.scrollable-table-container thead tr:nth-child(4) {
 		position: sticky;
 		top: 100px;
-		/* Adjust based on row height */
 		background-color: #b3b6b9;
 		z-index: 2;
 	}
@@ -3116,7 +2992,6 @@ PURPOSE		: BRRS_M_PLLREPORT
 	.scrollable-table-container thead tr:nth-child(5) {
 		position: sticky;
 		top: 135px;
-		/* Adjust based on row height */
 		background-color: #b3b6b9;
 		z-index: 1;
 	}
@@ -3126,7 +3001,6 @@ PURPOSE		: BRRS_M_PLLREPORT
 <style>
 	.inner {
 		max-height: 600px;
-		/* Adjust height as needed */
 		overflow: auto;
 		border: 1px solid #dee2e6;
 	}
@@ -3136,7 +3010,6 @@ PURPOSE		: BRRS_M_PLLREPORT
 		position: sticky;
 		top: 0;
 		background-color: #f8f9fa;
-		/* Match Bootstrap thead-light */
 		z-index: 2;
 	}
 

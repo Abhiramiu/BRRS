@@ -68,52 +68,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.UserProfileRep;
 
-// =====================================================================
-// NOTE ON DESIGN
-// =====================================================================
-// This version follows the same architecture as
-// BRRS_M_TOP_100_BORROWER_ReportService (the file you supplied as a
-// reference), because the new BRRS_SLS_WORKING_* tables have the same
-// two structural issues that service already solves for:
-//
-//   1. The old single SUMMARYTABLE-style table has been split into two
-//      physical tables (BRRS_SLS_WORKING_TABLE1 covering rows R1-R70,
-//      BRRS_SLS_WORKING_TABLE2 covering rows R71-R92; same split for
-//      the archival summary as ARCHIVALTABLE1 / ARCHIVALTABLE2). The
-//      reference service handles this exact pattern by querying each
-//      table separately and exposing them to the view as
-//      reportsummary / reportsummary1 (T1Master / T2Master) rather
-//      than trying to force a single-table JOIN across tables that
-//      don't share a natural row-level key.
-//
-//   2. The new tables use generic column names (R1_COLUMN_A ... N)
-//      instead of hand-named business columns (R11_PRODUCT, R11_DAY1,
-//      etc.), so a hand-written RowMapper per column - as the OLD
-//      version of this file used - is not practical (988 + 316
-//      columns across the two summary tables alone). The reference
-//      file solves the equivalent problem (900+ columns) with ONE
-//      generic, reflection-based row mapper (mapRow/queryEntities)
-//      that matches ResultSet column labels to entity field names
-//      (or @Column(name=...) when present). That same helper is
-//      ported here unchanged and reused for all six tables.
-//
-// SCOPE OF THIS FILE: the summary view (getSLSView) and detail view
-// (getSLScurrentDtl) read paths are fully rebuilt against the correct
-// tables below. Excel/PDF export and insert/update/promote logic from
-// the original 17k-line file were NOT ported in this pass - they all
-// depend on the same 908-field-style entities and can be rebuilt with
-// insertEntityReflective/updateEntityReflective (also ported from the
-// reference, ready to use) the same way the reference file does, on
-// request.
-//
-// TABLE -> ENTITY MAP:
-//   BRRS_SLS_WORKING_TABLE1                -> SLS_WORKING_Summary_Entity1          (R1-R70)
-//   BRRS_SLS_WORKING_TABLE2                -> SLS_WORKING_Summary_Entity2          (R71-R92)
-//   BRRS_SLS_WORKING_ARCHIVALTABLE1        -> SLS_WORKING_Archival_Summary_Entity1 (R1-R70)
-//   BRRS_SLS_WORKING_ARCHIVALTABLE2        -> SLS_WORKING_Archival_Summary_Entity2 (R71-R92)
-//   BRRS_SLS_WORKING_DETAILTABLE           -> SLS_WORKING_Detail_Entity
-//   BRRS_SLS_WORKING_ARCHIVALTABLE_DETAIL  -> SLS_WORKING_Archival_Detail_Entity
-// =====================================================================
+
 
 @Component
 @Service
@@ -595,61 +550,7 @@ public class BRRS_SLS_WORKING_ReportService {
 		}
 	}
 
-	// =====================================================================
-	// SUMMARY EXCEL EXPORT (template-based)
-	// Structured to match BRRS_SLS_INPUT_SHT_ReportService.getSLSExcel() /
-	// getExcelSLSARCHIVAL(): a single inline row/column reflection loop
-	// per method, no shared helper. The reference report's entity uses
-	// named "day-bucket" fields (DAY1, DAY2_7 ... OVER5Y); this report's
-	// entities use the generic column-letter convention actually present
-	// on SLS_WORKING_Summary_Entity1/2 and SLS_WORKING_Archival_Summary_
-	// Entity1/2: R{n}_COLUMN_A (String label, row-1-based, NOT written -
-	// expected to already exist in the template) through R{n}_COLUMN_N
-	// (13 BigDecimal value columns, mapped 1:1 onto Excel columns B-N).
-	//
-	// Row range: rows R1-R92 span BOTH summary tables - TABLE1
-	// (SLS_WORKING_Summary_Entity1 / SLS_WORKING_Archival_Summary_Entity1)
-	// defines R1_COLUMN_* through R70_COLUMN_*; TABLE2
-	// (SLS_WORKING_Summary_Entity2 / SLS_WORKING_Archival_Summary_Entity2)
-	// defines R71_COLUMN_* through R92_COLUMN_* - confirmed directly
-	// against the entity field declarations. Each row pulls from
-	// whichever table entity actually declares that row number.
-	//
-	// Rows are skipped based on the DATA itself (no COLUMN_A label for
-	// that row number on the record) rather than a hardcoded row-number
-	// list, so this stays correct even if the set of spacer/blank rows
-	// differs between report templates.
-	// =====================================================================
-
-	// ------------------------------
-	// Resolves the on-disk template file for a requested filename.
-	//
-	// WHY THIS EXISTS: the caller (browser) always asks for a fixed name,
-	// e.g. "SLS_WORKING.xlsx" (see downloadfile() in SLS_WORKING.html /
-	// data-filename attribute). If whoever deployed the template folder
-	// saved the file in the OLD binary Excel format (.xls, "Excel 97-2003
-	// Workbook") instead of .xlsx - or with any other extension/casing -
-	// an exact Paths.get(dir, filename) lookup will report the file as
-	// missing even though a perfectly usable template sits right next to
-	// it under a different extension. That mismatch, not missing data,
-	// is what produced the FileNotFoundException in the logs: SOURCETEMP
-	// contains "SLS_WORKING" as an Excel 97-2003 file while every sibling
-	// template in that folder is .xlsx.
-	//
-	// Apache POI's WorkbookFactory.create(InputStream) auto-detects HSSF
-	// (.xls) vs XSSF (.xlsx) from the file's actual header bytes, not its
-	// extension - so once we find the right file, reading it works
-	// regardless of which Excel format it's actually saved as.
-	//
-	// Resolution order:
-	//   1. Exact match: <dir>/<filename>
-	//   2. Same base name (filename without extension), any extension,
-	//      matched case-insensitively - covers "SLS_WORKING.xls" being
-	//      present when "SLS_WORKING.xlsx" was requested, or a stray
-	//      case mismatch.
-	//   3. Not found -> null, caller throws the descriptive
-	//      FileNotFoundException as before.
-	// ------------------------------
+	
 	private Path resolveTemplateFile(String templateDir, String filename) throws Exception {
 
 		if (templateDir == null || templateDir.trim().isEmpty()) {
@@ -707,45 +608,7 @@ public class BRRS_SLS_WORKING_ReportService {
 		return null;
 	}
 
-	// ------------------------------
-	// FIX: guards against the resolved template actually being a legacy
-	// binary .xls (OLE2) file wearing a ".xlsx" name/extension.
-	//
-	// WHY THIS EXISTS: resolveTemplateFile() above will happily hand back a
-	// file like "SLS_WORKING.xls" when the caller asked for
-	// "SLS_WORKING.xlsx" (that's the point of its base-name fallback).
-	// WorkbookFactory.create() auto-detects the real format from the file's
-	// bytes, so for a .xls source it returns an HSSFWorkbook - and
-	// workbook.write(out) later faithfully re-serialises it back out in that
-	// SAME binary OLE2 format. The browser still downloads those bytes as
-	// "SLS_WORKING.xlsx" though, which is exactly what produced the
-	// "Automatic update of links has been disabled" security bar users saw
-	// (legacy binary workbooks carry old-style external link/OLE records a
-	// genuine OOXML export wouldn't have) and the abnormally large download
-	// size (BIFF8 binary storage is far less efficient than OOXML,
-	// especially with a "personal working file" template that has
-	// formatting pre-applied broadly).
-	//
-	// This method looks at the ACTUAL FILE BYTES (not the extension). If the
-	// resolved template is already real OOXML (.xlsx/zip, starts with "PK"),
-	// nothing changes and the same path is returned. If it's legacy OLE2
-	// (.xls, starts with D0 CF 11 E0), it is converted to real .xlsx.
-	//
-	// FIX (root cause of the "No data was available to create a download" /
-	// 204 error): this used to shell out to a headless LibreOffice process
-	// ("soffice --headless --convert-to xlsx ..."). On this server soffice
-	// is not installed / not on PATH, so ProcessBuilder.start() threw
-	// "CreateProcess error=2, The system cannot find the file specified",
-	// which propagated out of getSLSExcel() and was treated upstream as
-	// "no data" -> 204 No Content, producing exactly that popup. Rather
-	// than depend on an external application being installed and
-	// discoverable on every deployment target, the conversion is now done
-	// entirely in-process with Apache POI (already a hard dependency of
-	// this file): the legacy HSSFWorkbook is read and its sheets/rows/
-	// cells/styles/merged-regions/column-widths are copied into a brand
-	// new XSSFWorkbook, which is then saved as real OOXML. No external
-	// process, no server configuration required.
-	// ------------------------------
+
 	private Path ensureOoxmlTemplate(Path templatePath) throws IOException {
 		byte[] header = new byte[8];
 		int read;
@@ -970,29 +833,7 @@ public class BRRS_SLS_WORKING_ReportService {
 		}
 	}
 
-	// ------------------------------
-	// Evaluates every formula cell in the workbook, but cell-by-cell instead
-	// of Workbook.evaluateAll()'s all-or-nothing pass.
-	//
-	// WHY THIS EXISTS: templates in SOURCETEMP are frequently produced by
-	// copy-pasting from someone's personal working file, and can retain a
-	// stale formula that references an EXTERNAL workbook by absolute path
-	// (e.g. "C:\Users\<name>\...\some working file.xlsx"). That file will
-	// never exist on the server, so POI cannot resolve it - and
-	// evaluateAll() aborts the ENTIRE evaluation (and therefore the whole
-	// export) the moment it hits that one bad formula, even though every
-	// other formula in the template is perfectly fine.
-	//
-	// Evaluating cell-by-cell means one broken external-link formula just
-	// gets skipped (its last-saved/cached value from the template is left
-	// as-is) and logged, while every other formula in the sheet still
-	// evaluates and updates normally. Combined with
-	// setForceFormulaRecalculation(true) below, Excel will also recompute
-	// everything it can when the user opens the downloaded file - the
-	// external-link cell alone will keep showing its cached value (or a
-	// #REF!/prompt for the missing file in Excel), which is the correct,
-	// expected behaviour for a genuinely broken external reference.
-	// ------------------------------
+	
 	private void safeEvaluateAllFormulas(Workbook workbook) {
 		org.apache.poi.ss.usermodel.FormulaEvaluator evaluator = workbook.getCreationHelper()
 				.createFormulaEvaluator();
@@ -1025,27 +866,7 @@ public class BRRS_SLS_WORKING_ReportService {
 	}
 
 
-	// ------------------------------
-	// FIX: the legacy .xls template on the server turned out to be a
-	// personal "rolling" working file with one sheet per month (APRIL 2022,
-	// MAY 2022, ... OCTOBER) instead of a clean single-sheet template - each
-	// new month's tab was copied from the previous one, so the LAST sheet in
-	// the file is always the current/live layout (it's also the only one
-	// whose headers - "Pula in 1000" / "USD Millions" / "DEP TOTAL" /
-	// "ADV TOTAL" - actually match what the frontend shows; the older tabs
-	// use different, stale header labels from earlier report versions).
-	//
-	// getSheetAt(0) picked up the OLDEST tab instead of the live one, and
-	// because ensureOoxmlTemplate() (correctly) preserves every sheet when
-	// converting the legacy workbook, the workbook returned to the browser
-	// still carried all of the old month tabs along with it - that's why
-	// the download showed April through October instead of just the one
-	// report on screen.
-	//
-	// This selects the LAST sheet to write the report into, then removes
-	// every other sheet from the workbook before it's serialised, so the
-	// download always contains exactly the one sheet the frontend shows.
-	// ------------------------------
+	
 	private Sheet selectLiveSheetAndPruneOthers(Workbook workbook) {
 		int liveSheetIndex = workbook.getNumberOfSheets() - 1;
 		Sheet liveSheet = workbook.getSheetAt(liveSheetIndex);
