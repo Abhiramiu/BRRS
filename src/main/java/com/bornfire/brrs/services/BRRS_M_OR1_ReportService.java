@@ -17903,17 +17903,17 @@ public class BRRS_M_OR1_ReportService {
 			try {
 
 				// Row 6 = Excel row 7
-				Row dateRow = sheet.getRow(6);
+				Row dateRow = sheet.getRow(5);
 
 				if (dateRow == null) {
-					dateRow = sheet.createRow(6);
+					dateRow = sheet.createRow(5);
 				}
 
 				// Column 4 = Excel column D
-				Cell dateCell = dateRow.getCell(3);
+				Cell dateCell = dateRow.getCell(1);
 
 				if (dateCell == null) {
-					dateCell = dateRow.createCell(3);
+					dateCell = dateRow.createCell(1);
 				}
 
 				// Date conversion
@@ -19133,17 +19133,17 @@ public class BRRS_M_OR1_ReportService {
 			try {
 
 				// Row 6 = Excel row 7
-				Row dateRow = sheet.getRow(6);
+				Row dateRow = sheet.getRow(5);
 
 				if (dateRow == null) {
-					dateRow = sheet.createRow(6);
+					dateRow = sheet.createRow(5);
 				}
 
 				// Column 4 = Excel column D
-				Cell dateCell = dateRow.getCell(3);
+				Cell dateCell = dateRow.getCell(1);
 
 				if (dateCell == null) {
-					dateCell = dateRow.createCell(3);
+					dateCell = dateRow.createCell(1);
 				}
 
 				// Date conversion

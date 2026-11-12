@@ -2185,7 +2185,7 @@ public class BRRS_M_MRC_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 //EMAIL
-					Cell R12Cell = row.createCell(2);
+					Cell R12Cell = row.createCell(1);
 
 					if (record.getReportDate() != null) {
 

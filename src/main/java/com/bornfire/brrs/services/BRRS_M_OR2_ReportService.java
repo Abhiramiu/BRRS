@@ -34290,7 +34290,7 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 							
 			//row6
 						// Column B
-						Cell cellBdate = row.createCell(6);
+						Cell cellBdate = row.createCell(3);
 						if (record.getReport_date() != null) {
 							cellBdate.setCellValue(record.getReport_date());
 							cellBdate.setCellStyle(dateStyle);
@@ -41305,7 +41305,7 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 						
 		//row6
 						// Column B
-						Cell cellBdate = row.createCell(6);
+						Cell cellBdate = row.createCell(3);
 						if (record.getReport_date() != null) {
 							cellBdate.setCellValue(record.getReport_date());
 							cellBdate.setCellStyle(dateStyle);
