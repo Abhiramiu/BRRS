@@ -7,14 +7,18 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -80,6 +84,22 @@ public class BRRS_BDISB1_ReportService {
 		String sql = "SELECT * FROM BRRS_BDISB1_SUMMARYTABLE WHERE REPORT_DATE = ?";
 
 		return jdbcTemplate.query(sql, new Object[] { reportDate }, new BDISB1_RowMapper_Summary());
+	}
+
+	// Fetch existing live summary record
+	public BDISB1_Summary_Entity findByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_BDISB1_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<BDISB1_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new BDISB1_RowMapper_Summary(), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	// Fetch existing mod record if any pending modifications exist
+	public BDISB1_Summary_Entity findModRecordByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_BDISB1_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<BDISB1_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new BDISB1_RowMapper_Summary(), reportDate);
+		return list.isEmpty() ? null : list.get(0);
 	}			
 
 	
@@ -11154,114 +11174,331 @@ public class BRRS_BDISB1_ReportService {
 	// UPDATE ENTITY 
 	//===============================
 	@Transactional
-	public void updateReport(BDISB1_Summary_Entity request1) {
+	public void updateReport(BDISB1_Summary_Entity updatedEntity) {
+		System.out.println("Came to BDISB1 Update");
+		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-	    try {
+		// 1. Fetch live summary record as baseline reference
+		BDISB1_Summary_Entity liveSummary = findByReportDate(updatedEntity.getREPORT_DATE());
+		if (liveSummary == null) {
+			throw new RuntimeException(
+					"Record not found in live summary table for REPORT_DATE : " + updatedEntity.getREPORT_DATE());
+		}
 
-	        // Fetch existing record for audit
-	        BDISB1_Summary_Entity oldcopy = jdbcTemplate.queryForObject(
-	                "SELECT * FROM BRRS_BDISB1_SUMMARYTABLE WHERE REPORT_DATE = ?",
-	                new BeanPropertyRowMapper<>(BDISB1_Summary_Entity.class),
-	                request1.getREPORT_DATE());
+		// 2. Check if a mod record already exists. If not, copy from live summary
+		// baseline.
+		BDISB1_Summary_Entity modRecord = findModRecordByReportDate(updatedEntity.getREPORT_DATE());
+		if (modRecord == null) {
+			modRecord = new BDISB1_Summary_Entity();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
 
-	        BDISB1_Summary_Entity oldEntity = new BDISB1_Summary_Entity();
-	        BeanUtils.copyProperties(oldcopy, oldEntity);
+		// 3. Keep old copy for audit comparison
+		BDISB1_Summary_Entity oldcopy = new BDISB1_Summary_Entity();
+		BeanUtils.copyProperties(modRecord, oldcopy);
 
-	        StringBuilder sql = new StringBuilder(
-	                "UPDATE BRRS_BDISB1_SUMMARYTABLE SET ");
+		try {
+			// ✅ Apply updates ONLY to the modRecord object (Live tables are untouched!)
+			String[] fields = {
+				"RECORD_NUMBER", "TITLE", "FIRST_NAME", "MIDDLE_NAME", "SURNAME",
+				"PREVIOUS_NAME", "GENDER", "IDENTIFICATION_TYPE", "PASSPORT_NUMBER",
+				"DATE_OF_BIRTH", "HOME_ADDRESS", "POSTAL_ADDRESS", "RESIDENCE",
+				"EMAIL", "LANDLINE", "MOBILE_PHONE_NUMBER", "MOBILE_MONEY_NUMBER",
+				"PRODUCT_TYPE", "ACCOUNT_BY_OWNERSHIP", "ACCOUNT_NUMBER",
+				"ACCOUNT_HOLDER_INDICATOR", "STATUS_OF_ACCOUNT", "NOT_FIT_FOR_STP",
+				"BRANCH_CODE_AND_NAME", "ACCOUNT_BALANCE_IN_PULA", "CURRENCY_OF_ACCOUNT",
+				"EXCHANGE_RATE"
+			};
+			applyChangesToEntity(5, 11, fields, updatedEntity, modRecord);
 
-	        List<Object> params = new ArrayList<>();
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating BDISB1 fields", e);
+		}
 
-	        for (int i = 5; i <= 11; i++) {
+		// 4. Evaluate audit changes against the mod baseline
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		System.out.println("BDISB1 Changes Length = " + (changes != null ? changes.length() : 0));
 
-	            sql.append("R").append(i).append("_RECORD_NUMBER=?,")
-	               .append("R").append(i).append("_TITLE=?,")
-	               .append("R").append(i).append("_FIRST_NAME=?,")
-	               .append("R").append(i).append("_MIDDLE_NAME=?,")
-	               .append("R").append(i).append("_SURNAME=?,")
-	               .append("R").append(i).append("_PREVIOUS_NAME=?,")
-	               .append("R").append(i).append("_GENDER=?,")
-	               .append("R").append(i).append("_IDENTIFICATION_TYPE=?,")
-	               .append("R").append(i).append("_PASSPORT_NUMBER=?,")
-	               .append("R").append(i).append("_DATE_OF_BIRTH=?,")
-	               .append("R").append(i).append("_HOME_ADDRESS=?,")
-	               .append("R").append(i).append("_POSTAL_ADDRESS=?,")
-	               .append("R").append(i).append("_RESIDENCE=?,")
-	               .append("R").append(i).append("_EMAIL=?,")
-	               .append("R").append(i).append("_LANDLINE=?,")
-	               .append("R").append(i).append("_MOBILE_PHONE_NUMBER=?,")
-	               .append("R").append(i).append("_MOBILE_MONEY_NUMBER=?,")
-	               .append("R").append(i).append("_PRODUCT_TYPE=?,")
-	               .append("R").append(i).append("_ACCOUNT_BY_OWNERSHIP=?,")
-	               .append("R").append(i).append("_ACCOUNT_NUMBER=?,")
-	               .append("R").append(i).append("_ACCOUNT_HOLDER_INDICATOR=?,")
-	               .append("R").append(i).append("_STATUS_OF_ACCOUNT=?,")
-	               .append("R").append(i).append("_NOT_FIT_FOR_STP=?,")
-	               .append("R").append(i).append("_BRANCH_CODE_AND_NAME=?,")
-	               .append("R").append(i).append("_ACCOUNT_BALANCE_IN_PULA=?,")
-	               .append("R").append(i).append("_CURRENCY_OF_ACCOUNT=?,")
-	               .append("R").append(i).append("_EXCHANGE_RATE=?,");
+		// 5. Set Maker-Checker Flags
+		modRecord.setENTITY_FLG("Y");
+		modRecord.setMODIFY_FLG("Y");
+		modRecord.setDEL_FLG("N");
 
-	            params.add(getValue(request1, "getR" + i + "_RECORD_NUMBER"));
-	            params.add(getValue(request1, "getR" + i + "_TITLE"));
-	            params.add(getValue(request1, "getR" + i + "_FIRST_NAME"));
-	            params.add(getValue(request1, "getR" + i + "_MIDDLE_NAME"));
-	            params.add(getValue(request1, "getR" + i + "_SURNAME"));
-	            params.add(getValue(request1, "getR" + i + "_PREVIOUS_NAME"));
-	            params.add(getValue(request1, "getR" + i + "_GENDER"));
-	            params.add(getValue(request1, "getR" + i + "_IDENTIFICATION_TYPE"));
-	            params.add(getValue(request1, "getR" + i + "_PASSPORT_NUMBER"));
-	            params.add(getValue(request1, "getR" + i + "_DATE_OF_BIRTH"));
-	            params.add(getValue(request1, "getR" + i + "_HOME_ADDRESS"));
-	            params.add(getValue(request1, "getR" + i + "_POSTAL_ADDRESS"));
-	            params.add(getValue(request1, "getR" + i + "_RESIDENCE"));
-	            params.add(getValue(request1, "getR" + i + "_EMAIL"));
-	            params.add(getValue(request1, "getR" + i + "_LANDLINE"));
-	            params.add(getValue(request1, "getR" + i + "_MOBILE_PHONE_NUMBER"));
-	            params.add(getValue(request1, "getR" + i + "_MOBILE_MONEY_NUMBER"));
-	            params.add(getValue(request1, "getR" + i + "_PRODUCT_TYPE"));
-	            params.add(getValue(request1, "getR" + i + "_ACCOUNT_BY_OWNERSHIP"));
-	            params.add(getValue(request1, "getR" + i + "_ACCOUNT_NUMBER"));
-	            params.add(getValue(request1, "getR" + i + "_ACCOUNT_HOLDER_INDICATOR"));
-	            params.add(getValue(request1, "getR" + i + "_STATUS_OF_ACCOUNT"));
-	            params.add(getValue(request1, "getR" + i + "_NOT_FIT_FOR_STP"));
-	            params.add(getValue(request1, "getR" + i + "_BRANCH_CODE_AND_NAME"));
-	            params.add(getValue(request1, "getR" + i + "_ACCOUNT_BALANCE_IN_PULA"));
-	            params.add(getValue(request1, "getR" + i + "_CURRENCY_OF_ACCOUNT"));
-	            params.add(getValue(request1, "getR" + i + "_EXCHANGE_RATE"));
-	        }
+		// 6. Save/Update into MOD Summary Table ONLY (Live tables remain intact)
+		saveModSummaryEntity(modRecord);
+		System.out.println("✔ Record saved into BRRS_BDISB1_MOD_SUMMARYTABLE for Checker Approval");
 
-	        sql.deleteCharAt(sql.length() - 1);
+		// 7. Log Audit Trail if changes exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, modRecord, updatedEntity.getREPORT_DATE().toString(),
+					"BDISB1 Summary Screen", "BRRS_BDISB1_MOD_SUMMARYTABLE");
+		}
+	}
 
-	        sql.append(" WHERE REPORT_DATE=?");
+	// 1. Safe entity updater with strict number parsing / cleaning
+	private void applyChangesToEntity(int startRow, int endRow, String[] fields, BDISB1_Summary_Entity updatedEntity,
+			BDISB1_Summary_Entity targetEntity) {
+		for (int i = startRow; i <= endRow; i++) {
+			String prefix = "R" + i + "_";
+			for (String field : fields) {
+				String getterName = "get" + prefix + field;
+				String setterName = "set" + prefix + field;
 
-	        params.add(request1.getREPORT_DATE());
+				try {
+					Method getter = BDISB1_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(updatedEntity);
 
-	        int count = jdbcTemplate.update(sql.toString(), params.toArray());
+					Class<?> returnType = getter.getReturnType();
 
-	        System.out.println("Rows Updated = " + count);
+					// Clean and convert string numbers to proper numeric format or null
+					if (returnType == BigDecimal.class) {
+						if (value instanceof String) {
+							String valStr = ((String) value).trim().replace(",", "");
+							if (valStr.isEmpty()) {
+								value = null;
+							} else {
+								try {
+									value = new java.math.BigDecimal(valStr);
+								} catch (NumberFormatException e) {
+									value = null; // Fallback to null if invalid number format
+								}
+							}
+						}
+					} else if (returnType == Date.class) {
+						if (value instanceof String) {
+							String valStr = ((String) value).trim();
+							if (valStr.isEmpty()) {
+								value = null;
+							} else {
+								try {
+									value = new SimpleDateFormat("yyyy-MM-dd").parse(valStr);
+								} catch (Exception e) {
+									value = null;
+								}
+							}
+						}
+					} else if (returnType == String.class) {
+						if (value instanceof String) {
+							value = ((String) value).trim();
+						}
+					}
 
-	        // Audit Logic
-	        BDISB1_Summary_Entity newEntity = new BDISB1_Summary_Entity();
-	        BeanUtils.copyProperties(request1, newEntity);
+					if (value == null) {
+						continue;
+					}
 
-	        String changes = auditService.getChanges(oldEntity, newEntity);
+					Method setter = BDISB1_Summary_Entity.class.getMethod(setterName, returnType);
+					setter.invoke(targetEntity, value);
 
-	        if (!changes.isEmpty()) {
+				} catch (NoSuchMethodException e) {
+					// Skip gracefully if method doesn't exist
+				} catch (Exception e) {
+					throw new RuntimeException("Error applying field: " + getterName, e);
+				}
+			}
+		}
+	}
 
-	            auditService.compareEntitiesmanual(
-	                    oldEntity,
-	                    newEntity,
-	                    request1.getREPORT_DATE().toString(),
-	                    "BDISB1 Summary Screen",
-	                    "BRRS_BDISB1_SUMMARYTABLE"
-	            );
-	        }
+	// 2. Safe MOD table saver with strict cleaning and BigDecimal conversion
+	public void saveModSummaryEntity(BDISB1_Summary_Entity entity) {
+		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        throw new RuntimeException("Error while updating BRRS_BDISB1 Report", e);
-	    }
+		String checkSql = "SELECT COUNT(*) FROM BRRS_BDISB1_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+		MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", entity.getREPORT_DATE());
+		Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
+
+		MapSqlParameterSource params = new MapSqlParameterSource()
+				.addValue("reportDate", entity.getREPORT_DATE(), Types.DATE)
+				.addValue("reportVersion", entity.getREPORT_VERSION(), Types.NUMERIC)
+				.addValue("reportFrequency", entity.getREPORT_FREQUENCY(), Types.VARCHAR)
+				.addValue("reportCode", entity.getREPORT_CODE(), Types.VARCHAR)
+				.addValue("reportDesc", entity.getREPORT_DESC(), Types.VARCHAR)
+				.addValue("entity_flg", entity.getENTITY_FLG(), Types.VARCHAR)
+				.addValue("modify_flg", entity.getMODIFY_FLG(), Types.VARCHAR)
+				.addValue("del_flg", entity.getDEL_FLG(), Types.VARCHAR);
+
+		String[] fields = {
+			"RECORD_NUMBER", "TITLE", "FIRST_NAME", "MIDDLE_NAME", "SURNAME",
+			"PREVIOUS_NAME", "GENDER", "IDENTIFICATION_TYPE", "PASSPORT_NUMBER",
+			"DATE_OF_BIRTH", "HOME_ADDRESS", "POSTAL_ADDRESS", "RESIDENCE",
+			"EMAIL", "LANDLINE", "MOBILE_PHONE_NUMBER", "MOBILE_MONEY_NUMBER",
+			"PRODUCT_TYPE", "ACCOUNT_BY_OWNERSHIP", "ACCOUNT_NUMBER",
+			"ACCOUNT_HOLDER_INDICATOR", "STATUS_OF_ACCOUNT", "NOT_FIT_FOR_STP",
+			"BRANCH_CODE_AND_NAME", "ACCOUNT_BALANCE_IN_PULA", "CURRENCY_OF_ACCOUNT",
+			"EXCHANGE_RATE"
+		};
+
+		StringBuilder updateSetSql = new StringBuilder(
+				"MODIFY_FLG = :modify_flg, ENTITY_FLG = :entity_flg, DEL_FLG = :del_flg");
+		List<String> insertColumns = new ArrayList<>();
+		List<String> insertValues = new ArrayList<>();
+
+		insertColumns.add("REPORT_DATE");
+		insertValues.add(":reportDate");
+		insertColumns.add("REPORT_VERSION");
+		insertValues.add(":reportVersion");
+		insertColumns.add("REPORT_FREQUENCY");
+		insertValues.add(":reportFrequency");
+		insertColumns.add("REPORT_CODE");
+		insertValues.add(":reportCode");
+		insertColumns.add("REPORT_DESC");
+		insertValues.add(":reportDesc");
+		insertColumns.add("ENTITY_FLG");
+		insertValues.add(":entity_flg");
+		insertColumns.add("MODIFY_FLG");
+		insertValues.add(":modify_flg");
+		insertColumns.add("DEL_FLG");
+		insertValues.add(":del_flg");
+
+		for (int i = 5; i <= 11; i++) {
+			String prefix = "R" + i + "_";
+			for (String field : fields) {
+				String getterName = "get" + prefix + field;
+				String paramName = "r" + i + "_" + field.toLowerCase();
+				String columnName = prefix + field;
+
+				try {
+					Method getter = BDISB1_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(entity);
+
+					Class<?> returnType = getter.getReturnType();
+					int sqlType = Types.VARCHAR;
+
+					if (returnType == BigDecimal.class) {
+						sqlType = Types.NUMERIC;
+						if (value instanceof String) {
+							String valStr = ((String) value).trim().replace(",", "");
+							if (valStr.isEmpty()) {
+								value = null;
+							} else {
+								try {
+									value = new java.math.BigDecimal(valStr);
+								} catch (NumberFormatException e) {
+									value = null;
+								}
+							}
+						}
+					} else if (returnType == Date.class) {
+						sqlType = Types.DATE;
+						if (value instanceof String) {
+							String valStr = ((String) value).trim();
+							if (valStr.isEmpty()) {
+								value = null;
+							} else {
+								try {
+									value = new SimpleDateFormat("yyyy-MM-dd").parse(valStr);
+								} catch (Exception e) {
+									value = null;
+								}
+							}
+						}
+					}
+
+					params.addValue(paramName, value, sqlType);
+
+					updateSetSql.append(", ").append(columnName).append(" = :").append(paramName);
+					insertColumns.add(columnName);
+					insertValues.add(":" + paramName);
+
+				} catch (NoSuchMethodException e) {
+					// Skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error mapping column for MOD table: " + columnName, e);
+				}
+			}
+		}
+
+		if (count != null && count > 0) {
+			String updateSql = "UPDATE BRRS_BDISB1_MOD_SUMMARYTABLE SET " + updateSetSql.toString()
+					+ " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+			namedParamJdbc.update(updateSql, params);
+			System.out.println("✔ BRRS_BDISB1_MOD_SUMMARYTABLE updated successfully.");
+		} else {
+			String insertSql = "INSERT INTO BRRS_BDISB1_MOD_SUMMARYTABLE (" + String.join(", ", insertColumns)
+					+ ") VALUES (" + String.join(", ", insertValues) + ")";
+			namedParamJdbc.update(insertSql, params);
+			System.out.println("✔ BRRS_BDISB1_MOD_SUMMARYTABLE inserted successfully.");
+		}
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		// 1. Fetch pending modification record from MOD table
+		List<BDISB1_Summary_Entity> list = jdbcTemplate.query(
+				"SELECT * FROM BRRS_BDISB1_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				new BDISB1_RowMapper_Summary(), reportDate);
+
+		BDISB1_Summary_Entity modRecord = list.isEmpty() ? null : list.get(0);
+
+		if (modRecord == null) {
+			throw new RuntimeException("No pending modification found for approval on date: " + reportDate);
+		}
+
+		// 2. TRANSFER MOD VALUES TO LIVE SUMMARY AND DETAIL TABLES (Happens ONLY on
+		// approval)
+		transferModValuesToLiveTables(modRecord, reportDate);
+
+		// 3. Mark modified flag as 'N' (Approved) in the MOD table
+		jdbcTemplate.update(
+				"UPDATE BRRS_BDISB1_MOD_SUMMARYTABLE SET MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+
+		System.out.println(
+				"✔ BDISB1 Checker Approved Successfully: MOD values successfully transferred to Summary & Detail live tables.");
+	}
+
+	// Helper to push all modified fields from MOD table to Live Summary & Detail
+	// tables upon approval
+	private void transferModValuesToLiveTables(BDISB1_Summary_Entity modRecord, Date reportDate) {
+		String[] fields = {
+			"RECORD_NUMBER", "TITLE", "FIRST_NAME", "MIDDLE_NAME", "SURNAME",
+			"PREVIOUS_NAME", "GENDER", "IDENTIFICATION_TYPE", "PASSPORT_NUMBER",
+			"DATE_OF_BIRTH", "HOME_ADDRESS", "POSTAL_ADDRESS", "RESIDENCE",
+			"EMAIL", "LANDLINE", "MOBILE_PHONE_NUMBER", "MOBILE_MONEY_NUMBER",
+			"PRODUCT_TYPE", "ACCOUNT_BY_OWNERSHIP", "ACCOUNT_NUMBER",
+			"ACCOUNT_HOLDER_INDICATOR", "STATUS_OF_ACCOUNT", "NOT_FIT_FOR_STP",
+			"BRANCH_CODE_AND_NAME", "ACCOUNT_BALANCE_IN_PULA", "CURRENCY_OF_ACCOUNT",
+			"EXCHANGE_RATE"
+		};
+
+		for (int i = 5; i <= 11; i++) {
+			String prefix = "R" + i + "_";
+			for (String field : fields) {
+				String getterName = "get" + prefix + field;
+				String columnName = prefix + field;
+
+				try {
+					Method getter = BDISB1_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(modRecord);
+
+					if (value == null) {
+						continue;
+					}
+
+					// Update Live Summary Table
+					String summarySql = "UPDATE BRRS_BDISB1_SUMMARYTABLE SET " + columnName
+							+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					jdbcTemplate.update(summarySql, value, reportDate);
+
+					// Update Live Detail Table
+					String detailSql = "UPDATE BRRS_BDISB1_DETAILTABLE SET " + columnName
+							+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					jdbcTemplate.update(detailSql, value, reportDate);
+
+				} catch (NoSuchMethodException e) {
+					// Skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error transferring column to live tables: " + columnName, e);
+				}
+			}
+		}
+
+		jdbcTemplate.update(
+				"UPDATE BRRS_BDISB1_SUMMARYTABLE SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N', DEL_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+		jdbcTemplate.update(
+				"UPDATE BRRS_BDISB1_DETAILTABLE SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N', DEL_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
 	}
 
 	private Object getValue(Object obj, String methodName) {

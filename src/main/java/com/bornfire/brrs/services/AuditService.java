@@ -1456,6 +1456,8 @@ public class AuditService {
 			transferDEP3Data(auditRecord);
 		} else if (upperTable.contains("Q_STAFF")) {
 			transferQStaffData(auditRecord);
+		} else if (upperTable.contains("BDISB1")) {
+			transferBDISB1Data(auditRecord);
 		} else if (upperTable.contains("AIDP") || upperTable.contains("M_AIDP")) {
 			transferAIDPData(auditRecord);
 		} else if (upperTable.contains("Q_BRANCHNET")) {
@@ -2295,6 +2297,72 @@ public class AuditService {
 
 		System.out.println("Q_STAFF MOD Updated : " + modUpdated);
 		System.out.println("Q_STAFF Verification and Transfer Completed Successfully");
+	}
+
+	private void transferBDISB1Data(AuditServicesEntity auditRecord) {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_BDISB1_MOD_SUMMARYTABLE";
+		java.sql.Date reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified BDISB1 record available for verification.");
+		}
+
+		System.out.println("BDISB1 Report Date : " + reportDate);
+
+		String[] fields = {
+			"RECORD_NUMBER", "TITLE", "FIRST_NAME", "MIDDLE_NAME", "SURNAME",
+			"PREVIOUS_NAME", "GENDER", "IDENTIFICATION_TYPE", "PASSPORT_NUMBER",
+			"DATE_OF_BIRTH", "HOME_ADDRESS", "POSTAL_ADDRESS", "RESIDENCE",
+			"EMAIL", "LANDLINE", "MOBILE_PHONE_NUMBER", "MOBILE_MONEY_NUMBER",
+			"PRODUCT_TYPE", "ACCOUNT_BY_OWNERSHIP", "ACCOUNT_NUMBER",
+			"ACCOUNT_HOLDER_INDICATOR", "STATUS_OF_ACCOUNT", "NOT_FIT_FOR_STP",
+			"BRANCH_CODE_AND_NAME", "ACCOUNT_BALANCE_IN_PULA", "CURRENCY_OF_ACCOUNT",
+			"EXCHANGE_RATE"
+		};
+
+		StringBuilder colList = new StringBuilder();
+		StringBuilder selectList = new StringBuilder();
+
+		for (int i = 5; i <= 11; i++) {
+			for (String f : fields) {
+				colList.append("R").append(i).append("_").append(f).append(", ");
+				selectList.append("S.R").append(i).append("_").append(f).append(", ");
+			}
+		}
+		colList.append("ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+		selectList.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+
+		// 1. Update BRRS_BDISB1_SUMMARYTABLE from MOD table
+		String updateSummarySql = "UPDATE BRRS_BDISB1_SUMMARYTABLE M SET ("
+				+ colList.toString() + ") = (SELECT "
+				+ selectList.toString() + " FROM BRRS_BDISB1_MOD_SUMMARYTABLE S "
+				+ " WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+
+		if (summaryUpdated == 0) {
+			throw new IllegalStateException("BDISB1 modification record not found for date : " + reportDate);
+		}
+
+		System.out.println("BDISB1 Summary Table Updated : " + summaryUpdated);
+
+		// 2. Update BRRS_BDISB1_DETAILTABLE from MOD table (Same column mapping)
+		String updateDetailSql = "UPDATE BRRS_BDISB1_DETAILTABLE M SET ("
+				+ colList.toString() + ") = (SELECT "
+				+ selectList.toString() + " FROM BRRS_BDISB1_MOD_SUMMARYTABLE S "
+				+ " WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+		System.out.println("BDISB1 Detail Table Updated : " + detailUpdated);
+
+		// 3. Mark MOD record status as approved (MODIFY_FLG = 'N')
+		String updateModSql = "UPDATE BRRS_BDISB1_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+		int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+
+		System.out.println("BDISB1 MOD Updated : " + modUpdated);
+		System.out.println("BDISB1 Verification and Transfer Completed Successfully");
 	}
 
 	// =========================================================
