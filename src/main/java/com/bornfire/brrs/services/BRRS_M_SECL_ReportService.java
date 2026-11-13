@@ -637,7 +637,7 @@ public class BRRS_M_SECL_ReportService {
 			numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-			if ("report".equals(dtltype)) {
+			if (dtltype == null || "report".equals(dtltype)) {
 				List<M_SECL_Summary_Entity> dataList1 = jdbcTemplate.query(
 						"SELECT * FROM BRRS_M_SECL_SUMMARYTABLE WHERE REPORT_DATE = ?",
 						new M_SECL_Summary_Entity_RowMapper(), new java.sql.Date(reportDate.getTime()));
@@ -7146,7 +7146,7 @@ public class BRRS_M_SECL_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 			if ("ARCHIVAL".equals(type) && version != null) {
-				if (!dtltype.equals("details")) {
+				if (dtltype == null || !dtltype.equals("details")) {
 					System.out.println("Download From Archival Summary");
 					List<M_SECL_Archival_Summary_Entity> dataList1 = jdbcTemplate.query(
 							"SELECT * FROM BRRS_M_SECL_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
@@ -13830,7 +13830,7 @@ public class BRRS_M_SECL_ReportService {
 //--- End of Style Definitions ---
 
 			if (type.equals("RESUB") & version != null) {
-				if (dtltype.equals("report")) {
+				if (dtltype == null || dtltype.equals("report")) {
 
 					List<M_SECL_Archival_Summary_Entity> dataList1 = jdbcTemplate.query(
 							"SELECT * FROM BRRS_M_SECL_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
