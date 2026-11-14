@@ -3,7 +3,11 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -108,6 +112,149 @@ public class BRRS_UFCE_CALCULATION_ReportService {
 
 	private String nvlStr(String value) {
 		return value != null ? value : "";
+	}
+	
+	// =====================================================
+	// MAKER-CHECKER HELPERS (UFCE MANUAL ENTRY)   << NEW >>
+	// =====================================================
+
+	private static final String UFCE_MANUAL_MOD_TABLE = "BRRS_UFCE_CALCULATION_MOD_SUMMARYTABLE_MANUAL";
+
+	/** Business columns written to the MOD table (rows R10-R21 + R22 totals). */
+	private static List<String> ufceManualColumns() {
+		List<String> cols = new ArrayList<>();
+		for (int i = 10; i <= 21; i++) {
+			cols.add("R" + i + "_SERIAL_NO");
+			cols.add("R" + i + "_SUBSIDIARY");
+			cols.add("R" + i + "_TOTAL_ADV");
+			cols.add("R" + i + "_PROVISION");
+		}
+		cols.add("R22_TOTAL_ADV");
+		cols.add("R22_PROVISION");
+		return cols;
+	}
+
+	private static boolean isMakerRole(String role) {
+		if (role == null)
+			return false;
+		String r = role.trim().toUpperCase();
+		return r.equals("MAKER") || r.equals("M") || r.equals("MAN") || r.equals("MANAGER") || r.equals("B")
+				|| r.equals("ADMIN") || r.equals("A");
+	}
+
+	/** Server-side Maker gate (the HTML only hides the Modify button). */
+	private void assertMakerRole() {
+		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (attr == null)
+			return; // internal (non-HTTP) call
+		String userid = (String) attr.getRequest().getSession().getAttribute("USERID");
+		String role = userid != null ? userProfileRep.getUserRole(userid) : null;
+		if (!isMakerRole(role)) {
+			throw new SecurityException(
+					"Only Maker (or MAN/ADMIN) can submit UFCE modifications. Current role: " + role);
+		}
+	}
+
+	/** Next version = max(live, archival) + 1, or 1 when nothing exists yet. */
+	private BigDecimal nextManualEntryVersion(Date reportDate) {
+		BigDecimal liveMax = getLatestManualEntryVersion(reportDate);
+		BigDecimal archMax = findMaxManualEntryArchivalSummaryVersion(reportDate);
+		BigDecimal max = nvl(liveMax).max(nvl(archMax));
+		return max.signum() == 0 ? BigDecimal.ONE : max.add(BigDecimal.ONE);
+	}
+
+	/**
+	 * Makes "what the user typed" and "what the DB holds" comparable so the audit
+	 * diff only lists real changes: blank text -> null, null amounts -> 0,
+	 * amounts -> scale 2, serial numbers -> scale 0.
+	 */
+	private void normalizeManualEntity(BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY e) {
+		for (Field f : e.getClass().getDeclaredFields()) {
+			if (Modifier.isStatic(f.getModifiers()) || !f.getName().matches("r\\d+_.*"))
+				continue;
+			try {
+				f.setAccessible(true);
+				Object v = f.get(e);
+				if (f.getType() == String.class) {
+					String s = v == null ? null : ((String) v).trim();
+					f.set(e, (s == null || s.isEmpty()) ? null : s);
+				} else if (f.getType() == BigDecimal.class) {
+					int scale = f.getName().endsWith("_serial_no") ? 0 : 2;
+					BigDecimal b = v == null ? BigDecimal.ZERO : (BigDecimal) v;
+					f.set(e, b.setScale(scale, RoundingMode.HALF_UP));
+				}
+			} catch (IllegalAccessException ex) {
+				throw new IllegalStateException("Cannot normalise field " + f.getName(), ex);
+			}
+		}
+	}
+
+	/** Reads "R10_SERIAL_NO" through getR10_serial_no(); nulls become ""/0 like the old live UPDATE. */
+	private Object ufceManualValue(BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY entity, String column) {
+		int idx = column.indexOf('_');
+		String getter = "get" + column.substring(0, idx + 1) + column.substring(idx + 1).toLowerCase();
+		try {
+			Method m = entity.getClass().getMethod(getter);
+			Object v = m.invoke(entity);
+			if (m.getReturnType() == String.class)
+				return nvlStr((String) v);
+			if (m.getReturnType() == BigDecimal.class)
+				return nvl((BigDecimal) v);
+			return v;
+		} catch (Exception ex) {
+			throw new IllegalStateException("Cannot read " + getter, ex);
+		}
+	}
+
+	/**
+	 * MAKER write: MERGE the pending change into the MOD table, keyed on
+	 * (REPORT_DATE, REPORT_VERSION). The LIVE table is NOT touched here.
+	 * MOD flags: ENTITY_FLG='Y', MODIFY_FLG='Y' (pending), DEL_FLG='N'.
+	 */
+	private void saveModManualEntity(BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY entity, BigDecimal version) {
+		List<String> cols = ufceManualColumns();
+		StringBuilder upd = new StringBuilder();
+		StringBuilder insCols = new StringBuilder();
+		StringBuilder insVals = new StringBuilder();
+		List<Object> updParams = new ArrayList<>();
+		List<Object> insParams = new ArrayList<>();
+
+		for (String c : cols) {
+			Object v = ufceManualValue(entity, c);
+			upd.append(c).append(" = ?, ");
+			insCols.append(c).append(", ");
+			insVals.append("?, ");
+			updParams.add(v);
+			insParams.add(v);
+		}
+
+		String freq = entity.getReport_frequency() != null ? entity.getReport_frequency() : "Monthly";
+		String code = entity.getReport_code() != null ? entity.getReport_code() : "UFCE_CALC";
+		String desc = entity.getReport_desc() != null ? entity.getReport_desc() : "UFCE Calculation Summary";
+
+		String sql = "MERGE INTO " + UFCE_MANUAL_MOD_TABLE + " dest "
+				+ "USING (SELECT ? AS REPORT_DATE, ? AS REPORT_VERSION FROM dual) src "
+				+ "ON (TRUNC(dest.REPORT_DATE) = TRUNC(src.REPORT_DATE) AND dest.REPORT_VERSION = src.REPORT_VERSION) "
+				+ "WHEN MATCHED THEN UPDATE SET " + upd
+				+ "REPORT_FREQUENCY = ?, REPORT_CODE = ?, REPORT_DESC = ?, "
+				+ "ENTITY_FLG = 'Y', MODIFY_FLG = 'Y', DEL_FLG = 'N' "
+				+ "WHEN NOT MATCHED THEN INSERT (REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+				+ insCols + "ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+				+ "VALUES (src.REPORT_DATE, src.REPORT_VERSION, ?, ?, ?, " + insVals + "'Y', 'Y', 'N')";
+
+		List<Object> params = new ArrayList<>();
+		params.add(new java.sql.Date(entity.getReport_date().getTime())); // USING
+		params.add(version);
+		params.addAll(updParams); // WHEN MATCHED
+		params.add(freq);
+		params.add(code);
+		params.add(desc);
+		params.add(freq); // WHEN NOT MATCHED
+		params.add(code);
+		params.add(desc);
+		params.addAll(insParams);
+
+		jdbcTemplate.update(sql, params.toArray());
 	}
 
 	// =====================================================
@@ -676,169 +823,102 @@ public class BRRS_UFCE_CALCULATION_ReportService {
 		return mv;
 	}
 
-	// =====================================================
-	// SECTION 10: UPDATE SUMMARY - MANUAL TABLE
-	// =====================================================
-
+	/**
+	 * MAKER entry point (NORMAL type). Stages the change in
+	 * BRRS_UFCE_CALCULATION_MOD_SUMMARYTABLE_MANUAL and writes the audit row that the
+	 * Checker later verifies. The LIVE manual table is only changed by the Checker
+	 * (AuditService.transferUFCEManualData).
+	 */
 	@Transactional
 	public void updateSummaryReport(BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY updatedEntity) {
-		logger.info("Came to UFCE Summary Update");
+		logger.info("Came to UFCE Summary Update (MAKER)");
 		if (updatedEntity == null || updatedEntity.getReport_date() == null) {
 			throw new IllegalArgumentException("Updated entity and report date cannot be null");
 		}
 
+		// Server-side role gate
+		assertMakerRole();
+
+		Date reportDate = updatedEntity.getReport_date();
+
+		// 1) Resolve the version being edited (form value, else latest live version)
 		BigDecimal versionToUse = updatedEntity.getReport_version();
 		if (versionToUse == null || versionToUse.compareTo(BigDecimal.ZERO) == 0) {
-			versionToUse = getLatestManualEntryVersion(updatedEntity.getReport_date());
+			versionToUse = getLatestManualEntryVersion(reportDate);
 		}
 
-		logger.info("updateSummaryReport: resolved versionToUse={} for date={}", versionToUse,
-				updatedEntity.getReport_date());
-
-		if (versionToUse == null || versionToUse.compareTo(BigDecimal.ZERO) == 0) {
-			logger.info("updateSummaryReport: no live row found for date {} -> inserting new",
-					updatedEntity.getReport_date());
-			insertNewSummaryRecord(updatedEntity);
-			return;
+		// 2) Load the LIVE row (baseline for the audit diff)
+		BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY existing = null;
+		if (versionToUse != null && versionToUse.compareTo(BigDecimal.ZERO) != 0) {
+			List<BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY> matches = getManualEntrySummaryDataByDateAndVersion(
+					reportDate, versionToUse);
+			if (matches != null && !matches.isEmpty()) {
+				existing = matches.get(0);
+			}
+		}
+		if (existing == null) {
+			// first entry for this date -> pending record gets the next version
+			versionToUse = nextManualEntryVersion(reportDate);
+			logger.info("updateSummaryReport: no live row for date={} -> pending version {}", reportDate,
+					versionToUse);
 		}
 
-		List<BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY> matches = getManualEntrySummaryDataByDateAndVersion(
-				updatedEntity.getReport_date(), versionToUse);
-		if (matches == null || matches.isEmpty()) {
-			logger.info("updateSummaryReport: no live row for date={} version={} -> inserting new",
-					updatedEntity.getReport_date(), versionToUse);
-			insertNewSummaryRecord(updatedEntity);
-			return;
-		}
-
-		BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY existingSummary = matches.get(0);
 		BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY oldcopy = new BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY();
-		BeanUtils.copyProperties(existingSummary, oldcopy);
+		if (existing != null) {
+			BeanUtils.copyProperties(existing, oldcopy);
+		} else {
+			oldcopy.setReport_date(reportDate);
+			oldcopy.setReport_version(versionToUse);
+		}
 
 		try {
 			validateNonNegativeValues(updatedEntity);
 
-			BigDecimal totalAdvance = calculateTotalAdvance(updatedEntity);
-			BigDecimal totalProvision = calculateTotalProvision(updatedEntity);
-			updatedEntity.setR22_total_adv(totalAdvance);
-			updatedEntity.setR22_provision(totalProvision);
+			updatedEntity.setR22_total_adv(calculateTotalAdvance(updatedEntity));
+			updatedEntity.setR22_provision(calculateTotalProvision(updatedEntity));
 
-			String updateSummarySQL = "UPDATE BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL SET "
-			        + "R10_SERIAL_NO = ?, R10_SUBSIDIARY = ?, R10_TOTAL_ADV = ?, R10_PROVISION = ?, "
-			        + "R11_SERIAL_NO = ?, R11_SUBSIDIARY = ?, R11_TOTAL_ADV = ?, R11_PROVISION = ?, "
-			        + "R12_SERIAL_NO = ?, R12_SUBSIDIARY = ?, R12_TOTAL_ADV = ?, R12_PROVISION = ?, "
-			        + "R13_SERIAL_NO = ?, R13_SUBSIDIARY = ?, R13_TOTAL_ADV = ?, R13_PROVISION = ?, "
-			        + "R14_SERIAL_NO = ?, R14_SUBSIDIARY = ?, R14_TOTAL_ADV = ?, R14_PROVISION = ?, "
-			        + "R15_SERIAL_NO = ?, R15_SUBSIDIARY = ?, R15_TOTAL_ADV = ?, R15_PROVISION = ?, "
-			        + "R16_SERIAL_NO = ?, R16_SUBSIDIARY = ?, R16_TOTAL_ADV = ?, R16_PROVISION = ?, "
-			        + "R17_SERIAL_NO = ?, R17_SUBSIDIARY = ?, R17_TOTAL_ADV = ?, R17_PROVISION = ?, "
-			        + "R18_SERIAL_NO = ?, R18_SUBSIDIARY = ?, R18_TOTAL_ADV = ?, R18_PROVISION = ?, "
-			        + "R19_SERIAL_NO = ?, R19_SUBSIDIARY = ?, R19_TOTAL_ADV = ?, R19_PROVISION = ?, "
-			        + "R20_SERIAL_NO = ?, R20_SUBSIDIARY = ?, R20_TOTAL_ADV = ?, R20_PROVISION = ?, "
-			        + "R21_SERIAL_NO = ?, R21_SUBSIDIARY = ?, R21_TOTAL_ADV = ?, R21_PROVISION = ?, "
-			        + "R22_TOTAL_ADV = ?, R22_PROVISION = ?, "
-			        + "MODIFY_FLG = 'Y', DEL_FLG = 'N' "
-			        + "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+			// Header/flags mirror LIVE so the audit lists business changes only
+			updatedEntity.setReport_date(oldcopy.getReport_date());
+			updatedEntity.setReport_version(versionToUse);
+			updatedEntity.setReport_frequency(
+					oldcopy.getReport_frequency() != null ? oldcopy.getReport_frequency() : "Monthly");
+			updatedEntity
+					.setReport_code(oldcopy.getReport_code() != null ? oldcopy.getReport_code() : "UFCE_CALC");
+			updatedEntity.setReport_desc(
+					oldcopy.getReport_desc() != null ? oldcopy.getReport_desc() : "UFCE Calculation Summary");
+			updatedEntity.setReport_resubdate(oldcopy.getReport_resubdate());
+			updatedEntity.setEntity_flg(oldcopy.getEntity_flg());
+			updatedEntity.setModify_flg(oldcopy.getModify_flg());
+			updatedEntity.setDel_flg(oldcopy.getDel_flg());
 
-			logger.info("updateSummaryReport DIAG: date={} versionToUse={}", updatedEntity.getReport_date(),
+			normalizeManualEntity(oldcopy);
+			normalizeManualEntity(updatedEntity);
+
+			String changes = auditService.getChanges(oldcopy, updatedEntity);
+			if (changes == null || changes.isEmpty()) {
+				logger.info("updateSummaryReport: no changes detected for date={} version={} -> nothing sent to Checker",
+						reportDate, versionToUse);
+				return;
+			}
+
+			// 3) Stage in MOD (LIVE stays untouched until the Checker verifies)
+			saveModManualEntity(updatedEntity, versionToUse);
+			logger.info("UFCE pending change saved to {} for date={} version={}", UFCE_MANUAL_MOD_TABLE, reportDate,
 					versionToUse);
-			logger.info("updateSummaryReport DIAG: R10_subsidiary='{}' R10_total_adv='{}' R10_provision='{}'",
-					updatedEntity.getR10_subsidiary(), updatedEntity.getR10_total_adv(),
-					updatedEntity.getR10_provision());
-			logger.info("updateSummaryReport DIAG: R11_subsidiary='{}' R11_total_adv={} R11_provision={}",
-					updatedEntity.getR11_subsidiary(), updatedEntity.getR11_total_adv(),
-					updatedEntity.getR11_provision());
-			logger.info("updateSummaryReport DIAG: R21_subsidiary='{}' R21_total_adv={} R21_provision={}",
-					updatedEntity.getR21_subsidiary(), updatedEntity.getR21_total_adv(),
-					updatedEntity.getR21_provision());
-			logger.info("updateSummaryReport DIAG: totalAdvance={} totalProvision={}", totalAdvance, totalProvision);
 
-			int rowsUpdated = jdbcTemplate.update(updateSummarySQL,
-				    /* R10 */ nvlStr(updatedEntity.getR10_serial_no()),
-				              nvlStr(updatedEntity.getR10_subsidiary()),
-				              nvlStr(updatedEntity.getR10_total_adv()),
-				              nvlStr(updatedEntity.getR10_provision()),
-				    /* R11 */ nvl(updatedEntity.getR11_serial_no()),
-				              nvlStr(updatedEntity.getR11_subsidiary()),
-				              nvl(updatedEntity.getR11_total_adv()),
-				              nvl(updatedEntity.getR11_provision()),
-				    /* R12 */ nvl(updatedEntity.getR12_serial_no()),
-				              nvlStr(updatedEntity.getR12_subsidiary()),
-				              nvl(updatedEntity.getR12_total_adv()),
-				              nvl(updatedEntity.getR12_provision()),
-				    /* R13 */ nvl(updatedEntity.getR13_serial_no()),
-				              nvlStr(updatedEntity.getR13_subsidiary()),
-				              nvl(updatedEntity.getR13_total_adv()),
-				              nvl(updatedEntity.getR13_provision()),
-				    /* R14 */ nvl(updatedEntity.getR14_serial_no()),
-				              nvlStr(updatedEntity.getR14_subsidiary()),
-				              nvl(updatedEntity.getR14_total_adv()),
-				              nvl(updatedEntity.getR14_provision()),
-				    /* R15 */ nvl(updatedEntity.getR15_serial_no()),
-				              nvlStr(updatedEntity.getR15_subsidiary()),
-				              nvl(updatedEntity.getR15_total_adv()),
-				              nvl(updatedEntity.getR15_provision()),
-				    /* R16 */ nvl(updatedEntity.getR16_serial_no()),
-				              nvlStr(updatedEntity.getR16_subsidiary()),
-				              nvl(updatedEntity.getR16_total_adv()),
-				              nvl(updatedEntity.getR16_provision()),
-				    /* R17 */ nvl(updatedEntity.getR17_serial_no()),
-				              nvlStr(updatedEntity.getR17_subsidiary()),
-				              nvl(updatedEntity.getR17_total_adv()),
-				              nvl(updatedEntity.getR17_provision()),
-				    /* R18 */ nvl(updatedEntity.getR18_serial_no()),
-				              nvlStr(updatedEntity.getR18_subsidiary()),
-				              nvl(updatedEntity.getR18_total_adv()),
-				              nvl(updatedEntity.getR18_provision()),
-				    /* R19 */ nvl(updatedEntity.getR19_serial_no()),
-				              nvlStr(updatedEntity.getR19_subsidiary()),
-				              nvl(updatedEntity.getR19_total_adv()),
-				              nvl(updatedEntity.getR19_provision()),
-				    /* R20 */ nvl(updatedEntity.getR20_serial_no()),
-				              nvlStr(updatedEntity.getR20_subsidiary()),
-				              nvl(updatedEntity.getR20_total_adv()),
-				              nvl(updatedEntity.getR20_provision()),
-				    /* R21 */ nvl(updatedEntity.getR21_serial_no()),
-				              nvlStr(updatedEntity.getR21_subsidiary()),
-				              nvl(updatedEntity.getR21_total_adv()),
-				              nvl(updatedEntity.getR21_provision()),
-				    /* R22 */ nvl(totalAdvance),
-				              nvl(totalProvision),
-				    /* WHERE */ updatedEntity.getReport_date(),
-				                versionToUse);
-
-			logger.info("updateSummaryReport: rowsUpdated={} for date={} version={}", rowsUpdated,
-			        updatedEntity.getReport_date(), versionToUse);
-
-
-			if (rowsUpdated == 0) {
-			    logger.warn("updateSummaryReport: UPDATE matched 0 rows — falling back to INSERT "
-			            + "for date={} version={}", updatedEntity.getReport_date(), versionToUse);
-			    insertNewSummaryRecord(updatedEntity);
-			    return;
-			}
-
-			try {
-				if (auditService != null) {
-					String changes = auditService.getChanges(oldcopy, updatedEntity);
-					if (changes != null && !changes.isEmpty()) {
-						auditService.compareEntitiesmanual(oldcopy, updatedEntity,
-								updatedEntity.getReport_date().toString(), "UFCE Calculation Summary Screen",
-								"BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL");
-					}
-				}
-			} catch (Exception ae) {
-				logger.warn("Audit logging for updateSummaryReport failed (non-fatal): {}", ae.getMessage());
-			}
-
-			logger.info("UFCE Summary Update Completed Successfully for date: {} version: {}",
-					updatedEntity.getReport_date(), versionToUse);
+			// 4) Audit row = the work item the Checker verifies.
+			// change_details carries "yyyy-MM-dd|version" so the Checker promotes
+			// exactly this record (no MAX(REPORT_DATE) guessing).
+			String auditKey = new SimpleDateFormat("yyyy-MM-dd").format(reportDate) + "|"
+					+ versionToUse.toPlainString();
+			auditService.compareEntitiesmanual(oldcopy, updatedEntity, auditKey, "UFCE Calculation Summary Screen",
+					UFCE_MANUAL_MOD_TABLE);
 
 		} catch (IllegalArgumentException e) {
 			throw e;
 		} catch (Exception e) {
-			logger.error("Error while updating UFCE Summary fields", e);
-			throw new RuntimeException("Error while updating UFCE Summary fields: " + e.getMessage(), e);
+			logger.error("Error while staging UFCE Summary changes", e);
+			throw new RuntimeException("Error while staging UFCE Summary changes: " + e.getMessage(), e);
 		}
 	}
 

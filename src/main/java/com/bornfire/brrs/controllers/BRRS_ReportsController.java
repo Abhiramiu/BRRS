@@ -7693,7 +7693,21 @@ public class BRRS_ReportsController {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 						.body("Update Failed: Invalid or missing report date: " + asondateStr);
 			}
+			
 			logger.info("Type: {} | Screen: {} | Date: {}", type, screen, asondate);
+
+			// MAKER-CHECKER: NORMAL summary edits are staged in the MOD table for Checker
+			// approval, so only Makers may submit them (server-side gate).
+			boolean isNormalSummary = !"RESUB".equalsIgnoreCase(type) && "summary".equalsIgnoreCase(screen);
+			if (isNormalSummary) {
+				String userid = (String) request.getSession().getAttribute("USERID");
+				String role = userid != null ? userProfileRep.getUserRole(userid) : null;
+				if (!isMaker(role)) {
+					return ResponseEntity.status(HttpStatus.FORBIDDEN)
+							.body("Only Maker (or MAN/ADMIN) can submit UFCE_CALCULATION modifications. Current role: "
+									+ role);
+				}
+			}
 
 			Object entityInstance;
 
@@ -7740,15 +7754,58 @@ public class BRRS_ReportsController {
 
 			BRRS_UFCE_CALCULATION_ReportService.updateUFCEReport(entityInstance, type);
 
+			if (isNormalSummary) {
+				return ResponseEntity
+						.ok("Submitted successfully. Any changes have been sent for Checker approval.");
+			}
 			return ResponseEntity.ok("UFCE_CALCULATION Modified Successfully.");
 
+		} catch (SecurityException se) {
+			logger.warn("UFCE_CALCULATION update blocked: {}", se.getMessage());
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(se.getMessage());
 		} catch (Exception e) {
 			logger.error("Error in UFCE_CALCULATION update", e);
+			
 			Throwable root = e;
 			while (root.getCause() != null) {
 				root = root.getCause();
 			}
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + root.getMessage());
+		}
+	}
+	
+	// =====================================================
+	// UFCE_CALCULATION - CHECKER (verify by audit id)
+	// Audit screen "Verify" button -> promotes MOD -> LIVE
+	// =====================================================
+
+	@RequestMapping(value = "/verifyAuditUFCE", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> verifyAuditUFCE(@RequestParam("auditId") Long auditId, HttpServletRequest req) {
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
+
+			if (!isChecker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Checker (or MAN/ADMIN) can verify UFCE_CALCULATION. Current role: " + role);
+			}
+
+			logger.info("Came to verifyAuditUFCE (CHECKER) for auditId={}, role={}", auditId, role);
+
+			auditService.verifyAndTransferReport(auditId);
+
+			return ResponseEntity.ok("Verified and transferred successfully.");
+		} catch (SecurityException se) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(se.getMessage());
+		} catch (Exception e) {
+			logger.error("Error in verifyAuditUFCE", e);
+			Throwable root = e;
+			while (root.getCause() != null) {
+				root = root.getCause();
+			}
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Verify Failed: " + root.getMessage());
 		}
 	}
 

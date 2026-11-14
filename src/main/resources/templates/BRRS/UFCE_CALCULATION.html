@@ -26,291 +26,87 @@
 	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
 
 	<style>
-		.btns {
-			float: right;
-			margin: 5px;
-		}
-
-		.col-sm-5 {
-			padding-bottom: 15px;
-		}
-
-		.list-body {
-			padding: 0px;
-		}
-
-		.error {
-			color: red;
-			padding-left: 10px;
-		}
-
-		.formline {
-			padding-bottom: 15px;
-		}
-
-		.btn-primary {
-			background-color: #E77400;
-			border-color: #0c0c0c;
-		}
-
+		.btns { float: right; margin: 5px; }
+		.col-sm-5 { padding-bottom: 15px; }
+		.list-body { padding: 0px; }
+		.error { color: red; padding-left: 10px; }
+		.formline { padding-bottom: 15px; }
+		.btn-primary { background-color: #E77400; border-color: #0c0c0c; }
 		.btn-primary:not(:disabled):not(.disabled).active,
 		.btn-primary:not(:disabled):not(.disabled):active,
-		.show>.btn-primary.dropdown-toggle {
-			color: #fff;
-			background-color: #cc0000;
-			border-color: #161617;
-		}
-
-		#finusertb {
-			width: 460px;
-		}
-
-		.dataTables_wrapper .dataTables_paginate .paginate_button {
-			padding: 0px;
-		}
+		.show>.btn-primary.dropdown-toggle { color: #fff; background-color: #cc0000; border-color: #161617; }
+		#finusertb { width: 460px; }
+		.dataTables_wrapper .dataTables_paginate .paginate_button { padding: 0px; }
 	</style>
 
 	<style>
-		div span {
-			font-weight: bold;
-			color: white !important;
-		}
-
-		.card {
-			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-			border-radius: 8px;
-		}
-
-		.card-header h5 {
-			font-size: 22px;
-			color: #fff;
-			font-weight: 600;
-		}
-
-		.nav-tabs .nav-link {
-			font-weight: 500;
-			border: 1px solid #dee2e6;
-			border-bottom: none;
-			border-radius: 4px 4px 0 0;
-			background-color: #f1f1f1;
-			margin-right: 5px;
-		}
-
-		.nav-tabs .nav-link.active {
-			background-color: #ffffff;
-			border-color: #dee2e6 #dee2e6 #ffffff;
-		}
-
-		.table-responsive {
-			border: 1px solid #dee2e6;
-			border-radius: 4px;
-		}
-
-		.table-hover tbody tr:hover {
-			background-color: #f3f6f9;
-		}
-
-		thead th {
-			position: sticky;
-			top: 0;
-			background-color: #e9ecf0;
-			z-index: 1;
-		}
-
-		.table td {
-			background-color: #FFFFFF;
-		}
-
-		.card-footer {
-			padding: 10px;
-			border-top: 1px solid #ccc;
-		}
-
-		.btn-xs {
-			padding: 4px 12px;
-			font-size: 14px;
-			border-radius: 4px;
-		}
-
-		#BRFvalidation th,
-		#usertable td {
-			vertical-align: middle;
-			text-align: left;
-			font-size: 16px;
-			font-family: Arial;
-		}
-
-		.fa-edit:hover {
-			color: #28a745;
-			transform: scale(1.1);
-		}
-
-		td {
-			border: 1px solid rgb(0, 164, 166);
-			overflow: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
-		}
+		div span { font-weight: bold; color: white !important; }
+		.card { box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 8px; }
+		.card-header h5 { font-size: 22px; color: #fff; font-weight: 600; }
+		.nav-tabs .nav-link { font-weight: 500; border: 1px solid #dee2e6; border-bottom: none; border-radius: 4px 4px 0 0; background-color: #f1f1f1; margin-right: 5px; }
+		.nav-tabs .nav-link.active { background-color: #ffffff; border-color: #dee2e6 #dee2e6 #ffffff; }
+		.table-responsive { border: 1px solid #dee2e6; border-radius: 4px; }
+		.table-hover tbody tr:hover { background-color: #f3f6f9; }
+		thead th { position: sticky; top: 0; background-color: #e9ecf0; z-index: 1; }
+		.table td { background-color: #FFFFFF; }
+		.card-footer { padding: 10px; border-top: 1px solid #ccc; }
+		.btn-xs { padding: 4px 12px; font-size: 14px; border-radius: 4px; }
+		#BRFvalidation th, #usertable td { vertical-align: middle; text-align: left; font-size: 16px; font-family: Arial; }
+		.fa-edit:hover { color: #28a745; transform: scale(1.1); }
+		td { border: 1px solid rgb(0, 164, 166); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 	</style>
 
 	<style>
-		.form-group {
-			position: relative;
-			margin-bottom: 1.5rem;
-		}
-
-		.form-control {
-			width: 100%;
-			border: 2px solid #ccc;
-			border-radius: 8px;
-			font-size: 1rem;
-			outline: none;
-			background: transparent;
-			transition: border-color 0.3s ease, padding-top 0.3s ease;
-		}
-
-		.error {
-			color: red;
-			padding-top: 15px;
-		}
-
-		.form-control:focus {
-			border-color: #007bff;
-		}
-
-		.form-legend {
-			position: absolute;
-			top: 50%;
-			left: 15px;
-			transform: translateY(-50%);
-			font-size: 1rem;
-			color: #aaa;
-			background: white;
-			padding: 0 5px;
-			pointer-events: none;
-			transition: 0.3s ease;
-		}
-
-		.form-control:focus~.form-legend,
-		.form-control:not(:placeholder-shown)~.form-legend {
-			top: -8px;
-			font-size: 1rem;
-			color: #007bff;
-		}
-
-		.form-control:focus:hover~.form-legend {
-			color: #0056b3;
-		}
-
-		.form-control:not(:focus)~.form-legend {
-			color: #aaa;
-		}
+		.form-group { position: relative; margin-bottom: 1.5rem; }
+		.form-control { width: 100%; border: 2px solid #ccc; border-radius: 8px; font-size: 1rem; outline: none; background: transparent; transition: border-color 0.3s ease, padding-top 0.3s ease; }
+		.error { color: red; padding-top: 15px; }
+		.form-control:focus { border-color: #007bff; }
+		.form-legend { position: absolute; top: 50%; left: 15px; transform: translateY(-50%); font-size: 1rem; color: #aaa; background: white; padding: 0 5px; pointer-events: none; transition: 0.3s ease; }
+		.form-control:focus~.form-legend, .form-control:not(:placeholder-shown)~.form-legend { top: -8px; font-size: 1rem; color: #007bff; }
+		.form-control:focus:hover~.form-legend { color: #0056b3; }
+		.form-control:not(:focus)~.form-legend { color: #aaa; }
 	</style>
 
 	<style>
-		input.error,
-		select.error {
-			border: 2px solid red !important;
-		}
-
-		label.error {
-			color: red;
-			font-size: 0.85em;
-			margin-top: 5px;
-			display: block;
-		}
-
-		.underline {
-			text-decoration: underline;
-			color: #08a6f1;
-			cursor: pointer;
-		}
-
-		.left-arrow-circle {
-			width: 35px;
-			height: 35px;
-			border-radius: 50%;
-			background-color: white;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			margin-right: 10px;
-			transition: background-color 0.3s, transform 0.2s;
-		}
-
-		.left-arrow-circle i {
-			color: rgb(107, 122, 143);
-		}
-
-		.left-arrow-circle:hover {
-			background-color: rgb(107, 122, 143);
-			cursor: pointer;
-			transform: scale(1.05);
-			border: 2px solid white;
-		}
-
-		.left-arrow-circle:hover i {
-			color: white;
-		}
-
-		.white-text span {
-			color: white !important;
-		}
-
-		.table-cell tbody td:hover {
-			background-color: #f0f0f0;
-			cursor: pointer;
-		}
+		input.error, select.error { border: 2px solid red !important; }
+		label.error { color: red; font-size: 0.85em; margin-top: 5px; display: block; }
+		.underline { text-decoration: underline; color: #08a6f1; cursor: pointer; }
+		.left-arrow-circle { width: 35px; height: 35px; border-radius: 50%; background-color: white; display: flex; align-items: center; justify-content: center; margin-right: 10px; transition: background-color 0.3s, transform 0.2s; }
+		.left-arrow-circle i { color: rgb(107, 122, 143); }
+		.left-arrow-circle:hover { background-color: rgb(107, 122, 143); cursor: pointer; transform: scale(1.05); border: 2px solid white; }
+		.left-arrow-circle:hover i { color: white; }
+		.white-text span { color: white !important; }
+		.table-cell tbody td:hover { background-color: #f0f0f0; cursor: pointer; }
 	</style>
 
 	<style>
-		#reports,
-		#reports th,
-		#reports td {
-			border: 1px solid black !important;
-		}
-
-		#reports {
-			border-collapse: collapse;
-		}
+		#reports, #reports th, #reports td { border: 1px solid black !important; }
+		#reports { border-collapse: collapse; }
 	</style>
 
 	<script th:inline="javascript">
-		// Global report id used by the navigation functions
-		var reportid = /*[[${reportid}]]*/ '';
+		// ============================================================
+		// Server-side context
+		// ============================================================
+		var reportid   = /*[[${reportid}]]*/ '';
+		var serverRole = /*[[${role}]]*/ '';   // "MAKER" | "CHECKER" | "MAN" | "ADMIN" | null
+
+		// Central Maker/Checker flags — used by every mutating button.
+		var isMaker   = /^(MAKER|M|MAN|MANAGER|B|ADMIN|A)$/i.test(serverRole || '');
+		var isChecker = /^(CHECKER|C|MAN|MANAGER|B|ADMIN|A)$/i.test(serverRole || '');
 
 		$(document).ready(function () {
 			$('#loader').modal('hide');
+
+			// Hide Modify button for Checker-only users (server also blocks it,
+			// but hide it up-front so there's no dead UI element).
+			if (!isMaker) {
+				$('#modifyBtn').hide();
+			}
 		});
 
-		$(window).on('pageshow', function () {
-			$('#loader').modal('hide');
-		});
-
-		$(window).on('beforeunload', function () {
-			$('#loader').modal('hide');
-		});
-
-		$(document).ready(function () {
-			Maker_Checker_Function();
-		});
-
-		// If the logged-in user is a Checker, disable the Modify button
-		function Maker_Checker_Function() {
-			$.ajax({
-				url: "/BRRS/getUserRole",
-				type: "GET",
-				success: function (roleId) {
-					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
-						const modifyBtn = document.getElementById("modifyBtn");
-						if (modifyBtn) modifyBtn.style.display = "none";
-					}
-				},
-				error: function (err) {
-					console.error("Error fetching role:", err);
-				}
-			});
-		}
+		$(window).on('pageshow',   function () { $('#loader').modal('hide'); });
+		$(window).on('beforeunload', function () { $('#loader').modal('hide'); });
 
 		function home() {
 			$("#loader").modal("toggle");
@@ -322,164 +118,140 @@
 			window.history.back();
 		}
 
-		// Normalize data-* attribute values that come through as the literal string "null"
 		function cleanAttr(v) {
 			return (v === null || v === undefined || v === 'null' || v === '') ? '' : v;
 		}
 
-		// Navigate to Summary View
+		// ============================================================
+		// Navigation
+		// ============================================================
 		function showsummary() {
 			$('#loader').modal('show');
 			var fromdate = /*[[${fromdate}]]*/ '';
-			var todate = /*[[${todate}]]*/ '';
+			var todate   = /*[[${todate}]]*/ '';
 			var asondate = /*[[${asondate}]]*/ '';
-			var type = /*[[${type}]]*/ '';
-			var version = /*[[${version}]]*/ '';
+			var type     = /*[[${type}]]*/ '';
+			var version  = /*[[${version}]]*/ '';
 
 			var url = '/BRRS/Reports/' + reportid +
 				'?fromdate=' + encodeURIComponent(fromdate) +
-				'&todate=' + encodeURIComponent(todate) +
+				'&todate='   + encodeURIComponent(todate)   +
 				'&asondate=' + encodeURIComponent(asondate);
-			if (type && type !== '') {
-				url += '&type=' + encodeURIComponent(type);
-			}
-			if (version && version !== '') {
-				url += '&version=' + encodeURIComponent(version);
-			}
+			if (type && type !== '')       url += '&type='    + encodeURIComponent(type);
+			if (version && version !== '') url += '&version=' + encodeURIComponent(version);
 			location.href = url;
 		}
 
-		// Navigate to Detail View
 		function showdetails() {
 			$('#loader').modal('show');
 			var fromdate = /*[[${fromdate}]]*/ '';
-			var todate = /*[[${todate}]]*/ '';
+			var todate   = /*[[${todate}]]*/ '';
 			var asondate = /*[[${asondate}]]*/ '';
-			var type = /*[[${type}]]*/ '';
-			var version = /*[[${version}]]*/ '';
+			var type     = /*[[${type}]]*/ '';
+			var version  = /*[[${version}]]*/ '';
 
 			var url = '/BRRS/Reports/' + reportid +
 				'?fromdate=' + encodeURIComponent(fromdate) +
-				'&todate=' + encodeURIComponent(todate) +
+				'&todate='   + encodeURIComponent(todate)   +
 				'&asondate=' + encodeURIComponent(asondate) +
 				'&dtltype=detail';
-			if (type && type !== '') {
-				url += '&type=' + encodeURIComponent(type);
-			}
-			if (version && version !== '') {
-				url += '&version=' + encodeURIComponent(version);
-			}
+			if (type && type !== '')       url += '&type='    + encodeURIComponent(type);
+			if (version && version !== '') url += '&version=' + encodeURIComponent(version);
 			location.href = url;
 		}
 
-		// Archival Summary
 		function goToArchivalSummary() {
 			$('#loader').modal('show');
 			var fromdate = /*[[${fromdate}]]*/ '';
-			var todate = /*[[${todate}]]*/ '';
+			var todate   = /*[[${todate}]]*/ '';
 			var asondate = /*[[${asondate}]]*/ '';
-			var version = /*[[${version}]]*/ '';
-
+			var version  = /*[[${version}]]*/ '';
 			var url = '/BRRS/Reports/' + reportid +
 				'?fromdate=' + encodeURIComponent(fromdate) +
-				'&todate=' + encodeURIComponent(todate) +
+				'&todate='   + encodeURIComponent(todate)   +
 				'&asondate=' + encodeURIComponent(asondate) +
 				'&type=ARCHIVAL';
-			if (version && version !== '') {
-				url += '&version=' + encodeURIComponent(version);
-			}
+			if (version && version !== '') url += '&version=' + encodeURIComponent(version);
 			location.href = url;
 		}
 
-		// Archival Detail
 		function showArchivalDetail() {
 			$('#loader').modal('show');
 			var fromdate = /*[[${fromdate}]]*/ '';
-			var todate = /*[[${todate}]]*/ '';
+			var todate   = /*[[${todate}]]*/ '';
 			var asondate = /*[[${asondate}]]*/ '';
-			var version = /*[[${version}]]*/ '';
-
+			var version  = /*[[${version}]]*/ '';
 			var url = '/BRRS/Reports/' + reportid +
 				'?fromdate=' + encodeURIComponent(fromdate) +
-				'&todate=' + encodeURIComponent(todate) +
+				'&todate='   + encodeURIComponent(todate)   +
 				'&asondate=' + encodeURIComponent(asondate) +
 				'&type=ARCHIVAL&dtltype=detail';
-			if (version && version !== '') {
-				url += '&version=' + encodeURIComponent(version);
-			}
+			if (version && version !== '') url += '&version=' + encodeURIComponent(version);
 			location.href = url;
 		}
 
-		// Resub Summary
 		function goToResubSummary() {
 			$('#loader').modal('show');
 			var fromdate = /*[[${fromdate}]]*/ '';
-			var todate = /*[[${todate}]]*/ '';
+			var todate   = /*[[${todate}]]*/ '';
 			var asondate = /*[[${asondate}]]*/ '';
-			var version = /*[[${version}]]*/ '';
-
+			var version  = /*[[${version}]]*/ '';
 			var url = '/BRRS/Reports/' + reportid +
 				'?fromdate=' + encodeURIComponent(fromdate) +
-				'&todate=' + encodeURIComponent(todate) +
+				'&todate='   + encodeURIComponent(todate)   +
 				'&asondate=' + encodeURIComponent(asondate) +
 				'&type=RESUB';
-			if (version && version !== '') {
-				url += '&version=' + encodeURIComponent(version);
-			}
+			if (version && version !== '') url += '&version=' + encodeURIComponent(version);
 			location.href = url;
 		}
 
-		// Resub Detail
 		function showResubDetail() {
 			$('#loader').modal('show');
 			var fromdate = /*[[${fromdate}]]*/ '';
-			var todate = /*[[${todate}]]*/ '';
+			var todate   = /*[[${todate}]]*/ '';
 			var asondate = /*[[${asondate}]]*/ '';
-			var version = /*[[${version}]]*/ '';
-
+			var version  = /*[[${version}]]*/ '';
 			var url = '/BRRS/Reports/' + reportid +
 				'?fromdate=' + encodeURIComponent(fromdate) +
-				'&todate=' + encodeURIComponent(todate) +
+				'&todate='   + encodeURIComponent(todate)   +
 				'&asondate=' + encodeURIComponent(asondate) +
 				'&type=RESUB&dtltype=detail';
-			if (version && version !== '') {
-				url += '&version=' + encodeURIComponent(version);
-			}
+			if (version && version !== '') url += '&version=' + encodeURIComponent(version);
 			location.href = url;
 		}
 	</script>
 
 	<script>
-		// -------- Excel download --------
+		// ============================================================
+		// Excel / PDF download
+		// ============================================================
 		function downloadfile(button) {
-			var reportid = cleanAttr(button.getAttribute('data-reportid'));
-			var asondate = cleanAttr(button.getAttribute('data-asondate'));
-			var fromdate = cleanAttr(button.getAttribute('data-fromdate'));
-			var todate = cleanAttr(button.getAttribute('data-todate'));
-			var currency = cleanAttr(button.getAttribute('data-currency'));
-			var subreportid = cleanAttr(button.getAttribute('data-subreportid'));
-			var secid = cleanAttr(button.getAttribute('data-secid'));
-			var dtltype = cleanAttr(button.getAttribute('data-dtltype'));
-			var filename = cleanAttr(button.getAttribute('data-filename'));
-			var type = cleanAttr(button.getAttribute('data-type'));
-			var version = cleanAttr(button.getAttribute('data-version'));
+			var reportid   = cleanAttr(button.getAttribute('data-reportid'));
+			var asondate   = cleanAttr(button.getAttribute('data-asondate'));
+			var fromdate   = cleanAttr(button.getAttribute('data-fromdate'));
+			var todate     = cleanAttr(button.getAttribute('data-todate'));
+			var currency   = cleanAttr(button.getAttribute('data-currency'));
+			var subreportid= cleanAttr(button.getAttribute('data-subreportid'));
+			var secid      = cleanAttr(button.getAttribute('data-secid'));
+			var dtltype    = cleanAttr(button.getAttribute('data-dtltype'));
+			var filename   = cleanAttr(button.getAttribute('data-filename'));
+			var type       = cleanAttr(button.getAttribute('data-type'));
+			var version    = cleanAttr(button.getAttribute('data-version'));
 
-			if (!filename) {
-				filename = 'UFCE_CALCULATION.xlsx';
-			}
+			if (!filename) filename = 'UFCE_CALCULATION.xlsx';
 
 			$('#loader').modal('show');
 
 			var url = './downloadExcel?reportid=' + encodeURIComponent(reportid) +
 				'&fromdate=' + encodeURIComponent(fromdate) +
 				'&asondate=' + encodeURIComponent(asondate) +
-				'&todate=' + encodeURIComponent(todate) +
+				'&todate='   + encodeURIComponent(todate)   +
 				'&currency=' + encodeURIComponent(currency) +
 				'&subreportid=' + encodeURIComponent(subreportid) +
-				'&secid=' + encodeURIComponent(secid) +
+				'&secid='    + encodeURIComponent(secid)    +
 				'&filename=' + encodeURIComponent(filename) +
-				'&type=' + encodeURIComponent(type) +
-				'&dtltype=' + encodeURIComponent(dtltype);
+				'&type='     + encodeURIComponent(type)     +
+				'&dtltype='  + encodeURIComponent(dtltype);
 
 			if (version && version.trim() !== '') {
 				url += '&version=' + encodeURIComponent(version);
@@ -488,14 +260,12 @@
 			$.ajax({
 				url: url,
 				type: 'GET',
-				xhrFields: {responseType: 'blob'},
+				xhrFields: { responseType: 'blob' },
 				success: function (data) {
 					if (data && data.size > 100) {
-						const blob = new Blob([data], {
-							type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-						});
+						const blob  = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 						const dlUrl = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
+						const a     = document.createElement('a');
 						a.style.display = 'none';
 						a.href = dlUrl;
 						a.download = filename;
@@ -512,30 +282,26 @@
 					console.error("Download failed:", textStatus, errorThrown);
 					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
 				},
-				complete: function () {
-					$('#loader').modal('hide');
-				}
+				complete: function () { $('#loader').modal('hide'); }
 			});
 		}
 
-		// -------- Regenerate R27-R33 --------
 		function regenProcedure(button) {
 			var reportid = cleanAttr(button.getAttribute('data-reportid'));
 			var asondate = cleanAttr(button.getAttribute('data-asondate'));
-			var todate = cleanAttr(button.getAttribute('data-todate'));
+			var todate   = cleanAttr(button.getAttribute('data-todate'));
 
 			$('#loader').modal('show');
-
 			$.ajax({
-				url: '/BRRS/Reports/UFCE_CALCULATION/regenprocedure'
-					+ '?reportid=' + encodeURIComponent(reportid)
-					+ '&asondate=' + encodeURIComponent(asondate)
-					+ '&todate=' + encodeURIComponent(todate),
+				url: '/BRRS/Reports/UFCE_CALCULATION/regenprocedure' +
+					'?reportid=' + encodeURIComponent(reportid) +
+					'&asondate=' + encodeURIComponent(asondate) +
+					'&todate='   + encodeURIComponent(todate),
 				type: 'POST',
 				success: function (response) {
 					$('#loader').modal('hide');
 					showResultModal('BRRS', response || 'Regeneration completed.');
-					setTimeout(function () {location.reload();}, 1200);
+					setTimeout(function () { location.reload(); }, 1200);
 				},
 				error: function (xhr) {
 					$('#loader').modal('hide');
@@ -544,44 +310,36 @@
 			});
 		}
 
-		// -------- PDF download --------
 		function downloadSummaryPdf(element) {
 			var reportid = cleanAttr(element.getAttribute('data-reportid'));
 			var fromdate = cleanAttr(element.getAttribute('data-fromdate'));
-			var todate = cleanAttr(element.getAttribute('data-todate'));
+			var todate   = cleanAttr(element.getAttribute('data-todate'));
 			var currency = cleanAttr(element.getAttribute('data-currency'));
-			var type = cleanAttr(element.getAttribute('data-type'));
-			var version = cleanAttr(element.getAttribute('data-version'));
-			var dtltype = cleanAttr(element.getAttribute('data-dtltype'));
+			var type     = cleanAttr(element.getAttribute('data-type'));
+			var version  = cleanAttr(element.getAttribute('data-version'));
+			var dtltype  = cleanAttr(element.getAttribute('data-dtltype'));
 			var filename = cleanAttr(element.getAttribute('data-filename'));
 
-			if (!reportid) {reportid = 'UFCE_CALCULATION';}
-			if (!filename) {filename = 'UFCE_CALCULATION.xlsx';}
-			if (!currency) {currency = 'BWP';}
-			if (!dtltype) {dtltype = 'summary';}
+			if (!reportid) reportid = 'UFCE_CALCULATION';
+			if (!filename) filename = 'UFCE_CALCULATION.xlsx';
+			if (!currency) currency = 'BWP';
+			if (!dtltype)  dtltype  = 'summary';
 
 			$('#loader').modal('show');
 
-			var url = '/BRRS/Reports/' + encodeURIComponent(reportid) + '/downloadPdf'
-				+ '?reportId=' + encodeURIComponent(reportid)
-				+ '&fromdate=' + encodeURIComponent(fromdate)
-				+ '&todate=' + encodeURIComponent(todate)
-				+ '&currency=' + encodeURIComponent(currency)
-				+ '&dtltype=' + encodeURIComponent(dtltype)
-				+ '&filename=' + encodeURIComponent(filename);
+			var url = '/BRRS/Reports/' + encodeURIComponent(reportid) + '/downloadPdf' +
+				'?reportId=' + encodeURIComponent(reportid) +
+				'&fromdate=' + encodeURIComponent(fromdate) +
+				'&todate='   + encodeURIComponent(todate)   +
+				'&currency=' + encodeURIComponent(currency) +
+				'&dtltype='  + encodeURIComponent(dtltype)  +
+				'&filename=' + encodeURIComponent(filename);
 
-			if (type && type !== '') {
-				url += '&type=' + encodeURIComponent(type);
-			}
-			if (version && version !== '') {
-				url += '&version=' + encodeURIComponent(version);
-			}
+			if (type && type !== '')       url += '&type='    + encodeURIComponent(type);
+			if (version && version !== '') url += '&version=' + encodeURIComponent(version);
 
 			window.location.href = url;
-
-			setTimeout(function () {
-				$('#loader').modal('hide');
-			}, 2000);
+			setTimeout(function () { $('#loader').modal('hide'); }, 2000);
 		}
 
 		function closemodel() {
@@ -595,10 +353,17 @@
 			$('#resultModal').modal('show');
 		}
 
-		// -------- Inline edit --------
+		// ============================================================
+		// Inline edit
+		// ============================================================
 		var isModifiedSuccess = false;
 
 		function enableInlineEdit() {
+			// Belt & braces: don't even flip UI if the server didn't grant Maker role.
+			if (!isMaker) {
+				showResultModal('Forbidden', 'Only Maker (or MAN/ADMIN) can edit this report.');
+				return;
+			}
 			$('#modifyBtn').hide();
 			$('.submit-btn-bottom').show();
 			$('#cancelRecord').show();
@@ -618,17 +383,17 @@
 			location.reload();
 		}
 
-		// Visual-only recompute of R22 totals from the manual entry rows R11..R21.
-		// Server recomputes on save; this is UX feedback only.
+		// Visual-only recompute of R22 totals from R11..R21 inputs.
+		// Server recomputes on save (calculateTotalAdvance / calculateTotalProvision).
 		function recalcManualTotals() {
 			var totalAdv = 0;
 			var totalProvision = 0;
 
 			$('#reports tr.manual-row').each(function () {
 				var row = $(this);
-				var advVal = parseFloat(row.find('input[name$="_total_adv"]').val()) || 0;
+				var advVal  = parseFloat(row.find('input[name$="_total_adv"]').val()) || 0;
 				var provVal = parseFloat(row.find('input[name$="_provision"]').val()) || 0;
-				totalAdv += advVal;
+				totalAdv       += advVal;
 				totalProvision += provVal;
 			});
 
@@ -641,58 +406,58 @@
 		});
 
 		function saveInlineEdits() {
+			if (!isMaker) {
+				showResultModal('Forbidden', 'Only Maker (or MAN/ADMIN) can submit changes.');
+				return;
+			}
 			var targetTable = $('#reports');
 			if (!targetTable.length) {
 				showResultModal('Information', 'No table found to save.');
 				return;
 			}
 
-			var urlParams = new URLSearchParams(window.location.search);
-			var type = urlParams.get('type') || '';
-			var screen = 'summary';
-			var versionFromUrl = urlParams.get('version') || '';
+			var urlParams       = new URLSearchParams(window.location.search);
+			var type            = urlParams.get('type')    || '';
+			var screen          = 'summary';
+			var versionFromUrl  = urlParams.get('version') || '';
 
 			$('#loader').modal('show');
 
 			var formData = {};
 			formData['asondate'] = $('#pageAsOnDate').val() || '';
-			formData['type'] = type;
-			formData['screen'] = screen;
+			formData['type']     = type;
+			formData['screen']   = screen;
 
-			// Send the report_version so the backend targets the correct row
 			if (versionFromUrl && versionFromUrl !== 'null' && versionFromUrl !== 'undefined') {
 				formData['report_version'] = versionFromUrl;
 			}
 
-			// R10 header row — hidden inputs (preserved values)
+			// R10 header — hidden inputs (preserved values)
 			formData['r10_serial_no'] = $('#r10_serial_no').val() || '';
-			formData['r10_subsidiary'] = $('#r10_subsidiary').val() || '';
+			formData['r10_subsidiary']= $('#r10_subsidiary').val() || '';
 			formData['r10_total_adv'] = $('#r10_total_adv').val() || '';
 			formData['r10_provision'] = $('#r10_provision').val() || '';
 
 			// R11..R21 manual rows — send by index
 			var _missingInputs = [];
 			for (var r = 11; r <= 21; r++) {
-			    var $sno  = $('input[name="r' + r + '_serial_no"]');
-			    var $sub  = $('input[name="r' + r + '_subsidiary"]');
-			    var $adv  = $('input[name="r' + r + '_total_adv"]');
-			    var $prov = $('input[name="r' + r + '_provision"]');
+				var $sno  = $('input[name="r' + r + '_serial_no"]');
+				var $sub  = $('input[name="r' + r + '_subsidiary"]');
+				var $adv  = $('input[name="r' + r + '_total_adv"]');
+				var $prov = $('input[name="r' + r + '_provision"]');
 
-			    if (!$sub.length)  { _missingInputs.push('r' + r + '_subsidiary'); }
-			    if (!$adv.length)  { _missingInputs.push('r' + r + '_total_adv'); }
-			    if (!$prov.length) { _missingInputs.push('r' + r + '_provision'); }
+				if (!$sub.length)  { _missingInputs.push('r' + r + '_subsidiary'); }
+				if (!$adv.length)  { _missingInputs.push('r' + r + '_total_adv'); }
+				if (!$prov.length) { _missingInputs.push('r' + r + '_provision'); }
 
-			    formData['r' + r + '_serial_no'] = $sno.val()  || (r - 10);
-			    formData['r' + r + '_subsidiary'] = $sub.val()  || '';
-			    formData['r' + r + '_total_adv']  = $adv.val()  || 0;
-			    formData['r' + r + '_provision']  = $prov.val() || 0;
+				formData['r' + r + '_serial_no']  = $sno.val()  || (r - 10);
+				formData['r' + r + '_subsidiary'] = $sub.val()  || '';
+				formData['r' + r + '_total_adv']  = $adv.val()  || 0;
+				formData['r' + r + '_provision']  = $prov.val() || 0;
 			}
 			if (_missingInputs.length) {
-			    console.warn('[UFCE_CALCULATION] Missing manual-entry inputs — please check the HTML "name" attributes:', _missingInputs);
+				console.warn('[UFCE_CALCULATION] Missing manual-entry inputs:', _missingInputs);
 			}
-
-			// R22 totals are computed server-side (calculateTotalAdvance / calculateTotalProvision).
-			// Do NOT send from client — server is the source of truth.
 
 			console.log('[UFCE_CALCULATION] Submitting formData:', JSON.stringify(formData));
 
@@ -705,8 +470,8 @@
 					$('#loader').modal('hide');
 					isModifiedSuccess = true;
 					setTimeout(function () {
-						showResultModal('BRRS', 'Modified Successfully.');
-						setTimeout(function () {location.reload();}, 1200);
+						showResultModal('BRRS', response || 'Modified Successfully.');
+						setTimeout(function () { location.reload(); }, 1200);
 					}, 300);
 				},
 				error: function (xhr) {
@@ -734,12 +499,10 @@
 						<div class="left-arrow-circle">
 							<i class="fa fa-arrow-left"></i>
 						</div>
-
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
 							UFCE - CALCULATION
 						</h5>
-
 						<div class="boards">
 							<p class="scrolling-text"> Bank of Baroda(Botswana)Ltd</p>
 						</div>
@@ -755,13 +518,11 @@
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
 						<input type="hidden" id="pageAsOnDate" th:value="${asondate}">
 
-						<!-- On Detail Page: ONLY "Summary View" button -->
+						<!-- Summary ↔ Detail navigation -->
 						<button type="button" class="custom-tab-btn" onclick="showsummary();"
 							th:if="${displaymode == 'detail' or displaymode == 'normalDetailWithVersion' or displaymode == 'archivalDetail' or displaymode == 'resubDetail'}">
 							Summary View
 						</button>
-
-						<!-- On Summary Page: "Details" button -->
 						<button type="button" class="custom-tab-btn" onclick="showdetails();"
 							th:if="${displaymode == 'summary' or displaymode == 'normalSummaryWithVersion' or displaymode == 'archivalSummary' or displaymode == 'resubSummary'}">
 							Details
@@ -779,7 +540,8 @@
 						<button type="button" class="custom-tab-btn" onclick="showResubDetail();"
 							th:if="${displaymode == 'resubSummary'}">Resub Details</button>
 
-						<!-- MODIFY / CANCEL BUTTONS -->
+						<!-- MODIFY / CANCEL -->
+						<!-- th:if hides for Checkers; JS also re-hides on load for non-Makers. -->
 						<button type="button" class="custom-tab-btn" id="modifyBtn" onclick="enableInlineEdit();"
 							th:if="${displaymode == 'summary' or displaymode == 'normalSummaryWithVersion' or displaymode == 'resubSummary'}"
 							title="Click to EDIT Records">
@@ -791,38 +553,31 @@
 							Cancel
 						</button>
 
-						<!-- Regenerate button -->
+						<!-- Regenerate -->
 						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary'}"
-							title="Regenerate R27-R33 from database" th:attr="data-reportid=${reportid},
-							         data-asondate=${asondate},
-							         data-todate=${todate}" onclick="regenProcedure(this);">
+							title="Regenerate R27-R33 from database"
+							th:attr="data-reportid=${reportid}, data-asondate=${asondate}, data-todate=${todate}"
+							onclick="regenProcedure(this);">
 							<i class="fa fa-sync"></i> Regenerate
 						</button>
 
-						<!-- Download button - Summary (Excel) -->
+						<!-- Download Summary Excel -->
 						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary'}"
-							title="Download Excel" th:attr="data-reportid=${reportid}, 
-							                                 data-asondate=${asondate}, 
-							                                 data-fromdate=${fromdate}, 
-							                                 data-todate=${todate}, 
-							                                 data-currency=${currency},  
-							                                 data-dtltype=${dtltype}, 
-							                                 data-filename='UFCE_CALCULATION.xlsx',
-							                                 data-type=${type},
-							                                 data-version=${version}" onclick="downloadfile(this);">
+							title="Download Excel"
+							th:attr="data-reportid=${reportid}, data-asondate=${asondate}, data-fromdate=${fromdate},
+							         data-todate=${todate}, data-currency=${currency}, data-dtltype=${dtltype},
+							         data-filename='UFCE_CALCULATION.xlsx', data-type=${type}, data-version=${version}"
+							onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
 
-						<!-- Download button - Summary (PDF) -->
+						<!-- Download Summary PDF -->
 						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary'}"
-							title="Download PDF" th:attr="data-reportid=${reportid}, 
-							                               data-fromdate=${fromdate}, 
-							                               data-todate=${todate},
-							                               data-currency=${currency},
-							                               data-type=${type},
-							                               data-version=${version},
-							                               data-dtltype=${dtltype},
-							                               data-filename='UFCE_CALCULATION.xlsx'" onclick="downloadSummaryPdf(this);">
+							title="Download PDF"
+							th:attr="data-reportid=${reportid}, data-fromdate=${fromdate}, data-todate=${todate},
+							         data-currency=${currency}, data-type=${type}, data-version=${version},
+							         data-dtltype=${dtltype}, data-filename='UFCE_CALCULATION.xlsx'"
+							onclick="downloadSummaryPdf(this);">
 							<i class="fa fa-file-pdf"></i>
 						</button>
 					</div>
@@ -849,7 +604,9 @@
 								</thead>
 								<tbody style="font-family: Arial;">
 
-									<!-- SECTION 1: PROVISION FOR UFCE (R5 to R8) -->
+									<!-- ========================================== -->
+									<!-- SECTION 1: PROVISION FOR UFCE (R5 to R8)    -->
+									<!-- ========================================== -->
 									<tr style="background-color: #e8f4f8;">
 										<td colspan="4" style="text-align: center; font-weight: bold;">Provision for
 											UFCE</td>
@@ -864,8 +621,7 @@
 
 									<tr>
 										<td style="text-align: center;"></td>
-										<td class="label-cell">Provision for accounts with exposure above Rs.25 crore
-										</td>
+										<td class="label-cell">Provision for accounts with exposure above Rs.25 crore</td>
 										<td class="formula-cell"></td>
 										<td class="value-cell">
 											<input type="text"
@@ -902,20 +658,17 @@
 										</td>
 									</tr>
 
-									<tr class="spacer-row">
-										<td colspan="4"></td>
-									</tr>
+									<tr class="spacer-row"><td colspan="4"></td></tr>
 
-									<!-- SECTION 2: SUBSIDIARY MANUAL ENTRIES -->
-									<!-- R10 = HEADER (column titles only, hidden inputs preserve DB values) -->
-									<!-- R11..R21 = 11 data rows with S.No 1..11 -->
-									<!-- R22 = TOTAL (no S.No) -->
+									<!-- ========================================== -->
+									<!-- SECTION 2: SUBSIDIARY MANUAL ENTRIES       -->
+									<!-- R10 = header (hidden inputs), R11..R21 rows, R22 total -->
+									<!-- ========================================== -->
 									<tr style="background-color: #e8f4f8;">
 										<td colspan="4" style="text-align: center; font-weight: bold;">Subsidiary
 											Details</td>
 									</tr>
 
-									<!-- R10 HEADER ROW — hidden inputs + column titles -->
 									<tr class="header-row" style="background-color: #f8f9fa;">
 										<td style="display: none;">
 											<input type="hidden" id="r10_serial_no" name="r10_serial_no"
@@ -933,7 +686,6 @@
 										<th style="text-align: center;">Provision for accounts above Rs. 25 crore</th>
 									</tr>
 
-									<!-- R11..R21 — 11 data rows, S.No 1..11 -->
 									<tr th:each="i : ${#numbers.sequence(11, 21)}" class="manual-row">
 										<td style="text-align: center; font-weight: bold;">
 											<input type="hidden" th:attr="name=${'r' + i + '_serial_no'}" th:value="${i - 10}" />
@@ -965,7 +717,6 @@
 										</td>
 									</tr>
 
-									<!-- TOTAL Row (R22) — no S.No -->
 									<tr class="total-row" style="font-weight: bold; background-color: #f8f9fa;">
 										<td style="text-align: center; font-weight: bold;">TOTAL</td>
 										<td></td>
@@ -985,11 +736,11 @@
 										</td>
 									</tr>
 
-									<tr class="spacer-row">
-										<td colspan="4"></td>
-									</tr>
+									<tr class="spacer-row"><td colspan="4"></td></tr>
 
-									<!-- SECTION 3: CALCULATION SECTION (R27-R33) -->
+									<!-- ========================================== -->
+									<!-- SECTION 3: CALCULATION (R27-R33)            -->
+									<!-- ========================================== -->
 									<tr style="background-color: #e8f4f8;">
 										<td colspan="4" style="text-align: center; font-weight: bold;">Calculation of
 											provision for accounts with exposure upto Rs. 25 crore</td>
@@ -1040,8 +791,7 @@
 									<tr>
 										<td style="text-align: center;"></td>
 										<td class="label-cell">Less: Standard Advance to Individual borrowers (under
-											retail, agriculture &amp; staff segment) with exposure upto Rs. 25 crore
-										</td>
+											retail, agriculture &amp; staff segment) with exposure upto Rs. 25 crore</td>
 										<td class="formula-cell">D</td>
 										<td class="value-cell-numeric">
 											<input type="text"
@@ -1068,8 +818,7 @@
 
 									<tr style="font-weight: bold; background-color: #f8f9fa;">
 										<td style="text-align: center;"></td>
-										<td class="label-cell">Balance Standard advance on which provision to be created
-										</td>
+										<td class="label-cell">Balance Standard advance on which provision to be created</td>
 										<td class="formula-cell">F = C - D - E</td>
 										<td class="value-cell-numeric">
 											<input type="text"
@@ -1096,7 +845,6 @@
 							</table>
 						</div>
 
-						<!-- Submit Button -->
 						<div style="text-align: center; margin-top: 15px; background-color: white;">
 							<button type="button" class="custom-tab-btn submit-btn-bottom" onclick="saveInlineEdits();"
 								style="display: none;" title="Submit changes">
@@ -1142,23 +890,19 @@
 
 									<tr>
 										<td style="text-align: center;"></td>
-										<td class="label-cell">Provision for accounts with exposure above Rs.25 crore
-										</td>
+										<td class="label-cell">Provision for accounts with exposure above Rs.25 crore</td>
 										<td class="formula-cell"></td>
 										<td class="value-cell">
-											<span
-												th:text="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r6_value : 'NIL'}"></span>
+											<span th:text="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r6_value : 'NIL'}"></span>
 										</td>
 									</tr>
 
 									<tr>
 										<td style="text-align: center;"></td>
-										<td class="label-cell">Provision for accounts with exposure upto Rs.25 crore
-										</td>
+										<td class="label-cell">Provision for accounts with exposure upto Rs.25 crore</td>
 										<td class="formula-cell"></td>
 										<td class="value-cell">
-											<span
-												th:text="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r7_value : 0}"></span>
+											<span th:text="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r7_value : 0}"></span>
 										</td>
 									</tr>
 
@@ -1167,21 +911,17 @@
 										<td class="label-cell" style="font-weight: bold;">Total</td>
 										<td class="formula-cell"></td>
 										<td class="value-cell" style="font-weight: bold;">
-											<span
-												th:text="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r8_value : 0}"></span>
+											<span th:text="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r8_value : 0}"></span>
 										</td>
 									</tr>
 
-									<tr class="spacer-row">
-										<td colspan="4"></td>
-									</tr>
+									<tr class="spacer-row"><td colspan="4"></td></tr>
 
 									<tr style="background-color: #e8f4f8;">
 										<td colspan="4" style="text-align: center; font-weight: bold;">Subsidiary
 											Details</td>
 									</tr>
 
-									<!-- R10 = HEADER -->
 									<tr style="background-color: #f8f9fa;">
 										<th style="text-align: center;">S. No.</th>
 										<th style="text-align: center;">NAME OF THE SUBSIDIARY</th>
@@ -1189,7 +929,6 @@
 										<th style="text-align: center;">Provision for accounts above Rs. 25 crore</th>
 									</tr>
 
-									<!-- R11..R21 — 11 data rows, S.No 1..11 -->
 									<tr th:each="i : ${#numbers.sequence(11, 21)}">
 										<td style="text-align: center; font-weight: bold;">
 											<span th:text="${i - 10}"></span>
@@ -1205,6 +944,7 @@
 										</td>
 									</tr>
 
+									<!-- ✅ FIX: was `reportsum[0].r22_provision` (typo) -->
 									<tr class="total-row" style="font-weight: bold; background-color: #f8f9fa;">
 										<td style="text-align: center; font-weight: bold;">TOTAL</td>
 										<td></td>
@@ -1212,13 +952,11 @@
 											th:text="${reportsummary != null and !reportsummary.isEmpty() ? reportsummary[0].r22_total_adv : 0}">
 										</td>
 										<td style="text-align: right; font-weight: bold;"
-											th:text="${reportsummary != null and !reportsummary.isEmpty() ? reportsum[0].r22_provision : 0}">
+											th:text="${reportsummary != null and !reportsummary.isEmpty() ? reportsummary[0].r22_provision : 0}">
 										</td>
 									</tr>
 
-									<tr class="spacer-row">
-										<td colspan="4"></td>
-									</tr>
+									<tr class="spacer-row"><td colspan="4"></td></tr>
 
 									<tr style="background-color: #e8f4f8;">
 										<td colspan="4" style="text-align: center; font-weight: bold;">Calculation of
@@ -1258,8 +996,7 @@
 									<tr>
 										<td style="text-align: center;"></td>
 										<td class="label-cell">Less: Standard Advance to Individual borrowers (under
-											retail, agriculture &amp; staff segment) with exposure upto Rs. 25 crore
-										</td>
+											retail, agriculture &amp; staff segment) with exposure upto Rs. 25 crore</td>
 										<td class="formula-cell">D</td>
 										<td class="value-cell-numeric"
 											th:text="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r30_value : 0}">
@@ -1278,8 +1015,7 @@
 
 									<tr style="font-weight: bold; background-color: #f8f9fa;">
 										<td style="text-align: center;"></td>
-										<td class="label-cell">Balance Standard advance on which provision to be created
-										</td>
+										<td class="label-cell">Balance Standard advance on which provision to be created</td>
 										<td class="formula-cell">F = C - D - E</td>
 										<td class="value-cell-numeric"
 											th:text="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r32_value : 0}">
@@ -1294,7 +1030,6 @@
 											th:text="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r33_value : 0}">
 										</td>
 									</tr>
-
 								</tbody>
 							</table>
 						</div>
@@ -1334,7 +1069,7 @@
 				</div>
 			</div>
 
-			<!-- Cellresult modal (kept for other pages that reuse the template) -->
+			<!-- Cellresult modal -->
 			<div class="modal fade" id="cellresultModal">
 				<div class="modal-dialog modal-dialog-centered">
 					<div class="modal-content">
@@ -1363,141 +1098,31 @@
 </body>
 
 <style>
-	.dataTables_scrollHeadInner,
-	table.dataTable {
-		width: 100% !important;
-	}
-
-	.scrollable-table-container {
-		max-height: 700px;
-		overflow-y: auto;
-		overflow-x: hidden;
-		border: 1px solid #ccc;
-	}
-
-	.scrollable-table-container thead tr:nth-child(1) {
-		position: sticky;
-		top: 0;
-		background-color: #b3b6b9;
-		z-index: 5;
-	}
-
-	.scrollable-table-container thead tr:nth-child(2) {
-		position: sticky;
-		top: 36px;
-		background-color: #b3b6b9;
-		z-index: 4;
-	}
-
-	.scrollable-table-container thead tr:nth-child(3) {
-		position: sticky;
-		top: 72px;
-		background-color: #b3b6b9;
-		z-index: 3;
-	}
-
-	.scrollable-table-container thead tr:nth-child(4) {
-		position: sticky;
-		top: 100px;
-		background-color: #b3b6b9;
-		z-index: 2;
-	}
-
-	.scrollable-table-container thead tr:nth-child(5) {
-		position: sticky;
-		top: 135px;
-		background-color: #b3b6b9;
-		z-index: 1;
-	}
+	.dataTables_scrollHeadInner, table.dataTable { width: 100% !important; }
+	.scrollable-table-container { max-height: 700px; overflow-y: auto; overflow-x: hidden; border: 1px solid #ccc; }
+	.scrollable-table-container thead tr:nth-child(1) { position: sticky; top: 0; background-color: #b3b6b9; z-index: 5; }
+	.scrollable-table-container thead tr:nth-child(2) { position: sticky; top: 36px; background-color: #b3b6b9; z-index: 4; }
+	.scrollable-table-container thead tr:nth-child(3) { position: sticky; top: 72px; background-color: #b3b6b9; z-index: 3; }
+	.scrollable-table-container thead tr:nth-child(4) { position: sticky; top: 100px; background-color: #b3b6b9; z-index: 2; }
+	.scrollable-table-container thead tr:nth-child(5) { position: sticky; top: 135px; background-color: #b3b6b9; z-index: 1; }
 </style>
 
 <style>
-	.inner {
-		max-height: 600px;
-		overflow: auto;
-		border: 1px solid #dee2e6;
-	}
-
-	#reports thead th {
-		position: sticky;
-		top: 0;
-		background-color: #f8f9fa;
-		z-index: 2;
-	}
-
-	div.dataTables_wrapper div.dataTables_paginate {
-		text-align: right !important;
-		float: right !important;
-		width: auto;
-		margin-top: 10px;
-	}
-
-	div.dataTables_wrapper div.dataTables_info {
-		float: left !important;
-		margin-top: 10px;
-	}
-
-	.pagination {
-		margin: 0;
-	}
-
-	.page-item.active .page-link {
-		background-color: #386276;
-		border-color: #386276;
-	}
-
-	.page-link {
-		color: #386276;
-	}
-
-	.page-link:hover {
-		color: #2a4a5c;
-	}
-
-	.form-select {
-		display: inline-block;
-		width: auto;
-	}
-
-	.left-arrow-circle {
-		background-color: white;
-		color: #007bff;
-		border-radius: 50%;
-		padding: 8px;
-		margin-right: 10px;
-		cursor: pointer;
-	}
-
-	.boards {
-		transform: translateY(6px);
-		background-color: rgb(107, 122, 143);
-		color: white;
-		padding: 5px 5px;
-		border-radius: 8px;
-		overflow: hidden;
-		white-space: nowrap;
-		flex: 1;
-		min-width: 200px;
-		box-shadow: 0 0 10px rgb(107, 122, 143);
-		position: relative;
-	}
-
-	.scrolling-text {
-		display: inline-block;
-		font-family: "Courier New", monospace;
-		font-weight: bold;
-		letter-spacing: 1px;
-		animation: scroll-left 10s linear infinite;
-	}
-
+	.inner { max-height: 600px; overflow: auto; border: 1px solid #dee2e6; }
+	#reports thead th { position: sticky; top: 0; background-color: #f8f9fa; z-index: 2; }
+	div.dataTables_wrapper div.dataTables_paginate { text-align: right !important; float: right !important; width: auto; margin-top: 10px; }
+	div.dataTables_wrapper div.dataTables_info { float: left !important; margin-top: 10px; }
+	.pagination { margin: 0; }
+	.page-item.active .page-link { background-color: #386276; border-color: #386276; }
+	.page-link { color: #386276; }
+	.page-link:hover { color: #2a4a5c; }
+	.form-select { display: inline-block; width: auto; }
+	.left-arrow-circle { background-color: white; color: #007bff; border-radius: 50%; padding: 8px; margin-right: 10px; cursor: pointer; }
+	.boards { transform: translateY(6px); background-color: rgb(107, 122, 143); color: white; padding: 5px 5px; border-radius: 8px; overflow: hidden; white-space: nowrap; flex: 1; min-width: 200px; box-shadow: 0 0 10px rgb(107, 122, 143); position: relative; }
+	.scrolling-text { display: inline-block; font-family: "Courier New", monospace; font-weight: bold; letter-spacing: 1px; animation: scroll-left 10s linear infinite; }
 	@keyframes scroll-left {
-		0% {
-			transform: translateX(100%);
-		}
-
-		100% {
-			transform: translateX(-100%);
-		}
+		0%   { transform: translateX(100%); }
+		100% { transform: translateX(-100%); }
 	}
 </style>
 

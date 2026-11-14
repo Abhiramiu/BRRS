@@ -44,6 +44,7 @@ import com.bornfire.brrs.entities.GeneralMasterRepo;
 import com.bornfire.brrs.entities.MCBL_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Rep;
 import com.bornfire.brrs.entities.MCBL_Rep;
+import com.bornfire.brrs.entities.UserProfileRep;
 import com.bornfire.brrs.services.BRRS_M_GALOR_ReportService.M_GALOR_Manual_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_IS_ReportService.M_IS_Summary_Entity1;
 import com.bornfire.brrs.services.BRRS_M_IS_ReportService.M_IS_Summary_Entity2;
@@ -69,6 +70,8 @@ public class AuditService {
 	MCBL_Rep MCBL_Reps;
 	@Autowired
 	BLBF_Rep BLBF_Reps;
+	@Autowired
+	private UserProfileRep userProfileRep;
 
 	public List<AuditServicesEntity> getUserServices() {
 		System.out.println(auditServicesRep.getUserAudit());
@@ -1556,6 +1559,8 @@ public class AuditService {
 			transferMSRWA12BData(auditRecord);
 		} else if (upperTable.contains("M_SEC_MOD_SUMMARYTABLE") || upperTable.startsWith("BRRS_M_SEC")) {
 			transferMSecData(auditRecord);
+		} else if (upperTable.contains("UFCE_CALCULATION_MOD_SUMMARYTABLE_MANUAL") || upperTable.startsWith("BRRS_UFCE_CALCULATION")) {
+			transferUFCEManualData(auditRecord);
 		} else {
 			throw new IllegalArgumentException("Verification not configured for table: " + auditTable);
 		}
@@ -6195,6 +6200,124 @@ public class AuditService {
 				reportDate);
 
 		System.out.println("M_SEC Verification and Transfer Completed Successfully");
+	}
+	
+	// =====================================================================
+	// UFCE CALCULATION (MANUAL ENTRY)  -  CHECKER: MOD -> LIVE      << NEW >>
+	// =====================================================================
+
+	private static final String UFCE_LIVE_MANUAL = "BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL";
+	private static final String UFCE_MOD_MANUAL = "BRRS_UFCE_CALCULATION_MOD_SUMMARYTABLE_MANUAL";
+
+	/** Business columns promoted from MOD to LIVE (must match the Maker's MERGE). */
+	private List<String> ufceManualColumns() {
+		List<String> cols = new ArrayList<>();
+		for (int i = 10; i <= 21; i++) {
+			cols.add("R" + i + "_SERIAL_NO");
+			cols.add("R" + i + "_SUBSIDIARY");
+			cols.add("R" + i + "_TOTAL_ADV");
+			cols.add("R" + i + "_PROVISION");
+		}
+		cols.add("R22_TOTAL_ADV");
+		cols.add("R22_PROVISION");
+		return cols;
+	}
+
+	/** Server-side Checker gate: CHECKER / C / MAN / MANAGER / B / ADMIN / A. */
+	private void assertCheckerRole(String reportName) {
+		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (attr == null)
+			return; // internal (non-HTTP) call
+		String userid = (String) attr.getRequest().getSession().getAttribute("USERID");
+		String role = userid != null ? userProfileRep.getUserRole(userid) : null;
+		String r = role == null ? "" : role.trim().toUpperCase();
+		boolean ok = r.equals("CHECKER") || r.equals("C") || r.equals("MAN") || r.equals("MANAGER") || r.equals("B")
+				|| r.equals("ADMIN") || r.equals("A");
+		if (!ok) {
+			throw new SecurityException("Only Checker (or MAN/ADMIN) can verify " + reportName
+					+ " modifications. Current role: " + role);
+		}
+	}
+
+	private void transferUFCEManualData(AuditServicesEntity auditRecord) {
+
+		assertCheckerRole("UFCE");
+
+		// 1) Which record? The Maker stores "yyyy-MM-dd|version" in change_details.
+		java.sql.Date reportDate = null;
+		BigDecimal reportVersion = null;
+		String key = auditRecord.getChange_details();
+		if (key != null && key.contains("|")) {
+			try {
+				String[] parts = key.split("\\|");
+				reportDate = new java.sql.Date(new SimpleDateFormat("yyyy-MM-dd").parse(parts[0].trim()).getTime());
+				reportVersion = new BigDecimal(parts[1].trim());
+			} catch (Exception e) {
+				logger.warn("UFCE verify: could not parse change_details '{}': {}", key, e.getMessage());
+				reportDate = null;
+				reportVersion = null;
+			}
+		}
+
+		// Fallback (old audit rows): accept only if exactly ONE pending record exists
+		if (reportDate == null || reportVersion == null) {
+			List<Object[]> pending = jdbcTemplate.query(
+					"SELECT REPORT_DATE, REPORT_VERSION FROM " + UFCE_MOD_MANUAL + " WHERE MODIFY_FLG = 'Y'",
+					(rs, i) -> new Object[] { rs.getDate("REPORT_DATE"), rs.getBigDecimal("REPORT_VERSION") });
+			if (pending.size() != 1) {
+				throw new IllegalStateException("UFCE verify: expected exactly one pending modification but found "
+						+ pending.size() + ". Audit change_details='" + key + "'");
+			}
+			reportDate = (java.sql.Date) pending.get(0)[0];
+			reportVersion = (BigDecimal) pending.get(0)[1];
+		}
+
+		System.out.println("UFCE Verify -> date=" + reportDate + ", version=" + reportVersion);
+
+		// 2) Must still be pending (also blocks double verification)
+		Integer pendingCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + UFCE_MOD_MANUAL
+				+ " WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ? AND MODIFY_FLG = 'Y'", Integer.class,
+				reportDate, reportVersion);
+		if (pendingCount == null || pendingCount == 0) {
+			throw new IllegalStateException("No pending UFCE modification for date " + reportDate + " version "
+					+ reportVersion + " (already verified?)");
+		}
+
+		// 3) MOD -> LIVE (update the version if it exists, otherwise create it)
+		List<String> cols = ufceManualColumns();
+		StringBuilder upd = new StringBuilder();
+		StringBuilder insCols = new StringBuilder();
+		StringBuilder insVals = new StringBuilder();
+		for (String c : cols) {
+			upd.append("d.").append(c).append(" = s.").append(c).append(", ");
+			insCols.append(c).append(", ");
+			insVals.append("s.").append(c).append(", ");
+		}
+
+		String mergeSql = "MERGE INTO " + UFCE_LIVE_MANUAL + " d " + "USING (SELECT * FROM " + UFCE_MOD_MANUAL
+				+ " WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?) s "
+				+ "ON (TRUNC(d.REPORT_DATE) = TRUNC(s.REPORT_DATE) AND d.REPORT_VERSION = s.REPORT_VERSION) "
+				+ "WHEN MATCHED THEN UPDATE SET " + upd
+				+ "d.REPORT_FREQUENCY = s.REPORT_FREQUENCY, d.REPORT_CODE = s.REPORT_CODE, d.REPORT_DESC = s.REPORT_DESC, "
+				+ "d.ENTITY_FLG = 'Y', d.MODIFY_FLG = 'Y', d.DEL_FLG = 'N' "
+				+ "WHEN NOT MATCHED THEN INSERT (REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+				+ insCols + "ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+				+ "VALUES (s.REPORT_DATE, s.REPORT_VERSION, s.REPORT_FREQUENCY, s.REPORT_CODE, s.REPORT_DESC, "
+				+ insVals + "'Y', 'Y', 'N')";
+
+		int merged = jdbcTemplate.update(mergeSql, reportDate, reportVersion);
+		if (merged == 0) {
+			throw new IllegalStateException(
+					"UFCE modification record not found for date " + reportDate + " version " + reportVersion);
+		}
+		System.out.println("UFCE LIVE manual table updated: " + merged);
+
+		// 4) Close the pending item
+		int updated = jdbcTemplate.update("UPDATE " + UFCE_MOD_MANUAL
+				+ " SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?",
+				reportDate, reportVersion);
+		System.out.println("UFCE MOD marked verified: " + updated);
+		System.out.println("UFCE Verification Completed Successfully");
 	}
 
 	private void transferMIrbData(AuditServicesEntity auditRecord) {
