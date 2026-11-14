@@ -1043,8 +1043,8 @@ public class RegulatoryReportServices {
 			break;
 
 		case "CASH_FLOW":
-			repsummary = BRRS_CASH_FLOW_ReportService.getCASH_FLOWView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
+			repsummary = BRRS_CASH_FLOW_ReportService.getCASH_FLOWView(reportId, fromdate, todate,
+					currency, dtltype, pageable, type, version, req, md);;
 			break;
 		case "PL_SCHS":
 			repsummary = BRRS_PL_SCHS_Reportservice.getPL_SCHSView(reportId, fromdate, todate, currency, dtltype,

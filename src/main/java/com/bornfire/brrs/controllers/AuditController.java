@@ -17,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -87,7 +88,20 @@ public class AuditController {
 
 		return "Modify_status";
 	}
-	
+	@PostMapping("/approveSelectedAuditRecords")
+	@ResponseBody
+	public ResponseEntity<String> approveSelectedAuditRecords(@RequestBody List<String> selectedIds, HttpServletRequest req) {
+		try {
+			String userId = (String) req.getSession().getAttribute("USERID");
+			auditService.processSelectedRecords(selectedIds);
+			return ResponseEntity.ok("Selected Reports Verified and Data Transferred Successfully!");
+		} catch (IllegalArgumentException | IllegalStateException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred during verification.");
+		}
+	}
 	@RequestMapping(value = "getchanges", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public String fetchChanges(@RequestParam(required = false) String audit_ref_no) {

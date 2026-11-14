@@ -1325,7 +1325,7 @@ public class BRRS_M_FAS_ReportService {
 
 			} else {
 				updateReport1(updatedEntity);
-				return ResponseEntity.ok("Modified Successfully.");
+				return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 			}
 		} catch (Exception e) {
 			logger.error("Error in updateReport", e);

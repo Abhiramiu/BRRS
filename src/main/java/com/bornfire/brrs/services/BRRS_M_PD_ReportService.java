@@ -547,17 +547,21 @@ public void updateReport(M_PD_Manual_Summary_Entity updatedEntity) {
 	saveModSummaryEntity(existing);
 	System.out.println("✔ Record saved into " + PD_MOD_TABLE + " for Checker Approval");
 
-	// 🔹 Audit only if changes found
-	if (changes != null && !changes.trim().isEmpty()) {
-		System.out.println("Audit Length : " + changes.length());
+	// 🔹 Audit only if changes found  
+			if (changes != null && !changes.trim().isEmpty()) {  
+			    System.out.println("Audit Length : " + changes.length());
 
-		if (changes.length() <= 2000) {
-			auditService.compareEntitiesmanual(oldcopy, existing, updatedEntity.getReport_date().toString(),
-					"M PD Manual Summary Screen", PD_MOD_TABLE);
-		} else {
-			System.out.println("Audit skipped because MODI_DETAILS exceeds 2000 characters.");
-		}
-	}
+			    String finalAuditChanges = changes;
+			    if (finalAuditChanges.length() > 2000) {
+			        // Truncate safely and add a truncation message at the end
+			        finalAuditChanges = finalAuditChanges.substring(0, 1900) + "\n... [TRUNCATED DUE TO SIZE]";
+			        System.out.println("Audit was truncated to fit the 2000 character limit.");
+			    }
+
+			    // Pass the safe string or modify your auditService to handle it
+			    auditService.compareEntitiesmanual(oldcopy, existing, updatedEntity.getReport_date().toString(),  
+			            "M PD Manual Summary Screen", PD_MOD_TABLE);  
+			}
 
 	System.out.println("Record Updated Successfully");
 }

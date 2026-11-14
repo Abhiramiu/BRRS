@@ -14,7 +14,10 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -57,7 +60,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.ui.Model;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.bornfire.brrs.entities.UserProfileRep;
 
 @Service
 @Transactional
@@ -81,6 +87,9 @@ public class BRRS_CASH_FLOW_ReportService {
 	@Autowired
 	AuditService auditService;
 
+	@Autowired
+	UserProfileRep userProfileRep;
+	
 	// Fetch data by report date
 	public List<CASH_FLOW_Summary_Entity> getDataByDate(Date reportDate) {
 
@@ -5054,13 +5063,15 @@ public class BRRS_CASH_FLOW_ReportService {
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getCASH_FLOWView(
-
-			String reportId, String fromdate, String todate, String currency, String dtltype, Pageable pageable,
-			String type, BigDecimal version) {
+	public ModelAndView getCASH_FLOWView(String reportId, String fromdate, String todate, String currency,
+			String dtltype, Pageable pageable, String type, BigDecimal version, HttpServletRequest req1, Model md) {
 
 		ModelAndView mv = new ModelAndView();
-
+		String userid = (String) req1.getSession().getAttribute("USERID");
+		System.out.println("User Id Maker and Checker: " + userid);
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
 		System.out.println("CASH_FLOW View Called");
 		System.out.println("Type = " + type);
 		System.out.println("Version = " + version);
@@ -6776,7 +6787,8 @@ public class BRRS_CASH_FLOW_ReportService {
 		}
 
 		List<CASH_FLOW_Archival_Summary_Entity> dataList = getdatabydateListarchival(dateformat.parse(todate), version);
-		List<CASH_FLOW_Manual_Archival_Summary_Entity> dataList1 = getdatabydateListarchivalManual(dateformat.parse(todate), version);
+		List<CASH_FLOW_Manual_Archival_Summary_Entity> dataList1 = getdatabydateListarchivalManual(
+				dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for CASH_FLOW new report. Returning empty result.");
@@ -7767,6 +7779,24 @@ public class BRRS_CASH_FLOW_ReportService {
 
 		return resubList;
 	}
+
+	private static final String CF_LIVE_TABLE = "BRRS_CASH_FLOW_MANUAL_SUMMARYTABLE";
+	private static final String CF_ARCH_TABLE = "BRRS_CASH_FLOW_MANUAL_ARCHIVALTABLE_SUMMARY";
+	private static final String CF_MOD_TABLE = "BRRS_CASH_FLOW_MANUAL_MOD_SUMMARYTABLE";
+
+	private static final int[] CF_ROWS = { 12, 14, 15, 16, 19, 21, 22, 23, 31, 33, 36, 37, 38, 40, 41, 42, 43, 44 };
+	private static final String[] CF_COLS = { "lc_as_on_mar", "lc_as_on_sep" };
+
+	private List<String> cfColumns() {
+		List<String> cols = new ArrayList<>();
+		for (int r : CF_ROWS) {
+			for (String c : CF_COLS) {
+				cols.add("R" + r + "_" + c.toUpperCase());
+			}
+		}
+		return cols;
+	}
+
 	@Transactional
 	public void updateReport(Object entity, String type) {
 
@@ -7774,116 +7804,104 @@ public class BRRS_CASH_FLOW_ReportService {
 
 		System.out.println("Came to CASH_FLOW Manual Update. Type: " + (isResub ? "RESUB" : "NORMAL"));
 
-		String tableName = isResub ? "BRRS_CASH_FLOW_MANUAL_ARCHIVALTABLE_SUMMARY" : "BRRS_CASH_FLOW_MANUAL_SUMMARYTABLE";
-
-		int[] rows = { 12,14,15,16,19,21,22,23,31,33,36,37,38,40,41,42,43,44,45,46,48,49,51};
+		// RESUB keeps the original direct update on the archival table
+		if (isResub) {
+			cfUpdateDirect(entity, CF_ARCH_TABLE);
+			return;
+		}
 
 		try {
-			// Use the actual runtime class
 			Class<?> entityClass = entity.getClass();
 
-			// Get report date
-			Method getDateMethod = entityClass.getMethod("getREPORT_DATE");
-			Object reportDateObj = getDateMethod.invoke(entity);
-
+			Object reportDateObj = entityClass.getMethod("getREPORT_DATE").invoke(entity);
 			if (reportDateObj == null) {
 				throw new RuntimeException("Report Date is NULL");
 			}
-
 			Date reportDate = (Date) reportDateObj;
+			java.sql.Date sqlReportDate = new java.sql.Date(reportDate.getTime());
 
 			System.out.println("Report Date : " + reportDate);
 			System.out.println("Entity Class : " + entityClass.getName());
 
-			// =====================================================
-			// 🔹 AUDIT TRAIL SETUP (DYNAMIC LOG PAYLOAD PREPARATION)
-			// =====================================================
+			// 🔹 Current values from the live table (empty map if no row yet)
+			Map<String, Object> liveRow = new HashMap<>();
+			List<Map<String, Object>> existingRows = jdbcTemplate.queryForList(
+					"SELECT * FROM " + CF_LIVE_TABLE + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", sqlReportDate);
+			if (!existingRows.isEmpty()) {
+				liveRow = existingRows.get(0);
+			}
+
+			// 🔹 Audit copies: oldcopy = live DB state, newcopy = live state + changes
+			Object oldcopy = entityClass.getDeclaredConstructor().newInstance();
+			Object newcopy = entityClass.getDeclaredConstructor().newInstance();
+			BeanUtils.copyProperties(entity, oldcopy);
+			BeanUtils.copyProperties(entity, newcopy);
+
+			Map<String, Object> mergedValues = new LinkedHashMap<>();
 			StringBuilder changesBuilder = new StringBuilder();
-			java.sql.Date sqlReportDate = new java.sql.Date(reportDate.getTime());
 
-			for (int r : rows) {
-
-				String[] cols = { "lc_as_on_mar", "lc_as_on_sep" };
-
-				for (String col : cols) {
-
+			for (int r : CF_ROWS) {
+				for (String col : CF_COLS) {
 					String getterName = "getR" + r + "_" + col;
-					String columnName = "R" + r + "_" + col;
+					String setterName = "setR" + r + "_" + col;
+					String columnName = "R" + r + "_" + col.toUpperCase();
 
 					try {
 						Method getter = entityClass.getMethod(getterName);
+						Method setter = entityClass.getMethod(setterName, getter.getReturnType());
+
 						Object newValueObj = getter.invoke(entity);
+						Object dbValueObj = liveRow.get(columnName);
 
-						System.out.println("Processing -> " + getterName + " = " + newValueObj);
+						// Old copy holds the live DB value
+						setter.invoke(oldcopy, cfConvert(dbValueObj, getter.getReturnType()));
 
-						// Skip processing if the web input value completely lacks data
+						// Prevent NULL overwrite: keep the live value when the screen sends null
+						Object finalValue = (newValueObj != null) ? newValueObj
+								: cfConvert(dbValueObj, getter.getReturnType());
+						setter.invoke(newcopy, finalValue);
+						mergedValues.put(columnName, finalValue);
+
 						if (newValueObj == null) {
 							continue;
 						}
 
-						// 1. Fetch current value directly from the targeted DB Table before updating
-						String selectSql = "SELECT " + columnName + " FROM " + tableName + " WHERE REPORT_DATE = ?";
-						Object dbValueObj = null;
-						try {
-							dbValueObj = jdbcTemplate.queryForObject(selectSql, Object.class, sqlReportDate);
-						} catch (Exception e) {
-							// Handle if row doesn't exist yet gracefully
-							dbValueObj = null;
+						String currentVal = dbValueObj == null ? "" : dbValueObj.toString().trim();
+						String newVal = newValueObj.toString().trim();
+
+						if (!currentVal.equals(newVal)) {
+							if (changesBuilder.length() > 0) {
+								changesBuilder.append("|||");
+							}
+							changesBuilder.append(columnName).append(": OldValue: ")
+									.append(currentVal.isEmpty() ? "null" : currentVal).append(", NewValue: ")
+									.append(newVal);
 						}
-
-						// 2. Normalize comparison strings to prevent audit bloat
-						String currentValStr = (dbValueObj == null) ? "" : dbValueObj.toString().trim();
-						String newValStr = newValueObj.toString().trim();
-
-						// Skip update if value hasn't actually changed
-						if (currentValStr.equals(newValStr)) {
-							continue;
-						}
-
-						// 3. Track changes manually for JDBC tracking
-						if (changesBuilder.length() > 0) {
-							changesBuilder.append("|||");
-						}
-						changesBuilder.append(columnName.toUpperCase()).append(": OldValue: ")
-								.append(currentValStr.isEmpty() ? "null" : currentValStr).append(", NewValue: ")
-								.append(newValStr);
-
-						// 4. Perform live database update
-						String updateSql = "UPDATE " + tableName + " SET " + columnName + " = ? WHERE REPORT_DATE = ?";
-						int count = jdbcTemplate.update(updateSql, newValueObj, sqlReportDate);
-
-						System.out.println("Updated Column : " + columnName + " Rows Affected : " + count);
-
 					} catch (NoSuchMethodException ex) {
 						System.out.println("Method not found : " + getterName + " - Skipping");
 					}
 				}
 			}
 
-			// =====================================================
-			// 🔹 EXECUTE MANUAL AUDIT LOG INSERTION
-			// =====================================================
 			String changes = changesBuilder.toString();
 			System.out.println("CASH_FLOW Manual Changes Length = " + changes.length());
 
+			// 🔹 Maker-Checker flags
+			mergedValues.put("ENTITY_FLG", "Y");
+			mergedValues.put("MODIFY_FLG", "Y");
+			mergedValues.put("DEL_FLG", "N");
+
+			// 🔹 Save into MOD Summary Table for Checker Approval
+			cfUpsert(CF_MOD_TABLE, sqlReportDate, mergedValues);
+			System.out.println("✔ Record saved into " + CF_MOD_TABLE + " for Checker Approval");
+
+			// 🔹 Audit only if changes found
 			if (!changes.isEmpty()) {
-				// Enforce character protection thresholds against database column bounds
-				if (changes.length() > 1900) {
-					changes = changes.substring(0, 1900);
-				}
-
-				// Call custom manual audit execution to save directly into your Audit table
-				auditService.compareEntitiesmanual(entity, // Old copy placeholder (We pass entity to satisfy signature)
-						entity, // Existing copy placeholder
-						reportDate.toString(), "CASH_FLOW Manual Screen", tableName);
-
-				// Optional: If your audit trail system relies strictly on a pre-generated
-				// string instead of recalculating, you can write a short jdbcTemplate insert
-				// here
-				// to insert the `changes` string directly into "BRRS_AUDIT"."MODI_DETAILS".
+				auditService.compareEntitiesmanual(oldcopy, newcopy, reportDate.toString(), "CASH_FLOW Manual Screen",
+						CF_LIVE_TABLE);
 			}
 
-			System.out.println("CASH_FLOW Manual Update Completed Successfully for Type : " + type);
+			System.out.println("CASH_FLOW Manual saved for Checker Approval");
 
 		} catch (Exception e) {
 			System.err.println("===== CASH_FLOW UPDATE ERROR =====");
@@ -7893,11 +7911,177 @@ public class BRRS_CASH_FLOW_ReportService {
 			while (root.getCause() != null) {
 				root = root.getCause();
 			}
-
 			System.err.println("ROOT CAUSE : " + root.getMessage());
 
 			throw new RuntimeException("Error while updating CASH_FLOW Manual fields for type: " + type, e);
 		}
 	}
 
+// Original direct update (used by RESUB on the archival table)
+	private void cfUpdateDirect(Object entity, String tableName) {
+		try {
+			Class<?> entityClass = entity.getClass();
+
+			Object reportDateObj = entityClass.getMethod("getREPORT_DATE").invoke(entity);
+			if (reportDateObj == null) {
+				throw new RuntimeException("Report Date is NULL");
+			}
+			Date reportDate = (Date) reportDateObj;
+			java.sql.Date sqlReportDate = new java.sql.Date(reportDate.getTime());
+
+			StringBuilder changesBuilder = new StringBuilder();
+
+			for (int r : CF_ROWS) {
+				for (String col : CF_COLS) {
+					String getterName = "getR" + r + "_" + col;
+					String columnName = "R" + r + "_" + col;
+
+					try {
+						Method getter = entityClass.getMethod(getterName);
+						Object newValueObj = getter.invoke(entity);
+
+						if (newValueObj == null) {
+							continue;
+						}
+
+						Object dbValueObj = null;
+						try {
+							dbValueObj = jdbcTemplate.queryForObject(
+									"SELECT " + columnName + " FROM " + tableName + " WHERE REPORT_DATE = ?",
+									Object.class, sqlReportDate);
+						} catch (Exception e) {
+							dbValueObj = null;
+						}
+
+						String currentValStr = (dbValueObj == null) ? "" : dbValueObj.toString().trim();
+						String newValStr = newValueObj.toString().trim();
+
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
+
+						if (changesBuilder.length() > 0) {
+							changesBuilder.append("|||");
+						}
+						changesBuilder.append(columnName.toUpperCase()).append(": OldValue: ")
+								.append(currentValStr.isEmpty() ? "null" : currentValStr).append(", NewValue: ")
+								.append(newValStr);
+
+						int count = jdbcTemplate.update(
+								"UPDATE " + tableName + " SET " + columnName + " = ? WHERE REPORT_DATE = ?",
+								newValueObj, sqlReportDate);
+
+						System.out.println("Updated Column : " + columnName + " Rows Affected : " + count);
+
+					} catch (NoSuchMethodException ex) {
+						System.out.println("Method not found : " + getterName + " - Skipping");
+					}
+				}
+			}
+
+			if (changesBuilder.length() > 0) {
+				auditService.compareEntitiesmanual(entity, entity, reportDate.toString(), "CASH_FLOW Manual Screen",
+						tableName);
+			}
+
+			System.out.println("CASH_FLOW Manual Update Completed Successfully for RESUB");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error while updating CASH_FLOW Manual fields for type: RESUB", e);
+		}
+	}
+
+// Converts a DB value (BigDecimal, String, ...) to the entity getter's type
+	private Object cfConvert(Object dbValue, Class<?> targetType) {
+		if (dbValue == null) {
+			return null;
+		}
+		if (targetType.isInstance(dbValue)) {
+			return dbValue;
+		}
+		if (dbValue instanceof java.math.BigDecimal) {
+			java.math.BigDecimal bd = (java.math.BigDecimal) dbValue;
+			if (targetType == Double.class || targetType == double.class)
+				return bd.doubleValue();
+			if (targetType == Long.class || targetType == long.class)
+				return bd.longValue();
+			if (targetType == Integer.class || targetType == int.class)
+				return bd.intValue();
+			if (targetType == String.class)
+				return bd.toPlainString();
+		}
+		if (targetType == String.class) {
+			return dbValue.toString();
+		}
+		return dbValue;
+	}
+
+// Generic upsert from a column -> value map (insert if no row for the date, else update)
+	private void cfUpsert(String tableName, java.sql.Date sqlReportDate, Map<String, Object> values) {
+		Integer count = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM " + tableName + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", Integer.class,
+				sqlReportDate);
+
+		List<Object> params = new ArrayList<>();
+
+		if (count != null && count > 0) {
+			StringBuilder sql = new StringBuilder("UPDATE " + tableName + " SET ");
+			boolean first = true;
+			for (Map.Entry<String, Object> e : values.entrySet()) {
+				if (!first)
+					sql.append(", ");
+				sql.append(e.getKey()).append(" = ?");
+				params.add(e.getValue());
+				first = false;
+			}
+			sql.append(" WHERE TRUNC(REPORT_DATE) = TRUNC(?)");
+			params.add(sqlReportDate);
+			jdbcTemplate.update(sql.toString(), params.toArray());
+		} else {
+			StringBuilder cols = new StringBuilder("REPORT_DATE");
+			StringBuilder marks = new StringBuilder("?");
+			params.add(sqlReportDate);
+			for (Map.Entry<String, Object> e : values.entrySet()) {
+				cols.append(", ").append(e.getKey());
+				marks.append(", ?");
+				params.add(e.getValue());
+			}
+			jdbcTemplate.update("INSERT INTO " + tableName + " (" + cols + ") VALUES (" + marks + ")",
+					params.toArray());
+		}
+	}
+
+// Reads the MOD row's updated columns as a map (null if no row)
+	private Map<String, Object> cfReadModValues(java.sql.Date reportDate, boolean onlyPending) {
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList("SELECT * FROM " + CF_MOD_TABLE
+				+ " WHERE TRUNC(REPORT_DATE) = TRUNC(?)" + (onlyPending ? " AND MODIFY_FLG = 'Y'" : ""), reportDate);
+		if (rows.isEmpty()) {
+			return null;
+		}
+		Map<String, Object> mod = new LinkedHashMap<>();
+		for (String col : cfColumns()) {
+			mod.put(col, rows.get(0).get(col));
+		}
+		return mod;
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		java.sql.Date sqlDate = new java.sql.Date(reportDate.getTime());
+
+		Map<String, Object> mod = cfReadModValues(sqlDate, true);
+		if (mod == null) {
+			throw new IllegalStateException("No pending CASH_FLOW modification found for date : " + reportDate);
+		}
+
+		// Copy MOD values into the LIVE summary table
+		cfUpsert(CF_LIVE_TABLE, sqlDate, mod);
+
+		// Mark modified flag as 'N' (Approved) in the MOD table
+		jdbcTemplate.update("UPDATE " + CF_MOD_TABLE + " SET MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				sqlDate);
+
+		System.out.println("CASH_FLOW Checker Approved Successfully");
+	}
 }

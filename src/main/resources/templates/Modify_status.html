@@ -2,35 +2,22 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<link rel="stylesheet" type="text/css" href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css"
-		th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
-	<link rel="stylesheet" type="text/css" href="/webjars/font-awesome/5.9.0/css/all.min.css"
-		th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
-	<link rel="stylesheet" type="text/css" href="/webjars/jquery-ui/1.12.1/jquery-ui.min.css"
-		th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
-	<link rel="stylesheet" type="text/css" href="/webjars/datatables/1.10.19/css/jquery.dataTables.min.css"
-		th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+	<link rel="stylesheet" type="text/css"
+		href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css"
+		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css">
+	<link rel="stylesheet" type="text/css"
+		href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap4.min.css">
 	<link rel="shortcut icon" th:href="@{/favicon.ico}" type="image/x-icon">
 	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon">
 	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
 
-	<script src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"
-		th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
-	<script src="/webjars/popper.js/1.14.7/umd/popper.min.js"
-		th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
-	<script src="/webjars/jquery/3.4.1/jquery.min.js" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-	<script src="/webjars/jquery-ui/1.12.1/jquery-ui.min.js"
-		th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
-	<script src="/webjars/datatables/1.10.19/js/jquery.dataTables.min.js"
-		th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
-	<script src="/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js"
-		th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script src="/webjars/jquery/3.6.0/jquery.min.js" th:src="@{/webjars/jquery/3.6.0/jquery.min.js}"></script>
-	<script src="/webjars/bootstrap/4.6.0/js/bootstrap.bundle.min.js"
-		th:src="@{/webjars/bootstrap/4.6.0/js/bootstrap.bundle.min.js}"></script>
-	<script src="/webjars/datatables.net/1.13.4/js/jquery.dataTables.min.js"
-		th:src="@{/webjars/datatables.net/1.13.4/js/jquery.dataTables.min.js}"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
 
 	<style>
 		.row1 {
@@ -101,12 +88,24 @@
 			font-size: 13px;
 			text-align: left;
 			border: 1px solid #dee2e6;
+			white-space: nowrap;
 		}
 
 		table.dataTable tbody td {
 			text-align: left;
 			border: 1px solid #dee2e6;
 			font-size: 13px;
+		}
+
+		/* Color styling for Select and Deselect headers/options */
+		.select-header {
+			color: #28a745 !important;
+			font-weight: bold;
+		}
+
+		.deselect-header {
+			color: #dc3545 !important;
+			font-weight: bold;
 		}
 
 		.status-badge {
@@ -240,6 +239,94 @@
 				});
 		}
 
+		// Master Select All
+		function selectAllRecords() {
+			const rows = document.querySelectorAll('tr.userlist');
+			let unverifiedFound = false;
+
+			rows.forEach(row => {
+				const selectRadio = row.querySelector('.row-select-radio');
+				const deselectRadio = row.querySelector('.row-deselect-radio');
+
+				if (selectRadio && !selectRadio.disabled) {
+					selectRadio.checked = true;
+					deselectRadio.checked = false;
+					unverifiedFound = true;
+				}
+			});
+
+			if (!unverifiedFound) {
+				showCustomAlert("No unverified records available to select.");
+			}
+		}
+
+		// Master Deselect All
+		function deselectAllRecords() {
+			const rows = document.querySelectorAll('tr.userlist');
+			rows.forEach(row => {
+				const selectRadio = row.querySelector('.row-select-radio');
+				const deselectRadio = row.querySelector('.row-deselect-radio');
+
+				if (deselectRadio && !deselectRadio.disabled) {
+					selectRadio.checked = false;
+					deselectRadio.checked = true;
+				}
+			});
+		}
+
+		function verifySelectedRecords() {
+			const selectedRadios = document.querySelectorAll('.row-select-radio:checked');
+
+			if (selectedRadios.length === 0) {
+				showCustomAlert("Please select at least one record using the Select radio button to verify.");
+				return;
+			}
+
+			let selectedIds = [];
+			selectedRadios.forEach(radio => {
+				// Only collect IDs from enabled (unverified) rows
+				if (!radio.disabled) {
+					selectedIds.push(radio.value);
+				}
+			});
+
+			if (selectedIds.length === 0) {
+				showCustomAlert("Please select valid unverified records to verify.");
+				return;
+			}
+
+			showCustomConfirm(
+				"Are you sure you want to verify and transfer " + selectedIds.length + " selected record(s)?",
+				function () {
+					fetch('./approveSelectedAuditRecords', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify(selectedIds)
+					})
+						.then(response => {
+							if (!response.ok) {
+								throw new Error('Verification failed');
+							}
+							return response.text();
+						})
+						.then(data => {
+							showCustomAlert(
+								"Selected Reports Verified and Data Transferred Successfully!",
+								function () {
+									location.reload();
+								}
+							);
+						})
+						.catch(error => {
+							console.error(error);
+							showCustomAlert("Failed to verify and transfer selected reports.");
+						});
+				}
+			);
+		}
+
 		function verifyRecord(rowId) {
 			currentRowId = rowId;
 			showCustomConfirm(
@@ -289,13 +376,10 @@
 		function showCustomAlert(message, onOk) {
 			document.getElementById('customAlertMessage').textContent = message;
 			const alertBox = document.getElementById('customAlert');
-			const okButton = alertBox.querySelector('.custom-alert-btn');
-
-			// Reset footer to standard single OK button in case it was modified by confirm dialog
 			const footer = alertBox.querySelector('.custom-alert-footer');
+
 			footer.innerHTML = `<button type="button" class="custom-alert-btn" onclick="closeCustomAlert()">OK</button>`;
 
-			// Re-query the button inside the fresh footer
 			const newOkButton = footer.querySelector('.custom-alert-btn');
 			newOkButton.onclick = function () {
 				closeCustomAlert();
@@ -335,6 +419,40 @@
 			};
 		}
 		/*]]>*/
+		document.addEventListener("DOMContentLoaded", function () {
+
+			const rows = document.querySelectorAll("tr.userlist");
+			let verifiedAbove = false;
+
+			rows.forEach(row => {
+
+				const isVerified = row.getAttribute("data-verified") === "true";
+
+				const selectRadio = row.querySelector(".row-select-radio");
+				const deselectRadio = row.querySelector(".row-deselect-radio");
+
+				// Disable current row if already verified
+				// Also disable rows below an already verified record
+				if (verifiedAbove || isVerified) {
+
+					if (selectRadio) {
+						selectRadio.disabled = true;
+					}
+
+					if (deselectRadio) {
+						deselectRadio.disabled = true;
+					}
+				}
+
+				// Once a verified record is found,
+				// disable selection for all subsequent rows
+				if (isVerified) {
+					verifiedAbove = true;
+				}
+
+			});
+
+		});
 	</script>
 	<title>Verify Status</title>
 </head>
@@ -351,6 +469,10 @@
 							style="background-color: #6B7A8F;">
 							<h4 style="color:white;font-weight: bold;font-size: 20px;padding-top: 5px;">MODIFY STATUS -
 								VERIFICATION SCREEN</h4>
+							<button type="button" class="btn btn-light btn-sm font-weight-bold"
+								onclick="verifySelectedRecords()">
+								<i class="fas fa-check text-success"></i> Verify Selected Record
+							</button>
 						</div>
 
 						<div class="table-container">
@@ -361,10 +483,21 @@
 										<th>Table Name</th>
 										<th style="text-align: center;">View</th>
 										<th style="text-align: center;">Verify Status</th>
+										<th style="text-align: center; white-space: nowrap;">
+											<span class="select-header">Select</span>&nbsp;&nbsp;<input type="radio"
+												name="masterToggle" onclick="selectAllRecords()" title="Select All"
+												style="vertical-align: middle; accent-color: #28a745;" />
+										</th>
+										<th style="text-align: center; white-space: nowrap;">
+											<span class="deselect-header">Deselect</span>&nbsp;&nbsp;<input type="radio"
+												name="masterToggle" onclick="deselectAllRecords()" title="Deselect All"
+												checked style="vertical-align: middle; accent-color: #dc3545;" />
+										</th>
 									</tr>
 								</thead>
 								<tbody>
-									<tr th:each="auditdata : ${AuditListModify}" class="userlist">
+									<tr th:each="auditdata : ${AuditListModify}" class="userlist"
+										th:attr="data-verified=${not #strings.isEmpty(auditdata.auth_user)}">
 										<td
 											th:text="${(auditdata.entry_user ?: 'N/A') + ' / ' + (auditdata.entry_user_name ?: 'N/A')}">
 										</td>
@@ -381,21 +514,44 @@
 
 										<!-- Verify Status Column -->
 										<td style="text-align: center;">
-											<!-- Verified (Green Check Icon - Clickable to show "Already Verified" popup) -->
+											<!-- Verified -->
 											<span th:if="${not #strings.isEmpty(auditdata.auth_user)}"
 												style="cursor: pointer;"
 												onclick="showCustomAlert('This record is already verified!')"
 												title="Verified">
-												<i class="fas fa-check-circle" style="color: green; font-size: 18px;"></i>
+												<i class="fas fa-check-circle"
+													style="color: green; font-size: 18px;"></i>
 											</span>
 
-											<!-- Unverified (Red Cross Icon - Clickable to Verify) -->
-											<span th:unless="${not #strings.isEmpty(auditdata.auth_user)}"
+											<!-- Unverified -->
+											<!--<span th:unless="${not #strings.isEmpty(auditdata.auth_user)}"
 												style="cursor: pointer;"
 												th:onclick="'verifyRecord(\'' + ${auditdata.sno} + '\')'"
 												title="Unverified (Click to Verify)">
 												<i class="fas fa-times-circle" style="color: red; font-size: 18px;"></i>
+											</span>-->
+											<span th:unless="${not #strings.isEmpty(auditdata.auth_user)}"
+												style="cursor: pointer;"
+												
+												title="Unverified (Click to Verify)">
+												<i class="fas fa-times-circle" style="color: red; font-size: 18px;"></i>
 											</span>
+										</td>
+
+										<!-- Select Radio Column -->
+										<td style="text-align: center;">
+											<input type="radio" th:name="${'rowSelect_' + auditdata.sno}"
+												class="row-select-radio" th:value="${auditdata.sno}"
+												style="accent-color: #28a745;"
+												th:disabled="${not #strings.isEmpty(auditdata.auth_user)}" />
+										</td>
+
+										<!-- Deselect Radio Column -->
+										<td style="text-align: center;">
+											<input type="radio" th:name="${'rowSelect_' + auditdata.sno}"
+												class="row-deselect-radio" value="DESELECT" checked
+												style="accent-color: #dc3545;"
+												th:disabled="${not #strings.isEmpty(auditdata.auth_user)}" />
 										</td>
 									</tr>
 								</tbody>

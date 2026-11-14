@@ -1459,8 +1459,6 @@ public class AuditService {
 			transferDEP3Data(auditRecord);
 		} else if (upperTable.contains("Q_STAFF")) {
 			transferQStaffData(auditRecord);
-		} else if (upperTable.contains("BDISB1")) {
-			transferBDISB1Data(auditRecord);
 		} else if (upperTable.contains("AIDP") || upperTable.contains("M_AIDP")) {
 			transferAIDPData(auditRecord);
 		} else if (upperTable.contains("Q_BRANCHNET")) {
@@ -1559,8 +1557,8 @@ public class AuditService {
 			transferMSRWA12BData(auditRecord);
 		} else if (upperTable.contains("M_SEC_MOD_SUMMARYTABLE") || upperTable.startsWith("BRRS_M_SEC")) {
 			transferMSecData(auditRecord);
-		} else if (upperTable.contains("UFCE_CALCULATION_MOD_SUMMARYTABLE_MANUAL") || upperTable.startsWith("BRRS_UFCE_CALCULATION")) {
-			transferUFCEManualData(auditRecord);
+		} else if (upperTable.contains("CASH_FLOW")) {
+			transferCASHFLOWData(auditRecord);
 		} else {
 			throw new IllegalArgumentException("Verification not configured for table: " + auditTable);
 		}
@@ -1580,6 +1578,25 @@ public class AuditService {
 		auditServicesRep.save(auditRecord);
 
 		System.out.println("Audit Record ID " + auditId + " marked as Verified successfully.");
+	}
+
+	@Transactional
+	public void processSelectedRecords(List<String> selectedIds) {
+		for (String idStr : selectedIds) {
+			try {
+				Long id = Long.valueOf(idStr);
+				AuditServicesEntity auditRecord = auditServicesRep.findById(id).orElse(null);
+
+				// Condition: Only verify and transfer if the record exists and is NOT already
+				// verified
+				if (auditRecord != null
+						&& (auditRecord.getAuth_user() == null || auditRecord.getAuth_user().trim().isEmpty())) {
+					verifyAndTransferReport(id);
+				}
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException("Invalid ID format: " + idStr);
+			}
+		}
 	}
 
 	private void transferM_SRWA_12CData(AuditServicesEntity auditRecord) {
@@ -6368,5 +6385,68 @@ public class AuditService {
 		out[base.length] = extra;
 		return out;
 	}
+	private void transferCASHFLOWData(AuditServicesEntity auditRecord) {
+		final String liveTable = "BRRS_CASH_FLOW_MANUAL_SUMMARYTABLE";
+		final String modTable = "BRRS_CASH_FLOW_MANUAL_MOD_SUMMARYTABLE";
 
+		// Only the rows that exist in BRRS_CASH_FLOW_MANUAL_MOD_SUMMARYTABLE
+		int[] rows = { 12, 14, 15, 16, 19, 21, 22, 31, 36, 37, 40, 41, 42, 43, 44 };
+		String[] cols = { "LC_AS_ON_MAR", "LC_AS_ON_SEP" };
+
+		java.sql.Date reportDate = jdbcTemplate.queryForObject("SELECT MAX(REPORT_DATE) FROM " + modTable,
+				java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified CASH_FLOW record available for verification.");
+		}
+
+		System.out.println("CASH_FLOW Report Date : " + reportDate);
+
+		// Build column lists: R12_LC_AS_ON_MAR, R12_LC_AS_ON_SEP, ...
+		StringBuilder targetCols = new StringBuilder();
+		StringBuilder sourceCols = new StringBuilder();
+		for (int r : rows) {
+			for (String c : cols) {
+				if (targetCols.length() > 0) {
+					targetCols.append(", ");
+					sourceCols.append(", ");
+				}
+				targetCols.append("R").append(r).append("_").append(c);
+				sourceCols.append("S.R").append(r).append("_").append(c);
+			}
+		}
+
+		// Does a live row already exist for this date?
+		Integer liveCount = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM " + liveTable + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", Integer.class,
+				reportDate);
+
+		int affected;
+		if (liveCount != null && liveCount > 0) {
+			// Update the existing live row from the MOD row
+			String updateSql = "UPDATE " + liveTable + " M SET (" + targetCols + ") = (SELECT " + sourceCols + " FROM "
+					+ modTable + " S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE))"
+					+ " WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+			affected = jdbcTemplate.update(updateSql, reportDate);
+		} else {
+			// No live row yet: insert it from the MOD row
+			String insertSql = "INSERT INTO " + liveTable + " (REPORT_DATE, " + targetCols + ") SELECT S.REPORT_DATE, "
+					+ sourceCols + " FROM " + modTable + " S WHERE TRUNC(S.REPORT_DATE) = TRUNC(?)";
+			affected = jdbcTemplate.update(insertSql, reportDate);
+		}
+
+		if (affected == 0) {
+			throw new IllegalStateException("CASH_FLOW modification record not found for date : " + reportDate);
+		}
+
+		System.out.println("CASH_FLOW Main Updated : " + affected);
+
+		// Mark the MOD row as verified
+		int updated = jdbcTemplate.update(
+				"UPDATE " + modTable + " SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				reportDate);
+
+		System.out.println("CASH_FLOW MOD Updated : " + updated);
+		System.out.println("CASH_FLOW Verification Completed Successfully");
+	}
 }
