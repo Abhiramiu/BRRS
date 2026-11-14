@@ -7027,6 +7027,15 @@ public class BRRS_ReportsController {
 		mv.addObject("asondate", asondate);
 		mv.addObject("fromdate", fromdate);
 		mv.addObject("todate", todate);
+
+		// ✅ NEW — visible-role + safe defaults so header buttons render on Add screen
+		String role = userId != null ? userProfileRep.getUserRole(userId) : null;
+		mv.addObject("role", role);
+		mv.addObject("archiveMode", Boolean.FALSE);
+		mv.addObject("resubMode", Boolean.FALSE);
+		mv.addObject("currency", "PULA");
+		logger.info("IRRBB_PLACEMENTS add page — role={}", role);
+
 		return mv;
 	}
 
@@ -7081,8 +7090,22 @@ public class BRRS_ReportsController {
 		String userId = (String) req.getSession().getAttribute("USERID");
 		logger.info("IRRBB_PLACEMENTS modify page - id={} by user={}", id, userId);
 
+		// 1) Load LIVE row as the fallback
 		BRRS_IRRBB_PLACEMENTS_ReportService.IRRBB_PLACEMENTS_Summary_Entity entity = BRRS_IRRBB_PLACEMENTS_reportservice
 				.findById(id);
+
+		// 2) Prefer a pending MOD row so the Maker continues editing their own staged
+		// values
+		if (entity != null && entity.getReportDate() != null) {
+			BRRS_IRRBB_PLACEMENTS_ReportService.IRRBB_PLACEMENTS_Summary_Entity mod = BRRS_IRRBB_PLACEMENTS_reportservice
+					.findModRecordByReportDate(entity.getReportDate());
+			if (mod != null) {
+				mod.setSno(entity.getSno());
+				entity = mod;
+				logger.info("IRRBB_PLACEMENTS modify page — using pending MOD record for date={}",
+						entity.getReportDate());
+			}
+		}
 
 		ModelAndView mv = new ModelAndView("BRRS/IRRBB_PLACEMENTS");
 		mv.addObject("displaymode", "modify");
@@ -7091,6 +7114,15 @@ public class BRRS_ReportsController {
 		mv.addObject("asondate", asondate);
 		mv.addObject("fromdate", fromdate);
 		mv.addObject("todate", todate);
+
+		// ✅ NEW — same safety net as the Add screen
+		String role = userId != null ? userProfileRep.getUserRole(userId) : null;
+		mv.addObject("role", role);
+		mv.addObject("archiveMode", Boolean.FALSE);
+		mv.addObject("resubMode", Boolean.FALSE);
+		mv.addObject("currency", "PULA");
+		logger.info("IRRBB_PLACEMENTS modify page — role={}", role);
+
 		return mv;
 	}
 
@@ -7106,26 +7138,28 @@ public class BRRS_ReportsController {
 			RedirectAttributes redirectAttributes, HttpServletRequest req) {
 
 		String userId = (String) req.getSession().getAttribute("USERID");
-		logger.info("IRRBB_PLACEMENTS update - sno={} by user={}", entity.getSno(), userId);
+		logger.info("IRRBB_PLACEMENTS update - sno={} date={} by user={}", entity.getSno(), entity.getReportDate(),
+				userId);
 
 		try {
 			BRRS_IRRBB_PLACEMENTS_reportservice.updateRecord(entity);
 
-			// Format dates for redirect
 			String formattedAson = formatDateForRedirect(asondate);
 			String formattedFrom = formatDateForRedirect(fromdate);
 			String formattedTo = formatDateForRedirect(todate);
 
-			redirectAttributes.addFlashAttribute("successMessage", "✅ Record updated successfully!");
+			redirectAttributes.addFlashAttribute("successMessage", "Modification saved. Pending Checker verification.");
 			redirectAttributes.addFlashAttribute("successType", "success");
 
 			return "redirect:/Reports/IRRBB_PLACEMENTS" + "?asondate=" + formattedAson + "&fromdate=" + formattedFrom
 					+ "&todate=" + formattedTo + "&dtltype=report";
 		} catch (Exception e) {
-			logger.error("Error updating IRRBB_PLACEMENTS record", e);
-			redirectAttributes.addFlashAttribute("successMessage", "❌ Failed to update record: " + e.getMessage());
+			logger.error("Error staging IRRBB_PLACEMENTS modification", e);
+			redirectAttributes.addFlashAttribute("successMessage", "❌ Failed to save modification: " + e.getMessage());
 			redirectAttributes.addFlashAttribute("successType", "error");
 
+			// Preserve asondate so the modify page can reload the pending MOD record (FIX
+			// #7)
 			return "redirect:/Reports/IRRBB_PLACEMENTS/modify/" + entity.getSno() + "?asondate=" + asondate
 					+ "&fromdate=" + fromdate + "&todate=" + todate;
 		}
@@ -7138,7 +7172,7 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "IRRBB_PLACEMENTS/detail", method = RequestMethod.GET)
 	public ModelAndView irrbbPlacementsDetail(@RequestParam String fromdate, @RequestParam String todate,
 			@RequestParam(defaultValue = "") String asondate) {
-		return BRRS_IRRBB_PLACEMENTS_reportservice.getIRRBB_PLACEMENTS_DetailView(fromdate, todate, todate);
+		return BRRS_IRRBB_PLACEMENTS_reportservice.getIRRBB_PLACEMENTS_DetailView(fromdate, todate, asondate);
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────
@@ -7170,15 +7204,28 @@ public class BRRS_ReportsController {
 	// ─────────────────────────────────────────────────────────────────────────
 	@RequestMapping(value = "IRRBB_PLACEMENTS/detail/modify/{id}", method = RequestMethod.GET)
 	public ModelAndView irrbbPlacementsDetailModifyForm(@PathVariable Long id, @RequestParam String asondate,
-			@RequestParam String fromdate, @RequestParam String todate) {
+			@RequestParam String fromdate, @RequestParam String todate, HttpServletRequest req) {
+
 		BRRS_IRRBB_PLACEMENTS_ReportService.IRRBB_PLACEMENTS_Summary_Entity entity = BRRS_IRRBB_PLACEMENTS_reportservice
 				.findDetailById(id);
+
 		ModelAndView mv = new ModelAndView("BRRS/IRRBB_PLACEMENTS");
 		mv.addObject("irrbbPlacements", entity);
 		mv.addObject("displaymode", "detail-modify");
 		mv.addObject("asondate", asondate);
 		mv.addObject("fromdate", fromdate);
 		mv.addObject("todate", todate);
+
+		// ✅ NEW — role + defaults so Detail-Modify header also renders buttons
+		String userId = (String) req.getSession().getAttribute("USERID");
+		String role = userId != null ? userProfileRep.getUserRole(userId) : null;
+		mv.addObject("role", role);
+		mv.addObject("archiveMode", Boolean.FALSE);
+		mv.addObject("resubMode", Boolean.FALSE);
+		mv.addObject("reportid", "IRRBB_PLACEMENTS");
+		mv.addObject("currency", "PULA");
+		logger.info("IRRBB_PLACEMENTS detail-modify — role={}", role);
+
 		return mv;
 	}
 
@@ -7214,6 +7261,10 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<ByteArrayResource> downloadIrrbbPlacementsSummary(@RequestParam String todate,
 			@RequestParam(required = false) String type, HttpServletResponse response) {
+
+		if (todate == null || todate.trim().isEmpty()) {
+			return ResponseEntity.badRequest().build();
+		}
 		response.setContentType("application/octet-stream");
 		try {
 			byte[] data;
@@ -7250,6 +7301,10 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<ByteArrayResource> downloadIrrbbPlacementsDetail(@RequestParam String todate,
 			@RequestParam(required = false) String type, HttpServletResponse response) {
+
+		if (todate == null || todate.trim().isEmpty()) {
+			return ResponseEntity.badRequest().build();
+		}
 		response.setContentType("application/octet-stream");
 		try {
 			byte[] data;
@@ -7285,6 +7340,10 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "IRRBB_PLACEMENTS/downloadSummaryPdf", method = RequestMethod.GET)
 	public void downloadIrrbbPlacementsSummaryPdf(@RequestParam String todate,
 			@RequestParam(required = false) String type, HttpServletResponse response) {
+		if (todate == null || todate.trim().isEmpty()) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
 		try {
 			byte[] excelBytes;
 			String filename;
@@ -7298,6 +7357,10 @@ public class BRRS_ReportsController {
 				excelBytes = BRRS_IRRBB_PLACEMENTS_reportservice.generateSummaryExcel(todate);
 				filename = "IRRBB_PLACEMENTS_Summary.pdf";
 			}
+			if (excelBytes == null || excelBytes.length == 0) {
+				response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+				return;
+			}
 			byte[] pdfBytes = exceltopdfservice.convertExcelBytesToPdf(excelBytes);
 			response.setContentType("application/pdf");
 			response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
@@ -7308,7 +7371,9 @@ public class BRRS_ReportsController {
 			}
 		} catch (Exception e) {
 			logger.error("IRRBB_PLACEMENTS downloadSummaryPdf ERROR", e);
-			response.setStatus(500);
+			if (!response.isCommitted())
+				response.reset();
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -7319,6 +7384,10 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "IRRBB_PLACEMENTS/downloadDetailPdf", method = RequestMethod.GET)
 	public void downloadIrrbbPlacementsDetailPdf(@RequestParam String todate,
 			@RequestParam(required = false) String type, HttpServletResponse response) {
+		if (todate == null || todate.trim().isEmpty()) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
 		try {
 			byte[] excelBytes;
 			String filename;
@@ -7332,6 +7401,10 @@ public class BRRS_ReportsController {
 				excelBytes = BRRS_IRRBB_PLACEMENTS_reportservice.generateDetailExcel(todate);
 				filename = "IRRBB_PLACEMENTS_Detail.pdf";
 			}
+			if (excelBytes == null || excelBytes.length == 0) {
+				response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+				return;
+			}
 			byte[] pdfBytes = exceltopdfservice.convertExcelBytesToPdf(excelBytes);
 			response.setContentType("application/pdf");
 			response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
@@ -7342,7 +7415,9 @@ public class BRRS_ReportsController {
 			}
 		} catch (Exception e) {
 			logger.error("IRRBB_PLACEMENTS downloadDetailPdf ERROR", e);
-			response.setStatus(500);
+			if (!response.isCommitted())
+				response.reset();
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -7358,10 +7433,13 @@ public class BRRS_ReportsController {
 			HttpServletRequest req) {
 		try {
 			System.out.println("Came to IRRBB_PLACEMENTS Resub Controller");
-			if (asondate != null) {
-				request.setReportDate(asondate);
-				System.out.println("Set Report Date: " + asondate);
+
+			if (asondate == null) {
+				return ResponseEntity.badRequest().body("asondate is required.");
 			}
+			request.setReportDate(asondate);
+			System.out.println("Set Report Date: " + asondate);
+
 			BRRS_IRRBB_PLACEMENTS_reportservice.updateResubRecord(request);
 			return ResponseEntity.ok("Resubmission Updated Successfully");
 		} catch (Exception e) {
@@ -7693,7 +7771,7 @@ public class BRRS_ReportsController {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 						.body("Update Failed: Invalid or missing report date: " + asondateStr);
 			}
-			
+
 			logger.info("Type: {} | Screen: {} | Date: {}", type, screen, asondate);
 
 			// MAKER-CHECKER: NORMAL summary edits are staged in the MOD table for Checker
@@ -7755,8 +7833,7 @@ public class BRRS_ReportsController {
 			BRRS_UFCE_CALCULATION_ReportService.updateUFCEReport(entityInstance, type);
 
 			if (isNormalSummary) {
-				return ResponseEntity
-						.ok("Submitted successfully. Any changes have been sent for Checker approval.");
+				return ResponseEntity.ok("Submitted successfully. Any changes have been sent for Checker approval.");
 			}
 			return ResponseEntity.ok("UFCE_CALCULATION Modified Successfully.");
 
@@ -7765,7 +7842,7 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(se.getMessage());
 		} catch (Exception e) {
 			logger.error("Error in UFCE_CALCULATION update", e);
-			
+
 			Throwable root = e;
 			while (root.getCause() != null) {
 				root = root.getCause();
@@ -7773,7 +7850,7 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + root.getMessage());
 		}
 	}
-	
+
 	// =====================================================
 	// UFCE_CALCULATION - CHECKER (verify by audit id)
 	// Audit screen "Verify" button -> promotes MOD -> LIVE
@@ -7804,8 +7881,7 @@ public class BRRS_ReportsController {
 			while (root.getCause() != null) {
 				root = root.getCause();
 			}
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Verify Failed: " + root.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Verify Failed: " + root.getMessage());
 		}
 	}
 

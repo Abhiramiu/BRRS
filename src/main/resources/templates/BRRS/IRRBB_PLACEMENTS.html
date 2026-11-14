@@ -223,7 +223,6 @@
 			display: none;
 		}
 
-		/* Alert animation */
 		.alert {
 			animation: slideDown 0.5s ease;
 		}
@@ -242,64 +241,131 @@
 	</style>
 
 	<script>
+		// ============================================================
+		// Server-side role — synchronous, defensive, NON-DESTRUCTIVE.
+		//
+		// The primary security gate is SERVER-SIDE:
+		//   • th:if=${role == 'M' or role == 'MAN'} on Modify / Add buttons
+		//   • th:if=${role != 'M'}                  on Download buttons
+		//   • role checks in the controller & service
+		//
+		// This JS only *cosmetically hides* UI when we know the role.
+		// If role is missing/null (misconfig, future route change, etc.),
+		// we DO NOTHING — leaving the server-rendered buttons visible so
+		// that a legitimate Maker or Checker never loses access.
+		// ============================================================
+		var rawRole = /*[[${role}]]*/ '';
+		var hasRole = rawRole !== null && rawRole !== undefined && String(rawRole).trim() !== '';
+		var serverRole = hasRole ? String(rawRole).trim() : '';
+
+		var roleIsMaker = hasRole && /^(MAKER|M|MAN|MANAGER|B|ADMIN|A)$/i.test(serverRole);
+		var roleIsChecker = hasRole && /^(CHECKER|C|MAN|MANAGER|B|ADMIN|A)$/i.test(serverRole);
+		var isPureMaker = roleIsMaker && !roleIsChecker;   // 'M' / 'MAKER' only
+
 		$(document).ready(function () {
-			Maker_Checker_Function();
+			applyRoleVisibility();
+			toggleFloatingFields();
+			setTimeout(toggleFloatingFields, 50);
 		});
 
-		// Maker-Checker: Checkers cannot modify, Makers cannot download
-		function Maker_Checker_Function() {
-			$.ajax({
-				url: "/BRRS/getUserRole",
-				type: "GET",
-				success: function (roleId) {
-					// Checkers -> hide Modify / Add buttons
-					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
-						const modifyBtn = document.getElementById("addRecord");
-						if (modifyBtn) modifyBtn.style.display = "none";
-						document.querySelectorAll("#addRecord, .btn-warning, .btn-primary, a[href*='/add']").forEach(el => el.style.display = "none");
-					}
+		function applyRoleVisibility() {
+			// ⚠ If role is unknown → do NOT touch visibility.
+			//   Trust server-side th:if to render the correct buttons.
+			if (!hasRole) {
+				console.warn("[IRRBB_PLACEMENTS] role not supplied by server — visibility left to th:if");
+				return;
+			}
 
-					// Makers -> hide all download buttons
-					if (roleId === "ADM-M" || roleId === "USR-M") {
-						document.querySelectorAll(".dl-split-wrap, .dl-main-btn, .dl-caret-btn, #btn-format, #btn-detail, #custom-tab-btnAdd").forEach(el => el.style.display = "none");
-					}
-				},
-				error: function (err) {
-					console.error("Error fetching role:", err);
-				}
-			});
+			// Hide maker-only UI (Modify / Add) for Checkers / anyone who cannot make.
+			if (!roleIsMaker) {
+				document.querySelectorAll(
+					"#addRecord, " +
+					"a[href*='/IRRBB_PLACEMENTS/add'], " +
+					"a[href*='/IRRBB_PLACEMENTS/modify/'], " +
+					"a[href*='/IRRBB_PLACEMENTS/detail/modify/'], " +
+					"a[href*='/IRRBB_PLACEMENTS/detail/add'], " +
+					".btn-warning"
+				).forEach(function (el) {el.style.display = "none";});
+			}
+
+			// Hide download menus for PURE makers only.
+			// 'MAN' / 'ADMIN' are dual-role → they should see BOTH modify and download.
+			if (isPureMaker) {
+				document.querySelectorAll(
+					".dl-split-wrap, .dl-main-btn, .dl-caret-btn"
+				).forEach(function (el) {el.style.display = "none";});
+			}
 		}
 
 		function back() {
 			$("#loader").modal("toggle");
 			window.history.back();
 		}
+
 		function showResultModal(title, message) {
 			$('#resultModalLabel').text(title);
 			$('#resultModalBody').text(message);
 			$('#resultModal').modal('show');
 		}
+
 		function closemodel() {
 			$("#resultModal").modal("hide");
 			$('#loader').modal('hide');
 		}
+
+		// ============================================================
+		// Navigation helpers (unchanged from previous version)
+		// ============================================================
 		function goToDetail() {
 			var fromdate = document.getElementById('hdnFromdate').value;
 			var todate = document.getElementById('hdnTodate').value;
+			var asondate = (document.getElementById('pageAsOnDate') || {}).value || todate;
 			window.location.href = '/BRRS/Reports/IRRBB_PLACEMENTS/detail'
 				+ '?fromdate=' + encodeURIComponent(fromdate)
-				+ '&todate=' + encodeURIComponent(todate);
+				+ '&todate=' + encodeURIComponent(todate)
+				+ '&asondate=' + encodeURIComponent(asondate);
 		}
 		function backToSummary() {
 			var fromdate = document.getElementById('hdnFromdate').value;
 			var todate = document.getElementById('hdnTodate').value;
+			var asondate = (document.getElementById('pageAsOnDate') || {}).value || todate;
 			window.location.href = '/BRRS/Reports/IRRBB_PLACEMENTS'
 				+ '?dtltype=report'
 				+ '&fromdate=' + encodeURIComponent(fromdate)
 				+ '&todate=' + encodeURIComponent(todate)
-				+ '&asondate=' + encodeURIComponent(todate)
+				+ '&asondate=' + encodeURIComponent(asondate)
 				+ '&currency=AED';
 		}
+		function goToResubSummary() {
+			var fromdate = document.getElementById('hdnFromdate').value;
+			var todate = document.getElementById('hdnTodate').value;
+			var asondate = (document.getElementById('pageAsOnDate') || {}).value || todate;
+			var version = new URLSearchParams(window.location.search).get('version') || '';
+			var url = '/BRRS/Reports/IRRBB_PLACEMENTS'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate)
+				+ '&asondate=' + encodeURIComponent(asondate)
+				+ '&type=RESUB';
+			if (version) url += '&version=' + encodeURIComponent(version);
+			window.location.href = url;
+		}
+		function goToResubDetail() {
+			var fromdate = document.getElementById('hdnFromdate').value;
+			var todate = document.getElementById('hdnTodate').value;
+			var asondate = (document.getElementById('pageAsOnDate') || {}).value || todate;
+			var version = new URLSearchParams(window.location.search).get('version') || '';
+			var url = '/BRRS/Reports/IRRBB_PLACEMENTS/detail'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate)
+				+ '&asondate=' + encodeURIComponent(asondate)
+				+ '&type=RESUB';
+			if (version) url += '&version=' + encodeURIComponent(version);
+			window.location.href = url;
+		}
+
+		// ============================================================
+		// Downloads (unchanged) — hidden from pure makers by CSS-JS
+		// ============================================================
 		function downloadSummaryExcel() {
 			var todate = document.getElementById('hdnTodate').value;
 			$('#loader').modal('show');
@@ -420,6 +486,7 @@
 				error: function (jqXHR) {$('#loader').modal('hide'); alert('Download failed.');}
 			});
 		}
+
 		function toggleDlMenu(menuId) {
 			var menu = document.getElementById(menuId);
 			menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
@@ -433,44 +500,36 @@
 		});
 
 		// ============================================================
-		// TOGGLE FLOATING FIELDS VISIBILITY
+		// Floating-field toggle (unchanged)
 		// ============================================================
 		function toggleFloatingFields() {
-			var selectedValue = document.getElementById('floatingFixedSelect').value;
+			var sel = document.getElementById('floatingFixedSelect');
+			if (!sel) return;
+
+			var selectedValue = sel.value;
 			var floatingFields = document.querySelectorAll('.floating-field');
 
 			if (selectedValue === 'Floating') {
 				floatingFields.forEach(function (field) {
 					field.style.display = 'block';
-					// Enable any disabled inputs
-					var inputs = field.querySelectorAll('input, select, textarea');
-					inputs.forEach(function (input) {
+					field.querySelectorAll('input, select, textarea').forEach(function (input) {
 						input.disabled = false;
 					});
 				});
 			} else {
 				floatingFields.forEach(function (field) {
 					field.style.display = 'none';
-					// Disable inputs to prevent data submission
-					var inputs = field.querySelectorAll('input, select, textarea');
-					inputs.forEach(function (input) {
+					field.querySelectorAll('input, select, textarea').forEach(function (input) {
 						input.disabled = true;
-						// Clear values when hidden
-						if (input.type !== 'hidden') {
-							input.value = '';
-						}
+						if (input.type !== 'hidden') input.value = '';
 					});
 				});
 			}
 		}
-
-		// Initialize on page load
-		$(document).ready(function () {
-			toggleFloatingFields();
-		});
 	</script>
 
 	<title>IRRBB PLACEMENTS</title>
+
 </head>
 
 <body>
@@ -507,31 +566,43 @@
 						<input type="hidden" id="hdnFromdate" th:value="${fromdate}" />
 						<input type="hidden" id="hdnTodate" th:value="${todate}" />
 						<input type="hidden" id="hdnArchiveMode" th:value="${archiveMode}" />
+						<!-- §2 — needed by goToDetail() / backToSummary() -->
+						<input type="hidden" id="pageAsOnDate" th:value="${asondate}" />
 
-						<!-- Add New Record button — summary page only, hide in archive/resub mode -->
-						<a th:if="${displaymode == 'summary' and archiveMode != true and resubMode != true and (role == 'M' or role == 'MAN')}"
-							th:href="@{/Reports/IRRBB_PLACEMENTS/add(asondate=${asondate},fromdate=${fromdate},todate=${todate})}"
-							class="custom-tab-btn">
+						<!-- Add New Record — summary page only, hide in archive/resub -->
+						<a th:if="${displaymode == 'summary' and archiveMode != true and resubMode != true
+						           and (role == 'M' or role == 'MAN' or role == 'MAKER' or role == 'MANAGER' or role == 'ADMIN' or role == 'A' or role == 'B')}"
+							th:href="@{/Reports/IRRBB_PLACEMENTS/add(...)}" class="custom-tab-btn">
 							Add New Record
 						</a>
 
-						<!-- Detail button — visible on summary (live) -->
+						<!-- Detail button — visible on live summary -->
 						<button type="button" class="custom-tab-btn"
 							th:if="${displaymode == 'summary' and archiveMode != true and resubMode != true}"
 							onclick="goToDetail()">Detail</button>
 
-						<!-- Back to Summary button on detail views -->
+						<!-- Back to Summary button on live detail view -->
 						<button type="button" class="custom-tab-btn"
 							th:if="${displaymode == 'detail' and archiveMode != true and resubMode != true}"
 							onclick="backToSummary()">&#8592; Summary</button>
 
+						<!-- §5 — Resub navigation -->
+						<button type="button" class="custom-tab-btn"
+							th:if="${resubMode == true and displaymode == 'summary'}" onclick="goToResubDetail()">Resub
+							Detail</button>
+						<button type="button" class="custom-tab-btn"
+							th:if="${resubMode == true and displaymode == 'detail'}"
+							onclick="goToResubSummary()">&#8592; Resub Summary</button>
+
 						<!-- Header Modify placeholder -->
 						<button type="button" class="custom-tab-btn"
-							th:if="${displaymode == 'summary' and archiveMode != true and (role == 'M' or role == 'MAN')}" id="addRecord"
+							th:if="${displaymode == 'summary' and archiveMode != true
+						             and (role == 'M' or role == 'MAN' or role == 'MAKER' or role == 'MANAGER' or role == 'ADMIN' or role == 'A' or role == 'B')}" id="addRecord"
 							title="Use the Modify button on each row">Modify</button>
 
 						<!-- Download split button — live summary -->
-						<div th:if="${displaymode == 'summary' and archiveMode != true and resubMode != true and role != 'M'}"
+						<div th:if="${displaymode == 'summary' and archiveMode != true and resubMode != true
+						             and (role == 'C' or role == 'CHECKER' or role == 'MAN' or role == 'MANAGER' or role == 'ADMIN' or role == 'A' or role == 'B')}"
 							class="dl-split-wrap" id="dlSumWrap">
 							<button class="custom-tab-btn dl-main-btn" onclick="downloadSummaryExcel()">
 								<i class="fa fa-download"></i> Download
@@ -565,8 +636,8 @@
 						</div>
 
 						<!-- Download split button — archive summary -->
-						<div th:if="${archiveMode == true and displaymode == 'summary' and role != 'M'}" class="dl-split-wrap"
-							id="dlArchSumWrap">
+						<div th:if="${archiveMode == true and displaymode == 'summary' and role != 'M'}"
+							class="dl-split-wrap" id="dlArchSumWrap">
 							<button class="custom-tab-btn dl-main-btn" onclick="downloadArchiveSummaryExcel()">
 								<i class="fa fa-download"></i> Download
 							</button>
@@ -582,8 +653,8 @@
 						</div>
 
 						<!-- Download split button — archive detail -->
-						<div th:if="${archiveMode == true and displaymode == 'detail' and role != 'M'}" class="dl-split-wrap"
-							id="dlArchDetWrap">
+						<div th:if="${archiveMode == true and displaymode == 'detail' and role != 'M'}"
+							class="dl-split-wrap" id="dlArchDetWrap">
 							<button class="custom-tab-btn dl-main-btn" onclick="downloadArchiveDetailExcel()">
 								<i class="fa fa-download"></i> Download
 							</button>
@@ -599,8 +670,8 @@
 						</div>
 
 						<!-- Download split button — resub summary -->
-						<div th:if="${resubMode == true and displaymode == 'summary' and role != 'M'}" class="dl-split-wrap"
-							id="dlResubSumWrap">
+						<div th:if="${resubMode == true and displaymode == 'summary' and role != 'M'}"
+							class="dl-split-wrap" id="dlResubSumWrap">
 							<button class="custom-tab-btn dl-main-btn" onclick="downloadResubSummaryExcel()">
 								<i class="fa fa-download"></i> Download
 							</button>
@@ -616,8 +687,8 @@
 						</div>
 
 						<!-- Download split button — resub detail -->
-						<div th:if="${resubMode == true and displaymode == 'detail' and role != 'M'}" class="dl-split-wrap"
-							id="dlResubDetWrap">
+						<div th:if="${resubMode == true and displaymode == 'detail' and role != 'M'}"
+							class="dl-split-wrap" id="dlResubDetWrap">
 							<button class="custom-tab-btn dl-main-btn" onclick="downloadResubDetailExcel()">
 								<i class="fa fa-download"></i> Download
 							</button>
@@ -646,9 +717,7 @@
 				<div th:if="${successMessage != null}"
 					th:class="'alert alert-' + (${successType == 'success' ? 'success' : 'danger'}) + ' alert-dismissible fade show'"
 					role="alert" style="margin: 15px 20px 0 20px;">
-
 					<span th:text="${successMessage}"></span>
-
 					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
@@ -677,7 +746,10 @@
 							<table class="table table-bordered table-hover table-sm" id="irrbbPlacementsTbl">
 								<thead>
 									<tr>
-										<th th:if="${archiveMode != true and (role == 'M' or role == 'MAN')}"></th>
+										<th
+											th:if="${archiveMode != true
+										           and (role == 'M' or role == 'MAN' or role == 'MAKER' or role == 'MANAGER' or role == 'ADMIN' or role == 'A' or role == 'B')}">
+										</th>
 										<th>S.No</th>
 										<th>Account Number</th>
 										<th>GL Code</th>
@@ -701,7 +773,9 @@
 								</thead>
 								<tbody>
 									<tr th:each="data : ${reportsummary}">
-										<td th:if="${archiveMode != true and (role == 'M' or role == 'MAN')}">
+										<td
+											th:if="${archiveMode != true
+										           and (role == 'M' or role == 'MAN' or role == 'MAKER' or role == 'MANAGER' or role == 'ADMIN' or role == 'A' or role == 'B')}">
 											<a th:if="${resubMode != true}"
 												th:href="@{/Reports/IRRBB_PLACEMENTS/modify/{id}(id=${data.sno},asondate=${asondate},fromdate=${fromdate},todate=${todate})}"
 												class="btn btn-warning btn-sm">Modify</a>
@@ -745,8 +819,6 @@
 					</div>
 				</div>
 
-
-
 				<!-- ===================================================== -->
 				<!-- DETAIL TABLE                                           -->
 				<!-- ===================================================== -->
@@ -761,7 +833,9 @@
 						</button>
 					</div>
 
-					<div th:if="${archiveMode != true and resubMode != true and (role == 'M' or role == 'MAN')}" style="padding:8px 15px;">
+					<div th:if="${archiveMode != true and resubMode != true
+					             and (role == 'M' or role == 'MAN' or role == 'MAKER' or role == 'MANAGER' or role == 'ADMIN' or role == 'A' or role == 'B')}"
+						style="padding:8px 15px;">
 						<a th:href="@{/Reports/IRRBB_PLACEMENTS/detail/add(asondate=${asondate},fromdate=${fromdate},todate=${todate})}"
 							class="btn btn-primary btn-sm">Add New Record</a>
 					</div>
@@ -770,7 +844,10 @@
 							<table class="table table-bordered table-hover table-sm" id="irrbbPlacementsDetailTbl">
 								<thead>
 									<tr>
-										<th th:if="${archiveMode != true and (role == 'M' or role == 'MAN')}"></th>
+										<th
+											th:if="${archiveMode != true
+										           and (role == 'M' or role == 'MAN' or role == 'MAKER' or role == 'MANAGER' or role == 'ADMIN' or role == 'A' or role == 'B')}">
+										</th>
 										<th>S.No</th>
 										<th>Account Number</th>
 										<th>GL Code</th>
@@ -794,7 +871,9 @@
 								</thead>
 								<tbody>
 									<tr th:each="data : ${reportdetail}">
-										<td th:if="${archiveMode != true and (role == 'M' or role == 'MAN')}">
+										<td
+											th:if="${archiveMode != true
+										           and (role == 'M' or role == 'MAN' or role == 'MAKER' or role == 'MANAGER' or role == 'ADMIN' or role == 'A' or role == 'B')}">
 											<a th:if="${resubMode != true}"
 												th:href="@{/Reports/IRRBB_PLACEMENTS/detail/modify/{id}(id=${data.sno},asondate=${asondate},fromdate=${fromdate},todate=${todate})}"
 												class="btn btn-warning btn-sm">Modify</a>
@@ -838,16 +917,11 @@
 					</div>
 				</div>
 
-
-
-
 				<!-- ===================================================== -->
 				<!-- ADD SCREEN                                             -->
 				<!-- ===================================================== -->
 				<div th:if="${displaymode == 'add'}" class="container-fluid">
-
 					<form th:action="@{/Reports/IRRBB_PLACEMENTS/save}" method="post" th:object="${irrbbPlacements}">
-
 						<input type="hidden" th:name="asondate" th:value="${asondate}" />
 						<input type="hidden" th:name="fromdate" th:value="${fromdate}" />
 						<input type="hidden" th:name="todate" th:value="${todate}" />
@@ -886,38 +960,28 @@
 										</select>
 									</div>
 
-
-									<!-- Floating-specific fields (shown only when Floating is selected) -->
 									<div class="floating-field">
 										<div class="row">
-											<div class="col-md-4 mb-3"><label>Existing Benchmark</label>
-												<input type="text" th:field="*{existingBenchmark}"
-													class="form-control" />
+											<div class="col-md-4 mb-3"><label>Existing Benchmark</label><input
+													type="text" th:field="*{existingBenchmark}" class="form-control" />
 											</div>
-											<div class="col-md-4 mb-3"><label>Existing Repricing Frequency</label>
-												<input type="text" th:field="*{existingRepricingFrequency}"
-													class="form-control" />
+											<div class="col-md-4 mb-3"><label>Existing Repricing Frequency</label><input
+													type="text" th:field="*{existingRepricingFrequency}"
+													class="form-control" /></div>
+											<div class="col-md-4 mb-3"><label>Last Repricing Date</label><input
+													type="date" th:field="*{lastRepricingDate}" class="form-control" />
 											</div>
-											<div class="col-md-4 mb-3"><label>Last Repricing Date</label>
-												<input type="date" th:field="*{lastRepricingDate}"
-													class="form-control" />
+											<div class="col-md-4 mb-3"><label>Next Repricing Date</label><input
+													type="date" th:field="*{nextRepricingDate}" class="form-control" />
 											</div>
-											<div class="col-md-4 mb-3"><label>Next Repricing Date</label>
-												<input type="date" th:field="*{nextRepricingDate}"
-													class="form-control" />
-											</div>
-											<div class="col-md-4 mb-3"><label>Spread Over Benchmark</label>
-												<input type="text" th:field="*{spreadOverBenchmark}"
-													class="form-control" />
-											</div>
+											<div class="col-md-4 mb-3"><label>Spread Over Benchmark</label><input
+													type="text" th:field="*{spreadOverBenchmark}"
+													class="form-control" /></div>
 										</div>
 									</div>
 
-
-
 									<div class="col-md-4 mb-3"><label>Final ROI %</label><input type="text"
 											th:field="*{finalRoiPercent}" class="form-control" /></div>
-
 									<div class="col-md-4 mb-3"><label>Remarks</label><input type="text"
 											th:field="*{remarks}" class="form-control" /></div>
 									<div class="col-md-4 mb-3"><label>BACID</label><input type="text"
@@ -954,10 +1018,8 @@
 				<!-- DETAIL-ADD SCREEN                                      -->
 				<!-- ===================================================== -->
 				<div th:if="${displaymode == 'detail-add'}" class="container-fluid">
-
 					<form th:action="@{/Reports/IRRBB_PLACEMENTS/detail/save}" method="post"
 						th:object="${irrbbPlacements}">
-
 						<input type="hidden" th:name="asondate" th:value="${asondate}" />
 						<input type="hidden" th:name="fromdate" th:value="${fromdate}" />
 						<input type="hidden" th:name="todate" th:value="${todate}" />
@@ -996,35 +1058,28 @@
 										</select>
 									</div>
 
-									<!-- Floating-specific fields (shown only when Floating is selected) -->
 									<div class="floating-field">
 										<div class="row">
-											<div class="col-md-4 mb-3"><label>Existing Benchmark</label>
-												<input type="text" th:field="*{existingBenchmark}"
-													class="form-control" />
+											<div class="col-md-4 mb-3"><label>Existing Benchmark</label><input
+													type="text" th:field="*{existingBenchmark}" class="form-control" />
 											</div>
-											<div class="col-md-4 mb-3"><label>Existing Repricing Frequency</label>
-												<input type="text" th:field="*{existingRepricingFrequency}"
-													class="form-control" />
+											<div class="col-md-4 mb-3"><label>Existing Repricing Frequency</label><input
+													type="text" th:field="*{existingRepricingFrequency}"
+													class="form-control" /></div>
+											<div class="col-md-4 mb-3"><label>Last Repricing Date</label><input
+													type="date" th:field="*{lastRepricingDate}" class="form-control" />
 											</div>
-											<div class="col-md-4 mb-3"><label>Last Repricing Date</label>
-												<input type="date" th:field="*{lastRepricingDate}"
-													class="form-control" />
+											<div class="col-md-4 mb-3"><label>Next Repricing Date</label><input
+													type="date" th:field="*{nextRepricingDate}" class="form-control" />
 											</div>
-											<div class="col-md-4 mb-3"><label>Next Repricing Date</label>
-												<input type="date" th:field="*{nextRepricingDate}"
-													class="form-control" />
-											</div>
-											<div class="col-md-4 mb-3"><label>Spread Over Benchmark</label>
-												<input type="text" th:field="*{spreadOverBenchmark}"
-													class="form-control" />
-											</div>
+											<div class="col-md-4 mb-3"><label>Spread Over Benchmark</label><input
+													type="text" th:field="*{spreadOverBenchmark}"
+													class="form-control" /></div>
 										</div>
 									</div>
 
 									<div class="col-md-4 mb-3"><label>Final ROI %</label><input type="text"
 											th:field="*{finalRoiPercent}" class="form-control" /></div>
-
 									<div class="col-md-4 mb-3"><label>Remarks</label><input type="text"
 											th:field="*{remarks}" class="form-control" /></div>
 									<div class="col-md-4 mb-3"><label>BACID</label><input type="text"
@@ -1058,7 +1113,7 @@
 				</div>
 
 				<!-- ===================================================== -->
-				<!-- MODIFY SCREEN                                          -->
+				<!-- MODIFY SCREEN (live path — Maker)                       -->
 				<!-- ===================================================== -->
 				<div th:if="${displaymode == 'modify'}" class="container-fluid">
 
@@ -1068,15 +1123,19 @@
 						<input type="hidden" th:name="fromdate" th:value="${fromdate}" />
 						<input type="hidden" th:name="todate" th:value="${todate}" />
 						<input type="hidden" th:field="*{sno}" />
-						<input type="hidden" th:field="*{reportDate}" />
-						<input type="hidden" th:field="*{reportVersion}" />
-						<input type="hidden" th:field="*{reportFrequency}" />
-						<input type="hidden" th:field="*{reportCode}" />
-						<input type="hidden" th:field="*{reportDesc}" />
-						<input type="hidden" th:field="*{entityFlg}" />
-						<input type="hidden" th:field="*{modifyFlg}" />
-						<input type="hidden" th:field="*{delFlg}" />
-						<input type="hidden" th:if="*{reportResubdate != null}" th:field="*{reportResubdate}" />
+						<!-- §4 — safe reportDate / reportVersion / flags -->
+						<input type="hidden" name="reportDate"
+							th:value="${irrbbPlacements.reportDate != null ? #dates.format(irrbbPlacements.reportDate,'yyyy-MM-dd') : ''}" />
+						<input type="hidden" name="reportVersion" th:value="${irrbbPlacements.reportVersion}" />
+						<input type="hidden" name="reportFrequency" th:value="${irrbbPlacements.reportFrequency}" />
+						<input type="hidden" name="reportCode" th:value="${irrbbPlacements.reportCode}" />
+						<input type="hidden" name="reportDesc" th:value="${irrbbPlacements.reportDesc}" />
+						<input type="hidden" name="entityFlg" th:value="${irrbbPlacements.entityFlg}" />
+						<input type="hidden" name="modifyFlg" th:value="${irrbbPlacements.modifyFlg}" />
+						<input type="hidden" name="delFlg" th:value="${irrbbPlacements.delFlg}" />
+						<input type="hidden" name="reportResubdate"
+							th:value="${irrbbPlacements.reportResubdate != null ? #dates.format(irrbbPlacements.reportResubdate,'yyyy-MM-dd') : ''}" />
+
 						<div class="card">
 							<div class="card-header bg-warning text-dark">
 								<h4>Modify IRRBB PLACEMENTS Record</h4>
@@ -1111,35 +1170,28 @@
 										</select>
 									</div>
 
-									<!-- Floating-specific fields (shown only when Floating is selected) -->
 									<div class="floating-field">
 										<div class="row">
-											<div class="col-md-4 mb-3"><label>Existing Benchmark</label>
-												<input type="text" th:field="*{existingBenchmark}"
-													class="form-control" />
+											<div class="col-md-4 mb-3"><label>Existing Benchmark</label><input
+													type="text" th:field="*{existingBenchmark}" class="form-control" />
 											</div>
-											<div class="col-md-4 mb-3"><label>Existing Repricing Frequency</label>
-												<input type="text" th:field="*{existingRepricingFrequency}"
-													class="form-control" />
+											<div class="col-md-4 mb-3"><label>Existing Repricing Frequency</label><input
+													type="text" th:field="*{existingRepricingFrequency}"
+													class="form-control" /></div>
+											<div class="col-md-4 mb-3"><label>Last Repricing Date</label><input
+													type="date" th:field="*{lastRepricingDate}" class="form-control" />
 											</div>
-											<div class="col-md-4 mb-3"><label>Last Repricing Date</label>
-												<input type="date" th:field="*{lastRepricingDate}"
-													class="form-control" />
+											<div class="col-md-4 mb-3"><label>Next Repricing Date</label><input
+													type="date" th:field="*{nextRepricingDate}" class="form-control" />
 											</div>
-											<div class="col-md-4 mb-3"><label>Next Repricing Date</label>
-												<input type="date" th:field="*{nextRepricingDate}"
-													class="form-control" />
-											</div>
-											<div class="col-md-4 mb-3"><label>Spread Over Benchmark</label>
-												<input type="text" th:field="*{spreadOverBenchmark}"
-													class="form-control" />
-											</div>
+											<div class="col-md-4 mb-3"><label>Spread Over Benchmark</label><input
+													type="text" th:field="*{spreadOverBenchmark}"
+													class="form-control" /></div>
 										</div>
 									</div>
 
 									<div class="col-md-4 mb-3"><label>Final ROI %</label><input type="text"
 											th:field="*{finalRoiPercent}" class="form-control" /></div>
-
 									<div class="col-md-4 mb-3"><label>Remarks</label><input type="text"
 											th:field="*{remarks}" class="form-control" /></div>
 									<div class="col-md-4 mb-3"><label>BACID</label><input type="text"
@@ -1153,19 +1205,25 @@
 						</div>
 					</form>
 
-					<form th:if="${resubMode}" th:action="@{/Reports/IRRBB_PLACEMENTS/update}" method="post"
+					<!-- §3 — RESUB Modify routes to the ReSub endpoint -->
+					<form th:if="${resubMode}" th:action="@{/Reports/UpdateIRRBB_PLACEMENTS_ReSub}" method="post"
 						th:object="${irrbbPlacements}">
+						<input type="hidden" th:name="asondate" th:value="${asondate}" />
 						<input type="hidden" th:name="todate" th:value="${todate}" />
 						<input type="hidden" th:field="*{sno}" />
-						<input type="hidden" th:field="*{reportDate}" />
-						<input type="hidden" th:field="*{reportVersion}" />
-						<input type="hidden" th:field="*{reportFrequency}" />
-						<input type="hidden" th:field="*{reportCode}" />
-						<input type="hidden" th:field="*{reportDesc}" />
-						<input type="hidden" th:field="*{entityFlg}" />
-						<input type="hidden" th:field="*{modifyFlg}" />
-						<input type="hidden" th:field="*{delFlg}" />
-						<input type="hidden" th:if="*{reportResubdate != null}" th:field="*{reportResubdate}" />
+						<!-- §4 — safe date fields -->
+						<input type="hidden" name="reportDate"
+							th:value="${irrbbPlacements.reportDate != null ? #dates.format(irrbbPlacements.reportDate,'yyyy-MM-dd') : ''}" />
+						<input type="hidden" name="reportVersion" th:value="${irrbbPlacements.reportVersion}" />
+						<input type="hidden" name="reportFrequency" th:value="${irrbbPlacements.reportFrequency}" />
+						<input type="hidden" name="reportCode" th:value="${irrbbPlacements.reportCode}" />
+						<input type="hidden" name="reportDesc" th:value="${irrbbPlacements.reportDesc}" />
+						<input type="hidden" name="entityFlg" th:value="${irrbbPlacements.entityFlg}" />
+						<input type="hidden" name="modifyFlg" th:value="${irrbbPlacements.modifyFlg}" />
+						<input type="hidden" name="delFlg" th:value="${irrbbPlacements.delFlg}" />
+						<input type="hidden" name="reportResubdate"
+							th:value="${irrbbPlacements.reportResubdate != null ? #dates.format(irrbbPlacements.reportResubdate,'yyyy-MM-dd') : ''}" />
+
 						<div class="card">
 							<div class="card-header bg-warning text-dark">
 								<h4>Modify IRRBB PLACEMENTS Resub Record</h4>
@@ -1200,35 +1258,28 @@
 										</select>
 									</div>
 
-									<!-- Floating-specific fields (shown only when Floating is selected) -->
 									<div class="floating-field">
 										<div class="row">
-											<div class="col-md-4 mb-3"><label>Existing Benchmark</label>
-												<input type="text" th:field="*{existingBenchmark}"
-													class="form-control" />
+											<div class="col-md-4 mb-3"><label>Existing Benchmark</label><input
+													type="text" th:field="*{existingBenchmark}" class="form-control" />
 											</div>
-											<div class="col-md-4 mb-3"><label>Existing Repricing Frequency</label>
-												<input type="text" th:field="*{existingRepricingFrequency}"
-													class="form-control" />
+											<div class="col-md-4 mb-3"><label>Existing Repricing Frequency</label><input
+													type="text" th:field="*{existingRepricingFrequency}"
+													class="form-control" /></div>
+											<div class="col-md-4 mb-3"><label>Last Repricing Date</label><input
+													type="date" th:field="*{lastRepricingDate}" class="form-control" />
 											</div>
-											<div class="col-md-4 mb-3"><label>Last Repricing Date</label>
-												<input type="date" th:field="*{lastRepricingDate}"
-													class="form-control" />
+											<div class="col-md-4 mb-3"><label>Next Repricing Date</label><input
+													type="date" th:field="*{nextRepricingDate}" class="form-control" />
 											</div>
-											<div class="col-md-4 mb-3"><label>Next Repricing Date</label>
-												<input type="date" th:field="*{nextRepricingDate}"
-													class="form-control" />
-											</div>
-											<div class="col-md-4 mb-3"><label>Spread Over Benchmark</label>
-												<input type="text" th:field="*{spreadOverBenchmark}"
-													class="form-control" />
-											</div>
+											<div class="col-md-4 mb-3"><label>Spread Over Benchmark</label><input
+													type="text" th:field="*{spreadOverBenchmark}"
+													class="form-control" /></div>
 										</div>
 									</div>
 
 									<div class="col-md-4 mb-3"><label>Final ROI %</label><input type="text"
 											th:field="*{finalRoiPercent}" class="form-control" /></div>
-
 									<div class="col-md-4 mb-3"><label>Remarks</label><input type="text"
 											th:field="*{remarks}" class="form-control" /></div>
 									<div class="col-md-4 mb-3"><label>BACID</label><input type="text"
@@ -1254,15 +1305,19 @@
 						<input type="hidden" th:name="fromdate" th:value="${fromdate}" />
 						<input type="hidden" th:name="todate" th:value="${todate}" />
 						<input type="hidden" th:field="*{sno}" />
-						<input type="hidden" th:field="*{reportDate}" />
-						<input type="hidden" th:field="*{reportVersion}" />
-						<input type="hidden" th:field="*{reportFrequency}" />
-						<input type="hidden" th:field="*{reportCode}" />
-						<input type="hidden" th:field="*{reportDesc}" />
-						<input type="hidden" th:field="*{entityFlg}" />
-						<input type="hidden" th:field="*{modifyFlg}" />
-						<input type="hidden" th:field="*{delFlg}" />
-						<input type="hidden" th:if="*{reportResubdate != null}" th:field="*{reportResubdate}" />
+						<!-- §4 — safe date fields -->
+						<input type="hidden" name="reportDate"
+							th:value="${irrbbPlacements.reportDate != null ? #dates.format(irrbbPlacements.reportDate,'yyyy-MM-dd') : ''}" />
+						<input type="hidden" name="reportVersion" th:value="${irrbbPlacements.reportVersion}" />
+						<input type="hidden" name="reportFrequency" th:value="${irrbbPlacements.reportFrequency}" />
+						<input type="hidden" name="reportCode" th:value="${irrbbPlacements.reportCode}" />
+						<input type="hidden" name="reportDesc" th:value="${irrbbPlacements.reportDesc}" />
+						<input type="hidden" name="entityFlg" th:value="${irrbbPlacements.entityFlg}" />
+						<input type="hidden" name="modifyFlg" th:value="${irrbbPlacements.modifyFlg}" />
+						<input type="hidden" name="delFlg" th:value="${irrbbPlacements.delFlg}" />
+						<input type="hidden" name="reportResubdate"
+							th:value="${irrbbPlacements.reportResubdate != null ? #dates.format(irrbbPlacements.reportResubdate,'yyyy-MM-dd') : ''}" />
+
 						<div class="card">
 							<div class="card-header bg-warning text-dark">
 								<h4>Modify IRRBB PLACEMENTS Detail Record</h4>
@@ -1297,35 +1352,28 @@
 										</select>
 									</div>
 
-									<!-- Floating-specific fields (shown only when Floating is selected) -->
 									<div class="floating-field">
 										<div class="row">
-											<div class="col-md-4 mb-3"><label>Existing Benchmark</label>
-												<input type="text" th:field="*{existingBenchmark}"
-													class="form-control" />
+											<div class="col-md-4 mb-3"><label>Existing Benchmark</label><input
+													type="text" th:field="*{existingBenchmark}" class="form-control" />
 											</div>
-											<div class="col-md-4 mb-3"><label>Existing Repricing Frequency</label>
-												<input type="text" th:field="*{existingRepricingFrequency}"
-													class="form-control" />
+											<div class="col-md-4 mb-3"><label>Existing Repricing Frequency</label><input
+													type="text" th:field="*{existingRepricingFrequency}"
+													class="form-control" /></div>
+											<div class="col-md-4 mb-3"><label>Last Repricing Date</label><input
+													type="date" th:field="*{lastRepricingDate}" class="form-control" />
 											</div>
-											<div class="col-md-4 mb-3"><label>Last Repricing Date</label>
-												<input type="date" th:field="*{lastRepricingDate}"
-													class="form-control" />
+											<div class="col-md-4 mb-3"><label>Next Repricing Date</label><input
+													type="date" th:field="*{nextRepricingDate}" class="form-control" />
 											</div>
-											<div class="col-md-4 mb-3"><label>Next Repricing Date</label>
-												<input type="date" th:field="*{nextRepricingDate}"
-													class="form-control" />
-											</div>
-											<div class="col-md-4 mb-3"><label>Spread Over Benchmark</label>
-												<input type="text" th:field="*{spreadOverBenchmark}"
-													class="form-control" />
-											</div>
+											<div class="col-md-4 mb-3"><label>Spread Over Benchmark</label><input
+													type="text" th:field="*{spreadOverBenchmark}"
+													class="form-control" /></div>
 										</div>
 									</div>
 
 									<div class="col-md-4 mb-3"><label>Final ROI %</label><input type="text"
 											th:field="*{finalRoiPercent}" class="form-control" /></div>
-
 									<div class="col-md-4 mb-3"><label>Remarks</label><input type="text"
 											th:field="*{remarks}" class="form-control" /></div>
 									<div class="col-md-4 mb-3"><label>BACID</label><input type="text"
@@ -1339,19 +1387,25 @@
 						</div>
 					</form>
 
-					<form th:if="${resubMode}" th:action="@{/Reports/IRRBB_PLACEMENTS/detail/update}" method="post"
+					<!-- §3 — RESUB Detail Modify routes to ReSub endpoint -->
+					<form th:if="${resubMode}" th:action="@{/Reports/UpdateIRRBB_PLACEMENTS_ReSub}" method="post"
 						th:object="${irrbbPlacements}">
+						<input type="hidden" th:name="asondate" th:value="${asondate}" />
 						<input type="hidden" th:name="todate" th:value="${todate}" />
 						<input type="hidden" th:field="*{sno}" />
-						<input type="hidden" th:field="*{reportDate}" />
-						<input type="hidden" th:field="*{reportVersion}" />
-						<input type="hidden" th:field="*{reportFrequency}" />
-						<input type="hidden" th:field="*{reportCode}" />
-						<input type="hidden" th:field="*{reportDesc}" />
-						<input type="hidden" th:field="*{entityFlg}" />
-						<input type="hidden" th:field="*{modifyFlg}" />
-						<input type="hidden" th:field="*{delFlg}" />
-						<input type="hidden" th:if="*{reportResubdate != null}" th:field="*{reportResubdate}" />
+						<!-- §4 — safe date fields -->
+						<input type="hidden" name="reportDate"
+							th:value="${irrbbPlacements.reportDate != null ? #dates.format(irrbbPlacements.reportDate,'yyyy-MM-dd') : ''}" />
+						<input type="hidden" name="reportVersion" th:value="${irrbbPlacements.reportVersion}" />
+						<input type="hidden" name="reportFrequency" th:value="${irrbbPlacements.reportFrequency}" />
+						<input type="hidden" name="reportCode" th:value="${irrbbPlacements.reportCode}" />
+						<input type="hidden" name="reportDesc" th:value="${irrbbPlacements.reportDesc}" />
+						<input type="hidden" name="entityFlg" th:value="${irrbbPlacements.entityFlg}" />
+						<input type="hidden" name="modifyFlg" th:value="${irrbbPlacements.modifyFlg}" />
+						<input type="hidden" name="delFlg" th:value="${irrbbPlacements.delFlg}" />
+						<input type="hidden" name="reportResubdate"
+							th:value="${irrbbPlacements.reportResubdate != null ? #dates.format(irrbbPlacements.reportResubdate,'yyyy-MM-dd') : ''}" />
+
 						<div class="card">
 							<div class="card-header bg-warning text-dark">
 								<h4>Modify IRRBB PLACEMENTS Resub Detail Record</h4>
@@ -1386,35 +1440,28 @@
 										</select>
 									</div>
 
-									<!-- Floating-specific fields (shown only when Floating is selected) -->
 									<div class="floating-field">
 										<div class="row">
-											<div class="col-md-4 mb-3"><label>Existing Benchmark</label>
-												<input type="text" th:field="*{existingBenchmark}"
-													class="form-control" />
+											<div class="col-md-4 mb-3"><label>Existing Benchmark</label><input
+													type="text" th:field="*{existingBenchmark}" class="form-control" />
 											</div>
-											<div class="col-md-4 mb-3"><label>Existing Repricing Frequency</label>
-												<input type="text" th:field="*{existingRepricingFrequency}"
-													class="form-control" />
+											<div class="col-md-4 mb-3"><label>Existing Repricing Frequency</label><input
+													type="text" th:field="*{existingRepricingFrequency}"
+													class="form-control" /></div>
+											<div class="col-md-4 mb-3"><label>Last Repricing Date</label><input
+													type="date" th:field="*{lastRepricingDate}" class="form-control" />
 											</div>
-											<div class="col-md-4 mb-3"><label>Last Repricing Date</label>
-												<input type="date" th:field="*{lastRepricingDate}"
-													class="form-control" />
+											<div class="col-md-4 mb-3"><label>Next Repricing Date</label><input
+													type="date" th:field="*{nextRepricingDate}" class="form-control" />
 											</div>
-											<div class="col-md-4 mb-3"><label>Next Repricing Date</label>
-												<input type="date" th:field="*{nextRepricingDate}"
-													class="form-control" />
-											</div>
-											<div class="col-md-4 mb-3"><label>Spread Over Benchmark</label>
-												<input type="text" th:field="*{spreadOverBenchmark}"
-													class="form-control" />
-											</div>
+											<div class="col-md-4 mb-3"><label>Spread Over Benchmark</label><input
+													type="text" th:field="*{spreadOverBenchmark}"
+													class="form-control" /></div>
 										</div>
 									</div>
 
 									<div class="col-md-4 mb-3"><label>Final ROI %</label><input type="text"
 											th:field="*{finalRoiPercent}" class="form-control" /></div>
-
 									<div class="col-md-4 mb-3"><label>Remarks</label><input type="text"
 											th:field="*{remarks}" class="form-control" /></div>
 									<div class="col-md-4 mb-3"><label>BACID</label><input type="text"

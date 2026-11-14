@@ -13,6 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -26,6 +27,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
@@ -63,7 +65,8 @@ public class BRRS_IRRBB_PLACEMENTS_ReportService {
 	// ── SUMMARY QUERY ─────────────────────────────────────────────────────────
 
 	public List<IRRBB_PLACEMENTS_Summary_Entity> getdatabydateList(Date reportDate) {
-		String sql = "SELECT * FROM BRRS_IRRBB_PLA_SUMMARY_TABLE a WHERE TRUNC(a.REPORT_DATE) = TRUNC(?)";
+		String sql = "SELECT * FROM BRRS_IRRBB_PLA_SUMMARY_TABLE a "
+				+ "WHERE TRUNC(a.REPORT_DATE) = TRUNC(?) AND NVL(a.DEL_FLG,'N') = 'N'";
 		return jdbcTemplate.query(sql, new Object[] { reportDate }, new IRRBB_PLACEMENTS_RowMapper());
 	}
 
@@ -100,45 +103,170 @@ public class BRRS_IRRBB_PLACEMENTS_ReportService {
 
 	// ── SUMMARY UPDATE ────────────────────────────────────────────────────────
 
-	public void updateRecord(IRRBB_PLACEMENTS_Summary_Entity e) {
-		IRRBB_PLACEMENTS_Summary_Entity oldEntity = findById(e.getSno());
-		String sql = "UPDATE BRRS_IRRBB_PLA_SUMMARY_TABLE SET"
-				+ "  ACCOUNT_NUMBER = ?, GL_CODE = ?, GL_DESCRIPTION = ?,"
-				+ "  ACCOUNT_CURRENCY = ?, ACCOUNT_OPENING_DATE = ?, MATURITY_DATE = ?,"
-				+ "  OUT_BAL_ACC_CCY = ?, OUT_BAL_INR = ?,"
-				+ "  FLOATING_FIXED = ?, EXISTING_BENCHMARK = ?, EXISTING_REPRICING_FREQUENCY = ?,"
-				+ "  LAST_REPRICING_DATE = ?, NEXT_REPRICING_DATE = ?, SPREAD_OVER_BENCHMARK = ?,"
-				+ "  FINAL_ROI_PERCENT = ?, REMARKS = ?, BACID = ?,"
-				+ "  REPORT_DATE = ?, REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, REPORT_DESC = ?,"
-				+ "  ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ?, REPORT_RESUBDATE = ?" + " WHERE SNO = ?";
-		jdbcTemplate.update(sql, e.getAccountNumber(), e.getGlCode(), e.getGlDescription(), e.getAccountCurrency(),
-				e.getAccountOpeningDate(), e.getMaturityDate(), e.getOutBalAccCcy(), e.getOutBalInr(),
-				e.getFloatingFixed(), e.getExistingBenchmark(), e.getExistingRepricingFrequency(),
-				e.getLastRepricingDate(), e.getNextRepricingDate(), e.getSpreadOverBenchmark(), e.getFinalRoiPercent(),
-				e.getRemarks(), e.getBacid(), e.getReportDate(), e.getReportVersion(), e.getReportFrequency(),
-				e.getReportCode(), e.getReportDesc(), e.getEntityFlg(), e.getModifyFlg(), e.getDelFlg(),
-				e.getReportResubdate(), e.getSno());
-		// ── Sync to Detail table (same ACCOUNT_NUMBER + REPORT_DATE) ─────────
-		String detailSyncSql = "UPDATE BRRS_IRRBB_PLA_DETAIL_TABLE SET" + "  GL_CODE=?, GL_DESCRIPTION=?,"
-				+ "  ACCOUNT_CURRENCY=?, ACCOUNT_OPENING_DATE=?, MATURITY_DATE=?,"
-				+ "  OUT_BAL_ACC_CCY=?, OUT_BAL_INR=?,"
-				+ "  FLOATING_FIXED=?, EXISTING_BENCHMARK=?, EXISTING_REPRICING_FREQUENCY=?,"
-				+ "  LAST_REPRICING_DATE=?, NEXT_REPRICING_DATE=?, SPREAD_OVER_BENCHMARK=?,"
-				+ "  FINAL_ROI_PERCENT=?, REMARKS=?, BACID=?,"
-				+ "  REPORT_VERSION=?, REPORT_FREQUENCY=?, REPORT_CODE=?, REPORT_DESC=?,"
-				+ "  ENTITY_FLG=?, MODIFY_FLG=?, DEL_FLG=?, REPORT_RESUBDATE=?"
-				+ " WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND ACCOUNT_NUMBER = ?";
-		jdbcTemplate.update(detailSyncSql, e.getGlCode(), e.getGlDescription(), e.getAccountCurrency(),
-				e.getAccountOpeningDate(), e.getMaturityDate(), e.getOutBalAccCcy(), e.getOutBalInr(),
-				e.getFloatingFixed(), e.getExistingBenchmark(), e.getExistingRepricingFrequency(),
-				e.getLastRepricingDate(), e.getNextRepricingDate(), e.getSpreadOverBenchmark(), e.getFinalRoiPercent(),
-				e.getRemarks(), e.getBacid(), e.getReportVersion(), e.getReportFrequency(), e.getReportCode(),
-				e.getReportDesc(), e.getEntityFlg(), e.getModifyFlg(), e.getDelFlg(), e.getReportResubdate(),
-				e.getReportDate(), e.getAccountNumber());
-		logger.info("IRRBB_PLACEMENTS updateRecord — sno={}", e.getSno());
+	// =====================================================
+	// SUMMARY REPO — Maker reads
+	// =====================================================
 
-		auditService.compareEntitiesmanual(oldEntity, e, e.getSno().toString(), "IRRBB_PLACEMENTS Summary Screen",
-				"BRRS_IRRBB_PLA_SUMMARY_TABLE");
+	/** Live summary row for the given date. Returns null when no row exists. */
+	public IRRBB_PLACEMENTS_Summary_Entity findByReportDate(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_IRRBB_PLA_SUMMARY_TABLE " + "WHERE TRUNC(REPORT_DATE) = TRUNC(?) "
+				+ "  AND NVL(DEL_FLG,'N') = 'N'";
+		List<IRRBB_PLACEMENTS_Summary_Entity> list = jdbcTemplate.query(sql, new Object[] { reportDate },
+				new IRRBB_PLACEMENTS_RowMapper());
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	/** Existing MOD row for the given date (pending or not). */
+	public IRRBB_PLACEMENTS_Summary_Entity findModRecordByReportDate(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_IRRBB_PLA_MOD_SUMMARY_TABLE " + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<IRRBB_PLACEMENTS_Summary_Entity> list = jdbcTemplate.query(sql, new Object[] { reportDate },
+				new IRRBB_PLACEMENTS_RowMapper());
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	// =====================================================
+	// MAKER PATH — write to MOD only
+	// =====================================================
+
+	/**
+	 * Replaces the old updateRecord(). Saves the maker's changes into
+	 * BRRS_IRRBB_PLA_MOD_SUMMARY_TABLE. Live summary/detail tables are NOT touched.
+	 */
+	@Transactional
+	public void updateRecord(IRRBB_PLACEMENTS_Summary_Entity e) {
+		logger.info("IRRBB_PLACEMENTS updateRecord (MAKER) — sno={}, date={}", e.getSno(), e.getReportDate());
+
+		if (e.getReportDate() == null) {
+			throw new IllegalArgumentException("REPORT_DATE is required for maker submission.");
+		}
+
+		// 1) Baseline = LIVE summary (for audit diff)
+		IRRBB_PLACEMENTS_Summary_Entity liveSummary = findByReportDate(e.getReportDate());
+		if (liveSummary == null) {
+			throw new RuntimeException("No live summary row found for REPORT_DATE : " + e.getReportDate());
+		}
+
+		// 2) MOD row to write — start from existing MOD if present, else clone LIVE
+		IRRBB_PLACEMENTS_Summary_Entity modRecord = findModRecordByReportDate(e.getReportDate());
+		if (modRecord == null) {
+			modRecord = new IRRBB_PLACEMENTS_Summary_Entity();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
+
+		// 3) Baseline for audit comparison
+		IRRBB_PLACEMENTS_Summary_Entity oldcopy = new IRRBB_PLACEMENTS_Summary_Entity();
+		BeanUtils.copyProperties(modRecord, oldcopy);
+
+		// 4) Copy the maker's edited fields into MOD
+		try {
+			copyEditableFields(e, modRecord);
+		} catch (Exception ex) {
+			throw new RuntimeException("Error while updating IRRBB_PLACEMENTS fields", ex);
+		}
+
+		// 5) Maker–Checker flags
+		modRecord.setEntityFlg("Y");
+		modRecord.setModifyFlg("Y");
+		modRecord.setDelFlg("N");
+
+		// 6) Persist to MOD (insert or update)
+		saveModSummaryEntity(modRecord);
+		logger.info("✔ IRRBB_PLACEMENTS staged in BRRS_IRRBB_PLA_MOD_SUMMARY_TABLE (pending Checker)");
+
+		// 7) Audit row (Checker will consume this)
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, modRecord, e.getReportDate().toString(),
+					"IRRBB_PLACEMENTS Summary Screen", "BRRS_IRRBB_PLA_MOD_SUMMARY_TABLE");
+		}
+	}
+
+	/**
+	 * Copies all business fields from source → target, leaving SNO & flags alone.
+	 */
+	private void copyEditableFields(IRRBB_PLACEMENTS_Summary_Entity src, IRRBB_PLACEMENTS_Summary_Entity dst) {
+		dst.setAccountNumber(src.getAccountNumber());
+		dst.setGlCode(src.getGlCode());
+		dst.setGlDescription(src.getGlDescription());
+		dst.setAccountCurrency(src.getAccountCurrency());
+		dst.setAccountOpeningDate(src.getAccountOpeningDate());
+		dst.setMaturityDate(src.getMaturityDate());
+		dst.setOutBalAccCcy(src.getOutBalAccCcy());
+		dst.setOutBalInr(src.getOutBalInr());
+		dst.setFloatingFixed(src.getFloatingFixed());
+		dst.setExistingBenchmark(src.getExistingBenchmark());
+		dst.setExistingRepricingFrequency(src.getExistingRepricingFrequency());
+		dst.setLastRepricingDate(src.getLastRepricingDate());
+		dst.setNextRepricingDate(src.getNextRepricingDate());
+		dst.setSpreadOverBenchmark(src.getSpreadOverBenchmark());
+		dst.setFinalRoiPercent(src.getFinalRoiPercent());
+		dst.setRemarks(src.getRemarks());
+		dst.setBacid(src.getBacid());
+
+		// report metadata — keep existing values unless explicitly supplied
+		dst.setReportDate(src.getReportDate() != null ? src.getReportDate() : dst.getReportDate());
+		dst.setReportVersion(src.getReportVersion() != null ? src.getReportVersion() : dst.getReportVersion());
+		dst.setReportFrequency(src.getReportFrequency() != null ? src.getReportFrequency() : dst.getReportFrequency());
+		dst.setReportCode(src.getReportCode() != null ? src.getReportCode() : dst.getReportCode());
+		dst.setReportDesc(src.getReportDesc() != null ? src.getReportDesc() : dst.getReportDesc());
+		dst.setReportResubdate(src.getReportResubdate());
+	}
+
+	/**
+	 * Persists a MOD row. Keyed on (REPORT_DATE, REPORT_VERSION). SNO is computed
+	 * as NVL(MAX(SNO),0)+1 on insert.
+	 */
+	private void saveModSummaryEntity(IRRBB_PLACEMENTS_Summary_Entity e) {
+		Integer count = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM BRRS_IRRBB_PLA_MOD_SUMMARY_TABLE "
+						+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND NVL(REPORT_VERSION,0) = NVL(?,0)",
+				Integer.class, e.getReportDate(), e.getReportVersion());
+
+		if (count != null && count > 0) {
+			String updSql = "UPDATE BRRS_IRRBB_PLA_MOD_SUMMARY_TABLE SET "
+					+ "  ACCOUNT_NUMBER=?, GL_CODE=?, GL_DESCRIPTION=?, ACCOUNT_CURRENCY=?, "
+					+ "  ACCOUNT_OPENING_DATE=?, MATURITY_DATE=?, OUT_BAL_ACC_CCY=?, OUT_BAL_INR=?, "
+					+ "  FLOATING_FIXED=?, EXISTING_BENCHMARK=?, EXISTING_REPRICING_FREQUENCY=?, "
+					+ "  LAST_REPRICING_DATE=?, NEXT_REPRICING_DATE=?, SPREAD_OVER_BENCHMARK=?, "
+					+ "  FINAL_ROI_PERCENT=?, REMARKS=?, BACID=?, "
+					+ "  REPORT_FREQUENCY=?, REPORT_CODE=?, REPORT_DESC=?, "
+					+ "  ENTITY_FLG=?, MODIFY_FLG=?, DEL_FLG=?, REPORT_RESUBDATE=? "
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND NVL(REPORT_VERSION,0) = NVL(?,0)";
+
+			jdbcTemplate.update(updSql, e.getAccountNumber(), e.getGlCode(), e.getGlDescription(),
+					e.getAccountCurrency(), e.getAccountOpeningDate(), e.getMaturityDate(), e.getOutBalAccCcy(),
+					e.getOutBalInr(), e.getFloatingFixed(), e.getExistingBenchmark(), e.getExistingRepricingFrequency(),
+					e.getLastRepricingDate(), e.getNextRepricingDate(), e.getSpreadOverBenchmark(),
+					e.getFinalRoiPercent(), e.getRemarks(), e.getBacid(), e.getReportFrequency(), e.getReportCode(),
+					e.getReportDesc(), e.getEntityFlg(), e.getModifyFlg(), e.getDelFlg(), e.getReportResubdate(),
+					e.getReportDate(), e.getReportVersion());
+
+			logger.info("✔ BRRS_IRRBB_PLA_MOD_SUMMARY_TABLE updated (date={}, ver={})", e.getReportDate(),
+					e.getReportVersion());
+		} else {
+			Long newSno = jdbcTemplate.queryForObject("SELECT NVL(MAX(SNO),0)+1 FROM BRRS_IRRBB_PLA_MOD_SUMMARY_TABLE",
+					Long.class);
+
+			String insSql = "INSERT INTO BRRS_IRRBB_PLA_MOD_SUMMARY_TABLE ("
+					+ "  SNO, ACCOUNT_NUMBER, GL_CODE, GL_DESCRIPTION, ACCOUNT_CURRENCY, "
+					+ "  ACCOUNT_OPENING_DATE, MATURITY_DATE, OUT_BAL_ACC_CCY, OUT_BAL_INR, "
+					+ "  FLOATING_FIXED, EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, "
+					+ "  LAST_REPRICING_DATE, NEXT_REPRICING_DATE, SPREAD_OVER_BENCHMARK, "
+					+ "  FINAL_ROI_PERCENT, REMARKS, BACID, "
+					+ "  REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+					+ "  ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE"
+					+ ") VALUES (?,?,?,?,?, ?,?,?,?, ?,?,?, ?,?,?, ?,?,?, ?,?,?,?,?, ?,?,?,?)";
+
+			jdbcTemplate.update(insSql, newSno, e.getAccountNumber(), e.getGlCode(), e.getGlDescription(),
+					e.getAccountCurrency(), e.getAccountOpeningDate(), e.getMaturityDate(), e.getOutBalAccCcy(),
+					e.getOutBalInr(), e.getFloatingFixed(), e.getExistingBenchmark(), e.getExistingRepricingFrequency(),
+					e.getLastRepricingDate(), e.getNextRepricingDate(), e.getSpreadOverBenchmark(),
+					e.getFinalRoiPercent(), e.getRemarks(), e.getBacid(), e.getReportDate(), e.getReportVersion(),
+					e.getReportFrequency(), e.getReportCode(), e.getReportDesc(), e.getEntityFlg(), e.getModifyFlg(),
+					e.getDelFlg(), e.getReportResubdate());
+
+			logger.info("✔ BRRS_IRRBB_PLA_MOD_SUMMARY_TABLE inserted (SNO={}, date={})", newSno, e.getReportDate());
+		}
 	}
 
 	// ── UNIFIED VIEW HELPER (supports NORMAL / ARCHIVAL / RESUB) ─
@@ -148,8 +276,19 @@ public class BRRS_IRRBB_PLACEMENTS_ReportService {
 
 		ModelAndView mv = new ModelAndView();
 
-		String userid = (String) req1.getSession().getAttribute("USERID");
-		String role = userProfileRep.getUserRole(userid);
+		String userid = null;
+		String role = null;
+		if (req1 != null) {
+			userid = (String) req1.getSession().getAttribute("USERID");
+			if (userid != null) {
+				try {
+					role = userProfileRep.getUserRole(userid);
+				} catch (Exception ex) {
+					logger.warn("getBRRS_IRRBB_PLACEMENTS_View — role lookup failed for user={}: {}", userid,
+							ex.getMessage());
+				}
+			}
+		}
 		md.addAttribute("role", role);
 		mv.addObject("role", role);
 		System.out.println("User Id Maker and Checker: " + userid + ", Role: " + role);
@@ -300,14 +439,25 @@ public class BRRS_IRRBB_PLACEMENTS_ReportService {
 	public ModelAndView getIRRBB_PLACEMENTS_DetailView(String fromdate, String todate, String asondate) {
 		ModelAndView mv = new ModelAndView();
 		try {
-			Date d1 = dateformat.parse(todate);
+			// Prefer asondate; fall back to todate if asondate is blank
+			String effectiveDateStr = (asondate != null && !asondate.trim().isEmpty()) ? asondate : todate;
+			Date d1 = dateformat.parse(effectiveDateStr);
+
 			List<IRRBB_PLACEMENTS_Summary_Entity> dataList = getDetailByDateList(d1);
+
 			mv.addObject("displaymode", "detail");
 			mv.addObject("reportdetail", dataList);
 			mv.addObject("asondate", asondate);
 			mv.addObject("fromdate", fromdate);
 			mv.addObject("todate", todate);
 
+			// ✅ safe defaults so header th:if matches correctly
+			mv.addObject("archiveMode", Boolean.FALSE);
+			mv.addObject("resubMode", Boolean.FALSE);
+			mv.addObject("reportid", "IRRBB_PLACEMENTS");
+			mv.addObject("currency", "PULA");
+
+			// Role for Maker/Checker UI gating
 			try {
 				ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 				if (attrs != null && attrs.getRequest() != null) {
@@ -315,6 +465,7 @@ public class BRRS_IRRBB_PLACEMENTS_ReportService {
 					if (userid != null) {
 						String role = userProfileRep.getUserRole(userid);
 						mv.addObject("role", role);
+						logger.info("getIRRBB_PLACEMENTS_DetailView — user={}, role={}", userid, role);
 					}
 				}
 			} catch (Exception e) {
@@ -540,29 +691,37 @@ public class BRRS_IRRBB_PLACEMENTS_ReportService {
 
 	public byte[] IRRBB_PLACEMENTS_Excel(String filename, String todate) throws Exception {
 		Date d = parseDateSafe(todate);
+		String fn = filename != null ? filename.toLowerCase(Locale.ENGLISH) : "";
+
 		List<IRRBB_PLACEMENTS_Summary_Entity> data;
-		String fn = filename != null ? filename : "";
-		if (fn.contains("Archive_Detail")) {
+
+		// Order matters: check "detail" BEFORE "archive"/"resub"
+		boolean isDetail = fn.contains("detail");
+		boolean isArchive = fn.contains("archive");
+		boolean isResub = fn.contains("resub");
+
+		if (isArchive && isDetail) {
 			data = jdbcTemplate.query(
 					"SELECT * FROM BRRS_IRRBB_PLA_ARCHIVAL_DETAIL_TABLE a WHERE TRUNC(a.REPORT_DATE) = TRUNC(?)",
 					new Object[] { d }, new IRRBB_PLACEMENTS_RowMapper());
-		} else if (fn.contains("Archive")) {
+		} else if (isArchive) {
 			data = jdbcTemplate.query(
 					"SELECT * FROM BRRS_IRRBB_PLA_ARCHIVAL_SUMMARY_TABLE a WHERE TRUNC(a.REPORT_DATE) = TRUNC(?)",
 					new Object[] { d }, new IRRBB_PLACEMENTS_RowMapper());
-		} else if (fn.contains("Resub_Detail")) {
+		} else if (isResub && isDetail) {
 			data = jdbcTemplate.query(
 					"SELECT * FROM BRRS_IRRBB_PLA_RESUBMISSION_DETAIL_TABLE a WHERE TRUNC(a.REPORT_DATE) = TRUNC(?)",
 					new Object[] { d }, new IRRBB_PLACEMENTS_RowMapper());
-		} else if (fn.contains("Resub")) {
+		} else if (isResub) {
 			data = jdbcTemplate.query(
 					"SELECT * FROM BRRS_IRRBB_PLA_RESUBMISSION_SUMMARY_TABLE a WHERE TRUNC(a.REPORT_DATE) = TRUNC(?)",
 					new Object[] { d }, new IRRBB_PLACEMENTS_RowMapper());
-		} else if (fn.contains("Detail")) {
+		} else if (isDetail) {
 			data = getDetailByDateList(d);
 		} else {
 			data = getdatabydateList(d);
 		}
+
 		return buildExcel(data);
 	}
 

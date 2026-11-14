@@ -1559,6 +1559,11 @@ public class AuditService {
 			transferMSecData(auditRecord);
 		} else if (upperTable.contains("CASH_FLOW")) {
 			transferCASHFLOWData(auditRecord);
+		} else if (upperTable.contains("UFCE_CALCULATION_MOD_SUMMARYTABLE_MANUAL")
+				|| upperTable.startsWith("BRRS_UFCE_CALCULATION")) {
+			transferUFCEManualData(auditRecord);
+		} else if (upperTable.equals("BRRS_IRRBB_PLA_MOD_SUMMARY_TABLE")) {
+			transferIRRBBPLACEMENTSData(auditRecord);
 		} else {
 			throw new IllegalArgumentException("Verification not configured for table: " + auditTable);
 		}
@@ -2331,16 +2336,12 @@ public class AuditService {
 
 		System.out.println("BDISB1 Report Date : " + reportDate);
 
-		String[] fields = {
-			"RECORD_NUMBER", "TITLE", "FIRST_NAME", "MIDDLE_NAME", "SURNAME",
-			"PREVIOUS_NAME", "GENDER", "IDENTIFICATION_TYPE", "PASSPORT_NUMBER",
-			"DATE_OF_BIRTH", "HOME_ADDRESS", "POSTAL_ADDRESS", "RESIDENCE",
-			"EMAIL", "LANDLINE", "MOBILE_PHONE_NUMBER", "MOBILE_MONEY_NUMBER",
-			"PRODUCT_TYPE", "ACCOUNT_BY_OWNERSHIP", "ACCOUNT_NUMBER",
-			"ACCOUNT_HOLDER_INDICATOR", "STATUS_OF_ACCOUNT", "NOT_FIT_FOR_STP",
-			"BRANCH_CODE_AND_NAME", "ACCOUNT_BALANCE_IN_PULA", "CURRENCY_OF_ACCOUNT",
-			"EXCHANGE_RATE"
-		};
+		String[] fields = { "RECORD_NUMBER", "TITLE", "FIRST_NAME", "MIDDLE_NAME", "SURNAME", "PREVIOUS_NAME", "GENDER",
+				"IDENTIFICATION_TYPE", "PASSPORT_NUMBER", "DATE_OF_BIRTH", "HOME_ADDRESS", "POSTAL_ADDRESS",
+				"RESIDENCE", "EMAIL", "LANDLINE", "MOBILE_PHONE_NUMBER", "MOBILE_MONEY_NUMBER", "PRODUCT_TYPE",
+				"ACCOUNT_BY_OWNERSHIP", "ACCOUNT_NUMBER", "ACCOUNT_HOLDER_INDICATOR", "STATUS_OF_ACCOUNT",
+				"NOT_FIT_FOR_STP", "BRANCH_CODE_AND_NAME", "ACCOUNT_BALANCE_IN_PULA", "CURRENCY_OF_ACCOUNT",
+				"EXCHANGE_RATE" };
 
 		StringBuilder colList = new StringBuilder();
 		StringBuilder selectList = new StringBuilder();
@@ -2355,11 +2356,9 @@ public class AuditService {
 		selectList.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
 
 		// 1. Update BRRS_BDISB1_SUMMARYTABLE from MOD table
-		String updateSummarySql = "UPDATE BRRS_BDISB1_SUMMARYTABLE M SET ("
-				+ colList.toString() + ") = (SELECT "
+		String updateSummarySql = "UPDATE BRRS_BDISB1_SUMMARYTABLE M SET (" + colList.toString() + ") = (SELECT "
 				+ selectList.toString() + " FROM BRRS_BDISB1_MOD_SUMMARYTABLE S "
-				+ " WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) "
-				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+				+ " WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) " + "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
 
 		int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
 
@@ -2370,11 +2369,9 @@ public class AuditService {
 		System.out.println("BDISB1 Summary Table Updated : " + summaryUpdated);
 
 		// 2. Update BRRS_BDISB1_DETAILTABLE from MOD table (Same column mapping)
-		String updateDetailSql = "UPDATE BRRS_BDISB1_DETAILTABLE M SET ("
-				+ colList.toString() + ") = (SELECT "
+		String updateDetailSql = "UPDATE BRRS_BDISB1_DETAILTABLE M SET (" + colList.toString() + ") = (SELECT "
 				+ selectList.toString() + " FROM BRRS_BDISB1_MOD_SUMMARYTABLE S "
-				+ " WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) "
-				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+				+ " WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) " + "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
 
 		int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
 		System.out.println("BDISB1 Detail Table Updated : " + detailUpdated);
@@ -6218,15 +6215,17 @@ public class AuditService {
 
 		System.out.println("M_SEC Verification and Transfer Completed Successfully");
 	}
-	
+
 	// =====================================================================
-	// UFCE CALCULATION (MANUAL ENTRY)  -  CHECKER: MOD -> LIVE      << NEW >>
+	// UFCE CALCULATION (MANUAL ENTRY) - CHECKER: MOD -> LIVE << NEW >>
 	// =====================================================================
 
 	private static final String UFCE_LIVE_MANUAL = "BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL";
 	private static final String UFCE_MOD_MANUAL = "BRRS_UFCE_CALCULATION_MOD_SUMMARYTABLE_MANUAL";
 
-	/** Business columns promoted from MOD to LIVE (must match the Maker's MERGE). */
+	/**
+	 * Business columns promoted from MOD to LIVE (must match the Maker's MERGE).
+	 */
 	private List<String> ufceManualColumns() {
 		List<String> cols = new ArrayList<>();
 		for (int i = 10; i <= 21; i++) {
@@ -6251,8 +6250,8 @@ public class AuditService {
 		boolean ok = r.equals("CHECKER") || r.equals("C") || r.equals("MAN") || r.equals("MANAGER") || r.equals("B")
 				|| r.equals("ADMIN") || r.equals("A");
 		if (!ok) {
-			throw new SecurityException("Only Checker (or MAN/ADMIN) can verify " + reportName
-					+ " modifications. Current role: " + role);
+			throw new SecurityException(
+					"Only Checker (or MAN/ADMIN) can verify " + reportName + " modifications. Current role: " + role);
 		}
 	}
 
@@ -6292,9 +6291,10 @@ public class AuditService {
 		System.out.println("UFCE Verify -> date=" + reportDate + ", version=" + reportVersion);
 
 		// 2) Must still be pending (also blocks double verification)
-		Integer pendingCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + UFCE_MOD_MANUAL
-				+ " WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ? AND MODIFY_FLG = 'Y'", Integer.class,
-				reportDate, reportVersion);
+		Integer pendingCount = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM " + UFCE_MOD_MANUAL
+						+ " WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ? AND MODIFY_FLG = 'Y'",
+				Integer.class, reportDate, reportVersion);
 		if (pendingCount == null || pendingCount == 0) {
 			throw new IllegalStateException("No pending UFCE modification for date " + reportDate + " version "
 					+ reportVersion + " (already verified?)");
@@ -6335,6 +6335,76 @@ public class AuditService {
 				reportDate, reportVersion);
 		System.out.println("UFCE MOD marked verified: " + updated);
 		System.out.println("UFCE Verification Completed Successfully");
+	}
+
+	private void transferIRRBBPLACEMENTSData(AuditServicesEntity auditRecord) {
+
+		final String MOD = "BRRS_IRRBB_PLA_MOD_SUMMARY_TABLE";
+		final String LIVE = "BRRS_IRRBB_PLA_SUMMARY_TABLE";
+		final String DET = "BRRS_IRRBB_PLA_DETAIL_TABLE";
+
+		// 1) Find the pending MOD date. Prefer MODIFY_FLG='Y', fall back to MAX.
+		java.sql.Date reportDate = null;
+		try {
+			reportDate = jdbcTemplate.queryForObject("SELECT MAX(REPORT_DATE) FROM " + MOD + " WHERE MODIFY_FLG = 'Y'",
+					java.sql.Date.class);
+		} catch (Exception ignored) {
+			/* fall through */ }
+		if (reportDate == null) {
+			reportDate = jdbcTemplate.queryForObject("SELECT MAX(REPORT_DATE) FROM " + MOD, java.sql.Date.class);
+		}
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified IRRBB_PLACEMENTS record available for verification.");
+		}
+
+		// 2) Guard: must still be pending (blocks double-verify).
+		Integer pending = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM " + MOD + " WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				Integer.class, reportDate);
+		if (pending == null || pending == 0) {
+			throw new IllegalStateException(
+					"No pending IRRBB_PLACEMENTS modification for date " + reportDate + " (already verified?).");
+		}
+
+		System.out.println("IRRBB_PLACEMENTS Verify — date=" + reportDate);
+
+		// 3) Copy MOD business columns → LIVE Summary
+		String cols = "ACCOUNT_NUMBER, GL_CODE, GL_DESCRIPTION, ACCOUNT_CURRENCY, "
+				+ "ACCOUNT_OPENING_DATE, MATURITY_DATE, OUT_BAL_ACC_CCY, OUT_BAL_INR, "
+				+ "FLOATING_FIXED, EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, "
+				+ "LAST_REPRICING_DATE, NEXT_REPRICING_DATE, SPREAD_OVER_BENCHMARK, "
+				+ "FINAL_ROI_PERCENT, REMARKS, BACID, " + "REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+				+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE";
+
+		String srcCols = "S." + cols.replace(", ", ", S.");
+
+		String updSummary = "UPDATE " + LIVE + " M SET (" + cols + ") = (" + "  SELECT " + srcCols + " FROM " + MOD
+				+ " S " + "   WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+				+ "     AND NVL(S.REPORT_VERSION,0) = NVL(M.REPORT_VERSION,0)"
+				+ ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int summaryUpdated = jdbcTemplate.update(updSummary, reportDate);
+		if (summaryUpdated == 0) {
+			throw new IllegalStateException("IRRBB_PLACEMENTS live summary row missing for date " + reportDate);
+		}
+		System.out.println("IRRBB_PLACEMENTS Summary Table Updated : " + summaryUpdated);
+
+		// 4) Copy MOD business columns → LIVE Detail (same columns)
+		String updDetail = "UPDATE " + DET + " M SET (" + cols + ") = (" + "  SELECT " + srcCols + " FROM " + MOD
+				+ " S " + "   WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+				+ "     AND NVL(S.REPORT_VERSION,0) = NVL(M.REPORT_VERSION,0)"
+				+ ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int detailUpdated = jdbcTemplate.update(updDetail, reportDate);
+		System.out.println("IRRBB_PLACEMENTS Detail Table Updated : " + detailUpdated);
+
+		// 5) Flip MOD → approved
+		int modUpdated = jdbcTemplate.update(
+				"UPDATE " + MOD + " SET ENTITY_FLG='Y', MODIFY_FLG='N' " + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+		System.out.println("IRRBB_PLACEMENTS MOD Updated : " + modUpdated);
+
+		System.out.println("✔ IRRBB_PLACEMENTS Verification and Transfer Completed Successfully");
 	}
 
 	private void transferMIrbData(AuditServicesEntity auditRecord) {
@@ -6385,6 +6455,7 @@ public class AuditService {
 		out[base.length] = extra;
 		return out;
 	}
+
 	private void transferCASHFLOWData(AuditServicesEntity auditRecord) {
 		final String liveTable = "BRRS_CASH_FLOW_MANUAL_SUMMARYTABLE";
 		final String modTable = "BRRS_CASH_FLOW_MANUAL_MOD_SUMMARYTABLE";
