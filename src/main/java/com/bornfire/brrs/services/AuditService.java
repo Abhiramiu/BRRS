@@ -1485,6 +1485,8 @@ public class AuditService {
 			transferMOR2Data(auditRecord);
 		} else if (upperTable.contains("M_LA2")) {
 			transferMLA2Data(auditRecord);
+		} else if (upperTable.contains("M_SRWA_12A")) {
+			transferMSRWA12AData(auditRecord);
 		} else if (upperTable.contains("M_SRWA_12F")) {
 			transferMSRWA12FData(auditRecord);
 		} else if (upperTable.contains("M_SRWA_12G")) {
@@ -2439,6 +2441,72 @@ public class AuditService {
 
 		System.out.println("M_SRWA_12F MOD Updated : " + modUpdated);
 		System.out.println("M_SRWA_12F Verification and Transfer Completed Successfully");
+	}
+
+	private void transferMSRWA12AData(AuditServicesEntity auditRecord) {
+		String upperTable = auditRecord.getAudit_table().trim().toUpperCase();
+		java.util.regex.Matcher m = java.util.regex.Pattern.compile("M_SRWA_12A_MOD_SUMMARYTABLE([1-7])$")
+				.matcher(upperTable);
+		if (!m.find()) {
+			throw new IllegalStateException("Unsupported M_SRWA_12A audit table: " + auditRecord.getAudit_table());
+		}
+		final String modTable = "BRRS_M_SRWA_12A_MOD_SUMMARYTABLE" + m.group(1);
+		final String liveTable = "BRRS_M_SRWA_12A_SUMMARYTABLE" + m.group(1);
+
+		// 1. Pending report date (MODIFY_FLG = 'Y')
+		java.sql.Date reportDate = jdbcTemplate.queryForObject(
+				"SELECT MAX(REPORT_DATE) FROM " + modTable + " WHERE MODIFY_FLG = 'Y'", java.sql.Date.class);
+		if (reportDate == null) {
+			throw new IllegalStateException("No pending M_SRWA_12A modification found in " + modTable);
+		}
+		System.out.println("M_SRWA_12A Report Date : " + reportDate + " | " + modTable);
+
+		// 2. Data columns = every MOD column except report key / flag columns (read
+		// from the DB itself)
+		final java.util.Set<String> keyCols = new java.util.HashSet<>(
+				java.util.Arrays.asList("REPORT_DATE", "REPORT_VERSION", "REPORT_FREQUENCY", "REPORT_CODE",
+						"REPORT_DESC", "ENTITY_FLG", "MODIFY_FLG", "DEL_FLG"));
+		final StringBuilder columnList = new StringBuilder(); // c1, c2, ...
+		final StringBuilder selectList = new StringBuilder(); // S.c1, S.c2, ...
+		jdbcTemplate.query("SELECT * FROM " + modTable + " WHERE 1 = 0",
+				(org.springframework.jdbc.core.ResultSetExtractor<Void>) rs -> {
+					java.sql.ResultSetMetaData md = rs.getMetaData();
+					for (int i = 1; i <= md.getColumnCount(); i++) {
+						String c = md.getColumnName(i).toUpperCase();
+						if (keyCols.contains(c))
+							continue;
+						if (columnList.length() > 0) {
+							columnList.append(", ");
+							selectList.append(", ");
+						}
+						columnList.append(c);
+						selectList.append("S.").append(c);
+					}
+					return null;
+				});
+
+		// 3. MOD -> LIVE (correlated-subquery UPDATE, same pattern as FAS / SRWA_12C:
+		// avoids the MERGE join that exceeds Oracle's 1000-column limit on these wide
+		// tables)
+		String updateSql = "UPDATE " + liveTable + " L SET (" + columnList + ") = (" + "SELECT " + selectList + " FROM "
+				+ modTable + " S " + "WHERE TRUNC(S.REPORT_DATE) = TRUNC(L.REPORT_DATE) AND S.MODIFY_FLG = 'Y') "
+				+ "WHERE TRUNC(L.REPORT_DATE) = TRUNC(?) " + "AND EXISTS (SELECT 1 FROM " + modTable + " X "
+				+ "WHERE TRUNC(X.REPORT_DATE) = TRUNC(L.REPORT_DATE) AND X.MODIFY_FLG = 'Y')";
+		int updated = jdbcTemplate.update(updateSql, reportDate);
+		if (updated == 0) {
+			throw new IllegalStateException("M_SRWA_12A live record not found for date : " + reportDate);
+		}
+
+		// 4. Mark MOD record as approved
+		jdbcTemplate.update(
+				"UPDATE " + modTable + " SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				reportDate);
+
+		// 5. Procedure after verification (same as FAS)
+		String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+		jdbcTemplate.update("BEGIN BRRS_M_SRWA_12A_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+		System.out.println("M_SRWA_12A " + modTable + " Verification Completed Successfully");
 	}
 
 	// =========================================================

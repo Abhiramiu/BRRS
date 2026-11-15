@@ -105856,6 +105856,134 @@ public class BRRS_M_SRWA_12A_ReportService {
 	    								throw new RuntimeException("Error while updating " + table, e);
 	    							}
 	    						}
+								
+								// ============================================================
+// MOD TABLE SUPPORT — Summary tables 1-7 ONLY
+// ============================================================
+private static final Set<String> MOD_KEY_COLS = new HashSet<>(java.util.Arrays.asList(
+        "REPORT_DATE", "REPORT_VERSION", "REPORT_FREQUENCY", "REPORT_CODE", "REPORT_DESC",
+        "ENTITY_FLG", "MODIFY_FLG", "DEL_FLG"));
+
+private final Map<String, List<String>> modColumnCache = new ConcurrentHashMap<>();
+
+/** All column names (UPPER CASE) of a MOD table, read once from the DB and cached. */
+private List<String> getModColumns(String modTable) {
+    List<String> cached = modColumnCache.get(modTable);
+    if (cached != null) return cached;
+    List<String> cols = new ArrayList<>();
+    jdbcTemplate.query("SELECT * FROM " + modTable + " WHERE 1 = 0",
+            (org.springframework.jdbc.core.ResultSetExtractor<Void>) rs -> {
+                java.sql.ResultSetMetaData md = rs.getMetaData();
+                for (int i = 1; i <= md.getColumnCount(); i++) cols.add(md.getColumnName(i).toUpperCase());
+                return null;
+            });
+    modColumnCache.put(modTable, cols);
+    return cols;
+}
+
+/** MOD columns that carry data (everything except report key / flag columns). */
+private List<String> getModDataColumns(String modTable) {
+    List<String> out = new ArrayList<>();
+    for (String c : getModColumns(modTable)) if (!MOD_KEY_COLS.contains(c)) out.add(c);
+    return out;
+}
+
+/**
+ * Maker update for ONE summary table -> writes into its MOD table only (live table untouched).
+ * Returns true if the MOD table was written.
+ */
+private <T> boolean fastModUpdate(T updated, java.util.function.Supplier<T> liveLoader, Date reportDate, Class<T> cls,
+        java.util.function.Supplier<T> factory, String cacheKey, int[] rows, String[] fields, Set<String> skip,
+        Set<String> sent, String modTable, String screen) {
+    try {
+        List<String> modCols = getModColumns(modTable);
+
+        // 1) columns the browser sent AND that exist in the MOD table (= manual-entry cells)
+        List<Prop> todo = new ArrayList<>();
+        for (Prop p : resolveProps(cacheKey, cls, rows, fields, skip)) {
+            if (!modCols.contains(p.column.toUpperCase())) continue;
+            if (sent == null || sent.contains(p.column)) todo.add(p);
+        }
+        if (todo.isEmpty()) {
+            logger.info("{} : nothing sent for MOD columns", modTable);
+            return false;
+        }
+
+        // 2) compare against the live row (for change detection + audit)
+        T existing = liveLoader.get();
+        T oldcopy = factory.get();
+        BeanUtils.copyProperties(existing, oldcopy);
+
+        boolean changed = false;
+        for (Prop p : todo) {
+            Object newValue = p.getter.invoke(updated);
+            if (sameValue(newValue, p.getter.invoke(existing))) continue;
+            p.setter.invoke(existing, newValue);
+            changed = true;
+        }
+
+        Integer pending = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + modTable
+                + " WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'", Integer.class, reportDate);
+        boolean hasPending = pending != null && pending > 0;
+
+        if (!changed && !hasPending) {
+            logger.info("{} : no changes", modTable);
+            return false;
+        }
+
+        // 3) no pending MOD row -> seed a fresh one from the live row, so approve can copy a full row safely
+        if (!hasPending) {
+            jdbcTemplate.update("DELETE FROM " + modTable + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate);
+            String colList = String.join(", ", modCols);
+            jdbcTemplate.update("INSERT INTO " + modTable + " (" + colList + ") SELECT " + colList
+                    + " FROM " + modTable.replace("_MOD_SUMMARYTABLE", "_SUMMARYTABLE")
+                    + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate);
+        }
+
+        // 4) overlay the maker's values + maker-checker flags
+        List<String> setClauses = new ArrayList<>();
+        List<Object> params = new ArrayList<>();
+        for (Prop p : todo) {
+            setClauses.add(p.column + " = ?");
+            params.add(p.getter.invoke(updated));
+        }
+        setClauses.add("ENTITY_FLG = 'Y'");
+        setClauses.add("MODIFY_FLG = 'Y'");
+        setClauses.add("DEL_FLG = 'N'");
+        params.add(reportDate);
+        jdbcTemplate.update("UPDATE " + modTable + " SET " + String.join(", ", setClauses)
+                + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", params.toArray());
+
+        // 5) audit against the MOD table
+        if (changed) {
+            auditService.compareEntitiesmanual(oldcopy, existing, reportDate.toString(), screen, modTable);
+        }
+        logger.info("{} : staged for checker approval", modTable);
+        return true;
+
+    } catch (RuntimeException e) {
+        throw e;
+    } catch (Exception e) {
+        throw new RuntimeException("Error while staging " + modTable, e);
+    }
+}
+
+/** Runs the summary procedure once, after the transaction commits (same as FAS). */
+private void runSummaryProcedureAfterCommit(Date reportDate) {
+    final String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+        @Override
+        public void afterCommit() {
+            try {
+                logger.info("Transaction committed — calling BRRS_M_SRWA_12A_SUMMARY_PROCEDURE({})", formattedDate);
+                jdbcTemplate.update("BEGIN BRRS_M_SRWA_12A_SUMMARY_PROCEDURE(?); END;", formattedDate);
+            } catch (Exception e) {
+                logger.error("Procedure execution failed", e);
+                throw new RuntimeException("Procedure execution failed", e);
+            }
+        }
+    });
+}
 	    						 
 	    						private static final Set<String> NO_SKIP = Collections.emptySet();
 	    						 
@@ -105865,60 +105993,58 @@ public class BRRS_M_SRWA_12A_ReportService {
 	    						}
 	    						 
 	    						// ---------- the 8 per-table updates (signatures unchanged) ----------
-	    						public void updateReport1(M_SRWA_12A_Summary_Entity1 u, Set<String> sent) {
-	    							Date d = u.getReport_date();
-	    							fastUpdate(u, () -> firstOrFail(getSummary1DataByDate(d), d), d, M_SRWA_12A_Summary_Entity1.class, M_SRWA_12A_Summary_Entity1::new, "T1",
-	    									range(19, 57), ON_BAL_FIELDS, NO_SKIP, sent, "BRRS_M_SRWA_12A_SUMMARYTABLE1", "TRUNC(REPORT_DATE) = TRUNC(?)",
-	    									"M SRWA 12A Summary Screen", "BRRS_M_SRWA_12A_SUMMARYTABLE1");
-	    						}
-	    						 
-	    						public void updateReport2(M_SRWA_12A_Summary_Entity2 u, Set<String> sent) {
-	    							Date d = u.getReport_date();
-	    							fastUpdate(u, () -> firstOrFail(getSummary2DataByDate(d), d), d, M_SRWA_12A_Summary_Entity2.class, M_SRWA_12A_Summary_Entity2::new, "T2",
-	    									range(60, 99), ON_BAL_FIELDS, NO_SKIP, sent, "BRRS_M_SRWA_12A_SUMMARYTABLE2", "REPORT_DATE = ?",
-	    									"M SRWA 12A Summary Screen 2", "BRRS_M_SRWA_12A_SUMMARYTABLE2");
-	    						}
-	    						 
-	    						public void updateReport3(M_SRWA_12A_Summary_Entity3 u, Set<String> sent) {
-	    							Date d = u.getReport_date();
-	    							fastUpdate(u, () -> firstOrFail(getSummary3DataByDate(d), d), d, M_SRWA_12A_Summary_Entity3.class, M_SRWA_12A_Summary_Entity3::new, "T3",
-	    									range(100, 133), ON_BAL_FIELDS, NO_SKIP, sent, "BRRS_M_SRWA_12A_SUMMARYTABLE3", "REPORT_DATE = ?",
-	    									"M SRWA 12A Summary Screen 3", "BRRS_M_SRWA_12A_SUMMARYTABLE3");
-	    						}
-	    						 
-	    						public void updateReport4(M_SRWA_12A_Summary_Entity4 u, Set<String> sent) {
-	    							Date d = u.getReport_date();
-	    							fastUpdate(u, () -> firstOrFail(getSummary4DataByDate(d), d), d, M_SRWA_12A_Summary_Entity4.class, M_SRWA_12A_Summary_Entity4::new, "T4",
-	    									range(145, 178), OFF_BAL_FIELDS, NO_SKIP, sent, "BRRS_M_SRWA_12A_SUMMARYTABLE4", "REPORT_DATE = ?",
-	    									"M SRWA 12A Summary Screen 4", "BRRS_M_SRWA_12A_SUMMARYTABLE4");
-	    						}
-	    						 
-	    						public void updateReport5(M_SRWA_12A_Summary_Entity5 u, Set<String> sent) {
-	    							Date d = u.getReport_date();
-	    							fastUpdate(u, () -> firstOrFail(getSummary5DataByDate(d), d), d, M_SRWA_12A_Summary_Entity5.class, M_SRWA_12A_Summary_Entity5::new, "T5",
-	    									range(179, 212), OFF_BAL_FIELDS, NO_SKIP, sent, "BRRS_M_SRWA_12A_SUMMARYTABLE5", "REPORT_DATE = ?",
-	    									"M SRWA 12A Summary 5 Screen", "BRRS_M_SRWA_12A_SUMMARY5");
-	    						}
-	    						 
-	    						public void updateReport6(M_SRWA_12A_Summary_Entity6 u, Set<String> sent) {
-	    							Date d = u.getReport_date();
-	    							fastUpdate(u, () -> firstOrFail(getSummary6DataByDate(d), d), d, M_SRWA_12A_Summary_Entity6.class, M_SRWA_12A_Summary_Entity6::new, "T6",
-	    									range(213, 246), OFF_BAL_FIELDS, NO_SKIP, sent, "BRRS_M_SRWA_12A_SUMMARYTABLE6", "REPORT_DATE = ?",
-	    									"M SRWA 12A Summary 6 Screen", "BRRS_M_SRWA_12A_SUMMARY6");
-	    						}
-	    						 
-	    						public void updateReport7(M_SRWA_12A_Summary_Entity7 u, Set<String> sent) {
-	    							Date d = u.getReport_date();
-	    							// R247–R253 (all off-balance fields) + only R254_rwa_tot_ris_wei_ass  (same as old code)
-	    							Set<String> skip = new HashSet<>();
-	    							// rows list = 247..254, but for 254 only rwa_tot_ris_wei_ass is allowed
-	    							for (String f : OFF_BAL_FIELDS) {
-	    								if (!f.equals("rwa_tot_ris_wei_ass")) skip.add("R254_" + f);
-	    							}
-	    							fastUpdate(u, () -> firstOrFail(getSummary7DataByDate(d), d), d, M_SRWA_12A_Summary_Entity7.class, M_SRWA_12A_Summary_Entity7::new, "T7",
-	    									range(247, 254), OFF_BAL_FIELDS, skip, sent, "BRRS_M_SRWA_12A_SUMMARYTABLE7", "REPORT_DATE = ?",
-	    									"M SRWA 12A Summary 7 Screen", "BRRS_M_SRWA_12A_SUMMARY7");
-	    						}
+	    						public boolean updateReport1(M_SRWA_12A_Summary_Entity1 u, Set<String> sent) {
+    Date d = u.getReport_date();
+    return fastModUpdate(u, () -> firstOrFail(getSummary1DataByDate(d), d), d, M_SRWA_12A_Summary_Entity1.class,
+            M_SRWA_12A_Summary_Entity1::new, "T1", range(19, 57), ON_BAL_FIELDS, NO_SKIP, sent,
+            "BRRS_M_SRWA_12A_MOD_SUMMARYTABLE1", "M SRWA 12A Summary Screen");
+}
+
+public boolean updateReport2(M_SRWA_12A_Summary_Entity2 u, Set<String> sent) {
+    Date d = u.getReport_date();
+    return fastModUpdate(u, () -> firstOrFail(getSummary2DataByDate(d), d), d, M_SRWA_12A_Summary_Entity2.class,
+            M_SRWA_12A_Summary_Entity2::new, "T2", range(60, 99), ON_BAL_FIELDS, NO_SKIP, sent,
+            "BRRS_M_SRWA_12A_MOD_SUMMARYTABLE2", "M SRWA 12A Summary Screen 2");
+}
+
+public boolean updateReport3(M_SRWA_12A_Summary_Entity3 u, Set<String> sent) {
+    Date d = u.getReport_date();
+    return fastModUpdate(u, () -> firstOrFail(getSummary3DataByDate(d), d), d, M_SRWA_12A_Summary_Entity3.class,
+            M_SRWA_12A_Summary_Entity3::new, "T3", range(100, 133), ON_BAL_FIELDS, NO_SKIP, sent,
+            "BRRS_M_SRWA_12A_MOD_SUMMARYTABLE3", "M SRWA 12A Summary Screen 3");
+}
+
+public boolean updateReport4(M_SRWA_12A_Summary_Entity4 u, Set<String> sent) {
+    Date d = u.getReport_date();
+    return fastModUpdate(u, () -> firstOrFail(getSummary4DataByDate(d), d), d, M_SRWA_12A_Summary_Entity4.class,
+            M_SRWA_12A_Summary_Entity4::new, "T4", range(145, 178), OFF_BAL_FIELDS, NO_SKIP, sent,
+            "BRRS_M_SRWA_12A_MOD_SUMMARYTABLE4", "M SRWA 12A Summary Screen 4");
+}
+
+public boolean updateReport5(M_SRWA_12A_Summary_Entity5 u, Set<String> sent) {
+    Date d = u.getReport_date();
+    return fastModUpdate(u, () -> firstOrFail(getSummary5DataByDate(d), d), d, M_SRWA_12A_Summary_Entity5.class,
+            M_SRWA_12A_Summary_Entity5::new, "T5", range(179, 212), OFF_BAL_FIELDS, NO_SKIP, sent,
+            "BRRS_M_SRWA_12A_MOD_SUMMARYTABLE5", "M SRWA 12A Summary 5 Screen");
+}
+
+public boolean updateReport6(M_SRWA_12A_Summary_Entity6 u, Set<String> sent) {
+    Date d = u.getReport_date();
+    return fastModUpdate(u, () -> firstOrFail(getSummary6DataByDate(d), d), d, M_SRWA_12A_Summary_Entity6.class,
+            M_SRWA_12A_Summary_Entity6::new, "T6", range(213, 246), OFF_BAL_FIELDS, NO_SKIP, sent,
+            "BRRS_M_SRWA_12A_MOD_SUMMARYTABLE6", "M SRWA 12A Summary 6 Screen");
+}
+
+public boolean updateReport7(M_SRWA_12A_Summary_Entity7 u, Set<String> sent) {
+    Date d = u.getReport_date();
+    Set<String> skip = new HashSet<>();
+    for (String f : OFF_BAL_FIELDS) {
+        if (!f.equals("rwa_tot_ris_wei_ass")) skip.add("R254_" + f);
+    }
+    return fastModUpdate(u, () -> firstOrFail(getSummary7DataByDate(d), d), d, M_SRWA_12A_Summary_Entity7.class,
+            M_SRWA_12A_Summary_Entity7::new, "T7", range(247, 254), OFF_BAL_FIELDS, skip, sent,
+            "BRRS_M_SRWA_12A_MOD_SUMMARYTABLE7", "M SRWA 12A Summary 7 Screen");
+}
 	    						 
 	    						private static final int[] M_ROWS_ON_BAL = { 17, 18, 30, 31, 45, 46, 58, 59, 71, 72, 83, 84, 94, 95, 103, 104, 115,
 	    								116, 123, 134, 135, 136 };
@@ -105972,32 +106098,75 @@ public class BRRS_M_SRWA_12A_ReportService {
 	    								throw new RuntimeException("Error while updating BRRS_M_SRWA_12A_SUMMARYTABLE_M", e);
 	    							}
 	    						}
+								
+								
+@Transactional
+public void approveReport(Date reportDate) {
+    boolean approvedAny = false;
+
+    for (int i = 1; i <= 7; i++) {
+        String live = "BRRS_M_SRWA_12A_SUMMARYTABLE" + i;
+        String mod  = "BRRS_M_SRWA_12A_MOD_SUMMARYTABLE" + i;
+
+        Integer pending = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + mod
+                + " WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'", Integer.class, reportDate);
+        if (pending == null || pending == 0) continue;
+
+        StringBuilder setList = new StringBuilder();
+        for (String c : getModDataColumns(mod)) {
+            if (setList.length() > 0) setList.append(", ");
+            setList.append("L.").append(c).append(" = M.").append(c);
+        }
+
+        // MOD -> LIVE (manual-entry columns only)
+        jdbcTemplate.update("MERGE INTO " + live + " L USING (SELECT * FROM " + mod
+                + " WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y') M "
+                + "ON (TRUNC(L.REPORT_DATE) = TRUNC(M.REPORT_DATE)) "
+                + "WHEN MATCHED THEN UPDATE SET " + setList, reportDate);
+
+        // mark approved
+        jdbcTemplate.update("UPDATE " + mod + " SET MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate);
+        approvedAny = true;
+        logger.info("{} approved -> {}", mod, live);
+    }
+
+    if (!approvedAny) {
+        throw new IllegalStateException("No pending M_SRWA_12A modifications found for " + reportDate);
+    }
+    runSummaryProcedureAfterCommit(reportDate);
+}								
 	    						 
-	    						@Transactional
-	    						public void updateAllReports(Date asondate, Set<String> sent, M_SRWA_12A_Summary_Entity1 r1, M_SRWA_12A_Summary_Entity2 r2,
-	    								M_SRWA_12A_Summary_Entity3 r3, M_SRWA_12A_Summary_Entity4 r4, M_SRWA_12A_Summary_Entity5 r5,
-	    								M_SRWA_12A_Summary_Entity6 r6, M_SRWA_12A_Summary_Entity7 r7, M_SRWA_12A_Summary_M_Entity r8) {
+	    						
+								@Transactional
+public void updateAllReports(Date asondate, Set<String> sent, M_SRWA_12A_Summary_Entity1 r1, M_SRWA_12A_Summary_Entity2 r2,
+        M_SRWA_12A_Summary_Entity3 r3, M_SRWA_12A_Summary_Entity4 r4, M_SRWA_12A_Summary_Entity5 r5,
+        M_SRWA_12A_Summary_Entity6 r6, M_SRWA_12A_Summary_Entity7 r7, M_SRWA_12A_Summary_M_Entity r8) {
 
-	    							if (asondate == null) throw new IllegalArgumentException("asondate is null");
-	    							r1.setReport_date(asondate);
-	    							r2.setReport_date(asondate);
-	    							r3.setReport_date(asondate);
-	    							r4.setReport_date(asondate);
-	    							r5.setReport_date(asondate);
-	    							r6.setReport_date(asondate);
-	    							r7.setReport_date(asondate);
-	    							r8.setReport_date(asondate);
+    if (asondate == null) throw new IllegalArgumentException("asondate is null");
+    r1.setReport_date(asondate);
+    r2.setReport_date(asondate);
+    r3.setReport_date(asondate);
+    r4.setReport_date(asondate);
+    r5.setReport_date(asondate);
+    r6.setReport_date(asondate);
+    r7.setReport_date(asondate);
+    r8.setReport_date(asondate);
 
-	    							long t = System.currentTimeMillis();
-	    							updateReport1(r1, sent); t = lap("T1", t);
-	    							updateReport2(r2, sent); t = lap("T2", t);
-	    							updateReport3(r3, sent); t = lap("T3", t);
-	    							updateReport4(r4, sent); t = lap("T4", t);
-	    							updateReport5(r5, sent); t = lap("T5", t);
-	    							updateReport6(r6, sent); t = lap("T6", t);
-	    							updateReport7(r7, sent); t = lap("T7", t);
-	    							updateReport8(r8, sent); t = lap("TM", t);
-	    						}
+    long t = System.currentTimeMillis();
+    boolean staged = false;
+    staged |= updateReport1(r1, sent); t = lap("T1", t);
+    staged |= updateReport2(r2, sent); t = lap("T2", t);
+    staged |= updateReport3(r3, sent); t = lap("T3", t);
+    staged |= updateReport4(r4, sent); t = lap("T4", t);
+    staged |= updateReport5(r5, sent); t = lap("T5", t);
+    staged |= updateReport6(r6, sent); t = lap("T6", t);
+    staged |= updateReport7(r7, sent); t = lap("T7", t);
+    updateReport8(r8, sent);           t = lap("TM", t);   
+
+    if (staged) {
+        runSummaryProcedureAfterCommit(asondate);
+    }
+}
 
 	    						private long lap(String name, long start) {
 	    							long now = System.currentTimeMillis();
