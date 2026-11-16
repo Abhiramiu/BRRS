@@ -21,9 +21,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Objects;
 
 import javax.persistence.EntityManager;
@@ -53,9 +55,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
 import org.springframework.data.domain.Pageable;
-
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -64,7 +68,10 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.AuditServicesEntity;
 import com.bornfire.brrs.entities.UserProfileRep;
+import com.bornfire.brrs.services.BRRS_BDISB1_ReportService.BDISB1_RowMapper_Summary;
+import com.bornfire.brrs.services.BRRS_BDISB1_ReportService.BDISB1_Summary_Entity;
 
 import org.apache.poi.ss.usermodel.FillPatternType;
 
@@ -101,6 +108,763 @@ public class BRRS_M_NOSVOS_ReportService {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+
+	
+	// Fetch existing MOD record if any pending modifications exist
+	public BrrsMNosvosP1 findModRecordByReportDate1(Date reportDate) {
+
+	    String selectSql = "SELECT * FROM BRRS_M_NOSVOS_MOD_P1 "
+	                     + "WHERE TRUNC(REPORT_DATE) = TRUNC(?) "
+	                     + "AND MODIFY_FLG = 'Y'";
+
+	    List<BrrsMNosvosP1> list = jdbcTemplate.query(
+	            selectSql,
+	            new BrrsMNosvosP1RowMapper(),
+	            reportDate
+	    );
+
+	    return list.isEmpty() ? null : list.get(0);
+	}
+	
+	// Fetch existing MOD record if any pending modifications exist
+		public BrrsMNosvosP2 findModRecordByReportDate2(Date reportDate) {
+
+		    String selectSql = "SELECT * FROM BRRS_M_NOSVOS_MOD_P2 "
+		                     + "WHERE TRUNC(REPORT_DATE) = TRUNC(?) "
+		                     + "AND MODIFY_FLG = 'Y'";
+
+		    List<BrrsMNosvosP2> list = jdbcTemplate.query(
+		            selectSql,
+		            new BrrsMNosvosP2RowMapper(),
+		            reportDate
+		    );
+
+		    return list.isEmpty() ? null : list.get(0);
+		}
+
+		
+		// Fetch existing MOD record if any pending modifications exist
+		public BrrsMNosvosP3 findModRecordByReportDate3(Date reportDate) {
+
+		    String selectSql = "SELECT * FROM BRRS_M_NOSVOS_MOD_P3 "
+		                     + "WHERE TRUNC(REPORT_DATE) = TRUNC(?) "
+		                     + "AND MODIFY_FLG = 'Y'";
+
+		    List<BrrsMNosvosP3> list = jdbcTemplate.query(
+		            selectSql,
+		            new BrrsMNosvosP3RowMapper(),
+		            reportDate
+		    );
+
+		    return list.isEmpty() ? null : list.get(0);
+		}
+		
+		
+		// Fetch existing MOD record if any pending modifications exist
+		public BrrsMNosvosP4 findModRecordByReportDate4(Date reportDate) {
+
+		    String selectSql = "SELECT * FROM BRRS_M_NOSVOS_MOD_P4 "
+		                     + "WHERE TRUNC(REPORT_DATE) = TRUNC(?) "
+		                     + "AND MODIFY_FLG = 'Y'";
+
+		    List<BrrsMNosvosP4> list = jdbcTemplate.query(
+		            selectSql,
+		            new BrrsMNosvosP4RowMapper(),
+		            reportDate
+		    );
+
+		    return list.isEmpty() ? null : list.get(0);
+		}
+		
+		// Fetch existing MOD record if any pending modifications exist
+		public BrrsMNosvosP5 findModRecordByReportDate5(Date reportDate) {
+
+		    String selectSql = "SELECT * FROM BRRS_M_NOSVOS_MOD_P5 "
+		                     + "WHERE TRUNC(REPORT_DATE) = TRUNC(?) "
+		                     + "AND MODIFY_FLG = 'Y'";
+
+		    List<BrrsMNosvosP5> list = jdbcTemplate.query(
+		            selectSql,
+		            new BrrsMNosvosP5RowMapper(),
+		            reportDate
+		    );
+
+		    return list.isEmpty() ? null : list.get(0);
+		}
+		
+public static final String NOSVOS_COLS_1 = buildNosvosCols1();
+
+private static final String R_FIELDS_SET_1 = buildNosvosFieldsSet1();
+
+private static String buildNosvosCols1() {
+
+    StringBuilder columns = new StringBuilder();
+
+    String[] fields = {
+        "NAME_OF_BANK_AND_COUNTRY_NOSTRO",
+        "TYPE_OF_ACCOUNT_NOSTRO",
+        "PURPOSE_NOSTRO",
+        "CURRENCY_NOSTRO",
+        "SOVEREIGN_RATING_AAA_AA_A1_NOSTRO",
+        "RISK_WEIGHT_NOSTRO",
+        "AMOUNT_DEMAND_NOSTRO",
+        "AMOUNT_TIME_NOSTRO",
+        "RISK_WEIGHTED_AMOUNT_NOSTRO"
+    };
+
+    // R1 to R100
+    for (int i = 1; i <= 100; i++) {
+
+        for (String field : fields) {
+
+            if (columns.length() > 0) {
+                columns.append(",");
+            }
+
+            columns.append("R")
+                   .append(i)
+                   .append("_")
+                   .append(field);
+        }
+    }
+
+    // R101 Total fields
+    String[] totalFields = {
+        "R101_TOTAL_AMOUNT_DEMAND_NOSTRO",
+        "R101_TOTAL_AMOUNT_TIME_NOSTRO",
+        "R101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO"
+    };
+
+    for (String field : totalFields) {
+
+        if (columns.length() > 0) {
+            columns.append(",");
+        }
+
+        columns.append(field);
+    }
+
+    return columns.toString();
+}
+
+
+private static String buildNosvosFieldsSet1() {
+
+    StringBuilder fieldsSet = new StringBuilder();
+
+    String[] fields = {
+        "NAME_OF_BANK_AND_COUNTRY_NOSTRO",
+        "TYPE_OF_ACCOUNT_NOSTRO",
+        "PURPOSE_NOSTRO",
+        "CURRENCY_NOSTRO",
+        "SOVEREIGN_RATING_AAA_AA_A1_NOSTRO",
+        "RISK_WEIGHT_NOSTRO",
+        "AMOUNT_DEMAND_NOSTRO",
+        "AMOUNT_TIME_NOSTRO",
+        "RISK_WEIGHTED_AMOUNT_NOSTRO"
+    };
+
+    // R1 to R100
+    for (int i = 1; i <= 100; i++) {
+
+        for (String field : fields) {
+
+            if (fieldsSet.length() > 0) {
+                fieldsSet.append(",");
+            }
+
+            fieldsSet.append("R")
+                     .append(i)
+                     .append("_")
+                     .append(field)
+                     .append("=?");
+        }
+    }
+
+    // R101 Total fields
+    String[] totalFields = {
+        "R101_TOTAL_AMOUNT_DEMAND_NOSTRO",
+        "R101_TOTAL_AMOUNT_TIME_NOSTRO",
+        "R101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO"
+    };
+
+    for (String field : totalFields) {
+
+        if (fieldsSet.length() > 0) {
+            fieldsSet.append(",");
+        }
+
+        fieldsSet.append(field).append("=?");
+    }
+
+    return fieldsSet.toString();
+}
+
+///////////////
+
+//============================================================
+//NOSVOS TABLE 2 - VOSTRO
+//============================================================
+
+public static final String NOSVOS_COLS_2 = buildNosvosCols2();
+
+private static final String R_FIELDS_SET_2 = buildNosvosFieldsSet2();
+
+
+//============================================================
+//BUILD COLUMN LIST
+//============================================================
+
+private static String buildNosvosCols2() {
+
+ StringBuilder cols = new StringBuilder();
+
+ String[] fields = {
+     "NAME_OF_BANK_AND_COUNTRY_VOSTRO",
+     "TYPE_OF_ACCOUNT_VOSTRO",
+     "PURPOSE_VOSTRO",
+     "CURRENCY_VOSTRO",
+     "AMOUNT_DEMAND_VOSTRO",
+     "AMOUNT_TIME_VOSTRO"
+ };
+
+ // R1 to R100
+ for (int i = 1; i <= 100; i++) {
+
+     for (String field : fields) {
+
+         if (cols.length() > 0) {
+             cols.append(",");
+         }
+
+         cols.append("R")
+             .append(i)
+             .append("_")
+             .append(field);
+     }
+ }
+
+ // Report metadata columns
+ String[] metadataFields = {
+     "REPORT_DATE",
+     "REPORT_VERSION",
+     "REPORT_FREQUENCY",
+     "REPORT_CODE",
+     "REPORT_DESC",
+     "ENTITY_FLG",
+     "MODIFY_FLG",
+     "DEL_FLG"
+ };
+
+ for (String field : metadataFields) {
+
+     cols.append(",").append(field);
+ }
+
+ // R101 fields
+ String[] r101Fields = {
+     "R101_TOTAL_AMOUNT_DEMAND_VOSTRO",
+     "R101_TOTAL_AMOUNT_TIME_VOSTRO",
+     "R101_NAME_OF_BANK_AND_COUNTRY_VOSTRO",
+     "R101_TYPE_OF_ACCOUNT_VOSTRO",
+     "R101_PURPOSE_VOSTRO",
+     "R101_CURRENCY_VOSTRO",
+     "R101_AMOUNT_DEMAND_VOSTRO",
+     "R101_AMOUNT_TIME_VOSTRO"
+ };
+
+ for (String field : r101Fields) {
+
+     cols.append(",").append(field);
+ }
+
+ return cols.toString();
+}
+
+
+//============================================================
+//BUILD UPDATE FIELD SET
+//============================================================
+
+private static String buildNosvosFieldsSet2() {
+
+ StringBuilder fieldsSet = new StringBuilder();
+
+ String[] fields = {
+     "NAME_OF_BANK_AND_COUNTRY_VOSTRO",
+     "TYPE_OF_ACCOUNT_VOSTRO",
+     "PURPOSE_VOSTRO",
+     "CURRENCY_VOSTRO",
+     "AMOUNT_DEMAND_VOSTRO",
+     "AMOUNT_TIME_VOSTRO"
+ };
+
+ // R1 to R100
+ for (int i = 1; i <= 100; i++) {
+
+     for (String field : fields) {
+
+         if (fieldsSet.length() > 0) {
+             fieldsSet.append(",");
+         }
+
+         fieldsSet.append("R")
+                  .append(i)
+                  .append("_")
+                  .append(field)
+                  .append("=?");
+     }
+ }
+
+ // Report metadata columns
+ String[] metadataFields = {
+     "REPORT_DATE",
+     "REPORT_VERSION",
+     "REPORT_FREQUENCY",
+     "REPORT_CODE",
+     "REPORT_DESC",
+     "ENTITY_FLG",
+     "MODIFY_FLG",
+     "DEL_FLG"
+ };
+
+ for (String field : metadataFields) {
+
+     fieldsSet.append(",")
+              .append(field)
+              .append("=?");
+ }
+
+ // R101 fields
+ String[] r101Fields = {
+     "R101_TOTAL_AMOUNT_DEMAND_VOSTRO",
+     "R101_TOTAL_AMOUNT_TIME_VOSTRO",
+     "R101_NAME_OF_BANK_AND_COUNTRY_VOSTRO",
+     "R101_TYPE_OF_ACCOUNT_VOSTRO",
+     "R101_PURPOSE_VOSTRO",
+     "R101_CURRENCY_VOSTRO",
+     "R101_AMOUNT_DEMAND_VOSTRO",
+     "R101_AMOUNT_TIME_VOSTRO"
+ };
+
+ for (String field : r101Fields) {
+
+     fieldsSet.append(",")
+              .append(field)
+              .append("=?");
+ }
+
+ return fieldsSet.toString();
+}
+
+
+//============================================================
+//NOSVOS TABLE 3 - NOSTRO1
+//============================================================
+
+public static final String NOSVOS_COLS_3 = buildNosvosCols3();
+
+private static final String R_FIELDS_SET_3 = buildNosvosFieldsSet3();
+
+
+//============================================================
+//BUILD COLUMN LIST
+//============================================================
+
+private static String buildNosvosCols3() {
+
+ StringBuilder cols = new StringBuilder();
+
+ String[] fields = {
+     "NAME_OF_BANK_NOSTRO1",
+     "TYPE_OF_ACCOUNT_NOSTRO1",
+     "PURPOSE_NOSTRO1",
+     "CURRENCY_NOSTRO1",
+     "SOVEREIGN_RATING_NOSTRO1",
+     "RISK_WEIGHT_NOSTRO1",
+     "AMOUNT_DEMAND_NOSTRO1",
+     "AMOUNT_TIME_NOSTRO1",
+     "RISK_WEIGHTED_AMOUNT_NOSTRO1"
+ };
+
+ // R1 to R100
+ for (int i = 1; i <= 100; i++) {
+
+     for (String field : fields) {
+
+         if (cols.length() > 0) {
+             cols.append(",");
+         }
+
+         cols.append("R")
+             .append(i)
+             .append("_")
+             .append(field);
+     }
+ }
+
+ // Report metadata columns
+ String[] metadataFields = {
+     "REPORT_DATE",
+     "REPORT_VERSION",
+     "REPORT_FREQUENCY",
+     "REPORT_CODE",
+     "REPORT_DESC",
+     "ENTITY_FLG",
+     "MODIFY_FLG",
+     "DEL_FLG"
+ };
+
+ for (String field : metadataFields) {
+     cols.append(",").append(field);
+ }
+
+ // R101 fields
+ String[] r101Fields = {
+     "R101_TOTAL_AMOUNT_DEMAND_NOSTRO1",
+     "R101_TOTAL_AMOUNT_TIME_NOSTRO1",
+     "R101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO1",
+     "R101_NAME_OF_BANK_NOSTRO1",
+     "R101_TYPE_OF_ACCOUNT_NOSTRO1",
+     "R101_PURPOSE_NOSTRO1",
+     "R101_CURRENCY_NOSTRO1",
+     "R101_SOVEREIGN_RATING_NOSTRO1",
+     "R101_RISK_WEIGHT_NOSTRO1",
+     "R101_AMOUNT_DEMAND_NOSTRO1",
+     "R101_AMOUNT_TIME_NOSTRO1",
+     "R101_RISK_WEIGHTED_AMOUNT_NOSTRO1"
+ };
+
+ for (String field : r101Fields) {
+     cols.append(",").append(field);
+ }
+
+ return cols.toString();
+}
+
+
+//============================================================
+//BUILD UPDATE FIELD SET
+//============================================================
+
+private static String buildNosvosFieldsSet3() {
+
+ StringBuilder fieldsSet = new StringBuilder();
+
+ String[] fields = {
+     "NAME_OF_BANK_NOSTRO1",
+     "TYPE_OF_ACCOUNT_NOSTRO1",
+     "PURPOSE_NOSTRO1",
+     "CURRENCY_NOSTRO1",
+     "SOVEREIGN_RATING_NOSTRO1",
+     "RISK_WEIGHT_NOSTRO1",
+     "AMOUNT_DEMAND_NOSTRO1",
+     "AMOUNT_TIME_NOSTRO1",
+     "RISK_WEIGHTED_AMOUNT_NOSTRO1"
+ };
+
+ // R1 to R100
+ for (int i = 1; i <= 100; i++) {
+
+     for (String field : fields) {
+
+         if (fieldsSet.length() > 0) {
+             fieldsSet.append(",");
+         }
+
+         fieldsSet.append("R")
+                  .append(i)
+                  .append("_")
+                  .append(field)
+                  .append("=?");
+     }
+ }
+
+ // Report metadata columns
+ String[] metadataFields = {
+     "REPORT_DATE",
+     "REPORT_VERSION",
+     "REPORT_FREQUENCY",
+     "REPORT_CODE",
+     "REPORT_DESC",
+     "ENTITY_FLG",
+     "MODIFY_FLG",
+     "DEL_FLG"
+ };
+
+ for (String field : metadataFields) {
+     fieldsSet.append(",")
+              .append(field)
+              .append("=?");
+ }
+
+ // R101 fields
+ String[] r101Fields = {
+     "R101_TOTAL_AMOUNT_DEMAND_NOSTRO1",
+     "R101_TOTAL_AMOUNT_TIME_NOSTRO1",
+     "R101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO1",
+     "R101_NAME_OF_BANK_NOSTRO1",
+     "R101_TYPE_OF_ACCOUNT_NOSTRO1",
+     "R101_PURPOSE_NOSTRO1",
+     "R101_CURRENCY_NOSTRO1",
+     "R101_SOVEREIGN_RATING_NOSTRO1",
+     "R101_RISK_WEIGHT_NOSTRO1",
+     "R101_AMOUNT_DEMAND_NOSTRO1",
+     "R101_AMOUNT_TIME_NOSTRO1",
+     "R101_RISK_WEIGHTED_AMOUNT_NOSTRO1"
+ };
+
+ for (String field : r101Fields) {
+     fieldsSet.append(",")
+              .append(field)
+              .append("=?");
+ }
+
+ return fieldsSet.toString();
+}
+
+//////////
+
+
+//============================================================
+//NOSVOS TABLE 4 - VOSTRO1
+//============================================================
+
+public static final String NOSVOS_COLS_4 = buildNosvosCols4();
+
+private static String buildNosvosCols4() {
+
+ StringBuilder cols = new StringBuilder();
+
+ String[] fields = {
+     "NAME_OF_BANK_VOSTRO1",
+     "TYPE_OF_ACCOUNT_VOSTRO1",
+     "PURPOSE_VOSTRO1",
+     "CURRENCY_VOSTRO1",
+     "AMOUNT_DEMAND_VOSTRO1",
+     "AMOUNT_TIME_VOSTRO1"
+ };
+
+ // R1 TO R100
+ for (int i = 1; i <= 100; i++) {
+     for (String field : fields) {
+         if (cols.length() > 0) {
+             cols.append(", ");
+         }
+         cols.append("R").append(i).append("_").append(field);
+     }
+ }
+
+ // COMMON METADATA COLUMNS
+ String[] metadata = {
+     "REPORT_DATE",
+     "REPORT_VERSION",
+     "REPORT_FREQUENCY",
+     "REPORT_CODE",
+     "REPORT_DESC",
+     "ENTITY_FLG",
+     "MODIFY_FLG",
+     "DEL_FLG"
+ };
+
+ for (String field : metadata) {
+     cols.append(", ").append(field);
+ }
+
+ // R101 COLUMNS
+ String[] r101Fields = {
+     "R101_TOTAL_AMOUNT_DEMAND_VOSTRO1",
+     "R101_TOTAL_AMOUNT_TIME_VOSTRO1",
+     "R101_NAME_OF_BANK_VOSTRO1",
+     "R101_TYPE_OF_ACCOUNT_VOSTRO1",
+     "R101_PURPOSE_VOSTRO1",
+     "R101_CURRENCY_VOSTRO1",
+     "R101_AMOUNT_DEMAND_VOSTRO1",
+     "R101_AMOUNT_TIME_VOSTRO1"
+ };
+
+ for (String field : r101Fields) {
+     cols.append(", ").append(field);
+ }
+
+ return cols.toString();
+}
+
+
+//============================================================
+//TABLE 4 - UPDATE PLACEHOLDERS
+//============================================================
+
+private static final String R_FIELDS_SET_4 = buildNosvosFieldsSet4();
+
+private static String buildNosvosFieldsSet4() {
+
+ StringBuilder fieldsSet = new StringBuilder();
+
+ String[] fields = {
+     "NAME_OF_BANK_VOSTRO1",
+     "TYPE_OF_ACCOUNT_VOSTRO1",
+     "PURPOSE_VOSTRO1",
+     "CURRENCY_VOSTRO1",
+     "AMOUNT_DEMAND_VOSTRO1",
+     "AMOUNT_TIME_VOSTRO1"
+ };
+
+ // R1 TO R100
+ for (int i = 1; i <= 100; i++) {
+     for (int j = 0; j < fields.length; j++) {
+         if (fieldsSet.length() > 0) {
+             fieldsSet.append(", ");
+         }
+         fieldsSet.append("?");
+     }
+ }
+
+ // COMMON METADATA PLACEHOLDERS
+ for (int i = 0; i < 8; i++) {
+     fieldsSet.append(", ?");
+ }
+
+ // R101 PLACEHOLDERS
+ String[] r101Fields = {
+     "R101_TOTAL_AMOUNT_DEMAND_VOSTRO1",
+     "R101_TOTAL_AMOUNT_TIME_VOSTRO1",
+     "R101_NAME_OF_BANK_VOSTRO1",
+     "R101_TYPE_OF_ACCOUNT_VOSTRO1",
+     "R101_PURPOSE_VOSTRO1",
+     "R101_CURRENCY_VOSTRO1",
+     "R101_AMOUNT_DEMAND_VOSTRO1",
+     "R101_AMOUNT_TIME_VOSTRO1"
+ };
+
+ for (String field : r101Fields) {
+     fieldsSet.append(", ?");
+ }
+
+ return fieldsSet.toString();
+}
+
+//============================================================
+//NOSVOS TABLE 5 - COLUMN CONSTANTS
+//============================================================
+
+public static final String NOSVOS_COLS_5 = buildNosvosCols5();
+
+private static String buildNosvosCols5() {
+
+ StringBuilder cols = new StringBuilder();
+
+ // METADATA COLUMNS - FIRST
+ String[] metadata = {
+     "REPORT_DATE",
+     "REPORT_VERSION",
+     "REPORT_FREQUENCY",
+     "REPORT_CODE",
+     "REPORT_DESC",
+     "ENTITY_FLG",
+     "MODIFY_FLG",
+     "DEL_FLG"
+ };
+
+ for (String field : metadata) {
+     if (cols.length() > 0) {
+         cols.append(", ");
+     }
+     cols.append(field);
+ }
+
+ // DUE FROM DOMESTIC - R1 TO R11
+ String[] dueFromFields = {
+     "DUE_FROM_DOMESTIC_NAME_OF_BANK",
+     "DUE_FROM_DOMESTIC_ACCT_TYPE",
+     "DUE_FROM_DOMESTIC_PURPOSE",
+     "DUE_FROM_DOMESTIC_AMOUNT",
+     "DUE_FROM_DOMESTIC_RISK_WEIGHT",
+     "DUE_FROM_DOMESTIC_CURRENCY",
+     "DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT"
+ };
+
+ for (int i = 1; i <= 11; i++) {
+     for (String field : dueFromFields) {
+         cols.append(", R").append(i).append("_").append(field);
+     }
+ }
+
+ // DUE TO DOMESTIC - R1 TO R8
+ String[] dueToFields = {
+     "DUE_TO_DOMESTIC_NAME_OF_BANK",
+     "DUE_TO_DOMESTIC_ACCT_TYPE",
+     "DUE_TO_DOMESTIC_PURPOSE",
+     "DUE_TO_DOMESTIC_AMOUNT",
+     "DUE_TO_DOMESTIC_RISK_WEIGHT",
+     "DUE_TO_DOMESTIC_RISK_WEIGHT_AMT"
+ };
+
+ for (int i = 1; i <= 8; i++) {
+     for (String field : dueToFields) {
+         cols.append(", R").append(i).append("_").append(field);
+     }
+ }
+
+ return cols.toString();
+}
+
+
+//============================================================
+//NOSVOS TABLE 5 - INSERT PLACEHOLDERS
+//============================================================
+
+private static final String R_FIELDS_SET_5 = buildNosvosFieldsSet5();
+
+private static String buildNosvosFieldsSet5() {
+
+ StringBuilder fieldsSet = new StringBuilder();
+
+ // 8 METADATA PLACEHOLDERS
+ for (int i = 0; i < 8; i++) {
+     if (fieldsSet.length() > 0) {
+         fieldsSet.append(", ");
+     }
+     fieldsSet.append("?");
+ }
+
+ // DUE FROM DOMESTIC - R1 TO R11 (7 FIELDS EACH)
+ String[] dueFromFields = {
+     "DUE_FROM_DOMESTIC_NAME_OF_BANK",
+     "DUE_FROM_DOMESTIC_ACCT_TYPE",
+     "DUE_FROM_DOMESTIC_PURPOSE",
+     "DUE_FROM_DOMESTIC_AMOUNT",
+     "DUE_FROM_DOMESTIC_RISK_WEIGHT",
+     "DUE_FROM_DOMESTIC_CURRENCY",
+     "DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT"
+ };
+
+ for (int i = 1; i <= 11; i++) {
+     for (String field : dueFromFields) {
+         fieldsSet.append(", ?");
+     }
+ }
+
+ // DUE TO DOMESTIC - R1 TO R8 (6 FIELDS EACH)
+ String[] dueToFields = {
+     "DUE_TO_DOMESTIC_NAME_OF_BANK",
+     "DUE_TO_DOMESTIC_ACCT_TYPE",
+     "DUE_TO_DOMESTIC_PURPOSE",
+     "DUE_TO_DOMESTIC_AMOUNT",
+     "DUE_TO_DOMESTIC_RISK_WEIGHT",
+     "DUE_TO_DOMESTIC_RISK_WEIGHT_AMT"
+ };
+
+ for (int i = 1; i <= 8; i++) {
+     for (String field : dueToFields) {
+         fieldsSet.append(", ?");
+     }
+ }
+
+ return fieldsSet.toString();
+}
+
+
 
 	// =========================================================
 	// JDBC QUERY METHODS
@@ -202645,54 +203409,422 @@ public class BRRS_M_NOSVOS_ReportService {
 	}
 
 
-	// ================================================================
-	// NOSVOS P1, P2, P3, P4, P5 - SINGLE UPDATE METHOD
-	// ================================================================
+	/*
+	 * // ================================================================ // NOSVOS
+	 * P1, P2, P3, P4, P5 - SINGLE UPDATE METHOD //
+	 * ================================================================
+	 * 
+	 * @Transactional public void updateNosvosReport(Object request1) {
+	 * 
+	 * try {
+	 * 
+	 * logger.info("Came to NOSVOS update service");
+	 * 
+	 * if (request1 == null) { throw new RuntimeException("Request cannot be null");
+	 * }
+	 * 
+	 * Date reportDate = (Date) getValue( request1, "getREPORT_DATE" );
+	 * 
+	 * if (reportDate == null) { throw new
+	 * RuntimeException("REPORT_DATE cannot be null"); }
+	 * 
+	 * Class<?> entityClass = request1.getClass();
+	 * 
+	 * List<?> records;
+	 * 
+	 * String tableName; String detailTable; String screenName;
+	 * 
+	 * String[] fields = null; String[] totalFields = null; String[] fromFields =
+	 * null; String[] toFields = null; int endRow = 10; // default for P1, P2, P4
+	 * 
+	 * // ======================================================== // P1 - NOSTRO //
+	 * ========================================================
+	 * 
+	 * if (request1 instanceof BrrsMNosvosP1) {
+	 * 
+	 * records = p1_getDataByDate(reportDate);
+	 * 
+	 * tableName = "BRRS_M_NOSVOS_P1"; detailTable = "BRRS_M_NOSVOS_DETAIL_P1";
+	 * screenName = "M NOSVOS P1 Screen";
+	 * 
+	 * fields = new String[] { "NAME_OF_BANK_AND_COUNTRY_NOSTRO",
+	 * "TYPE_OF_ACCOUNT_NOSTRO", "PURPOSE_NOSTRO", "CURRENCY_NOSTRO",
+	 * "SOVEREIGN_RATING_AAA_AA_A1_NOSTRO", "RISK_WEIGHT_NOSTRO",
+	 * "AMOUNT_DEMAND_NOSTRO", "AMOUNT_TIME_NOSTRO", "RISK_WEIGHTED_AMOUNT_NOSTRO"
+	 * };
+	 * 
+	 * totalFields = new String[] { "TOTAL_AMOUNT_DEMAND_NOSTRO",
+	 * "TOTAL_AMOUNT_TIME_NOSTRO", "TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO" };
+	 * 
+	 * }
+	 * 
+	 * // ======================================================== // P2 - VOSTRO //
+	 * ========================================================
+	 * 
+	 * else if (request1 instanceof BrrsMNosvosP2) {
+	 * 
+	 * records = p2_getDataByDate(reportDate);
+	 * 
+	 * tableName = "BRRS_M_NOSVOS_P2"; detailTable = "BRRS_M_NOSVOS_DETAIL_P2";
+	 * screenName = "M NOSVOS P2 Screen";
+	 * 
+	 * fields = new String[] { "NAME_OF_BANK_AND_COUNTRY_VOSTRO",
+	 * "TYPE_OF_ACCOUNT_VOSTRO", "PURPOSE_VOSTRO", "CURRENCY_VOSTRO",
+	 * "AMOUNT_DEMAND_VOSTRO", "AMOUNT_TIME_VOSTRO" };
+	 * 
+	 * totalFields = new String[] { "TOTAL_AMOUNT_DEMAND_VOSTRO",
+	 * "TOTAL_AMOUNT_TIME_VOSTRO" };
+	 * 
+	 * }
+	 * 
+	 * // ======================================================== // P3 - NOSTRO1
+	 * // ========================================================
+	 * 
+	 * else if (request1 instanceof BrrsMNosvosP3) {
+	 * 
+	 * records = p3_getDataByDate(reportDate);
+	 * 
+	 * // P3 branch tableName = "BRRS_M_NOSVOS_P3"; endRow = 11; // DUE FROM RELATED
+	 * FOREIGN BANKS has 11 rows detailTable = "BRRS_M_NOSVOS_DETAIL_P3"; screenName
+	 * = "M NOSVOS P3 Screen";
+	 * 
+	 * fields = new String[] { "NAME_OF_BANK_NOSTRO1", "TYPE_OF_ACCOUNT_NOSTRO1",
+	 * "PURPOSE_NOSTRO1", "CURRENCY_NOSTRO1", "SOVEREIGN_RATING_NOSTRO1",
+	 * "RISK_WEIGHT_NOSTRO1", "AMOUNT_DEMAND_NOSTRO1", "AMOUNT_TIME_NOSTRO1",
+	 * "RISK_WEIGHTED_AMOUNT_NOSTRO1" };
+	 * 
+	 * totalFields = new String[] { "TOTAL_AMOUNT_DEMAND_NOSTRO1",
+	 * "TOTAL_AMOUNT_TIME_NOSTRO1", "TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO1" };
+	 * 
+	 * }
+	 * 
+	 * // ======================================================== // P4 - VOSTRO1
+	 * // ========================================================
+	 * 
+	 * else if (request1 instanceof BrrsMNosvosP4) {
+	 * 
+	 * records = p4_getDataByDate(reportDate);
+	 * 
+	 * tableName = "BRRS_M_NOSVOS_P4"; detailTable = "BRRS_M_NOSVOS_DETAIL_P4";
+	 * screenName = "M NOSVOS P4 Screen";
+	 * 
+	 * fields = new String[] { "NAME_OF_BANK_VOSTRO1", "TYPE_OF_ACCOUNT_VOSTRO1",
+	 * "PURPOSE_VOSTRO1", "CURRENCY_VOSTRO1", "AMOUNT_DEMAND_VOSTRO1",
+	 * "AMOUNT_TIME_VOSTRO1" };
+	 * 
+	 * totalFields = new String[] { "TOTAL_AMOUNT_DEMAND_VOSTRO1",
+	 * "TOTAL_AMOUNT_TIME_VOSTRO1" };
+	 * 
+	 * }
+	 * 
+	 * // ======================================================== // P5 - DUE FROM
+	 * / DUE TO DOMESTIC // ========================================================
+	 * 
+	 * else if (request1 instanceof BrrsMNosvosP5) {
+	 * 
+	 * records = p5_getDataByDate(reportDate);
+	 * 
+	 * tableName = "BRRS_M_NOSVOS_P5"; detailTable = "BRRS_M_NOSVOS_DETAIL_P5";
+	 * screenName = "M NOSVOS P5 Screen";
+	 * 
+	 * fromFields = new String[] { "DUE_FROM_DOMESTIC_NAME_OF_BANK",
+	 * "DUE_FROM_DOMESTIC_ACCT_TYPE", "DUE_FROM_DOMESTIC_PURPOSE",
+	 * "DUE_FROM_DOMESTIC_AMOUNT", "DUE_FROM_DOMESTIC_RISK_WEIGHT",
+	 * "DUE_FROM_DOMESTIC_CURRENCY", "DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT" };
+	 * 
+	 * toFields = new String[] { "DUE_TO_DOMESTIC_NAME_OF_BANK",
+	 * "DUE_TO_DOMESTIC_ACCT_TYPE", "DUE_TO_DOMESTIC_PURPOSE",
+	 * "DUE_TO_DOMESTIC_AMOUNT", "DUE_TO_DOMESTIC_RISK_WEIGHT",
+	 * "DUE_TO_DOMESTIC_RISK_WEIGHT_AMT" };
+	 * 
+	 * } else {
+	 * 
+	 * throw new RuntimeException( "Unsupported NOSVOS entity: " +
+	 * entityClass.getName() ); }
+	 * 
+	 * // ======================================================== // CHECK EXISTING
+	 * RECORD // ========================================================
+	 * 
+	 * if (records == null || records.isEmpty()) {
+	 * 
+	 * throw new RuntimeException( "Record not found for REPORT_DATE: " + reportDate
+	 * ); }
+	 * 
+	 * Object existing = records.get(0);
+	 * 
+	 * // ======================================================== // OLD COPY FOR
+	 * AUDIT // ========================================================
+	 * 
+	 * Object oldcopy = entityClass.newInstance();
+	 * 
+	 * BeanUtils.copyProperties(existing, oldcopy);
+	 * 
+	 * // ======================================================== // CHECK CHANGES
+	 * // ========================================================
+	 * 
+	 * String changes = auditService.getChanges( oldcopy, request1 );
+	 * 
+	 * if (changes == null || changes.trim().isEmpty()) {
+	 * 
+	 * logger.info( "No changes detected for REPORT_DATE: {}", reportDate );
+	 * 
+	 * return; }
+	 * 
+	 * // ======================================================== // BUILD UPDATE
+	 * SQL // ========================================================
+	 * 
+	 * StringBuilder sql = new StringBuilder( "UPDATE " + tableName + " SET " );
+	 * 
+	 * List<Object> params = new ArrayList<Object>();
+	 * 
+	 * // ======================================================== // P1, P2, P3, P4
+	 * FIELDS // ========================================================
+	 * 
+	 * if (fields != null) {
+	 * 
+	 * appendNosvosUpdateFields(sql, params, request1, fields, 1, endRow);
+	 * 
+	 * if (totalFields != null) {
+	 * 
+	 * appendNosvosUpdateFields( sql, params, request1, totalFields, 101, 101 ); } }
+	 * 
+	 * // ======================================================== // P5 DUE FROM
+	 * FIELDS // ========================================================
+	 * 
+	 * if (fromFields != null) {
+	 * 
+	 * appendNosvosUpdateFields( sql, params, request1, fromFields, 1, 11 ); }
+	 * 
+	 * // ======================================================== // P5 DUE TO
+	 * FIELDS // ========================================================
+	 * 
+	 * if (toFields != null) {
+	 * 
+	 * appendNosvosUpdateFields( sql, params, request1, toFields, 1, 8 ); }
+	 * 
+	 * // ======================================================== // COMMON FIELDS
+	 * // ========================================================
+	 * 
+	 * sql.append("REPORT_FREQUENCY=?, "); sql.append("REPORT_CODE=?, ");
+	 * sql.append("REPORT_DESC=?, "); sql.append("ENTITY_FLG=?, ");
+	 * sql.append("MODIFY_FLG=?, "); sql.append("DEL_FLG=? ");
+	 * 
+	 * // ======================================================== // DATE CONDITION
+	 * // ========================================================
+	 * 
+	 * sql.append( "WHERE REPORT_DATE >= TRUNC(?) " +
+	 * "AND REPORT_DATE < TRUNC(?) + 1" );
+	 * 
+	 * params.add(getValue(request1, "getREPORT_FREQUENCY"));
+	 * params.add(getValue(request1, "getREPORT_CODE"));
+	 * params.add(getValue(request1, "getREPORT_DESC"));
+	 * params.add(getValue(request1, "getENTITY_FLG"));
+	 * params.add(getValue(request1, "getMODIFY_FLG"));
+	 * params.add(getValue(request1, "getDEL_FLG"));
+	 * 
+	 * params.add(reportDate); params.add(reportDate);
+	 * 
+	 * // ======================================================== // EXECUTE UPDATE
+	 * // ========================================================
+	 * 
+	 * int count = jdbcTemplate.update( sql.toString(), params.toArray() );
+	 * 
+	 * logger.info( "{} Updated. Rows: {}", tableName, count );
+	 * 
+	 * // ======================================================== // AUDIT AND
+	 * DETAIL UPDATE // ========================================================
+	 * 
+	 * if (count > 0) {
+	 * 
+	 * auditService.compareEntitiesmanual( oldcopy, request1, reportDate.toString(),
+	 * screenName, tableName );
+	 * 
+	 * logger.info( "Audit completed for {}", tableName );
+	 * 
+	 * updateNosvosDetail( request1, detailTable );
+	 * 
+	 * logger.info( "{} Updated Successfully11", tableName ); }
+	 * 
+	 * } catch (Exception e) {
+	 * 
+	 * logger.error( "Error while updating NOSVOS report", e );
+	 * 
+	 * throw new RuntimeException( "Error while updating NOSVOS report", e ); } }
+	 * 
+	 * 
+	 * // ================================================================ // COMMON
+	 * FIELD UPDATE BUILDER //
+	 * ================================================================
+	 * 
+	 * private void appendNosvosUpdateFields( StringBuilder sql, List<Object>
+	 * params, Object request, String[] fields, int startRow, int endRow) {
+	 * 
+	 * try {
+	 * 
+	 * for (int i = startRow; i <= endRow; i++) {
+	 * 
+	 * for (String field : fields) {
+	 * 
+	 * String column = "R" + i + "_" + field;
+	 * 
+	 * Method getter = request.getClass().getMethod( "get" + column );
+	 * 
+	 * Object value = getter.invoke(request);
+	 * 
+	 * sql.append(column).append("=?, ");
+	 * 
+	 * params.add(value); } }
+	 * 
+	 * } catch (Exception e) {
+	 * 
+	 * logger.error( "Error building NOSVOS update fields", e );
+	 * 
+	 * throw new RuntimeException( "Error building NOSVOS update fields", e ); } }
+	 * 
+	 * 
+	 * // ================================================================ // COMMON
+	 * DETAIL TABLE UPDATE / INSERT //
+	 * ================================================================
+	 * 
+	 * private void updateNosvosDetail( Object request, String detailTable) {
+	 * 
+	 * try {
+	 * 
+	 * Date reportDate = (Date) getValue( request, "getREPORT_DATE" );
+	 * 
+	 * // ==================================================== // CHECK EXISTING
+	 * DETAIL RECORD // ====================================================
+	 * 
+	 * String checkSql = "SELECT COUNT(*) FROM " + detailTable +
+	 * " WHERE REPORT_DATE >= TRUNC(?) " + "AND REPORT_DATE < TRUNC(?) + 1";
+	 * 
+	 * Integer existingCount = jdbcTemplate.queryForObject( checkSql, Integer.class,
+	 * reportDate, reportDate );
+	 * 
+	 * // ==================================================== // UPDATE EXISTING
+	 * RECORD // ====================================================
+	 * 
+	 * if (existingCount != null && existingCount > 0) {
+	 * 
+	 * String updateSql = "UPDATE " + detailTable + " SET " + "REPORT_FREQUENCY=?, "
+	 * + "REPORT_CODE=?, " + "REPORT_DESC=?, " + "ENTITY_FLG=?, " + "MODIFY_FLG=?, "
+	 * + "DEL_FLG=? " + "WHERE REPORT_DATE >= TRUNC(?) " +
+	 * "AND REPORT_DATE < TRUNC(?) + 1";
+	 * 
+	 * int count = jdbcTemplate.update( updateSql,
+	 * 
+	 * getValue(request, "getREPORT_FREQUENCY"), getValue(request,
+	 * "getREPORT_CODE"), getValue(request, "getREPORT_DESC"), getValue(request,
+	 * "getENTITY_FLG"), getValue(request, "getMODIFY_FLG"), getValue(request,
+	 * "getDEL_FLG"),
+	 * 
+	 * reportDate, reportDate );
+	 * 
+	 * logger.info( "Detail record updated in {}. Rows: {}", detailTable, count );
+	 * 
+	 * } else {
+	 * 
+	 * // ==================================================== // INSERT NEW RECORD
+	 * // ====================================================
+	 * 
+	 * String insertSql = "INSERT INTO " + detailTable + " (" + "REPORT_DATE, " +
+	 * "REPORT_FREQUENCY, " + "REPORT_CODE, " + "REPORT_DESC, " + "ENTITY_FLG, " +
+	 * "MODIFY_FLG, " + "DEL_FLG" + ") VALUES (?, ?, ?, ?, ?, ?, ?)";
+	 * 
+	 * int count = jdbcTemplate.update( insertSql,
+	 * 
+	 * reportDate, getValue(request, "getREPORT_FREQUENCY"), getValue(request,
+	 * "getREPORT_CODE"), getValue(request, "getREPORT_DESC"), getValue(request,
+	 * "getENTITY_FLG"), getValue(request, "getMODIFY_FLG"), getValue(request,
+	 * "getDEL_FLG") );
+	 * 
+	 * logger.info( "Detail record inserted into {}. Rows: {}", detailTable, count
+	 * ); }
+	 * 
+	 * } catch (Exception e) {
+	 * 
+	 * logger.error( "Error updating NOSVOS detail table: " + detailTable, e );
+	 * 
+	 * throw new RuntimeException( "Error updating NOSVOS detail table: " +
+	 * detailTable, e ); } }
+	 * 
+	 * 
+	 * // ================================================================ // COMMON
+	 * GET VALUE METHOD //
+	 * ================================================================
+	 * 
+	 * private Object getValue( Object obj, String methodName) {
+	 * 
+	 * try {
+	 * 
+	 * Method method = obj.getClass().getMethod(methodName);
+	 * 
+	 * return method.invoke(obj);
+	 * 
+	 * } catch (Exception e) {
+	 * 
+	 * throw new RuntimeException( "Unable to get value from method: " + methodName,
+	 * e ); } }
+	 */
+	
+	
+	
+	
+	
+	
+
+	// =====================================================================
+	// NOSVOS P1, P2, P3, P4, P5 - MAKER CHECKER IMPLEMENTATION
+	// =====================================================================
+
+
+	// =====================================================================
+	// 1. MAKER UPDATE ENTITY - SAVE ONLY IN MOD TABLE
+	// =====================================================================
 
 	@Transactional
-	public void updateNosvosReport(Object request1) {
+	public void updateNosvosReport(Object updatedEntity) {
+
+	    System.out.println("Came to NOSVOS Maker Update");
 
 	    try {
 
-	        logger.info("Came to NOSVOS update service");
-
-	        if (request1 == null) {
-	            throw new RuntimeException("Request cannot be null");
+	        if (updatedEntity == null) {
+	            throw new RuntimeException("NOSVOS entity cannot be null");
 	        }
 
 	        Date reportDate = (Date) getValue(
-	            request1, "getREPORT_DATE"
+	            updatedEntity, "getREPORT_DATE"
 	        );
 
 	        if (reportDate == null) {
 	            throw new RuntimeException("REPORT_DATE cannot be null");
 	        }
 
-	        Class<?> entityClass = request1.getClass();
+	        List<?> liveRecords;
 
-	        List<?> records;
-
-	        String tableName;
-	        String detailTable;
+	        String liveTable;
+	        String modTable;
 	        String screenName;
 
 	        String[] fields = null;
 	        String[] totalFields = null;
 	        String[] fromFields = null;
-String[] toFields = null;
-int endRow = 10;          // default for P1, P2, P4
+	        String[] toFields = null;
 
-	        // ========================================================
+	        int endRow = 10;
+
+	        // =========================================================
 	        // P1 - NOSTRO
-	        // ========================================================
+	        // =========================================================
 
-	        if (request1 instanceof BrrsMNosvosP1) {
+	        if (updatedEntity instanceof BrrsMNosvosP1) {
 
-	            records = p1_getDataByDate(reportDate);
+	            liveRecords = p1_getDataByDate(reportDate);
 
-	            tableName = "BRRS_M_NOSVOS_P1";
-	            detailTable = "BRRS_M_NOSVOS_DETAIL_P1";
-	            screenName = "M NOSVOS P1 Screen";
+	            liveTable = "BRRS_M_NOSVOS_P1";
+	            modTable = "BRRS_M_NOSVOS_MOD_P1";
+	            screenName = "M NOSVOS P1 Summary Screen";
 
 	            fields = new String[] {
 	                "NAME_OF_BANK_AND_COUNTRY_NOSTRO",
@@ -202711,20 +203843,19 @@ int endRow = 10;          // default for P1, P2, P4
 	                "TOTAL_AMOUNT_TIME_NOSTRO",
 	                "TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO"
 	            };
-
 	        }
 
-	        // ========================================================
+	        // =========================================================
 	        // P2 - VOSTRO
-	        // ========================================================
+	        // =========================================================
 
-	        else if (request1 instanceof BrrsMNosvosP2) {
+	        else if (updatedEntity instanceof BrrsMNosvosP2) {
 
-	            records = p2_getDataByDate(reportDate);
+	            liveRecords = p2_getDataByDate(reportDate);
 
-	            tableName = "BRRS_M_NOSVOS_P2";
-	            detailTable = "BRRS_M_NOSVOS_DETAIL_P2";
-	            screenName = "M NOSVOS P2 Screen";
+	            liveTable = "BRRS_M_NOSVOS_P2";
+	            modTable = "BRRS_M_NOSVOS_MOD_P2";
+	            screenName = "M NOSVOS P2 Summary Screen";
 
 	            fields = new String[] {
 	                "NAME_OF_BANK_AND_COUNTRY_VOSTRO",
@@ -202739,22 +203870,21 @@ int endRow = 10;          // default for P1, P2, P4
 	                "TOTAL_AMOUNT_DEMAND_VOSTRO",
 	                "TOTAL_AMOUNT_TIME_VOSTRO"
 	            };
-
 	        }
 
-	        // ========================================================
+	        // =========================================================
 	        // P3 - NOSTRO1
-	        // ========================================================
+	        // =========================================================
 
-	        else if (request1 instanceof BrrsMNosvosP3) {
+	        else if (updatedEntity instanceof BrrsMNosvosP3) {
 
-	            records = p3_getDataByDate(reportDate);
+	            liveRecords = p3_getDataByDate(reportDate);
 
-	            // P3 branch
-tableName = "BRRS_M_NOSVOS_P3";
-endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
-	            detailTable = "BRRS_M_NOSVOS_DETAIL_P3";
-	            screenName = "M NOSVOS P3 Screen";
+	            liveTable = "BRRS_M_NOSVOS_P3";
+	            modTable = "BRRS_M_NOSVOS_MOD_P3";
+	            screenName = "M NOSVOS P3 Summary Screen";
+
+	            endRow = 11;
 
 	            fields = new String[] {
 	                "NAME_OF_BANK_NOSTRO1",
@@ -202773,20 +203903,19 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 	                "TOTAL_AMOUNT_TIME_NOSTRO1",
 	                "TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO1"
 	            };
-
 	        }
 
-	        // ========================================================
+	        // =========================================================
 	        // P4 - VOSTRO1
-	        // ========================================================
+	        // =========================================================
 
-	        else if (request1 instanceof BrrsMNosvosP4) {
+	        else if (updatedEntity instanceof BrrsMNosvosP4) {
 
-	            records = p4_getDataByDate(reportDate);
+	            liveRecords = p4_getDataByDate(reportDate);
 
-	            tableName = "BRRS_M_NOSVOS_P4";
-	            detailTable = "BRRS_M_NOSVOS_DETAIL_P4";
-	            screenName = "M NOSVOS P4 Screen";
+	            liveTable = "BRRS_M_NOSVOS_P4";
+	            modTable = "BRRS_M_NOSVOS_MOD_P4";
+	            screenName = "M NOSVOS P4 Summary Screen";
 
 	            fields = new String[] {
 	                "NAME_OF_BANK_VOSTRO1",
@@ -202801,20 +203930,19 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 	                "TOTAL_AMOUNT_DEMAND_VOSTRO1",
 	                "TOTAL_AMOUNT_TIME_VOSTRO1"
 	            };
-
 	        }
 
-	        // ========================================================
+	        // =========================================================
 	        // P5 - DUE FROM / DUE TO DOMESTIC
-	        // ========================================================
+	        // =========================================================
 
-	        else if (request1 instanceof BrrsMNosvosP5) {
+	        else if (updatedEntity instanceof BrrsMNosvosP5) {
 
-	            records = p5_getDataByDate(reportDate);
+	            liveRecords = p5_getDataByDate(reportDate);
 
-	            tableName = "BRRS_M_NOSVOS_P5";
-	            detailTable = "BRRS_M_NOSVOS_DETAIL_P5";
-	            screenName = "M NOSVOS P5 Screen";
+	            liveTable = "BRRS_M_NOSVOS_P5";
+	            modTable = "BRRS_M_NOSVOS_MOD_P5";
+	            screenName = "M NOSVOS P5 Summary Screen";
 
 	            fromFields = new String[] {
 	                "DUE_FROM_DOMESTIC_NAME_OF_BANK",
@@ -202834,243 +203962,642 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 	                "DUE_TO_DOMESTIC_RISK_WEIGHT",
 	                "DUE_TO_DOMESTIC_RISK_WEIGHT_AMT"
 	            };
+	        }
+
+	        else {
+
+	            throw new RuntimeException(
+	                "Unsupported NOSVOS entity: " +
+	                updatedEntity.getClass().getName()
+	            );
+	        }
+
+	        // =========================================================
+	        // 1. FETCH LIVE SUMMARY RECORD
+	        // =========================================================
+
+	        if (liveRecords == null || liveRecords.isEmpty()) {
+
+	            throw new RuntimeException(
+	                "Live record not found for REPORT_DATE: " + reportDate
+	            );
+	        }
+
+	        Object liveRecord = liveRecords.get(0);
+
+	        // =========================================================
+	        // 2. FETCH EXISTING MOD RECORD
+	        // =========================================================
+
+	        Class<?> entityClass = updatedEntity.getClass();
+
+	        List<?> modRecords = jdbcTemplate.query(
+	            "SELECT * FROM " + modTable +
+	            " WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+	            BeanPropertyRowMapper.newInstance(entityClass),
+	            reportDate
+	        );
+
+	        Object modRecord;
+
+	        if (modRecords == null || modRecords.isEmpty()) {
+
+	            // First Maker modification: copy LIVE baseline
+
+	            modRecord = entityClass.newInstance();
+
+	            BeanUtils.copyProperties(
+	                liveRecord,
+	                modRecord
+	            );
+
+	            System.out.println(
+	                "NOSVOS original LIVE data copied into MOD"
+	            );
 
 	        } else {
 
-	            throw new RuntimeException(
-	                "Unsupported NOSVOS entity: " + entityClass.getName()
+	            // Existing pending MOD: preserve its previous changes
+
+	            modRecord = modRecords.get(0);
+
+	            String modifyFlag = (String) getValue(
+	                modRecord, "getMODIFY_FLG"
+	            );
+
+	            if (!"Y".equals(modifyFlag)) {
+
+	                // Start a new modification from LIVE baseline
+
+	                modRecord = entityClass.newInstance();
+
+	                BeanUtils.copyProperties(
+	                    liveRecord,
+	                    modRecord
+	                );
+	            }
+
+	            System.out.println(
+	                "NOSVOS existing MOD record fetched"
 	            );
 	        }
 
-	        // ========================================================
-	        // CHECK EXISTING RECORD
-	        // ========================================================
-
-	        if (records == null || records.isEmpty()) {
-
-	            throw new RuntimeException(
-	                "Record not found for REPORT_DATE: " + reportDate
-	            );
-	        }
-
-	        Object existing = records.get(0);
-
-	        // ========================================================
-	        // OLD COPY FOR AUDIT
-	        // ========================================================
+	        // =========================================================
+	        // 3. OLD COPY FOR AUDIT
+	        // =========================================================
 
 	        Object oldcopy = entityClass.newInstance();
 
-	        BeanUtils.copyProperties(existing, oldcopy);
+	        BeanUtils.copyProperties(
+	            modRecord,
+	            oldcopy
+	        );
 
-	        // ========================================================
-	        // CHECK CHANGES
-	        // ========================================================
+	        // =========================================================
+	        // 4. APPLY REQUEST VALUES TO MOD OBJECT
+	        // =========================================================
+
+	        if (fields != null) {
+
+	            applyNosvosChanges(
+	                1,
+	                endRow,
+	                fields,
+	                updatedEntity,
+	                modRecord
+	            );
+
+	            if (totalFields != null) {
+
+	                applyNosvosChanges(
+	                    101,
+	                    101,
+	                    totalFields,
+	                    updatedEntity,
+	                    modRecord
+	                );
+	            }
+	        }
+
+	        if (fromFields != null) {
+
+	            applyNosvosChanges(
+	                1,
+	                11,
+	                fromFields,
+	                updatedEntity,
+	                modRecord
+	            );
+	        }
+
+	        if (toFields != null) {
+
+	            applyNosvosChanges(
+	                1,
+	                8,
+	                toFields,
+	                updatedEntity,
+	                modRecord
+	            );
+	        }
+
+	        // Update common report fields if supplied
+
+	        copyNosvosCommonFields(
+	            updatedEntity,
+	            modRecord
+	        );
+
+	        // =========================================================
+	        // 5. AUDIT CHANGE CHECK
+	        // =========================================================
 
 	        String changes = auditService.getChanges(
-	            oldcopy, request1
+	            oldcopy,
+	            modRecord
+	        );
+
+	        System.out.println(
+	            "NOSVOS Changes Length = " +
+	            (changes != null ? changes.length() : 0)
 	        );
 
 	        if (changes == null || changes.trim().isEmpty()) {
 
-	            logger.info(
-	                "No changes detected for REPORT_DATE: {}",
-	                reportDate
+	            System.out.println(
+	                "No NOSVOS changes detected"
 	            );
 
 	            return;
 	        }
 
-	        // ========================================================
-	        // BUILD UPDATE SQL
-	        // ========================================================
+	        // =========================================================
+	        // 6. SET MAKER CHECKER FLAGS
+	        // =========================================================
 
-	        StringBuilder sql = new StringBuilder(
-	            "UPDATE " + tableName + " SET "
+	        setNosvosFlag(modRecord, "setENTITY_FLG", "Y");
+	        setNosvosFlag(modRecord, "setMODIFY_FLG", "Y");
+	        setNosvosFlag(modRecord, "setDEL_FLG", "N");
+
+	        // =========================================================
+	        // 7. SAVE MOD SUMMARY TABLE ONLY
+	        // =========================================================
+
+	        saveNosvosModSummaryEntity(
+	            modRecord,
+	            modTable,
+	            fields,
+	            totalFields,
+	            fromFields,
+	            toFields,
+	            endRow
 	        );
 
-	        List<Object> params = new ArrayList<Object>();
-
-	        // ========================================================
-	        // P1, P2, P3, P4 FIELDS
-	        // ========================================================
-
-	        if (fields != null) {
-
-	            appendNosvosUpdateFields(sql, params, request1, fields, 1, endRow);
-
-	            if (totalFields != null) {
-
-	                appendNosvosUpdateFields(
-	                    sql, params, request1, totalFields, 101, 101
-	                );
-	            }
-	        }
-
-	        // ========================================================
-	        // P5 DUE FROM FIELDS
-	        // ========================================================
-
-	        if (fromFields != null) {
-
-	            appendNosvosUpdateFields(
-	                sql, params, request1, fromFields, 1, 11
-	            );
-	        }
-
-	        // ========================================================
-	        // P5 DUE TO FIELDS
-	        // ========================================================
-
-	        if (toFields != null) {
-
-	            appendNosvosUpdateFields(
-	                sql, params, request1, toFields, 1, 8
-	            );
-	        }
-
-	        // ========================================================
-	        // COMMON FIELDS
-	        // ========================================================
-
-	        sql.append("REPORT_FREQUENCY=?, ");
-	        sql.append("REPORT_CODE=?, ");
-	        sql.append("REPORT_DESC=?, ");
-	        sql.append("ENTITY_FLG=?, ");
-	        sql.append("MODIFY_FLG=?, ");
-	        sql.append("DEL_FLG=? ");
-
-	        // ========================================================
-	        // DATE CONDITION
-	        // ========================================================
-
-	        sql.append(
-	            "WHERE REPORT_DATE >= TRUNC(?) " +
-	            "AND REPORT_DATE < TRUNC(?) + 1"
+	        System.out.println(
+	            "NOSVOS MOD saved successfully: " + modTable
 	        );
 
-	        params.add(getValue(request1, "getREPORT_FREQUENCY"));
-	        params.add(getValue(request1, "getREPORT_CODE"));
-	        params.add(getValue(request1, "getREPORT_DESC"));
-	        params.add(getValue(request1, "getENTITY_FLG"));
-	        params.add(getValue(request1, "getMODIFY_FLG"));
-	        params.add(getValue(request1, "getDEL_FLG"));
+	        // =========================================================
+	        // 8. AUDIT TRAIL
+	        // =========================================================
 
-	        params.add(reportDate);
-	        params.add(reportDate);
-
-	        // ========================================================
-	        // EXECUTE UPDATE
-	        // ========================================================
-
-	        int count = jdbcTemplate.update(
-	            sql.toString(),
-	            params.toArray()
+	        auditService.compareEntitiesmanual(
+	            oldcopy,
+	            modRecord,
+	            reportDate.toString(),
+	            screenName,
+	            modTable
 	        );
 
-	        logger.info(
-	            "{} Updated. Rows: {}",
-	            tableName,
-	            count
+	        System.out.println(
+	            "NOSVOS Maker audit completed successfully"
 	        );
 
-	        // ========================================================
-	        // AUDIT AND DETAIL UPDATE
-	        // ========================================================
-
-	        if (count > 0) {
-
-	            auditService.compareEntitiesmanual(
-	                oldcopy,
-	                request1,
-	                reportDate.toString(),
-	                screenName,
-	                tableName
-	            );
-
-	            logger.info(
-	                "Audit completed for {}",
-	                tableName
-	            );
-
-	            updateNosvosDetail(
-	                request1,
-	                detailTable
-	            );
-
-	            logger.info(
-	                "{} Updated Successfully",
-	                tableName
-	            );
-	        }
+	        // IMPORTANT:
+	        // DO NOT UPDATE LIVE SUMMARY HERE.
+	        // DO NOT UPDATE LIVE DETAIL HERE.
 
 	    } catch (Exception e) {
 
 	        logger.error(
-	            "Error while updating NOSVOS report",
+	            "Error in NOSVOS Maker Update",
 	            e
 	        );
 
 	        throw new RuntimeException(
-	            "Error while updating NOSVOS report", e
+	            "Error in NOSVOS Maker Update", e
 	        );
 	    }
 	}
 
 
-	// ================================================================
-	// COMMON FIELD UPDATE BUILDER
-	// ================================================================
+	// =====================================================================
+	// 2. APPLY CHANGES TO NOSVOS MOD ENTITY
+	// =====================================================================
 
-	private void appendNosvosUpdateFields(
-	        StringBuilder sql,
-	        List<Object> params,
-	        Object request,
-	        String[] fields,
+	private void applyNosvosChanges(
 	        int startRow,
-	        int endRow) {
+	        int endRow,
+	        String[] fields,
+	        Object updatedEntity,
+	        Object targetEntity) {
+
+	    for (int i = startRow; i <= endRow; i++) {
+
+	        String prefix = "R" + i + "_";
+
+	        for (String field : fields) {
+
+	            String getterName = "get" + prefix + field;
+	            String setterName = "set" + prefix + field;
+
+	            try {
+
+	                Method getter = updatedEntity.getClass()
+	                    .getMethod(getterName);
+
+	                Object value = getter.invoke(updatedEntity);
+
+	                Class<?> returnType = getter.getReturnType();
+
+	                // Follow BDISB1 pattern: null request values
+	                // do not overwrite existing MOD values.
+
+	                if (value == null) {
+	                    continue;
+	                }
+
+	                if (returnType == BigDecimal.class) {
+
+	                    if (value instanceof String) {
+
+	                        String val = ((String) value)
+	                            .trim().replace(",", "");
+
+	                        if (val.isEmpty()) {
+	                            continue;
+	                        }
+
+	                        try {
+	                            value = new BigDecimal(val);
+	                        } catch (NumberFormatException e) {
+	                            throw new RuntimeException(
+	                                "Invalid number: " + val, e
+	                            );
+	                        }
+	                    }
+	                }
+
+	                else if (returnType == Date.class) {
+
+	                    if (value instanceof String) {
+
+	                        String val = ((String) value).trim();
+
+	                        if (val.isEmpty()) {
+	                            continue;
+	                        }
+
+	                        value = new SimpleDateFormat(
+	                            "yyyy-MM-dd"
+	                        ).parse(val);
+	                    }
+	                }
+
+	                else if (returnType == String.class) {
+
+	                    value = ((String) value).trim();
+	                }
+
+	                Method setter = targetEntity.getClass()
+	                    .getMethod(setterName, returnType);
+
+	                setter.invoke(targetEntity, value);
+
+	            } catch (NoSuchMethodException e) {
+
+	                // Skip missing fields
+
+	            } catch (Exception e) {
+
+	                throw new RuntimeException(
+	                    "Error applying NOSVOS field: " + getterName,
+	                    e
+	                );
+	            }
+	        }
+	    }
+	}
+
+
+	// =====================================================================
+	// 3. COPY COMMON NOSVOS REPORT FIELDS
+	// =====================================================================
+
+	private void copyNosvosCommonFields(
+	        Object source,
+	        Object target) {
+
+	    String[] commonFields = {
+	        "REPORT_VERSION",
+	        "REPORT_FREQUENCY",
+	        "REPORT_CODE",
+	        "REPORT_DESC"
+	    };
+
+	    for (String field : commonFields) {
+
+	        String getterName = "get" + field;
+	        String setterName = "set" + field;
+
+	        try {
+
+	            Method getter = source.getClass()
+	                .getMethod(getterName);
+
+	            Object value = getter.invoke(source);
+
+	            if (value == null) {
+	                continue;
+	            }
+
+	            Method setter = target.getClass()
+	                .getMethod(setterName, getter.getReturnType());
+
+	            setter.invoke(target, value);
+
+	        } catch (NoSuchMethodException e) {
+
+	            // Skip optional common field
+
+	        } catch (Exception e) {
+
+	            throw new RuntimeException(
+	                "Error copying NOSVOS common field: " + field,
+	                e
+	            );
+	        }
+	    }
+	}
+
+
+	// =====================================================================
+	// 4. COMMON NOSVOS FLAG SETTER
+	// =====================================================================
+
+	private void setNosvosFlag(
+	        Object entity,
+	        String setterName,
+	        String value) {
 
 	    try {
 
-	        for (int i = startRow; i <= endRow; i++) {
+	        Method setter = entity.getClass()
+	            .getMethod(setterName, String.class);
 
-	            for (String field : fields) {
-
-	                String column = "R" + i + "_" + field;
-
-	                Method getter = request.getClass().getMethod(
-	                    "get" + column
-	                );
-
-	                Object value = getter.invoke(request);
-
-	                sql.append(column).append("=?, ");
-
-	                params.add(value);
-	            }
-	        }
+	        setter.invoke(entity, value);
 
 	    } catch (Exception e) {
 
-	        logger.error(
-	            "Error building NOSVOS update fields",
-	            e
-	        );
-
 	        throw new RuntimeException(
-	            "Error building NOSVOS update fields", e
+	            "Unable to set NOSVOS flag: " + setterName,
+	            e
 	        );
 	    }
 	}
 
 
-	// ================================================================
-	// COMMON DETAIL TABLE UPDATE / INSERT
-	// ================================================================
+	// =====================================================================
+	// 5. GET NOSVOS VALID DATABASE COLUMNS
+	// =====================================================================
 
-	private void updateNosvosDetail(
-	        Object request,
-	        String detailTable) {
+	private List<String> getNosvosColumns(
+	        Object entity,
+	        String[] fields,
+	        String[] totalFields,
+	        String[] fromFields,
+	        String[] toFields,
+	        int endRow) {
+
+	    Set<String> columns = new LinkedHashSet<String>();
+
+	    columns.add("REPORT_DATE");
+	    columns.add("REPORT_VERSION");
+	    columns.add("REPORT_FREQUENCY");
+	    columns.add("REPORT_CODE");
+	    columns.add("REPORT_DESC");
+	    columns.add("ENTITY_FLG");
+	    columns.add("MODIFY_FLG");
+	    columns.add("DEL_FLG");
+
+	    if (fields != null) {
+
+	        for (int i = 1; i <= endRow; i++) {
+
+	            for (String field : fields) {
+
+	                columns.add("R" + i + "_" + field);
+	            }
+	        }
+
+	        if (totalFields != null) {
+
+	            for (String field : totalFields) {
+
+	                columns.add("R101_" + field);
+	            }
+	        }
+	    }
+
+	    if (fromFields != null) {
+
+	        for (int i = 1; i <= 11; i++) {
+
+	            for (String field : fromFields) {
+
+	                columns.add("R" + i + "_" + field);
+	            }
+	        }
+	    }
+
+	    if (toFields != null) {
+
+	        for (int i = 1; i <= 8; i++) {
+
+	            for (String field : toFields) {
+
+	                columns.add("R" + i + "_" + field);
+	            }
+	        }
+	    }
+
+	    List<String> validColumns = new ArrayList<String>();
+
+	    for (String column : columns) {
+
+	        try {
+
+	            entity.getClass().getMethod("get" + column);
+
+	            validColumns.add(column);
+
+	        } catch (NoSuchMethodException e) {
+
+	            // Skip fields not available in entity
+	        }
+	    }
+
+	    return validColumns;
+	}
+
+
+	// =====================================================================
+	// 6. SAVE / UPDATE NOSVOS MOD SUMMARY ENTITY
+	// =====================================================================
+
+	public void saveNosvosModSummaryEntity(
+	        Object entity,
+	        String modTable,
+	        String[] fields,
+	        String[] totalFields,
+	        String[] fromFields,
+	        String[] toFields,
+	        int endRow) {
+
+	    NamedParameterJdbcTemplate namedParamJdbc =
+	        new NamedParameterJdbcTemplate(jdbcTemplate);
+
+	    Date reportDate = (Date) getValue(
+	        entity, "getREPORT_DATE"
+	    );
+
+	    String checkSql =
+	        "SELECT COUNT(*) FROM " + modTable +
+	        " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+
+	    MapSqlParameterSource checkParams =
+	        new MapSqlParameterSource();
+
+	    checkParams.addValue("reportDate", reportDate);
+
+	    Integer count = namedParamJdbc.queryForObject(
+	        checkSql,
+	        checkParams,
+	        Integer.class
+	    );
+
+	    // =============================================================
+	    // GET VALID COLUMNS
+	    // =============================================================
+
+	    List<String> columns = getNosvosColumns(
+	        entity,
+	        fields,
+	        totalFields,
+	        fromFields,
+	        toFields,
+	        endRow
+	    );
+
+	    MapSqlParameterSource params =
+	        new MapSqlParameterSource();
+
+	    List<String> insertColumns = new ArrayList<String>();
+	    List<String> insertValues = new ArrayList<String>();
+
+	    StringBuilder updateSetSql = new StringBuilder();
+
+	    // =============================================================
+	    // MAP ENTITY VALUES
+	    // =============================================================
+
+	    for (String column : columns) {
+
+	        try {
+
+	            Method getter = entity.getClass()
+	                .getMethod("get" + column);
+
+	            Object value = getter.invoke(entity);
+
+	            String paramName = column.toLowerCase();
+
+	            params.addValue(paramName, value);
+
+	            insertColumns.add(column);
+
+	            insertValues.add(":" + paramName);
+
+	            if (!"REPORT_DATE".equals(column)) {
+
+	                updateSetSql.append(column)
+	                    .append(" = :")
+	                    .append(paramName)
+	                    .append(", ");
+	            }
+
+	        } catch (Exception e) {
+
+	            throw new RuntimeException(
+	                "Error mapping NOSVOS MOD column: " + column,
+	                e
+	            );
+	        }
+	    }
+
+	    // =============================================================
+	    // UPDATE EXISTING MOD RECORD
+	    // =============================================================
+
+	    if (count != null && count > 0) {
+
+	        String updateSql =
+	            "UPDATE " + modTable +
+	            " SET " +
+	            updateSetSql.substring(
+	                0, updateSetSql.length() - 2
+	            ) +
+	            " WHERE TRUNC(REPORT_DATE) = TRUNC(:report_date)";
+
+	        namedParamJdbc.update(
+	            updateSql,
+	            params
+	        );
+
+	        System.out.println(
+	            "NOSVOS MOD table updated successfully: " + modTable
+	        );
+	    }
+
+	    // =============================================================
+	    // INSERT NEW MOD RECORD
+	    // =============================================================
+
+	    else {
+
+	        String insertSql =
+	            "INSERT INTO " + modTable +
+	            " (" + String.join(", ", insertColumns) + ")" +
+	            " VALUES (" + String.join(", ", insertValues) + ")";
+
+	        namedParamJdbc.update(
+	            insertSql,
+	            params
+	        );
+
+	        System.out.println(
+	            "NOSVOS MOD table inserted successfully: " + modTable
+	        );
+	    }
+	}
+
+
+	// =====================================================================
+	// 7. CHECKER APPROVAL - NOSVOS P1 TO P5
+	// =====================================================================
+
+	@Transactional
+	public void approveNosvosReport(Object request) {
 
 	    try {
 
@@ -203078,112 +204605,368 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 	            request, "getREPORT_DATE"
 	        );
 
-	        // ====================================================
-	        // CHECK EXISTING DETAIL RECORD
-	        // ====================================================
+	        if (reportDate == null) {
+	            throw new RuntimeException("REPORT_DATE cannot be null");
+	        }
 
-	        String checkSql =
-	            "SELECT COUNT(*) FROM " + detailTable +
-	            " WHERE REPORT_DATE >= TRUNC(?) " +
-	            "AND REPORT_DATE < TRUNC(?) + 1";
+	        String modTable;
+	        String liveTable;
+	        String detailTable;
 
-	        Integer existingCount = jdbcTemplate.queryForObject(
-	            checkSql,
-	            Integer.class,
-	            reportDate,
+	        String[] fields = null;
+	        String[] totalFields = null;
+	        String[] fromFields = null;
+	        String[] toFields = null;
+
+	        int endRow = 10;
+
+	        // =========================================================
+	        // P1
+	        // =========================================================
+
+	        if (request instanceof BrrsMNosvosP1) {
+
+	            modTable = "BRRS_M_NOSVOS_MOD_P1";
+	            liveTable = "BRRS_M_NOSVOS_P1";
+	            detailTable = "BRRS_M_NOSVOS_DETAIL_P1";
+
+	            fields = new String[] {
+	                "NAME_OF_BANK_AND_COUNTRY_NOSTRO",
+	                "TYPE_OF_ACCOUNT_NOSTRO",
+	                "PURPOSE_NOSTRO",
+	                "CURRENCY_NOSTRO",
+	                "SOVEREIGN_RATING_AAA_AA_A1_NOSTRO",
+	                "RISK_WEIGHT_NOSTRO",
+	                "AMOUNT_DEMAND_NOSTRO",
+	                "AMOUNT_TIME_NOSTRO",
+	                "RISK_WEIGHTED_AMOUNT_NOSTRO"
+	            };
+
+	            totalFields = new String[] {
+	                "TOTAL_AMOUNT_DEMAND_NOSTRO",
+	                "TOTAL_AMOUNT_TIME_NOSTRO",
+	                "TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO"
+	            };
+	        }
+
+	        // =========================================================
+	        // P2
+	        // =========================================================
+
+	        else if (request instanceof BrrsMNosvosP2) {
+
+	            modTable = "BRRS_M_NOSVOS_MOD_P2";
+	            liveTable = "BRRS_M_NOSVOS_P2";
+	            detailTable = "BRRS_M_NOSVOS_DETAIL_P2";
+
+	            fields = new String[] {
+	                "NAME_OF_BANK_AND_COUNTRY_VOSTRO",
+	                "TYPE_OF_ACCOUNT_VOSTRO",
+	                "PURPOSE_VOSTRO",
+	                "CURRENCY_VOSTRO",
+	                "AMOUNT_DEMAND_VOSTRO",
+	                "AMOUNT_TIME_VOSTRO"
+	            };
+
+	            totalFields = new String[] {
+	                "TOTAL_AMOUNT_DEMAND_VOSTRO",
+	                "TOTAL_AMOUNT_TIME_VOSTRO"
+	            };
+	        }
+
+	        // =========================================================
+	        // P3
+	        // =========================================================
+
+	        else if (request instanceof BrrsMNosvosP3) {
+
+	            modTable = "BRRS_M_NOSVOS_MOD_P3";
+	            liveTable = "BRRS_M_NOSVOS_P3";
+	            detailTable = "BRRS_M_NOSVOS_DETAIL_P3";
+
+	            endRow = 11;
+
+	            fields = new String[] {
+	                "NAME_OF_BANK_NOSTRO1",
+	                "TYPE_OF_ACCOUNT_NOSTRO1",
+	                "PURPOSE_NOSTRO1",
+	                "CURRENCY_NOSTRO1",
+	                "SOVEREIGN_RATING_NOSTRO1",
+	                "RISK_WEIGHT_NOSTRO1",
+	                "AMOUNT_DEMAND_NOSTRO1",
+	                "AMOUNT_TIME_NOSTRO1",
+	                "RISK_WEIGHTED_AMOUNT_NOSTRO1"
+	            };
+
+	            totalFields = new String[] {
+	                "TOTAL_AMOUNT_DEMAND_NOSTRO1",
+	                "TOTAL_AMOUNT_TIME_NOSTRO1",
+	                "TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO1"
+	            };
+	        }
+
+	        // =========================================================
+	        // P4
+	        // =========================================================
+
+	        else if (request instanceof BrrsMNosvosP4) {
+
+	            modTable = "BRRS_M_NOSVOS_MOD_P4";
+	            liveTable = "BRRS_M_NOSVOS_P4";
+	            detailTable = "BRRS_M_NOSVOS_DETAIL_P4";
+
+	            fields = new String[] {
+	                "NAME_OF_BANK_VOSTRO1",
+	                "TYPE_OF_ACCOUNT_VOSTRO1",
+	                "PURPOSE_VOSTRO1",
+	                "CURRENCY_VOSTRO1",
+	                "AMOUNT_DEMAND_VOSTRO1",
+	                "AMOUNT_TIME_VOSTRO1"
+	            };
+
+	            totalFields = new String[] {
+	                "TOTAL_AMOUNT_DEMAND_VOSTRO1",
+	                "TOTAL_AMOUNT_TIME_VOSTRO1"
+	            };
+	        }
+
+	        // =========================================================
+	        // P5
+	        // =========================================================
+
+	        else if (request instanceof BrrsMNosvosP5) {
+
+	            modTable = "BRRS_M_NOSVOS_MOD_P5";
+	            liveTable = "BRRS_M_NOSVOS_P5";
+	            detailTable = "BRRS_M_NOSVOS_DETAIL_P5";
+
+	            fromFields = new String[] {
+	                "DUE_FROM_DOMESTIC_NAME_OF_BANK",
+	                "DUE_FROM_DOMESTIC_ACCT_TYPE",
+	                "DUE_FROM_DOMESTIC_PURPOSE",
+	                "DUE_FROM_DOMESTIC_AMOUNT",
+	                "DUE_FROM_DOMESTIC_RISK_WEIGHT",
+	                "DUE_FROM_DOMESTIC_CURRENCY",
+	                "DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT"
+	            };
+
+	            toFields = new String[] {
+	                "DUE_TO_DOMESTIC_NAME_OF_BANK",
+	                "DUE_TO_DOMESTIC_ACCT_TYPE",
+	                "DUE_TO_DOMESTIC_PURPOSE",
+	                "DUE_TO_DOMESTIC_AMOUNT",
+	                "DUE_TO_DOMESTIC_RISK_WEIGHT",
+	                "DUE_TO_DOMESTIC_RISK_WEIGHT_AMT"
+	            };
+	        }
+
+	        else {
+
+	            throw new RuntimeException(
+	                "Unsupported NOSVOS checker entity: " +
+	                request.getClass().getName()
+	            );
+	        }
+
+	        // =========================================================
+	        // 1. FETCH PENDING MOD RECORD
+	        // =========================================================
+
+	        Class<?> entityClass = request.getClass();
+
+	        List<?> modRecords = jdbcTemplate.query(
+	            "SELECT * FROM " + modTable +
+	            " WHERE TRUNC(REPORT_DATE) = TRUNC(?) " +
+	            " AND MODIFY_FLG = 'Y'",
+	            BeanPropertyRowMapper.newInstance(entityClass),
 	            reportDate
 	        );
 
-	        // ====================================================
-	        // UPDATE EXISTING RECORD
-	        // ====================================================
+	        if (modRecords == null || modRecords.isEmpty()) {
 
-	        if (existingCount != null && existingCount > 0) {
-
-	            String updateSql =
-	                "UPDATE " + detailTable + " SET " +
-	                "REPORT_FREQUENCY=?, " +
-	                "REPORT_CODE=?, " +
-	                "REPORT_DESC=?, " +
-	                "ENTITY_FLG=?, " +
-	                "MODIFY_FLG=?, " +
-	                "DEL_FLG=? " +
-	                "WHERE REPORT_DATE >= TRUNC(?) " +
-	                "AND REPORT_DATE < TRUNC(?) + 1";
-
-	            int count = jdbcTemplate.update(
-	                updateSql,
-
-	                getValue(request, "getREPORT_FREQUENCY"),
-	                getValue(request, "getREPORT_CODE"),
-	                getValue(request, "getREPORT_DESC"),
-	                getValue(request, "getENTITY_FLG"),
-	                getValue(request, "getMODIFY_FLG"),
-	                getValue(request, "getDEL_FLG"),
-
-	                reportDate,
-	                reportDate
-	            );
-
-	            logger.info(
-	                "Detail record updated in {}. Rows: {}",
-	                detailTable,
-	                count
-	            );
-
-	        } else {
-
-	            // ====================================================
-	            // INSERT NEW RECORD
-	            // ====================================================
-
-	            String insertSql =
-	                "INSERT INTO " + detailTable + " (" +
-	                "REPORT_DATE, " +
-	                "REPORT_FREQUENCY, " +
-	                "REPORT_CODE, " +
-	                "REPORT_DESC, " +
-	                "ENTITY_FLG, " +
-	                "MODIFY_FLG, " +
-	                "DEL_FLG" +
-	                ") VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-	            int count = jdbcTemplate.update(
-	                insertSql,
-
-	                reportDate,
-	                getValue(request, "getREPORT_FREQUENCY"),
-	                getValue(request, "getREPORT_CODE"),
-	                getValue(request, "getREPORT_DESC"),
-	                getValue(request, "getENTITY_FLG"),
-	                getValue(request, "getMODIFY_FLG"),
-	                getValue(request, "getDEL_FLG")
-	            );
-
-	            logger.info(
-	                "Detail record inserted into {}. Rows: {}",
-	                detailTable,
-	                count
+	            throw new RuntimeException(
+	                "No pending NOSVOS modification found: " + modTable
 	            );
 	        }
+
+	        Object modRecord = modRecords.get(0);
+
+	        // =========================================================
+	        // 2. TRANSFER MOD VALUES TO LIVE TABLES
+	        // =========================================================
+
+	        transferNosvosModValuesToLiveTables(
+	            modRecord,
+	            reportDate,
+	            liveTable,
+	            detailTable,
+	            fields,
+	            totalFields,
+	            fromFields,
+	            toFields,
+	            endRow
+	        );
+
+	        // =========================================================
+	        // 3. MARK MOD RECORD APPROVED
+	        // =========================================================
+
+	        jdbcTemplate.update(
+	            "UPDATE " + modTable +
+	            " SET MODIFY_FLG = 'N', " +
+	            " ENTITY_FLG = 'Y', " +
+	            " DEL_FLG = 'N' " +
+	            " WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+	            reportDate
+	        );
+
+	        System.out.println(
+	            "NOSVOS Checker Approved Successfully: " + modTable
+	        );
 
 	    } catch (Exception e) {
 
 	        logger.error(
-	            "Error updating NOSVOS detail table: " + detailTable,
+	            "Error in NOSVOS Checker Approval",
 	            e
 	        );
 
 	        throw new RuntimeException(
-	            "Error updating NOSVOS detail table: " + detailTable, e
+	            "Error in NOSVOS Checker Approval", e
 	        );
 	    }
 	}
 
 
-	// ================================================================
-	// COMMON GET VALUE METHOD
-	// ================================================================
+	// =====================================================================
+	// 8. TRANSFER MOD VALUES TO LIVE SUMMARY AND DETAIL TABLES
+	// =====================================================================
+
+	private void transferNosvosModValuesToLiveTables(
+	        Object modRecord,
+	        Date reportDate,
+	        String liveTable,
+	        String detailTable,
+	        String[] fields,
+	        String[] totalFields,
+	        String[] fromFields,
+	        String[] toFields,
+	        int endRow) {
+
+	    try {
+
+	        List<String> columns = getNosvosColumns(
+	            modRecord,
+	            fields,
+	            totalFields,
+	            fromFields,
+	            toFields,
+	            endRow
+	        );
+
+	        // =========================================================
+	        // UPDATE CELL VALUES IN LIVE SUMMARY AND DETAIL
+	        // =========================================================
+
+	        for (String column : columns) {
+
+	            if (!column.startsWith("R")) {
+	                continue;
+	            }
+
+	            try {
+
+	                Method getter = modRecord.getClass()
+	                    .getMethod("get" + column);
+
+	                Object value = getter.invoke(modRecord);
+
+	                // =================================================
+	                // LIVE SUMMARY UPDATE
+	                // =================================================
+
+	                String summarySql =
+	                    "UPDATE " + liveTable +
+	                    " SET " + column + " = ? " +
+	                    " WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+	                jdbcTemplate.update(
+	                    summarySql,
+	                    value,
+	                    reportDate
+	                );
+
+	                // =================================================
+	                // LIVE DETAIL UPDATE
+	                // =================================================
+
+	                String detailSql =
+	                    "UPDATE " + detailTable +
+	                    " SET " + column + " = ? " +
+	                    " WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+	                jdbcTemplate.update(
+	                    detailSql,
+	                    value,
+	                    reportDate
+	                );
+
+	            } catch (Exception e) {
+
+	                throw new RuntimeException(
+	                    "Error transferring NOSVOS column: " + column,
+	                    e
+	                );
+	            }
+	        }
+
+	        // =========================================================
+	        // UPDATE LIVE SUMMARY FLAGS
+	        // =========================================================
+
+	        jdbcTemplate.update(
+	            "UPDATE " + liveTable +
+	            " SET ENTITY_FLG = 'Y', " +
+	            " MODIFY_FLG = 'N', " +
+	            " DEL_FLG = 'N' " +
+	            " WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+	            reportDate
+	        );
+
+	        // =========================================================
+	        // UPDATE LIVE DETAIL FLAGS
+	        // =========================================================
+
+	        jdbcTemplate.update(
+	            "UPDATE " + detailTable +
+	            " SET ENTITY_FLG = 'Y', " +
+	            " MODIFY_FLG = 'N', " +
+	            " DEL_FLG = 'N' " +
+	            " WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+	            reportDate
+	        );
+
+	        System.out.println(
+	            "LIVE SUMMARY updated: " + liveTable
+	        );
+
+	        System.out.println(
+	            "LIVE DETAIL updated: " + detailTable
+	        );
+
+	    } catch (Exception e) {
+
+	        throw new RuntimeException(
+	            "Error transferring NOSVOS MOD values to LIVE tables",
+	            e
+	        );
+	    }
+	}
+
+
+	// =====================================================================
+	// 9. COMMON GET VALUE METHOD
+	// =====================================================================
 
 	private Object getValue(
 	        Object obj,
@@ -203191,14 +204974,16 @@ endRow = 11;              // DUE FROM RELATED FOREIGN BANKS has 11 rows
 
 	    try {
 
-	        Method method = obj.getClass().getMethod(methodName);
+	        Method method = obj.getClass()
+	            .getMethod(methodName);
 
 	        return method.invoke(obj);
 
 	    } catch (Exception e) {
 
 	        throw new RuntimeException(
-	            "Unable to get value from method: " + methodName, e
+	            "Unable to get value from method: " + methodName,
+	            e
 	        );
 	    }
 	}

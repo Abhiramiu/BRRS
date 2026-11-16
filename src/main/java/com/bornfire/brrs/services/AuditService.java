@@ -1558,6 +1558,8 @@ public class AuditService {
 			transferMSRWA12EData(auditRecord);
 		} else if (upperTable.contains("M_SRWA_12B") || upperTable.contains("SRWA_12B")) {
 			transferMSRWA12BData(auditRecord);
+		} else if (upperTable.contains("M_NOSVOS") || upperTable.contains("NOSVOS")) {
+			transferMNOSVOSData(auditRecord);
 		} else if (upperTable.contains("M_SEC_MOD_SUMMARYTABLE") || upperTable.startsWith("BRRS_M_SEC")) {
 			transferMSecData(auditRecord);
 		} else if (upperTable.contains("CASH_FLOW")) {
@@ -7279,4 +7281,186 @@ public class AuditService {
 		System.out.println("AS_11 Main Updated : " + affected + ", MOD Updated : " + updated);
 	}
 
+	// =========================================================
+		// NOSVOS — Checker transfer (MOD -> LIVE Summary + Detail)
+		// =========================================================
+		private void transferMNOSVOSData(AuditServicesEntity auditRecord) {
+
+			// 1. Find the pending report date from any NOSVOS MOD table
+			String dateSql = "SELECT MAX(REPORT_DATE) FROM ("
+					+ " SELECT REPORT_DATE FROM BRRS_M_NOSVOS_MOD_P1 WHERE MODIFY_FLG = 'Y' "
+					+ " UNION ALL "
+					+ " SELECT REPORT_DATE FROM BRRS_M_NOSVOS_MOD_P2 WHERE MODIFY_FLG = 'Y' "
+					+ " UNION ALL "
+					+ " SELECT REPORT_DATE FROM BRRS_M_NOSVOS_MOD_P3 WHERE MODIFY_FLG = 'Y' "
+					+ " UNION ALL "
+					+ " SELECT REPORT_DATE FROM BRRS_M_NOSVOS_MOD_P4 WHERE MODIFY_FLG = 'Y' "
+					+ " UNION ALL "
+					+ " SELECT REPORT_DATE FROM BRRS_M_NOSVOS_MOD_P5 WHERE MODIFY_FLG = 'Y' "
+					+ ")";
+
+			java.sql.Date reportDate = null;
+
+			try {
+				reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+			} catch (Exception e) {
+				// fallback below
+			}
+
+			if (reportDate == null) {
+				String fallbackSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_NOSVOS_MOD_P1";
+				try {
+					reportDate = jdbcTemplate.queryForObject(fallbackSql, java.sql.Date.class);
+				} catch (Exception e) {
+					// ignore
+				}
+			}
+
+			if (reportDate == null) {
+				throw new IllegalStateException("No modified NOSVOS record available for verification.");
+			}
+
+			System.out.println("NOSVOS Report Date : " + reportDate);
+
+			// 2. Transfer Parts 1 to 5
+			transferNOSVOSPart(1, BRRS_M_NOSVOS_ReportService.NOSVOS_COLS_1, reportDate);
+			transferNOSVOSPart(2, BRRS_M_NOSVOS_ReportService.NOSVOS_COLS_2, reportDate);
+			transferNOSVOSPart(3, BRRS_M_NOSVOS_ReportService.NOSVOS_COLS_3, reportDate);
+			transferNOSVOSPart(4, BRRS_M_NOSVOS_ReportService.NOSVOS_COLS_4, reportDate);
+			transferNOSVOSPart(5, BRRS_M_NOSVOS_ReportService.NOSVOS_COLS_5, reportDate);
+
+			// 3. Mark all MOD tables as approved (ENTITY_FLG = 'Y', MODIFY_FLG = 'N')
+			for (int p = 1; p <= 5; p++) {
+				jdbcTemplate.update(
+						"UPDATE BRRS_M_NOSVOS_MOD_P" + p + " "
+						+ "SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N' "
+						+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+						reportDate);
+			}
+
+			System.out.println("NOSVOS Verification and Transfer Completed Successfully");
+		}
+
+		// =========================================================
+		// NOSVOS — Individual Part Transfer (Summary + Detail)
+		// =========================================================
+		private void transferNOSVOSPart(
+				int part,
+				String cols,
+				java.sql.Date reportDate) {
+
+			if (cols == null || cols.trim().isEmpty()) {
+				return;
+			}
+
+			String modTable = "BRRS_M_NOSVOS_MOD_P" + part;
+			String summaryTable = "BRRS_M_NOSVOS_P" + part;
+			String detailTable = "BRRS_M_NOSVOS_DETAIL_P" + part;
+
+			// 1. Check if MOD record exists and is pending
+			Integer modCount = jdbcTemplate.queryForObject(
+					"SELECT COUNT(*) FROM " + modTable
+					+ " WHERE TRUNC(REPORT_DATE) = TRUNC(?) "
+					+ " AND MODIFY_FLG = 'Y'",
+					Integer.class,
+					reportDate);
+
+			if (modCount == null || modCount == 0) {
+				System.out.println("No modified record found in " + modTable + " for date: " + reportDate);
+				return;
+			}
+
+			// 2. Ensure live rows exist before performing updates
+			ensureNOSVOSLiveRowExists(summaryTable, reportDate);
+			ensureNOSVOSLiveRowExists(detailTable, reportDate);
+
+			// 3. Update LIVE Summary Table in safe chunks of 150 columns (avoids ORA-00600 [subsr3_11])
+			try {
+				updateNOSVOSTableInChunks(summaryTable, modTable, cols, reportDate, 150);
+				System.out.println("NOSVOS P" + part + " Summary Updated Successfully");
+			} catch (Exception e) {
+				System.err.println("Note on NOSVOS P" + part + " Summary transfer: " + e.getMessage());
+				throw new RuntimeException("NOSVOS P" + part + " Summary transfer failed", e);
+			}
+
+			// 4. Update LIVE Detail Table in safe chunks of 150 columns
+			try {
+				updateNOSVOSTableInChunks(detailTable, modTable, cols, reportDate, 150);
+				System.out.println("NOSVOS P" + part + " Detail Updated Successfully");
+			} catch (Exception e) {
+				System.err.println("Note on NOSVOS P" + part + " Detail transfer: " + e.getMessage());
+				throw new RuntimeException("NOSVOS P" + part + " Detail transfer failed", e);
+			}
+
+			System.out.println("NOSVOS P" + part + " Transfer Completed Successfully");
+		}
+
+		// =========================================================
+		// Helper: Update Table in Chunks (Avoids Oracle Subquery Overflow)
+		// =========================================================
+		private void updateNOSVOSTableInChunks(
+				String targetTable,
+				String modTable,
+				String cols,
+				java.sql.Date reportDate,
+				int chunkSize) {
+
+			String[] colArray = cols.split("\\s*,\\s*");
+
+			for (int i = 0; i < colArray.length; i += chunkSize) {
+				int end = Math.min(i + chunkSize, colArray.length);
+
+				StringBuilder targetCols = new StringBuilder();
+				StringBuilder sourceCols = new StringBuilder();
+
+				for (int j = i; j < end; j++) {
+					if (j > i) {
+						targetCols.append(", ");
+						sourceCols.append(", ");
+					}
+					targetCols.append(colArray[j]);
+					sourceCols.append("S.").append(colArray[j]);
+				}
+
+				// Subquery with <= 150 columns completely avoids ORA-00600 [subsr3_11]
+				String chunkSql = "UPDATE " + targetTable + " M SET ("
+						+ targetCols.toString() + ") = ("
+						+ " SELECT " + sourceCols.toString()
+						+ " FROM " + modTable + " S "
+						+ " WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+						+ " AND S.MODIFY_FLG = 'Y' "
+						+ ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+				jdbcTemplate.update(chunkSql, reportDate);
+			}
+
+			// Update the audit/status flags on the live table
+			jdbcTemplate.update(
+					"UPDATE " + targetTable
+					+ " SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N', DEL_FLG = 'N' "
+					+ " WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+					reportDate);
+		}
+
+		// =========================================================
+		// Helper: Ensure Live Row Exists
+		// =========================================================
+		private void ensureNOSVOSLiveRowExists(String tableName, java.sql.Date reportDate) {
+			try {
+				Integer count = jdbcTemplate.queryForObject(
+						"SELECT COUNT(*) FROM " + tableName + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+						Integer.class,
+						reportDate);
+
+				if (count == null || count == 0) {
+					jdbcTemplate.update(
+							"INSERT INTO " + tableName + " (REPORT_DATE, ENTITY_FLG, MODIFY_FLG, DEL_FLG) VALUES (?, 'Y', 'N', 'N')",
+							reportDate);
+				}
+			} catch (Exception e) {
+				// Detail table might be structured differently or managed separately; log and continue
+				System.out.println("Note on " + tableName + " row check: " + e.getMessage());
+			}
+		}
+		
 }

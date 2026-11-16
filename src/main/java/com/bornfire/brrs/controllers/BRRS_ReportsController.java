@@ -5461,7 +5461,7 @@ public class BRRS_ReportsController {
 			BRRS_M_NOSVOS_ReportService.updateNosvosReport(request4);
 			BRRS_M_NOSVOS_ReportService.updateNosvosReport(request5);
 
-			return ResponseEntity.ok("All Reports Updated Successfully");
+			return ResponseEntity.ok("All Reports Updated Successfully.Record sent for Checker Approval.");
 
 		} catch (Exception e) {
 
