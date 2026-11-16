@@ -75,13 +75,7 @@ PURPOSE		: BRRS CAP_RATIO_BUFFER  REPORT
 			border-color: #0c0c0c;
 		}
 
-		.btn-primary:not (:disabled):not (.disabled).active,
-		.btn-primary:not (:disabled):not (.disabled):active,
-		.show>.btn-primary.dropdown-toggle {
-			color: #fff;
-			background-color: #cc000000;
-			border-color: #161617;
-		}
+
 
 		#finusertb {
 			width: 460px;
@@ -317,13 +311,7 @@ PURPOSE		: BRRS CAP_RATIO_BUFFER  REPORT
 			transition: 0.3s ease;
 		}
 
-		/* When input or select is focused or has a value, move the label up */
-		.form-control:focus~.form-legend,
-		.form-control:not (:placeholder-shown)~.form-legend {
-			top: -8px;
-			font-size: 1rem;
-			color: #007bff;
-		}
+
 
 		/* Hover effect when the input/select is focused */
 		.form-control:focus:hover~.form-legend {
@@ -331,11 +319,7 @@ PURPOSE		: BRRS CAP_RATIO_BUFFER  REPORT
 			/* Darker shade of blue on hover */
 		}
 
-		/* Ensure the label returns to the normal color after focus or hover is removed */
-		.form-control:not (:focus)~.form-legend {
-			color: #aaa;
-			/* Normal label color */
-		}
+	
 
 		.table-cell tbody td:hover {
 			background-color: #f0f0f0;
@@ -1016,7 +1000,7 @@ PURPOSE		: BRRS CAP_RATIO_BUFFER  REPORT
 					dataType: 'text',
 					success: function () {
 						$("#resultModalLabel").text("BRRS");
-						$("#resultModalBody").text(" Modified Successfully.");
+						$("#resultModalBody").text("Modified Successfully. Record sent for Checker Approval.");
 						$("#resultModal").modal("show");
 					},
 					error: function (jqXHR) {

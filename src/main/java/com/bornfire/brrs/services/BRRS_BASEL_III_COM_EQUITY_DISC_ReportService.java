@@ -13,7 +13,9 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
@@ -54,9 +56,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.bornfire.brrs.entities.UserProfileRep;
 
 
 
@@ -80,7 +85,8 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 	@Autowired
 	AuditService auditService;
 	
-
+	@Autowired
+	UserProfileRep userProfileRep;
     // =====================================================
     // ENTITY MANAGER (Acts like Repository)
     // =====================================================
@@ -3394,10 +3400,13 @@ public void setSno(BigDecimal sno) {
 	        String dtltype,
 	        Pageable pageable,
 	        String type,
-	        BigDecimal version) {
+	        BigDecimal version,HttpServletRequest req1, Model md) {
 
 	    ModelAndView mv = new ModelAndView();
-
+		String userid = (String) req1.getSession().getAttribute("USERID");
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("User Id Maker and Checker: " + userid + ", Role: " + role);
 	    System.out.println("B_III_CETD View Called");
 	    System.out.println("Type = " + type);
 	    System.out.println("Version = " + version);
@@ -3688,104 +3697,138 @@ public void setSno(BigDecimal sno) {
 //		}
 		
 		
-		@Transactional
-		public void updateReport(
-		        BASEL_III_COM_EQUITY_DISC_Summary_Entity updatedEntity) {
+private static final String BC_LIVE_TABLE = "BRRS_BASEL_III_COM_EQUITY_DISC_SUMMARYTABLE";
+private static final String BC_MOD_TABLE  = "BRRS_BASEL_III_COM_EQUITY_DISC_MOD_SUMMARYTABLE";
 
-		    System.out.println("Came to BASEL_III_COM_EQUITY_DISC Manual Update");
-		    System.out.println("Report Date: " + updatedEntity.getReport_date());
+@Transactional
+public void updateReport(BASEL_III_COM_EQUITY_DISC_Summary_Entity updatedEntity) {
 
-		    // Fetch existing SUMMARY
-		    BASEL_III_COM_EQUITY_DISC_Summary_Entity existingSummary =
-		            findByReportDate(updatedEntity.getReport_date());
+	System.out.println("Came to BASEL_III_COM_EQUITY_DISC Manual Update");
+	System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		    if (existingSummary == null) {
-		        throw new RuntimeException(
-		                "Summary record not found for REPORT_DATE: "
-		                        + updatedEntity.getReport_date());
-		    }
+	// Live record (throws if missing, as in your original)
+	BASEL_III_COM_EQUITY_DISC_Summary_Entity existingSummary = findByReportDate(updatedEntity.getReport_date());
 
-		    // Audit old copy
-		    BASEL_III_COM_EQUITY_DISC_Summary_Entity oldcopy =
-		            new BASEL_III_COM_EQUITY_DISC_Summary_Entity();
+	if (existingSummary == null) {
+		throw new RuntimeException("Summary record not found for REPORT_DATE: " + updatedEntity.getReport_date());
+	}
 
-		    BeanUtils.copyProperties(existingSummary, oldcopy);
+	// Audit old copy = live values
+	BASEL_III_COM_EQUITY_DISC_Summary_Entity oldcopy = new BASEL_III_COM_EQUITY_DISC_Summary_Entity();
+	BeanUtils.copyProperties(existingSummary, oldcopy);
 
-		    int[] rows = { 73 };
+	int[] rows = { 73 };
+	String[] fields = { "amount" };
 
-		    String[] fields = { "amount" };
+	try {
+		java.sql.Date sqlDate = new java.sql.Date(updatedEntity.getReport_date().getTime());
+		Map<String, Object> values = new LinkedHashMap<>();
 
-		    try {
+		for (int i : rows) {
+			for (String field : fields) {
+				String getterName = "getR" + i + "_" + field;
+				String setterName = "setR" + i + "_" + field;
+				try {
+					Method getter = BASEL_III_COM_EQUITY_DISC_Summary_Entity.class.getMethod(getterName);
+					Method setter = BASEL_III_COM_EQUITY_DISC_Summary_Entity.class.getMethod(setterName,
+							getter.getReturnType());
 
-		        // Loop rows
-		        for (int i : rows) {
-		            for (String field : fields) {
+					Object value = getter.invoke(updatedEntity);
 
-		                String getterName = "getR" + i + "_" + field;
-		                String setterName = "setR" + i + "_" + field;
+					// Skip null values (keep live value)
+					if (value != null) {
+						setter.invoke(existingSummary, value);
+					}
 
-		                try {
+					// MOD row gets the merged value (screen value, else live value)
+					values.put("R" + i + "_" + field.toUpperCase(), getter.invoke(existingSummary));
 
-		                    Method getter =
-		                            BASEL_III_COM_EQUITY_DISC_Summary_Entity.class
-		                                    .getMethod(getterName);
-
-		                    Object value = getter.invoke(updatedEntity);
-
-		                    // Skip null values
-		                    if (value == null)
-		                        continue;
-
-		                    // Update existing object for audit comparison
-		                    Method setter =
-		                            BASEL_III_COM_EQUITY_DISC_Summary_Entity.class
-		                                    .getMethod(setterName,
-		                                            getter.getReturnType());
-
-		                    setter.invoke(existingSummary, value);
-
-		                    // Column name in DB
-		                    String columnName = "R" + i + "_" + field;
-
-		                    String sql =
-		                            "UPDATE BRRS_BASEL_III_COM_EQUITY_DISC_SUMMARYTABLE "
-		                                    + "SET " + columnName + " = ? "
-		                                    + "WHERE REPORT_DATE = ?";
-
-		                    jdbcTemplate.update(
-		                            sql,
-		                            value,
-		                            updatedEntity.getReport_date());
-
-		                } catch (NoSuchMethodException e) {
-		                    continue;
-		                }
-		            }
-		        }
-
-		        // Audit only if changes found
-		        String changes =
-		                auditService.getChanges(oldcopy, existingSummary);
-
-		        if (!changes.isEmpty()) {
-
-		            auditService.compareEntitiesmanual(
-		                    oldcopy,
-		                    existingSummary,
-		                    updatedEntity.getReport_date().toString(),
-		                    "B_III_CETD Summary Screen",
-		                    "BRRS_BASEL_III_COM_EQUITY_DISC_SUMMARY"
-		            );
-		        }
-
-		        System.out.println("B_III_CETD Manual Update Completed");
-
-		    } catch (Exception e) {
-		        throw new RuntimeException(
-		                "Error while updating B_III_CETD Manual fields", e);
-		    }
+				} catch (NoSuchMethodException e) {
+					continue;
+				}
+			}
 		}
-		
+
+		// Maker-Checker flags
+		values.put("ENTITY_FLG", "Y");
+		values.put("MODIFY_FLG", "Y");
+		values.put("DEL_FLG", "N");
+
+		// Save into MOD table for Checker Approval (live table untouched)
+		bcUpsert(BC_MOD_TABLE, sqlDate, values);
+		System.out.println("✔ Record saved into " + BC_MOD_TABLE + " for Checker Approval");
+
+		// Audit old value / new value
+		String changes = auditService.getChanges(oldcopy, existingSummary);
+
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existingSummary,
+					updatedEntity.getReport_date().toString(), "B_III_CETD Summary Screen", BC_LIVE_TABLE);
+		}
+
+		System.out.println("B_III_CETD Manual Update saved for Checker Approval");
+
+	} catch (Exception e) {
+		throw new RuntimeException("Error while updating B_III_CETD Manual fields", e);
+	}
+}
+
+// Generic upsert from a column -> value map (insert if no row for the date, else update)
+private void bcUpsert(String tableName, java.sql.Date sqlDate, Map<String, Object> values) {
+	Integer count = jdbcTemplate.queryForObject(
+			"SELECT COUNT(*) FROM " + tableName + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", Integer.class, sqlDate);
+
+	List<Object> params = new ArrayList<>();
+
+	if (count != null && count > 0) {
+		StringBuilder sql = new StringBuilder("UPDATE " + tableName + " SET ");
+		boolean first = true;
+		for (Map.Entry<String, Object> e : values.entrySet()) {
+			if (!first) sql.append(", ");
+			sql.append(e.getKey()).append(" = ?");
+			params.add(e.getValue());
+			first = false;
+		}
+		sql.append(" WHERE TRUNC(REPORT_DATE) = TRUNC(?)");
+		params.add(sqlDate);
+		jdbcTemplate.update(sql.toString(), params.toArray());
+	} else {
+		StringBuilder cols = new StringBuilder("REPORT_DATE");
+		StringBuilder marks = new StringBuilder("?");
+		params.add(sqlDate);
+		for (Map.Entry<String, Object> e : values.entrySet()) {
+			cols.append(", ").append(e.getKey());
+			marks.append(", ?");
+			params.add(e.getValue());
+		}
+		jdbcTemplate.update("INSERT INTO " + tableName + " (" + cols + ") VALUES (" + marks + ")",
+				params.toArray());
+	}
+}
+
+@Transactional
+public void approveReport(Date reportDate) {
+	java.sql.Date sqlDate = new java.sql.Date(reportDate.getTime());
+
+	List<Map<String, Object>> rows = jdbcTemplate.queryForList(
+			"SELECT * FROM " + BC_MOD_TABLE + " WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+			sqlDate);
+	if (rows.isEmpty()) {
+		throw new IllegalStateException("No pending B_III_CETD modification found for date : " + reportDate);
+	}
+
+	Map<String, Object> mod = new LinkedHashMap<>();
+	mod.put("R73_AMOUNT", rows.get(0).get("R73_AMOUNT"));
+
+	// Copy MOD values into the LIVE table
+	bcUpsert(BC_LIVE_TABLE, sqlDate, mod);
+
+	// Mark modified flag as 'N' (Approved) in the MOD table
+	jdbcTemplate.update("UPDATE " + BC_MOD_TABLE + " SET MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+			sqlDate);
+
+	System.out.println("B_III_CETD Checker Approved Successfully");
+}	
 public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
 		ModelAndView mv = new ModelAndView("BRRS/B_III_CETD"); 
 

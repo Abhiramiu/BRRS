@@ -2,17 +2,17 @@ package com.bornfire.brrs.services;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.UUID;
-import java.math.BigDecimal;
-import java.util.Locale;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -50,6 +50,7 @@ import com.bornfire.brrs.services.BRRS_M_IS_ReportService.M_IS_Summary_Entity1;
 import com.bornfire.brrs.services.BRRS_M_IS_ReportService.M_IS_Summary_Entity2;
 import com.bornfire.brrs.services.BRRS_M_I_S_CA_ReportService.M_I_S_CA_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_PD_ReportService.M_PD_Manual_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_PL_SCHS_ReportService.PL_SCHS_Summary_Entity;
 
 @Service
 public class AuditService {
@@ -1576,7 +1577,20 @@ public class AuditService {
 			transferBDISB2Data(auditRecord);
 		} else if (upperTable.contains("BDISB3")) {
 			transferBDISB3Data(auditRecord);
-		} else {
+		} 
+		else if (upperTable.contains("FORMAT_II")) {
+			transferFORMATIIData(auditRecord);
+		} else if (upperTable.contains("GL_SCH")) {
+			transferGLSCHData(auditRecord);
+		} else if (upperTable.contains("PL_SCHS")) {
+			transferPLSCHSData(auditRecord);
+		} else if (upperTable.contains("BASEL_III_COM_EQUITY_DISC")) {
+			transferBASELIIICETDData(auditRecord);
+		} else if (upperTable.contains("CAP_RATIO_BUFFER")) {
+			transferCAPRATIOBUFFERData(auditRecord);
+		} else if (upperTable.contains("AS_11")) {
+			transferAS11Data(auditRecord);
+		}else {
 			throw new IllegalArgumentException("Verification not configured for table: " + auditTable);
 		}
 		try {
@@ -6945,4 +6959,324 @@ public class AuditService {
 		System.out.println("CASH_FLOW MOD Updated : " + updated);
 		System.out.println("CASH_FLOW Verification Completed Successfully");
 	}
+	private void transferFORMATIIData(AuditServicesEntity auditRecord) {
+		final String liveTable = "BRRS_FORMAT_II_SUMMARYTABLE";
+		final String modTable = "BRRS_FORMAT_II_MOD_SUMMARYTABLE";
+
+		java.sql.Date reportDate = jdbcTemplate.queryForObject("SELECT MAX(REPORT_DATE) FROM " + modTable,
+				java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified FORMAT_II record available for verification.");
+		}
+
+		System.out.println("FORMAT_II Report Date : " + reportDate);
+
+		Integer liveCount = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM " + liveTable + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", Integer.class,
+				reportDate);
+
+		int affected;
+		if (liveCount != null && liveCount > 0) {
+			affected = jdbcTemplate.update("UPDATE " + liveTable + " M SET (R21_AMT, R25_AMT_SUB_DEL) = "
+					+ "(SELECT S.R21_AMT, S.R25_AMT_SUB_DEL FROM " + modTable
+					+ " S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)",
+					reportDate);
+		} else {
+			affected = jdbcTemplate.update("INSERT INTO " + liveTable + " (REPORT_DATE, R21_AMT, R25_AMT_SUB_DEL) "
+					+ "SELECT S.REPORT_DATE, S.R21_AMT, S.R25_AMT_SUB_DEL FROM " + modTable
+					+ " S WHERE TRUNC(S.REPORT_DATE) = TRUNC(?)", reportDate);
+		}
+
+		if (affected == 0) {
+			throw new IllegalStateException("FORMAT_II modification record not found for date : " + reportDate);
+		}
+
+		System.out.println("FORMAT_II Main Updated : " + affected);
+
+		int updated = jdbcTemplate.update(
+				"UPDATE " + modTable + " SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				reportDate);
+
+		System.out.println("FORMAT_II MOD Updated : " + updated);
+		System.out.println("FORMAT_II Verification Completed Successfully");
+	}
+
+	private void transferGLSCHData(AuditServicesEntity auditRecord) {
+		final String liveTable = "BRRS_GL_SCH_MANUAL_SUMMARYTABLE";
+		final String modTable = "BRRS_GL_SCH_MANUAL_MOD_SUMMARYTABLE";
+
+		java.sql.Date reportDate = jdbcTemplate.queryForObject("SELECT MAX(REPORT_DATE) FROM " + modTable,
+				java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified GL_SCH record available for verification.");
+		}
+
+		System.out.println("GL_SCH Report Date : " + reportDate);
+
+		// Columns that exist in the MOD table
+		List<String> modCols = jdbcTemplate.queryForList(
+				"SELECT COLUMN_NAME FROM USER_TAB_COLUMNS WHERE TABLE_NAME = ? ORDER BY COLUMN_ID", String.class,
+				modTable);
+
+		// Columns that exist in the LIVE table
+		java.util.Set<String> liveCols = new java.util.HashSet<>(jdbcTemplate.queryForList(
+				"SELECT COLUMN_NAME FROM USER_TAB_COLUMNS WHERE TABLE_NAME = ?", String.class, liveTable));
+
+		// Never copy these: key, report metadata and maker-checker flags
+		java.util.Set<String> skip = new java.util.HashSet<>(
+				java.util.Arrays.asList("REPORT_DATE", "REPORT_VERSION", "REPORT_FREQUENCY", "REPORT_CODE",
+						"REPORT_DESC", "REPORT_RESUBDATE", "ENTITY_FLG", "MODIFY_FLG", "DEL_FLG"));
+
+		StringBuilder targetCols = new StringBuilder();
+		StringBuilder sourceCols = new StringBuilder();
+		int colCount = 0;
+		for (String col : modCols) {
+			if (skip.contains(col) || !liveCols.contains(col)) {
+				continue;
+			}
+			if (colCount > 0) {
+				targetCols.append(", ");
+				sourceCols.append(", ");
+			}
+			targetCols.append(col);
+			sourceCols.append("S.").append(col);
+			colCount++;
+		}
+
+		if (colCount == 0) {
+			throw new IllegalStateException("No matching GL_SCH columns found between " + modTable + " and " + liveTable
+					+ ". Check that both tables are in the current schema.");
+		}
+
+		System.out.println("GL_SCH columns to transfer : " + colCount);
+
+		// Copy MOD values into the LIVE row
+		int affected = jdbcTemplate.update("UPDATE " + liveTable + " M SET (" + targetCols + ") = (SELECT " + sourceCols
+				+ " FROM " + modTable + " S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE))"
+				+ " WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)", reportDate);
+
+		if (affected == 0) {
+			throw new IllegalStateException("GL_SCH live record not found for date : " + reportDate);
+		}
+
+		System.out.println("GL_SCH Main Updated : " + affected);
+
+		// Mark the MOD row as verified
+		int updated = jdbcTemplate.update(
+				"UPDATE " + modTable + " SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				reportDate);
+		System.out.println("GL_SCH MOD Updated : " + updated);
+
+		// Run procedure after transfer
+		jdbcTemplate.update(con -> {
+			java.sql.CallableStatement cs = con.prepareCall("{call BRRS_GL_SCH_SUMMARY_PROCEDURE(?)}");
+			cs.setDate(1, reportDate);
+			return cs;
+		});
+
+		System.out.println("GL_SCH Verification and Procedure Execution Completed Successfully");
+	}
+
+	private static final int[] PL_ROWS = { 12, 13, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 42, 43, 54, 61, 63 };
+	private static final String[] PL_FIELDS = { "intrest_div", "other_income", "operating_expenses", "fig_bal_sheet",
+			"fig_bal_sheet_bwp", "amt_statement_adj", "amt_statement_adj_bwp", "net_amt", "net_amt_bwp", "bal_sub",
+			"bal_sub_bwp", "bal_sub_diaries", "bal_sub_diaries_bwp" };
+
+	private List<String> plColumns() {
+		List<String> cols = new ArrayList<>();
+		for (int r : PL_ROWS) {
+			for (String f : PL_FIELDS) {
+				try {
+					PL_SCHS_Summary_Entity.class.getMethod("getR" + r + "_" + f);
+					cols.add("R" + r + "_" + f.toUpperCase());
+				} catch (NoSuchMethodException ignored) {
+				}
+			}
+		}
+		return cols;
+	}
+
+	private void transferPLSCHSData(AuditServicesEntity auditRecord) {
+		final String liveTable = "BRRS_PL_SCHS_SUMMARYTABLE";
+		final String modTable = "BRRS_PL_SCHS_MOD_SUMMARYTABLE";
+
+		java.sql.Date reportDate = jdbcTemplate.queryForObject("SELECT MAX(REPORT_DATE) FROM " + modTable,
+				java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified PL_SCHS record available for verification.");
+		}
+
+		System.out.println("PL_SCHS Report Date : " + reportDate);
+
+		// Only the editable columns (same list as updateReport)
+		StringBuilder targetCols = new StringBuilder();
+		StringBuilder sourceCols = new StringBuilder();
+		int colCount = 0;
+		for (String col : plColumns()) {
+			if (colCount > 0) {
+				targetCols.append(", ");
+				sourceCols.append(", ");
+			}
+			targetCols.append(col);
+			sourceCols.append("S.").append(col);
+			colCount++;
+		}
+
+		System.out.println("PL_SCHS columns to transfer : " + colCount);
+
+		int affected = jdbcTemplate.update("UPDATE " + liveTable + " M SET (" + targetCols + ") = (SELECT " + sourceCols
+				+ " FROM " + modTable + " S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE))"
+				+ " WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)", reportDate);
+
+		if (affected == 0) {
+			throw new IllegalStateException("PL_SCHS live record not found for date : " + reportDate);
+		}
+
+		System.out.println("PL_SCHS Main Updated : " + affected);
+
+		int updated = jdbcTemplate.update(
+				"UPDATE " + modTable + " SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				reportDate);
+
+		System.out.println("PL_SCHS MOD Updated : " + updated);
+		System.out.println("PL_SCHS Verification Completed Successfully");
+	}
+
+	private void transferBASELIIICETDData(AuditServicesEntity auditRecord) {
+		final String liveTable = "BRRS_BASEL_III_COM_EQUITY_DISC_SUMMARYTABLE";
+		final String modTable = "BRRS_BASEL_III_COM_EQUITY_DISC_MOD_SUMMARYTABLE";
+
+		java.sql.Date reportDate = jdbcTemplate.queryForObject("SELECT MAX(REPORT_DATE) FROM " + modTable,
+				java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified B_III_CETD record available for verification.");
+		}
+
+		System.out.println("B_III_CETD Report Date : " + reportDate);
+
+		int affected = jdbcTemplate.update("UPDATE " + liveTable + " M SET R73_AMOUNT = " + "(SELECT S.R73_AMOUNT FROM "
+				+ modTable + " S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE))"
+				+ " WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)", reportDate);
+
+		if (affected == 0) {
+			throw new IllegalStateException("B_III_CETD live record not found for date : " + reportDate);
+		}
+
+		System.out.println("B_III_CETD Main Updated : " + affected);
+
+		int updated = jdbcTemplate.update(
+				"UPDATE " + modTable + " SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				reportDate);
+
+		System.out.println("B_III_CETD MOD Updated : " + updated);
+		System.out.println("B_III_CETD Verification Completed Successfully");
+	}
+
+	private void transferCAPRATIOBUFFERData(AuditServicesEntity auditRecord) {
+		final String liveTable = "BRRS_CAP_RATIO_BUFFER_SUMMARYTABLE";
+		final String modTable = "BRRS_CAP_RATIO_BUFFER_MOD_SUMMARYTABLE";
+
+		int[] rows = { 2, 3, 4, 11, 12, 13 };
+
+		java.sql.Date reportDate = jdbcTemplate.queryForObject("SELECT MAX(REPORT_DATE) FROM " + modTable,
+				java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified CAP_RATIO_BUFFER record available for verification.");
+		}
+
+		System.out.println("CAP_RATIO_BUFFER Report Date : " + reportDate);
+
+		StringBuilder targetCols = new StringBuilder();
+		StringBuilder sourceCols = new StringBuilder();
+		for (int r : rows) {
+			if (targetCols.length() > 0) {
+				targetCols.append(", ");
+				sourceCols.append(", ");
+			}
+			targetCols.append("R").append(r).append("_CAP_RATIO_BUFF_AMT");
+			sourceCols.append("S.R").append(r).append("_CAP_RATIO_BUFF_AMT");
+		}
+
+		int affected = jdbcTemplate.update("UPDATE " + liveTable + " M SET (" + targetCols + ") = (SELECT " + sourceCols
+				+ " FROM " + modTable + " S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE))"
+				+ " WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)", reportDate);
+
+		if (affected == 0) {
+			throw new IllegalStateException("CAP_RATIO_BUFFER live record not found for date : " + reportDate);
+		}
+
+		System.out.println("CAP_RATIO_BUFFER Main Updated : " + affected);
+
+		int updated = jdbcTemplate.update(
+				"UPDATE " + modTable + " SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				reportDate);
+
+		System.out.println("CAP_RATIO_BUFFER MOD Updated : " + updated);
+		System.out.println("CAP_RATIO_BUFFER Verification Completed Successfully");
+	}
+
+	private void transferAS11Data(AuditServicesEntity auditRecord) {
+		final String liveTable = "BRRS_AS_11_SUMMARYTABLE1";
+		final String modTable = "BRRS_AS_11_MOD_SUMMARYTABLE1";
+
+		// MOD table only has R18..R83, so rows 85, 90, 91 are excluded
+		int[] rows = { 21, 22, 27, 28, 30, 31, 32, 33, 34, 35, 36, 37, 38, 40, 46, 47, 57, 64, 66, 72, 73, 74, 76, 77,
+				78, 79, 80, 81, 82 };
+		String[] fields = { "QUA_I_LC", "QUA_I_QAR", "QUA_I_INR", "QUA_II_LC", "QUA_II_QAR", "QUA_II_INR", "QUA_III_LC",
+				"QUA_III_QAR", "QUA_III_INR", "QUA_IV_LC", "QUA_IV_QAR", "QUA_IV_INR", "CUMM_INR", "CUMM_BWP" };
+
+		// Latest pending (modified) MOD record: report date + version
+		List<Map<String, Object>> pending = jdbcTemplate.queryForList(
+				"SELECT REPORT_DATE, REPORT_VERSION FROM (SELECT REPORT_DATE, REPORT_VERSION FROM " + modTable
+						+ " WHERE MODIFY_FLG = 'Y' ORDER BY REPORT_DATE DESC, REPORT_VERSION DESC NULLS LAST)"
+						+ " WHERE ROWNUM = 1");
+
+		if (pending.isEmpty()) {
+			throw new IllegalStateException("No modified AS_11 record available for verification.");
+		}
+
+		java.sql.Date reportDate = new java.sql.Date(((java.util.Date) pending.get(0).get("REPORT_DATE")).getTime());
+		Object reportVersion = pending.get(0).get("REPORT_VERSION"); // BigDecimal, may be null
+
+		System.out.println("AS_11 Report Date : " + reportDate + ", Version : " + reportVersion);
+
+		StringBuilder targetCols = new StringBuilder();
+		StringBuilder sourceCols = new StringBuilder();
+		for (int r : rows) {
+			for (String f : fields) {
+				if (targetCols.length() > 0) {
+					targetCols.append(", ");
+					sourceCols.append(", ");
+				}
+				targetCols.append("R").append(r).append("_").append(f);
+				sourceCols.append("S.R").append(r).append("_").append(f);
+			}
+		}
+
+		// Match on REPORT_DATE + REPORT_VERSION (null-safe)
+		String match = "TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE) AND NVL(S.REPORT_VERSION, -1) = NVL(M.REPORT_VERSION, -1)";
+
+		int affected = jdbcTemplate.update(
+				"UPDATE " + liveTable + " M SET (" + targetCols + ") = (SELECT " + sourceCols + " FROM " + modTable
+						+ " S WHERE " + match + ")"
+						+ " WHERE TRUNC(M.REPORT_DATE) = TRUNC(?) AND NVL(M.REPORT_VERSION, -1) = NVL(?, -1)",
+				reportDate, reportVersion);
+
+		if (affected == 0) {
+			throw new IllegalStateException(
+					"AS_11 live record not found for date : " + reportDate + ", version : " + reportVersion);
+		}
+
+		int updated = jdbcTemplate.update("UPDATE " + modTable
+				+ " SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND NVL(REPORT_VERSION, -1) = NVL(?, -1)",
+				reportDate, reportVersion);
+
+		System.out.println("AS_11 Main Updated : " + affected + ", MOD Updated : " + updated);
+	}
+
 }

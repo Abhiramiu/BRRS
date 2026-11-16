@@ -14,7 +14,9 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -56,9 +58,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.bornfire.brrs.entities.UserProfileRep;
 
 @Service
 @Transactional
@@ -78,7 +83,8 @@ public class BRRS_AS_11_ReportService {
 	// ENTITY MANAGER (Acts like Repository)
 	@PersistenceContext
 	private EntityManager entityManager;
-
+	@Autowired
+	UserProfileRep userProfileRep;
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -24175,18 +24181,19 @@ public class BRRS_AS_11_ReportService {
 			this.average = average;
 		}
 	}
-
+	
 	// MODEL AND VIEW METHOD summary
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getAS_11View(
-
-			String reportId, String fromdate, String todate, String currency, String dtltype, Pageable pageable,
-			String type, BigDecimal version) {
+	public ModelAndView getAS_11View(String reportId, String fromdate, String todate, String currency,
+			String dtltype, Pageable pageable, String type, BigDecimal version, HttpServletRequest req1, Model md) {
 
 		ModelAndView mv = new ModelAndView();
-
+		String userid = (String) req1.getSession().getAttribute("USERID");
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("User Id Maker and Checker: " + userid + ", Role: " + role);
 		System.out.println("AS_11 View Called");
 		System.out.println("Type = " + type);
 		System.out.println("Version = " + version);
@@ -40729,64 +40736,145 @@ public class BRRS_AS_11_ReportService {
 
 	}
 
+	private static final String AS11_LIVE_TABLE = "BRRS_AS_11_SUMMARYTABLE1";
+	private static final String AS11_MOD_TABLE = "BRRS_AS_11_MOD_SUMMARYTABLE1"; // assumed name
+
+	private static final int[] AS11_ROWS = { 21, 22, 27, 28, 30, 31, 32, 33, 34, 35, 36, 37, 38, 40, 46, 47, 57, 64, 66,
+			72, 73, 74, 76, 77, 78, 79, 80, 81, 82, 85, 90, 91 };
+
+	private static final String[] AS11_FIELDS = { "qua_i_lc", "qua_i_qar", "qua_i_inr", "qua_ii_lc", "qua_ii_qar",
+			"qua_ii_inr", "qua_iii_lc", "qua_iii_qar", "qua_iii_inr", "qua_iv_lc", "qua_iv_qar", "qua_iv_inr",
+			"cumm_inr", "cumm_bwp" };
+
 	@Transactional
 	public void updateReport(AS_11_Summary_Entity1 updatedEntity) {
 
-		System.out.println("Came to AS 11 Update");
+		System.out.println("Came to AS 11 Manual Update");
 		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-		// Allowed rows
-		int[] rows = { 21, 22, 27, 28, 30, 31, 32, 33, 34, 35, 36, 37, 38, 40, 46, 47, 57, 64, 66, 72, 73, 74, 76, 77,
-				78, 79, 80, 81, 82, 85, 90, 91 };
+		String sqlSelect = "SELECT * FROM " + AS11_LIVE_TABLE + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 
 		try {
+			java.sql.Date sqlDate = new java.sql.Date(updatedEntity.getREPORT_DATE().getTime());
 
-			// Loop rows
-			for (int r : rows) {
+			// Old copy = live values (throws if no live row)
+			AS_11_Summary_Entity1 oldcopy = jdbcTemplate.queryForObject(sqlSelect, new Object[] { sqlDate },
+					new AS_11RowMapper1()); // assumed mapper name
 
-				// Allowed fields
-				String[] fields = { "qua_i_lc", "qua_i_qar", "qua_i_inr", "qua_ii_lc", "qua_ii_qar", "qua_ii_inr",
-						"qua_iii_lc", "qua_iii_qar", "qua_iii_inr", "qua_iv_lc", "qua_iv_qar", "qua_iv_inr", "cumm_inr",
-						"cumm_bwp" };
-				;
+			// New copy = live values + screen changes
+			AS_11_Summary_Entity1 newcopy = jdbcTemplate.queryForObject(sqlSelect, new Object[] { sqlDate },
+					new AS_11RowMapper1());
 
-				for (String field : fields) {
+			Map<String, Object> values = new LinkedHashMap<>();
 
+			for (int r : AS11_ROWS) {
+				for (String field : AS11_FIELDS) {
 					String getterName = "getR" + r + "_" + field;
-
+					String setterName = "setR" + r + "_" + field;
 					try {
-
 						Method getter = AS_11_Summary_Entity1.class.getMethod(getterName);
+						Method setter = AS_11_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
 
 						Object value = getter.invoke(updatedEntity);
 
-						// Skip null values
-						if (value == null)
-							continue;
+						// Skip null values (keep live value)
+						if (value != null) {
+							setter.invoke(newcopy, value);
+						}
 
-						// DB Column Name
-						String columnName = "R" + r + "_" + field.toUpperCase();
-
-						String sql = "UPDATE BRRS_AS_11_SUMMARYTABLE1 " + "SET " + columnName + " = ? "
-								+ "WHERE REPORT_DATE = ?";
-
-						int updatedRows = jdbcTemplate.update(sql, value, updatedEntity.getREPORT_DATE());
-
-						System.out.println(columnName + " Updated -> " + value + " Rows : " + updatedRows);
+						values.put("R" + r + "_" + field.toUpperCase(), getter.invoke(newcopy));
 
 					} catch (NoSuchMethodException e) {
-						// Skip if getter not exists
 						continue;
 					}
 				}
 			}
 
-			System.out.println("AS 11 Update Completed");
+			// Maker-Checker flags
+			values.put("ENTITY_FLG", "Y");
+			values.put("MODIFY_FLG", "Y");
+			values.put("DEL_FLG", "N");
+
+			// Save into MOD table for Checker approval (live table untouched)
+			as11Upsert(AS11_MOD_TABLE, sqlDate, values);
+			System.out.println("✔ Record saved into " + AS11_MOD_TABLE + " for Checker Approval");
+
+			// Audit old value / new value
+			String changes = auditService.getChanges(oldcopy, newcopy);
+
+			if (changes != null && !changes.isEmpty()) {
+				auditService.compareEntitiesmanual(oldcopy, newcopy, updatedEntity.getREPORT_DATE().toString(),
+						"AS 11 Screen", AS11_LIVE_TABLE);
+			}
+
+			System.out.println("AS 11 Manual Update saved for Checker Approval");
 
 		} catch (Exception e) {
-
-			throw new RuntimeException("Error while updating AS 11 fields", e);
+			throw new RuntimeException("Error while updating AS 11 Manual fields", e);
 		}
+	}
+
+// Generic upsert from a column -> value map (insert if no row for the date, else update)
+	private void as11Upsert(String tableName, java.sql.Date sqlDate, Map<String, Object> values) {
+		Integer count = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM " + tableName + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", Integer.class, sqlDate);
+
+		List<Object> params = new ArrayList<>();
+
+		if (count != null && count > 0) {
+			StringBuilder sql = new StringBuilder("UPDATE " + tableName + " SET ");
+			boolean first = true;
+			for (Map.Entry<String, Object> e : values.entrySet()) {
+				if (!first)
+					sql.append(", ");
+				sql.append(e.getKey()).append(" = ?");
+				params.add(e.getValue());
+				first = false;
+			}
+			sql.append(" WHERE TRUNC(REPORT_DATE) = TRUNC(?)");
+			params.add(sqlDate);
+			jdbcTemplate.update(sql.toString(), params.toArray());
+		} else {
+			StringBuilder cols = new StringBuilder("REPORT_DATE");
+			StringBuilder marks = new StringBuilder("?");
+			params.add(sqlDate);
+			for (Map.Entry<String, Object> e : values.entrySet()) {
+				cols.append(", ").append(e.getKey());
+				marks.append(", ?");
+				params.add(e.getValue());
+			}
+			jdbcTemplate.update("INSERT INTO " + tableName + " (" + cols + ") VALUES (" + marks + ")",
+					params.toArray());
+		}
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		java.sql.Date sqlDate = new java.sql.Date(reportDate.getTime());
+
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(
+				"SELECT * FROM " + AS11_MOD_TABLE + " WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				sqlDate);
+		if (rows.isEmpty()) {
+			throw new IllegalStateException("No pending AS_11 modification found for date : " + reportDate);
+		}
+
+		Map<String, Object> mod = new LinkedHashMap<>();
+		for (int r : AS11_ROWS) {
+			for (String field : AS11_FIELDS) {
+				String col = "R" + r + "_" + field.toUpperCase();
+				mod.put(col, rows.get(0).get(col));
+			}
+		}
+
+		// Copy MOD values into the LIVE table
+		as11Upsert(AS11_LIVE_TABLE, sqlDate, mod);
+
+		// Mark as approved in the MOD table
+		jdbcTemplate.update("UPDATE " + AS11_MOD_TABLE + " SET MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				sqlDate);
+
+		System.out.println("AS_11 Checker Approved Successfully");
 	}
 
 	// Resubmission

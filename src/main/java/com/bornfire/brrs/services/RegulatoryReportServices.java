@@ -773,7 +773,7 @@ public class RegulatoryReportServices {
 		case "B_III_CETD":
 
 			repsummary = b_III_cetd_ReportService.getB_III_CETDView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
+					pageable, type, version, req, md);
 
 			break;
 
@@ -1049,7 +1049,7 @@ public class RegulatoryReportServices {
 			break;
 		case "PL_SCHS":
 			repsummary = BRRS_PL_SCHS_Reportservice.getPL_SCHSView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
+					pageable, type, version, req, md);
 
 			break;
 
@@ -1060,7 +1060,7 @@ public class RegulatoryReportServices {
 
 		case "GL_SCH":
 			repsummary = brrs_gl_sch_reportservice.getGL_SCHView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
+					pageable, type, version, req, md);
 
 			break;
 
@@ -1115,7 +1115,7 @@ public class RegulatoryReportServices {
 
 		case "AS_11":
 			repsummary = BRRS_AS_11_Reportservice.getAS_11View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
+					type, version, req, md);
 
 			break;
 

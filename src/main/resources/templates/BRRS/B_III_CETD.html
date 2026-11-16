@@ -68,13 +68,7 @@ PURPOSE		: BRRS BASEL_III_COM_EQUITY_DISC  REPORT
 			border-color: #0c0c0c;
 		}
 
-		.btn-primary:not (:disabled):not (.disabled).active,
-		.btn-primary:not (:disabled):not (.disabled):active,
-		.show>.btn-primary.dropdown-toggle {
-			color: #fff;
-			background-color: #cc000000;
-			border-color: #161617;
-		}
+	
 
 		#finusertb {
 			width: 460px;
@@ -316,13 +310,6 @@ PURPOSE		: BRRS BASEL_III_COM_EQUITY_DISC  REPORT
 			transition: 0.3s ease;
 		}
 
-		/* When input or select is focused or has a value, move the label up */
-		.form-control:focus~.form-legend,
-		.form-control:not (:placeholder-shown)~.form-legend {
-			top: -8px;
-			font-size: 1rem;
-			color: #007bff;
-		}
 
 		/* Hover effect when the input/select is focused */
 		.form-control:focus:hover~.form-legend {
@@ -330,11 +317,6 @@ PURPOSE		: BRRS BASEL_III_COM_EQUITY_DISC  REPORT
 			/* Darker shade of blue on hover */
 		}
 
-		/* Ensure the label returns to the normal color after focus or hover is removed */
-		.form-control:not (:focus)~.form-legend {
-			color: #aaa;
-			/* Normal label color */
-		}
 
 		.table-cell tbody td:hover {
 			background-color: #f0f0f0;
@@ -1073,7 +1055,7 @@ PURPOSE		: BRRS BASEL_III_COM_EQUITY_DISC  REPORT
 					success: function () {
 						isSummaryPage = true;
 						$("#resultModalLabel").text("BRRS");
-						$("#resultModalBody").text(" Modified Successfully.");
+						$("#resultModalBody").text("Modified Successfully. Record sent for Checker Approval.");
 						$("#resultModal").modal("show");
 					},
 					error: function (jqXHR) {
@@ -1196,13 +1178,12 @@ PURPOSE		: BRRS BASEL_III_COM_EQUITY_DISC  REPORT
 
 						<!-- Modify button (show for anyone except Checker) -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL' 
-							        and role != 'C' and role != 'ADM-C' and role != 'USR-C'
-							        and !#strings.contains(#httpServletRequest.requestURI, '/Details')}"
-							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit' : ''"
-							id="addRecord">
-							Modify
-						</button>
+													title="Click to EDIT Records" th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL'
+						                and !#strings.contains(#httpServletRequest.requestURI, '/Details')}"
+													th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit' : ''"
+													id="addRecord">
+													Modify
+												</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"

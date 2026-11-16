@@ -14,7 +14,10 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -58,9 +61,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.bornfire.brrs.entities.UserProfileRep;
 
 @Service
 @Transactional
@@ -85,6 +91,8 @@ public class BRRS_PL_SCHS_ReportService {
 	private JdbcTemplate jdbcTemplate;
 	@Autowired
 	private PlatformTransactionManager transactionManager;
+	@Autowired
+	UserProfileRep userProfileRep;
 
 	// Fetch data by report date
 	public List<PL_SCHS_Summary_Entity> getDataByDate(Date reportDate) {
@@ -11923,13 +11931,14 @@ public class BRRS_PL_SCHS_ReportService {
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getPL_SCHSView(
-
-			String reportId, String fromdate, String todate, String currency, String dtltype, Pageable pageable,
-			String type, BigDecimal version) {
+	public ModelAndView getPL_SCHSView(String reportId, String fromdate, String todate, String currency, String dtltype,
+			Pageable pageable, String type, BigDecimal version, HttpServletRequest req1, Model md) {
 
 		ModelAndView mv = new ModelAndView();
-
+		String userid = (String) req1.getSession().getAttribute("USERID");
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("User Id Maker and Checker: " + userid + ", Role: " + role);
 		System.out.println("PL_SCHS View Called");
 		System.out.println("Type = " + type);
 		System.out.println("Version = " + version);
@@ -20123,68 +20132,208 @@ public class BRRS_PL_SCHS_ReportService {
 
 	}
 
+	// Columns that exist on the entity (so they exist in the live table too)
+	private List<String> plColumns() {
+		List<String> cols = new ArrayList<>();
+		for (int r : PL_ROWS) {
+			for (String f : PL_FIELDS) {
+				try {
+					PL_SCHS_Summary_Entity.class.getMethod("getR" + r + "_" + f);
+					cols.add("R" + r + "_" + f.toUpperCase());
+				} catch (NoSuchMethodException ignored) {
+				}
+			}
+		}
+		return cols;
+	}
+
+	private static final String PL_LIVE_TABLE = "BRRS_PL_SCHS_SUMMARYTABLE";
+	private static final String PL_ARCH_TABLE = "BRRS_PL_SCHS_ARCHIVALTABLE_SUMMARY";
+	private static final String PL_MOD_TABLE = "BRRS_PL_SCHS_MOD_SUMMARYTABLE";
+
+	private static final int[] PL_ROWS = { 12, 13, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 42, 43, 54, 61, 63 };
+	private static final String[] PL_FIELDS = { "intrest_div", "other_income", "operating_expenses", "fig_bal_sheet",
+			"fig_bal_sheet_bwp", "amt_statement_adj", "amt_statement_adj_bwp", "net_amt", "net_amt_bwp", "bal_sub",
+			"bal_sub_bwp", "bal_sub_diaries", "bal_sub_diaries_bwp" };
+
+	private void plUpsert(String tableName, java.sql.Date sqlDate, Map<String, Object> values) {
+		Integer count = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM " + tableName + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", Integer.class, sqlDate);
+
+		List<Object> params = new ArrayList<>();
+
+		if (count != null && count > 0) {
+			StringBuilder sql = new StringBuilder("UPDATE " + tableName + " SET ");
+			boolean first = true;
+			for (Map.Entry<String, Object> e : values.entrySet()) {
+				if (!first)
+					sql.append(", ");
+				sql.append(e.getKey()).append(" = ?");
+				params.add(e.getValue());
+				first = false;
+			}
+			sql.append(" WHERE TRUNC(REPORT_DATE) = TRUNC(?)");
+			params.add(sqlDate);
+			jdbcTemplate.update(sql.toString(), params.toArray());
+		} else {
+			StringBuilder cols = new StringBuilder("REPORT_DATE");
+			StringBuilder marks = new StringBuilder("?");
+			params.add(sqlDate);
+			for (Map.Entry<String, Object> e : values.entrySet()) {
+				cols.append(", ").append(e.getKey());
+				marks.append(", ?");
+				params.add(e.getValue());
+			}
+			jdbcTemplate.update("INSERT INTO " + tableName + " (" + cols + ") VALUES (" + marks + ")",
+					params.toArray());
+		}
+	}
+
 	@Transactional
 	public void updateReport(PL_SCHS_Summary_Entity updatedEntity, String type) {
 
 		boolean isResub = "RESUB".equalsIgnoreCase(type);
 
-		String tableName = isResub ? "BRRS_PL_SCHS_ARCHIVALTABLE_SUMMARY" : "BRRS_PL_SCHS_SUMMARYTABLE";
-
 		System.out.println("Came to PL SCHS Update");
 		System.out.println("Type : " + (isResub ? "RESUB" : "NORMAL"));
 		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-		// Allowed rows
-		int[] rows = { 12, 13, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 42, 43, 54, 61, 63 };
-
 		try {
+			java.sql.Date sqlDate = new java.sql.Date(updatedEntity.getREPORT_DATE().getTime());
 
-			// Allowed fields
-			String[] fields = { "intrest_div", "other_income", "operating_expenses", "fig_bal_sheet",
-					"fig_bal_sheet_bwp", "amt_statement_adj", "amt_statement_adj_bwp", "net_amt", "net_amt_bwp",
-					"bal_sub", "bal_sub_bwp", "bal_sub_diaries", "bal_sub_diaries_bwp" };
-
-			for (int r : rows) {
-
-				for (String field : fields) {
-
-					String getterName = "getR" + r + "_" + field;
-
-					try {
-
-						Method getter = PL_SCHS_Summary_Entity.class.getMethod(getterName);
-
-						Object value = getter.invoke(updatedEntity);
-
-						// Skip null values
-						if (value == null) {
+			// RESUB: original direct update on the archival table (no audit, as before)
+			if (isResub) {
+				for (int r : PL_ROWS) {
+					for (String field : PL_FIELDS) {
+						try {
+							Method getter = PL_SCHS_Summary_Entity.class.getMethod("getR" + r + "_" + field);
+							Object value = getter.invoke(updatedEntity);
+							if (value == null) {
+								continue;
+							}
+							String columnName = "R" + r + "_" + field.toUpperCase();
+							int n = jdbcTemplate.update(
+									"UPDATE " + PL_ARCH_TABLE + " SET " + columnName + " = ? WHERE REPORT_DATE = ?",
+									value, sqlDate);
+							System.out.println(columnName + " Updated -> " + value + " Rows : " + n);
+						} catch (NoSuchMethodException e) {
 							continue;
 						}
-
-						String columnName = "R" + r + "_" + field.toUpperCase();
-
-						String sql = "UPDATE " + tableName + " SET " + columnName + " = ? " + " WHERE REPORT_DATE = ?";
-
-						int updatedRows = jdbcTemplate.update(sql, value, updatedEntity.getREPORT_DATE());
-
-						System.out.println(columnName + " Updated -> " + value + " Rows : " + updatedRows);
-
-					} catch (NoSuchMethodException e) {
-						// Skip fields that don't exist
-						continue;
 					}
+				}
+				System.out.println("PL SCHS Update Completed");
+				return;
+			}
+
+			// NORMAL: current values from the live table (empty if no row yet)
+			Map<String, Object> liveRow = new HashMap<>();
+			List<Map<String, Object>> existing = jdbcTemplate
+					.queryForList("SELECT * FROM " + PL_LIVE_TABLE + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", sqlDate);
+			if (!existing.isEmpty()) {
+				liveRow = existing.get(0);
+			}
+
+			// Audit copies: oldcopy = live DB values, newcopy = live values + screen
+			// changes
+			PL_SCHS_Summary_Entity oldcopy = new PL_SCHS_Summary_Entity();
+			PL_SCHS_Summary_Entity newcopy = new PL_SCHS_Summary_Entity();
+			oldcopy.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+			newcopy.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+
+			Map<String, Object> merged = new LinkedHashMap<>();
+
+			for (String col : plColumns()) {
+				String suffix = "R" + col.substring(1).toLowerCase(); // e.g. R12_intrest_div
+				Method getter = PL_SCHS_Summary_Entity.class.getMethod("get" + suffix);
+				Method setter = PL_SCHS_Summary_Entity.class.getMethod("set" + suffix, getter.getReturnType());
+
+				Object screenValue = getter.invoke(updatedEntity);
+				Object liveValue = liveRow.get(col);
+
+				// Old copy = live DB value
+				setter.invoke(oldcopy, plConvert(liveValue, getter.getReturnType()));
+
+				// Prevent NULL overwrite: keep the live value when the screen sends null
+				Object finalValue = (screenValue != null) ? screenValue : liveValue;
+				setter.invoke(newcopy, plConvert(finalValue, getter.getReturnType()));
+
+				merged.put(col, finalValue);
+			}
+
+			// Maker-Checker flags
+			merged.put("ENTITY_FLG", "Y");
+			merged.put("MODIFY_FLG", "Y");
+			merged.put("DEL_FLG", "N");
+
+			// Save into MOD table for Checker Approval (live table untouched)
+			plUpsert(PL_MOD_TABLE, sqlDate, merged);
+			System.out.println(
+					"✔ Record saved into " + PL_MOD_TABLE + " for Checker Approval (" + merged.size() + " columns)");
+
+			// Audit trail: old value / new value
+			String changes = auditService.getChanges(oldcopy, newcopy);
+			System.out.println("PL SCHS Changes Length = " + (changes != null ? changes.length() : 0));
+
+			if (changes != null && !changes.trim().isEmpty()) {
+				if (changes.length() <= 2000) {
+					auditService.compareEntitiesmanual(oldcopy, newcopy, updatedEntity.getREPORT_DATE().toString(),
+							"PL SCHS Summary Screen", PL_LIVE_TABLE);
+				} else {
+					System.out.println("Audit skipped because MODI_DETAILS exceeds 2000 characters.");
 				}
 			}
 
-			System.out.println("PL SCHS Update Completed");
-
 		} catch (Exception e) {
-
 			System.err.println("===== PL SCHS UPDATE ERROR =====");
 			e.printStackTrace();
-
 			throw new RuntimeException("Error while updating PL SCHS fields", e);
 		}
+	}
+
+// Converts a DB value (BigDecimal, String, ...) to the entity getter's type
+	private Object plConvert(Object dbValue, Class<?> targetType) {
+		if (dbValue == null) {
+			return null;
+		}
+		if (targetType.isInstance(dbValue)) {
+			return dbValue;
+		}
+		if (targetType == String.class) {
+			return dbValue.toString();
+		}
+		if (dbValue instanceof java.math.BigDecimal) {
+			java.math.BigDecimal bd = (java.math.BigDecimal) dbValue;
+			if (targetType == Double.class || targetType == double.class)
+				return bd.doubleValue();
+			if (targetType == Long.class || targetType == long.class)
+				return bd.longValue();
+			if (targetType == Integer.class || targetType == int.class)
+				return bd.intValue();
+		}
+		return dbValue;
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		java.sql.Date sqlDate = new java.sql.Date(reportDate.getTime());
+
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(
+				"SELECT * FROM " + PL_MOD_TABLE + " WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'", sqlDate);
+		if (rows.isEmpty()) {
+			throw new IllegalStateException("No pending PL SCHS modification found for date : " + reportDate);
+		}
+
+		Map<String, Object> mod = new LinkedHashMap<>();
+		for (String col : plColumns()) {
+			mod.put(col, rows.get(0).get(col));
+		}
+
+		plUpsert(PL_LIVE_TABLE, sqlDate, mod);
+
+		jdbcTemplate.update("UPDATE " + PL_MOD_TABLE + " SET MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				sqlDate);
+
+		System.out.println("PL SCHS Checker Approved Successfully");
 	}
 
 	// Resubmission

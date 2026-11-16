@@ -15,7 +15,9 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
@@ -54,9 +56,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.bornfire.brrs.entities.UserProfileRep;
 
 @Service
 
@@ -78,6 +83,8 @@ public class BRRS_GL_SCH_ReportService {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
+	@Autowired
+	UserProfileRep userProfileRep;
 // =====================================================
 // SUMAMRY REPO
 // =====================================================1
@@ -55916,13 +55923,14 @@ public class BRRS_GL_SCH_ReportService {
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getGL_SCHView(
-
-			String reportId, String fromdate, String todate, String currency, String dtltype, Pageable pageable,
-			String type, BigDecimal version) {
+	public ModelAndView getGL_SCHView(String reportId, String fromdate, String todate, String currency,
+			String dtltype, Pageable pageable, String type, BigDecimal version, HttpServletRequest req1, Model md) {
 
 		ModelAndView mv = new ModelAndView();
-
+		String userid = (String) req1.getSession().getAttribute("USERID");
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("User Id Maker and Checker: " + userid + ", Role: " + role);
 		System.out.println("GL_SCH View Called");
 		System.out.println("Type = " + type);
 		System.out.println("Version = " + version);
@@ -56324,102 +56332,162 @@ public class BRRS_GL_SCH_ReportService {
 //    }
 //}
 
-	@Transactional
-	public void updateReport(GL_SCH_Manual_Summary_Entity updatedEntity) {
+private static final String GL_LIVE_TABLE = "BRRS_GL_SCH_MANUAL_SUMMARYTABLE";
+private static final String GL_MOD_TABLE  = "BRRS_GL_SCH_MANUAL_MOD_SUMMARYTABLE";
 
-		System.out.println("Came to GL_SCH Manual Update");
-		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+private static final int[] GL_ROWS = { 59, 61, 89, 91, 103, 130, 138, 139, 141, 241, 243, 245 };
+private static final String[] GL_FIELDS = { "PRODUCT", "FIG_BAL_BWP1", "FIG_BAL_BWP2", "AMT_ADJ_BWP1",
+		"AMT_ADJ_BWP2", "NET_AMT_BWP1", "NET_AMT_BWP2", "BAL_SUB_BWP1", "BAL_SUB_BWP2", "BAL_ACT_SUB_BWP1",
+		"BAL_ACT_SUB_BWP2" };
 
-		String sqlSelect = "SELECT * FROM BRRS_GL_SCH_MANUAL_SUMMARYTABLE WHERE REPORT_DATE = ?";
-
-		try {
-
-			// ====================================================
-			// 1️⃣ OLD COPY (BEFORE UPDATE)
-			// ====================================================
-
-			GL_SCH_Manual_Summary_Entity oldcopy = jdbcTemplate.queryForObject(sqlSelect,
-					new Object[] { updatedEntity.getREPORT_DATE() }, new GL_SCH_Summary_RowMapper4());
-
-			// Added 59
-			int[] rows = { 59, 61, 89, 91, 103, 130, 138, 139, 141, 241, 243, 245 };
-
-			String[] fields = { "PRODUCT", "FIG_BAL_BWP1", "FIG_BAL_BWP2", "AMT_ADJ_BWP1", "AMT_ADJ_BWP2",
-					"NET_AMT_BWP1", "NET_AMT_BWP2", "BAL_SUB_BWP1", "BAL_SUB_BWP2", "BAL_ACT_SUB_BWP1",
-					"BAL_ACT_SUB_BWP2" };
-
-			// ====================================================
-			// 2️⃣ UPDATE USING JDBC
-			// ====================================================
-
-			for (int row : rows) {
-
-				for (String field : fields) {
-
-					String getterName = "getR" + row + "_" + field;
-
-					try {
-
-						Method getter = GL_SCH_Manual_Summary_Entity.class.getMethod(getterName);
-
-						Object value = getter.invoke(updatedEntity);
-
-						if (value == null) {
-							continue;
-						}
-
-						String columnName = "R" + row + "_" + field;
-
-						String sqlUpdate = "UPDATE BRRS_GL_SCH_MANUAL_SUMMARYTABLE " + "SET " + columnName + " = ? "
-								+ "WHERE REPORT_DATE = ?";
-
-						jdbcTemplate.update(sqlUpdate, value, updatedEntity.getREPORT_DATE());
-
-						System.out.println("Updated Column: " + columnName + " = " + value);
-
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
-
-			System.out.println("GL_SCH Manual Update Completed");
-
-			// ====================================================
-			// 3️⃣ EXECUTE PROCEDURE
-			// ====================================================
-
-			jdbcTemplate.update(con -> {
-
-				CallableStatement cs = con.prepareCall("{call BRRS_GL_SCH_SUMMARY_PROCEDURE(?)}");
-
-				cs.setDate(1, new java.sql.Date(updatedEntity.getREPORT_DATE().getTime()));
-
-				return cs;
-			});
-
-			System.out.println("BRRS_GL_SCH_SUMMARY_PROCEDURE Executed Successfully");
-
-			// ====================================================
-			// 4️⃣ NEW COPY (AFTER UPDATE + PROCEDURE)
-			// ====================================================
-
-			GL_SCH_Manual_Summary_Entity newcopy = jdbcTemplate.queryForObject(sqlSelect,
-					new Object[] { updatedEntity.getREPORT_DATE() }, new GL_SCH_Summary_RowMapper4());
-
-			// ====================================================
-			// 5️⃣ AUDIT COMPARE
-			// ====================================================
-
-			auditService.compareEntitiesmanual(oldcopy, newcopy, updatedEntity.getREPORT_DATE().toString(),
-					"GL SCH Manual Screen", "BRRS_GL_SCH_MANUAL_SUMMARYTABLE");
-
-		} catch (Exception e) {
-
-			throw new RuntimeException("Error while updating GL_SCH Manual fields", e);
+private List<String> glColumns() {
+	List<String> cols = new ArrayList<>();
+	for (int r : GL_ROWS) {
+		for (String f : GL_FIELDS) {
+			cols.add("R" + r + "_" + f);
 		}
 	}
-//=====================================================
+	return cols;
+}
+
+@Transactional
+public void updateReport(GL_SCH_Manual_Summary_Entity updatedEntity) {
+
+	System.out.println("Came to GL_SCH Manual Update");
+	System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+
+	java.sql.Date sqlDate = new java.sql.Date(updatedEntity.getREPORT_DATE().getTime());
+
+	try {
+		// 🔹 Live record (baseline); throws if it doesn't exist, as in your original
+		GL_SCH_Manual_Summary_Entity oldcopy = jdbcTemplate.queryForObject(
+				"SELECT * FROM " + GL_LIVE_TABLE + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				new Object[] { sqlDate }, new GL_SCH_Summary_RowMapper4());
+
+		// 🔹 New copy = live values + screen changes
+		GL_SCH_Manual_Summary_Entity newcopy = new GL_SCH_Manual_Summary_Entity();
+		BeanUtils.copyProperties(oldcopy, newcopy);
+
+		boolean changed = false;
+		Map<String, Object> merged = new LinkedHashMap<>();
+
+		for (int row : GL_ROWS) {
+			for (String field : GL_FIELDS) {
+				String getterName = "getR" + row + "_" + field;
+				String setterName = "setR" + row + "_" + field;
+				String columnName = "R" + row + "_" + field;
+				try {
+					Method getter = GL_SCH_Manual_Summary_Entity.class.getMethod(getterName);
+					Method setter = GL_SCH_Manual_Summary_Entity.class.getMethod(setterName,
+							getter.getReturnType());
+
+					Object newValue = getter.invoke(updatedEntity);
+					Object oldValue = getter.invoke(oldcopy);
+
+					// Prevent NULL overwrite (same as your original)
+					if (newValue != null) {
+						setter.invoke(newcopy, newValue);
+						if (!newValue.toString().trim()
+								.equals(oldValue == null ? "" : oldValue.toString().trim())) {
+							changed = true;
+						}
+					}
+					merged.put(columnName, getter.invoke(newcopy));
+				} catch (NoSuchMethodException e) {
+					continue;
+				}
+			}
+		}
+
+		// 🔹 Maker-Checker flags
+		merged.put("ENTITY_FLG", "Y");
+		merged.put("MODIFY_FLG", "Y");
+		merged.put("DEL_FLG", "N");
+
+		// 🔹 Save into MOD table for Checker Approval (live table untouched)
+		glUpsert(GL_MOD_TABLE, sqlDate, merged);
+		System.out.println("✔ Record saved into " + GL_MOD_TABLE + " for Checker Approval");
+
+		// 🔹 Audit
+		if (changed) {
+			auditService.compareEntitiesmanual(oldcopy, newcopy, updatedEntity.getREPORT_DATE().toString(),
+					"GL SCH Manual Screen", GL_LIVE_TABLE);
+		}
+
+	} catch (Exception e) {
+		throw new RuntimeException("Error while updating GL_SCH Manual fields", e);
+	}
+}
+
+// Generic upsert from a column -> value map (insert if no row for the date, else update)
+private void glUpsert(String tableName, java.sql.Date sqlDate, Map<String, Object> values) {
+	Integer count = jdbcTemplate.queryForObject(
+			"SELECT COUNT(*) FROM " + tableName + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", Integer.class, sqlDate);
+
+	List<Object> params = new ArrayList<>();
+
+	if (count != null && count > 0) {
+		StringBuilder sql = new StringBuilder("UPDATE " + tableName + " SET ");
+		boolean first = true;
+		for (Map.Entry<String, Object> e : values.entrySet()) {
+			if (!first) sql.append(", ");
+			sql.append(e.getKey()).append(" = ?");
+			params.add(e.getValue());
+			first = false;
+		}
+		sql.append(" WHERE TRUNC(REPORT_DATE) = TRUNC(?)");
+		params.add(sqlDate);
+		jdbcTemplate.update(sql.toString(), params.toArray());
+	} else {
+		StringBuilder cols = new StringBuilder("REPORT_DATE");
+		StringBuilder marks = new StringBuilder("?");
+		params.add(sqlDate);
+		for (Map.Entry<String, Object> e : values.entrySet()) {
+			cols.append(", ").append(e.getKey());
+			marks.append(", ?");
+			params.add(e.getValue());
+		}
+		jdbcTemplate.update("INSERT INTO " + tableName + " (" + cols + ") VALUES (" + marks + ")",
+				params.toArray());
+	}
+}
+
+private void glRunProcedure(java.sql.Date sqlDate) {
+	jdbcTemplate.update(con -> {
+		CallableStatement cs = con.prepareCall("{call BRRS_GL_SCH_SUMMARY_PROCEDURE(?)}");
+		cs.setDate(1, sqlDate);
+		return cs;
+	});
+	System.out.println("BRRS_GL_SCH_SUMMARY_PROCEDURE Executed Successfully");
+}
+
+@Transactional
+public void approveReport(Date reportDate) {
+	java.sql.Date sqlDate = new java.sql.Date(reportDate.getTime());
+
+	List<Map<String, Object>> rows = jdbcTemplate.queryForList("SELECT * FROM " + GL_MOD_TABLE
+			+ " WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'", sqlDate);
+	if (rows.isEmpty()) {
+		throw new IllegalStateException("No pending GL_SCH modification found for date : " + reportDate);
+	}
+
+	Map<String, Object> mod = new LinkedHashMap<>();
+	for (String col : glColumns()) {
+		mod.put(col, rows.get(0).get(col));
+	}
+
+	// Copy MOD values into the LIVE table
+	glUpsert(GL_LIVE_TABLE, sqlDate, mod);
+
+	// Mark modified flag as 'N' (Approved) in the MOD table
+	jdbcTemplate.update("UPDATE " + GL_MOD_TABLE + " SET MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+			sqlDate);
+
+	// Run procedure after approval (as your original did after the update)
+	glRunProcedure(sqlDate);
+
+	System.out.println("GL_SCH Checker Approved Successfully");
+}//=====================================================
 // VIEW AND EDIT
 //=====================================================
 
