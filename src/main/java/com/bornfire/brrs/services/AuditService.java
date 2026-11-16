@@ -1566,8 +1566,10 @@ public class AuditService {
 			transferUFCEManualData(auditRecord);
 		} else if (upperTable.equals("BRRS_IRRBB_PLA_MOD_SUMMARY_TABLE")) {
 			transferIRRBBPLACEMENTSData(auditRecord);
-		} else if (upperTable.contains("BRRS_FSI_")) {
+		} else if (upperTable.contains("BRRS_FSI")) {
 			transferFSIData(auditRecord);
+		} else if (upperTable.contains("FORMAT_NEW_CPR")) {
+			transferCPRData(auditRecord);
 		} else {
 			throw new IllegalArgumentException("Verification not configured for table: " + auditTable);
 		}
@@ -6563,6 +6565,51 @@ public class AuditService {
 
 	public static final int[] FSI_MANUAL_ROWS = { 13, 18, 19, 27, 29, 32, 42, 48, 49, 52, 53, 54, 55, 56, 60, 61, 67,
 			68, 69, 71, 74, 88, 90, 91, 102, 104, 107, 108, 110, 111, 112, 113, 119, 120, 121, 122, 123, 124 };
+
+	private void transferCPRData(AuditServicesEntity auditRecord) {
+		final String liveTable = "BRRS_FORMAT_NEW_CPR_SUMMARYTABLE";
+		final String modTable = "BRRS_FORMAT_NEW_CPR_MOD_SUMMARYTABLE";
+
+		java.sql.Date reportDate = null;
+		try {
+			reportDate = jdbcTemplate.queryForObject(
+					"SELECT MAX(REPORT_DATE) FROM " + modTable + " WHERE MODIFY_FLG = 'Y'", java.sql.Date.class);
+		} catch (Exception ignored) {
+		}
+		if (reportDate == null) {
+			throw new IllegalStateException("No pending FORMAT_NEW_CPR modification available for verification.");
+		}
+		System.out.println("FORMAT_NEW_CPR Report Date : " + reportDate);
+
+		StringBuilder setCols = new StringBuilder();
+		StringBuilder selCols = new StringBuilder();
+		for (int r : CPR_MANUAL_ROWS) {
+			if (setCols.length() > 0) {
+				setCols.append(", ");
+				selCols.append(", ");
+			}
+			setCols.append("R").append(r).append("_AMOUNT");
+			selCols.append("S.R").append(r).append("_AMOUNT");
+		}
+
+		String updateSql = "UPDATE " + liveTable + " M SET (" + setCols + ") = (SELECT " + selCols + " FROM " + modTable
+				+ " S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) " + "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int updated = jdbcTemplate.update(updateSql, reportDate);
+		if (updated == 0) {
+			throw new IllegalStateException("FORMAT_NEW_CPR live summary record not found for date : " + reportDate);
+		}
+		System.out.println("FORMAT_NEW_CPR Main Updated : " + updated);
+
+		int modUpdated = jdbcTemplate.update(
+				"UPDATE " + modTable + " SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				reportDate);
+		System.out.println("FORMAT_NEW_CPR MOD Updated : " + modUpdated);
+	}
+
+	// FORMAT_NEW_CPR manual-entry rows (also used by
+	// BRRS_FORMAT_NEW_CPR_ReportService)
+	public static final int[] CPR_MANUAL_ROWS = { 10, 19, 22, 25, 26, 28, 33, 38, 39, 40, 41, 42, 45, 46, 47, 48, 49 };
 
 	private static Object[] appendArgs(Object[] base, Object extra) {
 		Object[] out = java.util.Arrays.copyOf(base, base.length + 1);

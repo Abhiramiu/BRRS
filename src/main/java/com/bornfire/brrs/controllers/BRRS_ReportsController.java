@@ -7589,20 +7589,38 @@ public class BRRS_ReportsController {
 	@Autowired
 	BRRS_FORMAT_NEW_CPR_ReportService BRRS_FORMAT_NEW_CPR_ReportService;
 
+	private static boolean isCheckerOnly(String role) {
+		if (role == null)
+			return false;
+		String r = role.trim().toUpperCase();
+		return r.equals("C") || r.equals("CHECKER") || r.equals("ADM-C") || r.equals("USR-C") || r.equals("USER-AUDIT");
+	}
+
 	@RequestMapping(value = "/FNCupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute FORMAT_NEW_CPR_Summary_Entity request) {
+			@ModelAttribute FORMAT_NEW_CPR_Summary_Entity request, HttpServletRequest req) {
 		try {
-			System.out.println("came to single controller");
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userid != null ? userProfileRep.getUserRole(userid) : null;
 
-			// ✅ set the asondate into entity
+			// Checkers verify; they must not submit modifications
+			if (isCheckerOnly(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Checker cannot modify FORMAT_NEW_CPR. Current role: " + role);
+			}
+			if (asondate == null) {
+				return ResponseEntity.badRequest().body("asondate is required.");
+			}
+
 			request.setReport_date(asondate);
-			// call services
-			BRRS_FORMAT_NEW_CPR_ReportService.updateReport(request);
+			boolean submitted = BRRS_FORMAT_NEW_CPR_ReportService.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully");
+			if (!submitted) {
+				return ResponseEntity.ok("No changes were made.");
+			}
+			return ResponseEntity.ok("Modification saved. Pending Checker verification.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
