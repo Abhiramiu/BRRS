@@ -7643,12 +7643,16 @@ public class BRRS_ReportsController {
 		try {
 			System.out.println("came to single controller");
 
-			// ✅ set the asondate into entity
+			// set the asondate into entity
 			request.setREPORT_DATE(asondate);
-			// call services
-			BRRS_FSI_ReportService.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully");
+			// call services
+			boolean submitted = BRRS_FSI_ReportService.updateReport(request);
+
+			if (!submitted) {
+				return ResponseEntity.ok("No changes were made.");
+			}
+			return ResponseEntity.ok("Modification saved. Pending Checker verification.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());

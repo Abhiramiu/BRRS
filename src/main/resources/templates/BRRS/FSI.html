@@ -1304,9 +1304,9 @@ PURPOSE  : BRRSREPORT
 					processData: false,
 					contentType: false,
 					dataType: 'text',
-					success: function () {
+					success: function (msg) {
 						$("#resultModalLabel").text("BRRS");
-						$("#resultModalBody").text(" Modified Successfully.");
+						$("#resultModalBody").text(msg);
 						$("#resultModal").modal("show");
 					},
 					error: function (jqXHR) {
