@@ -52,12 +52,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.UserProfileRep;
 import com.bornfire.brrs.services.BRRS_FORMAT_NEW_CPR_ReportService.FORMAT_NEW_CPR_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_FORMAT_NEW_CPR_ReportService.FORMAT_NEW_CPR_Summary_RowMapper;
 
@@ -67,6 +69,8 @@ import com.bornfire.brrs.services.BRRS_FORMAT_NEW_CPR_ReportService.FORMAT_NEW_C
 public class BRRS_EXPOSURES_ReportService {
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_EXPOSURES_ReportService.class);
 	
+	@Autowired
+	UserProfileRep userProfileRep;
 	
 	@Autowired
 	private Environment env;
@@ -4026,9 +4030,17 @@ public void setDelFlg(char delFlg) {
 	        String dtltype,
 	        Pageable pageable,
 	        String type,
-	        BigDecimal version) {
+	        BigDecimal version,
+	        HttpServletRequest req1,
+	        Model md) {
 
 	    ModelAndView mv = new ModelAndView();
+
+		String userid = (String) req1.getSession().getAttribute("USERID");
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		mv.addObject("role", role);
+		System.out.println("User Id Maker and Checker: " + userid + ", Role: " + role);
 
 	    System.out.println("EXPOSURES View Called");
 	    System.out.println("Type = " + type);
@@ -4121,9 +4133,17 @@ public void setDelFlg(char delFlg) {
 	        Pageable pageable,
 	        String filter,
 	        String type,
-	        String version) {
+	        String version,
+	        HttpServletRequest req1,
+	        Model md) {
 
 	    ModelAndView mv = new ModelAndView();
+
+		String userid = (String) req1.getSession().getAttribute("USERID");
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		mv.addObject("role", role);
+		System.out.println("User Id Maker and Checker: " + userid + ", Role: " + role);
 
 	    try {
 

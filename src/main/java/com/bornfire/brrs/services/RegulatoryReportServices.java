@@ -1138,7 +1138,7 @@ public class RegulatoryReportServices {
 
 		case "EXPOSURES":
 			repsummary = BRRS_EXPOSURES_ReportService.getEXPOSURESView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
+					pageable, type, version, req, md);
 
 			break;
 
@@ -1537,7 +1537,7 @@ public class RegulatoryReportServices {
 		case "EXPOSURES":
 
 			repdetail = BRRS_EXPOSURES_ReportService.getEXPOSUREScurrentDtl(reportId, fromdate, todate, currency,
-					dtltype, pageable, Filter, type, version);
+					dtltype, pageable, Filter, type, version, req1, md);
 			break;
 
 		case "FORMAT_NEW_CPR":
