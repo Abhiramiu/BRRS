@@ -634,12 +634,6 @@ function showdetails() {
 
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
-
-		}
-		function closemodel() {
-			$('#alert').modal('hide');
-			$('#resultModal').modal('hide');
-
 		}
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
@@ -959,10 +953,11 @@ function showdetails() {
 								       <tr th:each="data : ${reportsummary}">
 								           <td>
 								               <input type="hidden" class="row-sno" th:value="${data.sno}"/>
+								               <input type="hidden" class="row-account-number" th:value="${data.accountNumber}"/>
 								               <span th:text="${data.sno}"></span>
 								           </td>
 								           <td th:text="${data.customerId}"></td>
-								           <td th:text="${data.accountNumber}"></td>
+								           <td class="col-account-number" th:text="${data.accountNumber}"></td>
 								           <td th:text="${data.schemeCode}"></td>
 								           <td th:text="${data.glCode}"></td>
 								           <td th:text="${data.glDescription}"></td>
@@ -1280,10 +1275,11 @@ function showdetails() {
 				                    <tr th:each="data : ${reportsummary}">
 				                        <td>
 				                            <input type="hidden" class="row-sno" th:value="${data.sno}"/>
+				                            <input type="hidden" class="row-account-number" th:value="${data.accountNumber}"/>
 				                            <span th:text="${data.sno}"></span>
 				                        </td>
 				                        <td th:text="${data.customerId}"></td>
-				                        <td th:text="${data.accountNumber}"></td>
+				                        <td class="col-account-number" th:text="${data.accountNumber}"></td>
 				                        <td th:text="${data.schemeCode}"></td>
 				                        <td th:text="${data.glCode}"></td>
 				                        <td th:text="${data.glDescription}"></td>
@@ -1851,9 +1847,11 @@ function showdetails() {
 			targetTable.find('tbody tr').each(function() {
 				var row = $(this);
 				var sno = row.find('input.row-sno').val();
-				if (sno) {
+				var accountNumber = row.find('input.row-account-number').val() || row.find('td.col-account-number').text().trim() || row.find('td:nth-child(3)').text().trim();
+				if (sno || accountNumber) {
 					rowsData.push({
-						sno: parseInt(sno),
+						sno: sno ? parseInt(sno) : null,
+						accountNumber: accountNumber || '',
 						floatingFixed: row.find('select[name="floatingFixed"]').val() || 'Floating',
 						existingBenchmark: row.find('select[name="existingBenchmark"]').val() || 'BPLR',
 						existingRepricingFrequency: row.find('select[name="existingRepricingFrequency"]').val() || 'On resetting of MoPR',
@@ -1883,7 +1881,7 @@ function showdetails() {
 				success: function(response) {
 					$('#loader').modal('hide');
 					setTimeout(function() {
-						showResultModal('BRRS', 'Modified Successfully.');
+						showResultModal('BRRS', response || 'Modified Successfully.');
 					}, 300);
 				},
 				error: function(xhr) {

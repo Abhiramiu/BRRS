@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.math.BigDecimal;
@@ -27,17 +28,25 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.UserProfileRep;
+import com.bornfire.brrs.services.AuditService;
 
 @Service
 @Component
@@ -53,6 +62,9 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 
 	@Autowired
 	UserProfileRep userProfileRep;
+
+	@Autowired
+	private AuditService auditService;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
@@ -351,6 +363,283 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 		public void setDelFlg(String delFlg) {
 			this.delFlg = delFlg;
 		}
+
+		// Alias getters/setters for snake_case compatibility (e.g. M_FAS workflow)
+		public String getEntity_flg() {
+			return entityFlg;
+		}
+
+		public void setEntity_flg(String entityFlg) {
+			this.entityFlg = entityFlg;
+		}
+
+		public String getModify_flg() {
+			return modifyFlg;
+		}
+
+		public void setModify_flg(String modifyFlg) {
+			this.modifyFlg = modifyFlg;
+		}
+
+		public String getDel_flg() {
+			return delFlg;
+		}
+
+		public void setDel_flg(String delFlg) {
+			this.delFlg = delFlg;
+		}
+
+		public Date getReport_date() {
+			return reportDate;
+		}
+
+		public void setReport_date(Date reportDate) {
+			this.reportDate = reportDate;
+		}
+
+		public BigDecimal getReport_version() {
+			return reportVersion;
+		}
+
+		public void setReport_version(BigDecimal reportVersion) {
+			this.reportVersion = reportVersion;
+		}
+
+		public String getReport_frequency() {
+			return reportFrequency;
+		}
+
+		public void setReport_frequency(String reportFrequency) {
+			this.reportFrequency = reportFrequency;
+		}
+
+		public String getReport_code() {
+			return reportCode;
+		}
+
+		public void setReport_code(String reportCode) {
+			this.reportCode = reportCode;
+		}
+
+		public String getReport_desc() {
+			return reportDesc;
+		}
+
+		public void setReport_desc(String reportDesc) {
+			this.reportDesc = reportDesc;
+		}
+	}
+
+	// Manual/MOD Summary Entity corresponding to BRRS_IRRBB_ADV_MOD_SUMMARYTABLE
+	public static class IRRBB_ADV_Manual_Summary_Entity {
+		private String accountNumber;
+		private String floatingFixed;
+		private String existingBenchmark;
+		private String existingRepricingFrequency;
+		private Date lastRepricingDate;
+		private Date nextRepricingDate;
+		private String spreadOverBenchmark;
+		private String capFloorRateOfInterest;
+		private Date reportDate;
+		private BigDecimal reportVersion;
+		private String reportFrequency;
+		private String reportCode;
+		private String reportDesc;
+		private String entityFlg;
+		private String modifyFlg;
+		private String delFlg;
+
+		public String getAccountNumber() {
+			return accountNumber;
+		}
+
+		public void setAccountNumber(String accountNumber) {
+			this.accountNumber = accountNumber;
+		}
+
+		public String getFloatingFixed() {
+			return floatingFixed;
+		}
+
+		public void setFloatingFixed(String floatingFixed) {
+			this.floatingFixed = floatingFixed;
+		}
+
+		public String getExistingBenchmark() {
+			return existingBenchmark;
+		}
+
+		public void setExistingBenchmark(String existingBenchmark) {
+			this.existingBenchmark = existingBenchmark;
+		}
+
+		public String getExistingRepricingFrequency() {
+			return existingRepricingFrequency;
+		}
+
+		public void setExistingRepricingFrequency(String existingRepricingFrequency) {
+			this.existingRepricingFrequency = existingRepricingFrequency;
+		}
+
+		public Date getLastRepricingDate() {
+			return lastRepricingDate;
+		}
+
+		public void setLastRepricingDate(Date lastRepricingDate) {
+			this.lastRepricingDate = lastRepricingDate;
+		}
+
+		public Date getNextRepricingDate() {
+			return nextRepricingDate;
+		}
+
+		public void setNextRepricingDate(Date nextRepricingDate) {
+			this.nextRepricingDate = nextRepricingDate;
+		}
+
+		public String getSpreadOverBenchmark() {
+			return spreadOverBenchmark;
+		}
+
+		public void setSpreadOverBenchmark(String spreadOverBenchmark) {
+			this.spreadOverBenchmark = spreadOverBenchmark;
+		}
+
+		public String getCapFloorRateOfInterest() {
+			return capFloorRateOfInterest;
+		}
+
+		public void setCapFloorRateOfInterest(String capFloorRateOfInterest) {
+			this.capFloorRateOfInterest = capFloorRateOfInterest;
+		}
+
+		public Date getReportDate() {
+			return reportDate;
+		}
+
+		public void setReportDate(Date reportDate) {
+			this.reportDate = reportDate;
+		}
+
+		public BigDecimal getReportVersion() {
+			return reportVersion;
+		}
+
+		public void setReportVersion(BigDecimal reportVersion) {
+			this.reportVersion = reportVersion;
+		}
+
+		public String getReportFrequency() {
+			return reportFrequency;
+		}
+
+		public void setReportFrequency(String reportFrequency) {
+			this.reportFrequency = reportFrequency;
+		}
+
+		public String getReportCode() {
+			return reportCode;
+		}
+
+		public void setReportCode(String reportCode) {
+			this.reportCode = reportCode;
+		}
+
+		public String getReportDesc() {
+			return reportDesc;
+		}
+
+		public void setReportDesc(String reportDesc) {
+			this.reportDesc = reportDesc;
+		}
+
+		public String getEntityFlg() {
+			return entityFlg;
+		}
+
+		public void setEntityFlg(String entityFlg) {
+			this.entityFlg = entityFlg;
+		}
+
+		public String getModifyFlg() {
+			return modifyFlg;
+		}
+
+		public void setModifyFlg(String modifyFlg) {
+			this.modifyFlg = modifyFlg;
+		}
+
+		public String getDelFlg() {
+			return delFlg;
+		}
+
+		public void setDelFlg(String delFlg) {
+			this.delFlg = delFlg;
+		}
+
+		public String getEntity_flg() {
+			return entityFlg;
+		}
+
+		public void setEntity_flg(String entityFlg) {
+			this.entityFlg = entityFlg;
+		}
+
+		public String getModify_flg() {
+			return modifyFlg;
+		}
+
+		public void setModify_flg(String modifyFlg) {
+			this.modifyFlg = modifyFlg;
+		}
+
+		public String getDel_flg() {
+			return delFlg;
+		}
+
+		public void setDel_flg(String delFlg) {
+			this.delFlg = delFlg;
+		}
+
+		public Date getReport_date() {
+			return reportDate;
+		}
+
+		public void setReport_date(Date reportDate) {
+			this.reportDate = reportDate;
+		}
+
+		public BigDecimal getReport_version() {
+			return reportVersion;
+		}
+
+		public void setReport_version(BigDecimal reportVersion) {
+			this.reportVersion = reportVersion;
+		}
+
+		public String getReport_frequency() {
+			return reportFrequency;
+		}
+
+		public void setReport_frequency(String reportFrequency) {
+			this.reportFrequency = reportFrequency;
+		}
+
+		public String getReport_code() {
+			return reportCode;
+		}
+
+		public void setReport_code(String reportCode) {
+			this.reportCode = reportCode;
+		}
+
+		public String getReport_desc() {
+			return reportDesc;
+		}
+
+		public void setReport_desc(String reportDesc) {
+			this.reportDesc = reportDesc;
+		}
 	}
 
 	// Detail Entity
@@ -642,6 +931,71 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 
 		public void setDelFlg(String delFlg) {
 			this.delFlg = delFlg;
+		}
+
+		// Alias getters/setters for snake_case compatibility (e.g. M_FAS workflow)
+		public String getEntity_flg() {
+			return entityFlg;
+		}
+
+		public void setEntity_flg(String entityFlg) {
+			this.entityFlg = entityFlg;
+		}
+
+		public String getModify_flg() {
+			return modifyFlg;
+		}
+
+		public void setModify_flg(String modifyFlg) {
+			this.modifyFlg = modifyFlg;
+		}
+
+		public String getDel_flg() {
+			return delFlg;
+		}
+
+		public void setDel_flg(String delFlg) {
+			this.delFlg = delFlg;
+		}
+
+		public Date getReport_date() {
+			return reportDate;
+		}
+
+		public void setReport_date(Date reportDate) {
+			this.reportDate = reportDate;
+		}
+
+		public BigDecimal getReport_version() {
+			return reportVersion;
+		}
+
+		public void setReport_version(BigDecimal reportVersion) {
+			this.reportVersion = reportVersion;
+		}
+
+		public String getReport_frequency() {
+			return reportFrequency;
+		}
+
+		public void setReport_frequency(String reportFrequency) {
+			this.reportFrequency = reportFrequency;
+		}
+
+		public String getReport_code() {
+			return reportCode;
+		}
+
+		public void setReport_code(String reportCode) {
+			this.reportCode = reportCode;
+		}
+
+		public String getReport_desc() {
+			return reportDesc;
+		}
+
+		public void setReport_desc(String reportDesc) {
+			this.reportDesc = reportDesc;
 		}
 	}
 
@@ -1280,6 +1634,31 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 			entity.setFinalRoi(rs.getString("FINAL_ROI"));
 			entity.setCapFloorRateOfInterest(rs.getString("CAP_FLOOR_RATE_OF_INTEREST"));
 			entity.setAssetStatus(rs.getString("ASSET_STATUS"));
+			entity.setReportDate(rs.getDate("REPORT_DATE"));
+			entity.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
+			entity.setReportFrequency(rs.getString("REPORT_FREQUENCY"));
+			entity.setReportCode(rs.getString("REPORT_CODE"));
+			entity.setReportDesc(rs.getString("REPORT_DESC"));
+			entity.setEntityFlg(rs.getString("ENTITY_FLG"));
+			entity.setModifyFlg(rs.getString("MODIFY_FLG"));
+			entity.setDelFlg(rs.getString("DEL_FLG"));
+			return entity;
+		}
+	}
+
+	// MOD Summary Row Mapper (corresponding to BRRS_IRRBB_ADV_MOD_SUMMARYTABLE)
+	private class ModSummaryRowMapper implements RowMapper<IRRBB_ADVANCES_Summary_Entity> {
+		@Override
+		public IRRBB_ADVANCES_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			IRRBB_ADVANCES_Summary_Entity entity = new IRRBB_ADVANCES_Summary_Entity();
+			entity.setAccountNumber(rs.getString("ACCOUNT_NUMBER"));
+			entity.setFloatingFixed(rs.getString("FLOATING_FIXED"));
+			entity.setExistingBenchmark(rs.getString("EXISTING_BENCHMARK"));
+			entity.setExistingRepricingFrequency(rs.getString("EXISTING_REPRICING_FREQUENCY"));
+			entity.setLastRepricingDate(rs.getDate("LAST_REPRICING_DATE"));
+			entity.setNextRepricingDate(rs.getDate("NEXT_REPRICING_DATE"));
+			entity.setSpreadOverBenchmark(rs.getString("SPREAD_OVER_BENCHMARK"));
+			entity.setCapFloorRateOfInterest(rs.getString("CAP_FLOOR_RATE_OF_INTEREST"));
 			entity.setReportDate(rs.getDate("REPORT_DATE"));
 			entity.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
 			entity.setReportFrequency(rs.getString("REPORT_FREQUENCY"));
@@ -2276,6 +2655,7 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 
 	public static class IRRBB_ADVANCES_Update_Row {
 		private Long sno;
+		private String accountNumber;
 		private BigDecimal outstandingBalanceInr;
 		private String floatingFixed;
 		private String existingBenchmark;
@@ -2291,6 +2671,14 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 
 		public void setSno(Long sno) {
 			this.sno = sno;
+		}
+
+		public String getAccountNumber() {
+			return accountNumber;
+		}
+
+		public void setAccountNumber(String accountNumber) {
+			this.accountNumber = accountNumber;
 		}
 
 		public BigDecimal getOutstandingBalanceInr() {
@@ -2358,6 +2746,7 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 		}
 	}
 
+	@Transactional
 	public void updateAllIrradvRows(List<IRRBB_ADVANCES_Update_Row> rows, String type) {
 		if (rows == null || rows.isEmpty())
 			return;
@@ -2471,117 +2860,372 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 		}
 
 		// =====================================================
-		// NORMAL MODE: Archive current un-modified snapshot FIRST, then Update Live Tables
+		// NORMAL MODE: Replicate M_FAS Normal Update Workflow (MOD Table Staging & Checker Approval)
 		// =====================================================
-		String summaryTable = "BRRS_IRRBB_ADV_SUMMARYTABLE";
-		String detailTable = "BRRS_IRRBB_ADV_DETAILTABLE";
-
-		Date reportDate = null;
-		try {
-			reportDate = jdbcTemplate.queryForObject("SELECT REPORT_DATE FROM " + summaryTable + " WHERE SNO = ?",
-					Date.class, rows.get(0).getSno());
-		} catch (Exception e) {
-			try {
-				reportDate = jdbcTemplate.queryForObject("SELECT MAX(REPORT_DATE) FROM " + summaryTable, Date.class);
-			} catch (Exception ex) {
-				logger.warn("Could not query REPORT_DATE: {}", ex.getMessage());
-			}
-		}
-
-		// Step 1: Copy CURRENT un-modified record from SUMMARY/DETAIL table into ARCHIVAL table as maxVersion + 1 FIRST
-		if (reportDate != null) {
-			try {
-				BigDecimal nextVersion = findMaxArchivalVersion(reportDate);
-				nextVersion = (nextVersion != null) ? nextVersion.add(BigDecimal.ONE) : BigDecimal.ONE;
-				logger.info("Archiving current summary & detail data for date {} as version {} before submit updates",
-						reportDate, nextVersion);
-
-				String archiveSummarySql = "INSERT INTO BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE "
-						+ "(SNO, CUSTOMER_ID, ACCOUNT_NUMBER, SCHEME_CODE, GL_CODE, GL_DESCRIPTION, "
-						+ "TYPE_OF_LOAN, NAME, ACCOUNT_CURRENCY, OUTSTANDING_BALANCE_ACCT_CCY, OUTSTANDING_BALANCE_INR, "
-						+ "ACCOUNT_OPENING_DATE, MATURITY_DATE, TENOR_MONTH, EMI_OF_LOAN, FLOATING_FIXED, "
-						+ "EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, LAST_REPRICING_DATE, NEXT_REPRICING_DATE, "
-						+ "SPREAD_OVER_BENCHMARK, FINAL_ROI, CAP_FLOOR_RATE_OF_INTEREST, ASSET_STATUS, REPORT_DATE, "
-						+ "REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-						+ "SELECT (SELECT COALESCE(MAX(SNO), 0) FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE) + ROWNUM, "
-						+ "CUSTOMER_ID, ACCOUNT_NUMBER, SCHEME_CODE, GL_CODE, GL_DESCRIPTION, "
-						+ "TYPE_OF_LOAN, NAME, ACCOUNT_CURRENCY, OUTSTANDING_BALANCE_ACCT_CCY, OUTSTANDING_BALANCE_INR, "
-						+ "ACCOUNT_OPENING_DATE, MATURITY_DATE, TENOR_MONTH, EMI_OF_LOAN, FLOATING_FIXED, "
-						+ "EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, LAST_REPRICING_DATE, NEXT_REPRICING_DATE, "
-						+ "SPREAD_OVER_BENCHMARK, FINAL_ROI, CAP_FLOOR_RATE_OF_INTEREST, ASSET_STATUS, REPORT_DATE, "
-						+ "?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG "
-						+ "FROM BRRS_IRRBB_ADV_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-
-				int summaryCount = jdbcTemplate.update(archiveSummarySql, nextVersion, reportDate);
-				logger.info("Archived {} summary records into BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE with version {}",
-						summaryCount, nextVersion);
-
-				String archiveDetailSql = "INSERT INTO BRRS_IRRBB_ADV_ARCHIVAL_DETAILTABLE "
-						+ "(SNO, CUSTOMER_ID, ACCOUNT_NUMBER, SCHEME_CODE, GL_CODE, GL_DESCRIPTION, "
-						+ "TYPE_OF_LOAN, NAME, ACCOUNT_CURRENCY, OUTSTANDING_BALANCE_ACCT_CCY, OUTSTANDING_BALANCE_INR, "
-						+ "ACCOUNT_OPENING_DATE, MATURITY_DATE, TENOR_MONTH, EMI_OF_LOAN, FLOATING_FIXED, "
-						+ "EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, LAST_REPRICING_DATE, NEXT_REPRICING_DATE, "
-						+ "SPREAD_OVER_BENCHMARK, FINAL_ROI, CAP_FLOOR_RATE_OF_INTEREST, ASSET_STATUS, REPORT_DATE, "
-						+ "REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-						+ "SELECT (SELECT COALESCE(MAX(SNO), 0) FROM BRRS_IRRBB_ADV_ARCHIVAL_DETAILTABLE) + ROWNUM, "
-						+ "CUSTOMER_ID, ACCOUNT_NUMBER, SCHEME_CODE, GL_CODE, GL_DESCRIPTION, "
-						+ "TYPE_OF_LOAN, NAME, ACCOUNT_CURRENCY, OUTSTANDING_BALANCE_ACCT_CCY, OUTSTANDING_BALANCE_INR, "
-						+ "ACCOUNT_OPENING_DATE, MATURITY_DATE, TENOR_MONTH, EMI_OF_LOAN, FLOATING_FIXED, "
-						+ "EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, LAST_REPRICING_DATE, NEXT_REPRICING_DATE, "
-						+ "SPREAD_OVER_BENCHMARK, FINAL_ROI, CAP_FLOOR_RATE_OF_INTEREST, ASSET_STATUS, REPORT_DATE, "
-						+ "?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG "
-						+ "FROM BRRS_IRRBB_ADV_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-
-				int detailCount = jdbcTemplate.update(archiveDetailSql, nextVersion, reportDate);
-				logger.info("Archived {} detail records into BRRS_IRRBB_ADV_ARCHIVAL_DETAILTABLE with version {}",
-						detailCount, nextVersion);
-			} catch (Exception e) {
-				logger.error("Error archiving summary & detail data before updates: {}", e.getMessage(), e);
-			}
-		}
-
-		// Step 2: NOW apply inline updates to main summary and detail tables
-		String summarySql = "UPDATE " + summaryTable + " SET " + "FLOATING_FIXED = ?, " + "EXISTING_BENCHMARK = ?, "
-				+ "EXISTING_REPRICING_FREQUENCY = ?, " + "LAST_REPRICING_DATE = ?, " + "NEXT_REPRICING_DATE = ?, "
-				+ "SPREAD_OVER_BENCHMARK = ?, " + "CAP_FLOOR_RATE_OF_INTEREST = ? " + "WHERE SNO = ?";
-
-		String detailSql = "UPDATE " + detailTable + " SET " + "FLOATING_FIXED = ?, " + "EXISTING_BENCHMARK = ?, "
-				+ "EXISTING_REPRICING_FREQUENCY = ?, " + "LAST_REPRICING_DATE = ?, " + "NEXT_REPRICING_DATE = ?, "
-				+ "SPREAD_OVER_BENCHMARK = ?, " + "CAP_FLOOR_RATE_OF_INTEREST = ? " + "WHERE SNO = ?";
-
 		for (IRRBB_ADVANCES_Update_Row row : rows) {
-			if (row.getSno() == null)
+			if (row == null || ((row.getAccountNumber() == null || row.getAccountNumber().trim().isEmpty()) && row.getSno() == null))
 				continue;
 
-			Date lastRepriceDate = parseDate(row.getLastRepricingDate(), sdf1, sdf2);
-			Date nextRepriceDate = parseDate(row.getNextRepricingDate(), sdf1, sdf2);
+			List<IRRBB_ADVANCES_Summary_Entity> list = Collections.emptyList();
+			if (row.getAccountNumber() != null && !row.getAccountNumber().trim().isEmpty()) {
+				list = jdbcTemplate.query(
+						"SELECT * FROM BRRS_IRRBB_ADV_SUMMARYTABLE WHERE ACCOUNT_NUMBER = ?",
+						new SummaryRowMapper(), row.getAccountNumber().trim());
+			}
+			if (list.isEmpty() && row.getSno() != null) {
+				list = jdbcTemplate.query(
+						"SELECT * FROM BRRS_IRRBB_ADV_SUMMARYTABLE WHERE SNO = ?",
+						new SummaryRowMapper(), row.getSno());
+			}
 
-			jdbcTemplate.update(summarySql, row.getFloatingFixed(), row.getExistingBenchmark(),
-					row.getExistingRepricingFrequency(), lastRepriceDate, nextRepriceDate, row.getSpreadOverBenchmark(),
-					row.getCapFloorRateOfInterest(), row.getSno());
+			if (list.isEmpty()) {
+				continue;
+			}
 
-			int detailRowsUpdated = jdbcTemplate.update(detailSql, row.getFloatingFixed(), row.getExistingBenchmark(),
-					row.getExistingRepricingFrequency(), lastRepriceDate, nextRepriceDate, row.getSpreadOverBenchmark(),
-					row.getCapFloorRateOfInterest(), row.getSno());
-
-			if (detailRowsUpdated == 0) {
-				String detailSqlFallback = "UPDATE " + detailTable + " SET " + "FLOATING_FIXED = ?, "
-						+ "EXISTING_BENCHMARK = ?, " + "EXISTING_REPRICING_FREQUENCY = ?, "
-						+ "LAST_REPRICING_DATE = ?, " + "NEXT_REPRICING_DATE = ?, " + "SPREAD_OVER_BENCHMARK = ?, "
-						+ "CAP_FLOOR_RATE_OF_INTEREST = ? " + "WHERE REPORT_DATE = (SELECT REPORT_DATE FROM "
-						+ summaryTable + " WHERE SNO = ?) " + "AND (ACCOUNT_NUMBER = (SELECT ACCOUNT_NUMBER FROM "
-						+ summaryTable + " WHERE SNO = ?) " + " OR CUSTOMER_ID = (SELECT CUSTOMER_ID FROM "
-						+ summaryTable + " WHERE SNO = ?))";
-
+			IRRBB_ADVANCES_Summary_Entity existing = list.get(0);
+			if ((existing.getAccountNumber() == null || existing.getAccountNumber().trim().isEmpty())
+					&& row.getAccountNumber() != null && !row.getAccountNumber().trim().isEmpty()) {
+				existing.setAccountNumber(row.getAccountNumber().trim());
+			}
+			if (existing.getReportDate() == null) {
 				try {
-					jdbcTemplate.update(detailSqlFallback, row.getFloatingFixed(), row.getExistingBenchmark(),
-							row.getExistingRepricingFrequency(), lastRepriceDate, nextRepriceDate,
-							row.getSpreadOverBenchmark(), row.getCapFloorRateOfInterest(), row.getSno(), row.getSno(),
-							row.getSno());
-				} catch (Exception ex) {
-					logger.warn("Detail table fallback update warning for SNO {}: {}", row.getSno(), ex.getMessage());
+					Date maxDate = jdbcTemplate.queryForObject("SELECT MAX(REPORT_DATE) FROM BRRS_IRRBB_ADV_SUMMARYTABLE", Date.class);
+					existing.setReportDate(maxDate);
+				} catch (Exception ignored) {}
+			}
+
+			// Audit copy: Create a clone of the original database state before making any changes
+			IRRBB_ADVANCES_Summary_Entity oldcopy = new IRRBB_ADVANCES_Summary_Entity();
+			BeanUtils.copyProperties(existing, oldcopy);
+
+			boolean hasChanges = false;
+
+			if (row.getFloatingFixed() != null && !row.getFloatingFixed().trim().isEmpty()
+					&& !row.getFloatingFixed().trim().equals(existing.getFloatingFixed())) {
+				existing.setFloatingFixed(row.getFloatingFixed().trim());
+				hasChanges = true;
+			}
+
+			if (row.getExistingBenchmark() != null && !row.getExistingBenchmark().trim().isEmpty()
+					&& !row.getExistingBenchmark().trim().equals(existing.getExistingBenchmark())) {
+				existing.setExistingBenchmark(row.getExistingBenchmark().trim());
+				hasChanges = true;
+			}
+
+			if (row.getExistingRepricingFrequency() != null && !row.getExistingRepricingFrequency().trim().isEmpty()
+					&& !row.getExistingRepricingFrequency().trim().equals(existing.getExistingRepricingFrequency())) {
+				existing.setExistingRepricingFrequency(row.getExistingRepricingFrequency().trim());
+				hasChanges = true;
+			}
+
+			if (row.getLastRepricingDate() != null && !row.getLastRepricingDate().trim().isEmpty()) {
+				Date parsedLast = parseDate(row.getLastRepricingDate(), sdf1, sdf2);
+				if (parsedLast != null && !parsedLast.equals(existing.getLastRepricingDate())) {
+					existing.setLastRepricingDate(parsedLast);
+					hasChanges = true;
 				}
 			}
+
+			if (row.getNextRepricingDate() != null && !row.getNextRepricingDate().trim().isEmpty()) {
+				Date parsedNext = parseDate(row.getNextRepricingDate(), sdf1, sdf2);
+				if (parsedNext != null && !parsedNext.equals(existing.getNextRepricingDate())) {
+					existing.setNextRepricingDate(parsedNext);
+					hasChanges = true;
+				}
+			}
+
+			if (row.getSpreadOverBenchmark() != null && !row.getSpreadOverBenchmark().trim().isEmpty()
+					&& !row.getSpreadOverBenchmark().trim().equals(existing.getSpreadOverBenchmark())) {
+				existing.setSpreadOverBenchmark(row.getSpreadOverBenchmark().trim());
+				hasChanges = true;
+			}
+
+			if (row.getCapFloorRateOfInterest() != null && !row.getCapFloorRateOfInterest().trim().isEmpty()
+					&& !row.getCapFloorRateOfInterest().trim().equals(existing.getCapFloorRateOfInterest())) {
+				existing.setCapFloorRateOfInterest(row.getCapFloorRateOfInterest().trim());
+				hasChanges = true;
+			}
+
+			if (hasChanges) {
+				String changes = auditService.getChanges(oldcopy, existing);
+				logger.info("IRRBB_ADV Account {} Changes: {}", existing.getAccountNumber(), changes);
+
+				existing.setEntity_flg("Y");
+				existing.setModify_flg("Y");
+				existing.setDel_flg("N");
+
+				saveModSummaryEntity(existing);
+				logger.info("✔ Account {} saved into BRRS_IRRBB_ADV_MOD_SUMMARYTABLE for Checker Approval", existing.getAccountNumber());
+
+				if (changes != null && !changes.isEmpty()) {
+					String idValues = "Account: " + existing.getAccountNumber() + ", Date: " + (existing.getReportDate() != null ? existing.getReportDate().toString() : "");
+					auditService.compareEntitiesmanual(oldcopy, existing, idValues, "IRRBB_ADV", "BRRS_IRRBB_ADV_MOD_SUMMARYTABLE");
+				}
+			}
+		}
+	}
+
+	@Transactional
+	public void updateReport1(IRRBB_ADVANCES_Summary_Entity updatedEntity) {
+		logger.info("Came to IRRBB_ADV updateReport1");
+		logger.info("Report Date: {}, Account: {}, SNO: {}", updatedEntity.getReportDate(), updatedEntity.getAccountNumber(), updatedEntity.getSno());
+
+		List<IRRBB_ADVANCES_Summary_Entity> list = Collections.emptyList();
+		if (updatedEntity.getAccountNumber() != null && !updatedEntity.getAccountNumber().trim().isEmpty()) {
+			if (updatedEntity.getReportDate() != null) {
+				list = jdbcTemplate.query("SELECT * FROM BRRS_IRRBB_ADV_SUMMARYTABLE WHERE ACCOUNT_NUMBER = ? AND TRUNC(REPORT_DATE) = TRUNC(?)",
+						new SummaryRowMapper(), updatedEntity.getAccountNumber().trim(), updatedEntity.getReportDate());
+			} else {
+				list = jdbcTemplate.query("SELECT * FROM BRRS_IRRBB_ADV_SUMMARYTABLE WHERE ACCOUNT_NUMBER = ?",
+						new SummaryRowMapper(), updatedEntity.getAccountNumber().trim());
+			}
+		} else if (updatedEntity.getSno() != null) {
+			list = jdbcTemplate.query("SELECT * FROM BRRS_IRRBB_ADV_SUMMARYTABLE WHERE SNO = ?",
+					new SummaryRowMapper(), updatedEntity.getSno());
+		} else if (updatedEntity.getReportDate() != null) {
+			list = jdbcTemplate.query("SELECT * FROM BRRS_IRRBB_ADV_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+					new SummaryRowMapper(), updatedEntity.getReportDate());
+		}
+
+		IRRBB_ADVANCES_Summary_Entity existing;
+
+		if (list.isEmpty()) {
+			existing = new IRRBB_ADVANCES_Summary_Entity();
+			existing.setReportDate(updatedEntity.getReportDate());
+			existing.setAccountNumber(updatedEntity.getAccountNumber());
+			existing.setSno(updatedEntity.getSno());
+			logger.info("⚠️ No existing record found — creating new record");
+		} else {
+			existing = list.get(0);
+			if (existing.getAccountNumber() == null && updatedEntity.getAccountNumber() != null) {
+				existing.setAccountNumber(updatedEntity.getAccountNumber());
+			}
+			logger.info("Updating existing record for Account: {}", existing.getAccountNumber());
+		}
+
+		if (existing.getReportDate() == null && updatedEntity.getReportDate() != null) {
+			existing.setReportDate(updatedEntity.getReportDate());
+		}
+
+		// Audit copy: Create a clone of the original database state before making any changes
+		IRRBB_ADVANCES_Summary_Entity oldcopy = new IRRBB_ADVANCES_Summary_Entity();
+		BeanUtils.copyProperties(existing, oldcopy);
+
+		// Update editable fields
+		if (updatedEntity.getFloatingFixed() != null) {
+			existing.setFloatingFixed(updatedEntity.getFloatingFixed());
+		}
+		if (updatedEntity.getExistingBenchmark() != null) {
+			existing.setExistingBenchmark(updatedEntity.getExistingBenchmark());
+		}
+		if (updatedEntity.getExistingRepricingFrequency() != null) {
+			existing.setExistingRepricingFrequency(updatedEntity.getExistingRepricingFrequency());
+		}
+		if (updatedEntity.getLastRepricingDate() != null) {
+			existing.setLastRepricingDate(updatedEntity.getLastRepricingDate());
+		}
+		if (updatedEntity.getNextRepricingDate() != null) {
+			existing.setNextRepricingDate(updatedEntity.getNextRepricingDate());
+		}
+		if (updatedEntity.getSpreadOverBenchmark() != null) {
+			existing.setSpreadOverBenchmark(updatedEntity.getSpreadOverBenchmark());
+		}
+		if (updatedEntity.getCapFloorRateOfInterest() != null) {
+			existing.setCapFloorRateOfInterest(updatedEntity.getCapFloorRateOfInterest());
+		}
+		if (updatedEntity.getReportVersion() != null) {
+			existing.setReportVersion(updatedEntity.getReportVersion());
+		}
+		if (updatedEntity.getReportFrequency() != null) {
+			existing.setReportFrequency(updatedEntity.getReportFrequency());
+		}
+		if (updatedEntity.getReportCode() != null) {
+			existing.setReportCode(updatedEntity.getReportCode());
+		}
+		if (updatedEntity.getReportDesc() != null) {
+			existing.setReportDesc(updatedEntity.getReportDesc());
+		}
+
+		// Evaluate audit changes
+		String changes = auditService.getChanges(oldcopy, existing);
+		logger.info("IRRBB_ADV Changes Length = {}", (changes != null ? changes.length() : 0));
+
+		// Set Maker-Checker Flags
+		existing.setEntity_flg("Y");
+		existing.setModify_flg("Y");
+		existing.setDel_flg("N");
+
+		// Save into MOD Summary Table for Checker Approval
+		saveModSummaryEntity(existing);
+		logger.info("✔ Record saved into BRRS_IRRBB_ADV_MOD_SUMMARYTABLE for Checker Approval (Account: {})", existing.getAccountNumber());
+
+		// Log Audit Trail if changes exist
+		if (changes != null && !changes.isEmpty()) {
+			String idValues = "Account: " + existing.getAccountNumber() + ", Date: " + (existing.getReportDate() != null ? existing.getReportDate().toString() : "");
+			auditService.compareEntitiesmanual(oldcopy, existing, idValues,
+					"IRRBB_ADV", "BRRS_IRRBB_ADV_MOD_SUMMARYTABLE");
+		}
+	}
+
+	public void saveModSummaryEntity(IRRBB_ADVANCES_Summary_Entity entity) {
+		String sql = "MERGE INTO BRRS_IRRBB_ADV_MOD_SUMMARYTABLE dest "
+				+ "USING (SELECT ? AS account_number, ? AS report_date FROM dual) src "
+				+ "ON (dest.ACCOUNT_NUMBER = src.account_number AND TRUNC(dest.REPORT_DATE) = TRUNC(src.report_date)) "
+				+ "WHEN MATCHED THEN "
+				+ "  UPDATE SET "
+				+ "    FLOATING_FIXED = ?, "
+				+ "    EXISTING_BENCHMARK = ?, "
+				+ "    EXISTING_REPRICING_FREQUENCY = ?, "
+				+ "    LAST_REPRICING_DATE = ?, "
+				+ "    NEXT_REPRICING_DATE = ?, "
+				+ "    SPREAD_OVER_BENCHMARK = ?, "
+				+ "    CAP_FLOOR_RATE_OF_INTEREST = ?, "
+				+ "    REPORT_VERSION = ?, "
+				+ "    REPORT_FREQUENCY = ?, "
+				+ "    REPORT_CODE = ?, "
+				+ "    REPORT_DESC = ?, "
+				+ "    ENTITY_FLG = ?, "
+				+ "    MODIFY_FLG = ?, "
+				+ "    DEL_FLG = ? "
+				+ "WHEN NOT MATCHED THEN "
+				+ "  INSERT ("
+				+ "    ACCOUNT_NUMBER, "
+				+ "    FLOATING_FIXED, "
+				+ "    EXISTING_BENCHMARK, "
+				+ "    EXISTING_REPRICING_FREQUENCY, "
+				+ "    LAST_REPRICING_DATE, "
+				+ "    NEXT_REPRICING_DATE, "
+				+ "    SPREAD_OVER_BENCHMARK, "
+				+ "    CAP_FLOOR_RATE_OF_INTEREST, "
+				+ "    REPORT_DATE, "
+				+ "    REPORT_VERSION, "
+				+ "    REPORT_FREQUENCY, "
+				+ "    REPORT_CODE, "
+				+ "    REPORT_DESC, "
+				+ "    ENTITY_FLG, "
+				+ "    MODIFY_FLG, "
+				+ "    DEL_FLG"
+				+ "  ) VALUES ("
+				+ "    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"
+				+ "  )";
+
+		Object[] params = {
+				// USING clause
+				entity.getAccountNumber(),
+				entity.getReportDate(),
+
+				// UPDATE parameters
+				entity.getFloatingFixed(),
+				entity.getExistingBenchmark(),
+				entity.getExistingRepricingFrequency(),
+				entity.getLastRepricingDate(),
+				entity.getNextRepricingDate(),
+				entity.getSpreadOverBenchmark(),
+				entity.getCapFloorRateOfInterest(),
+				entity.getReportVersion(),
+				entity.getReportFrequency(),
+				entity.getReportCode(),
+				entity.getReportDesc(),
+				entity.getEntity_flg() != null ? entity.getEntity_flg() : "Y",
+				entity.getModify_flg() != null ? entity.getModify_flg() : "Y",
+				entity.getDel_flg() != null ? entity.getDel_flg() : "N",
+
+				// INSERT parameters
+				entity.getAccountNumber(),
+				entity.getFloatingFixed(),
+				entity.getExistingBenchmark(),
+				entity.getExistingRepricingFrequency(),
+				entity.getLastRepricingDate(),
+				entity.getNextRepricingDate(),
+				entity.getSpreadOverBenchmark(),
+				entity.getCapFloorRateOfInterest(),
+				entity.getReportDate(),
+				entity.getReportVersion(),
+				entity.getReportFrequency(),
+				entity.getReportCode(),
+				entity.getReportDesc(),
+				entity.getEntity_flg() != null ? entity.getEntity_flg() : "Y",
+				entity.getModify_flg() != null ? entity.getModify_flg() : "Y",
+				entity.getDel_flg() != null ? entity.getDel_flg() : "N"
+		};
+
+		jdbcTemplate.update(sql, params);
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		List<IRRBB_ADVANCES_Summary_Entity> modRecords = jdbcTemplate.query(
+				"SELECT * FROM BRRS_IRRBB_ADV_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND MODIFY_FLG='Y'",
+				new ModSummaryRowMapper(), reportDate);
+
+		if (modRecords.isEmpty()) {
+			throw new IllegalStateException("No pending modification record found for date: " + reportDate);
+		}
+
+		// Transfer MOD values to live SUMMARY table matching by ACCOUNT_NUMBER and REPORT_DATE
+		String updateSummarySql = "UPDATE BRRS_IRRBB_ADV_SUMMARYTABLE M SET ("
+				+ "  FLOATING_FIXED, EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, "
+				+ "  LAST_REPRICING_DATE, NEXT_REPRICING_DATE, SPREAD_OVER_BENCHMARK, "
+				+ "  CAP_FLOOR_RATE_OF_INTEREST, ENTITY_FLG, MODIFY_FLG, DEL_FLG"
+				+ ") = ("
+				+ "  SELECT S.FLOATING_FIXED, S.EXISTING_BENCHMARK, S.EXISTING_REPRICING_FREQUENCY, "
+				+ "         S.LAST_REPRICING_DATE, S.NEXT_REPRICING_DATE, S.SPREAD_OVER_BENCHMARK, "
+				+ "         S.CAP_FLOOR_RATE_OF_INTEREST, 'Y', 'N', 'N' "
+				+ "  FROM BRRS_IRRBB_ADV_MOD_SUMMARYTABLE S "
+				+ "  WHERE S.ACCOUNT_NUMBER = M.ACCOUNT_NUMBER AND TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+				+ ") WHERE M.ACCOUNT_NUMBER IN (SELECT S.ACCOUNT_NUMBER FROM BRRS_IRRBB_ADV_MOD_SUMMARYTABLE S WHERE S.MODIFY_FLG = 'Y' AND TRUNC(S.REPORT_DATE) = TRUNC(?)) "
+				+ "  AND TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate, reportDate);
+		logger.info("IRRBB_ADV Summary Table updated from MOD: {}", summaryUpdated);
+
+		// Transfer MOD values to live DETAIL table as well matching by ACCOUNT_NUMBER and REPORT_DATE
+		try {
+			String updateDetailSql = "UPDATE BRRS_IRRBB_ADV_DETAILTABLE M SET ("
+					+ "  FLOATING_FIXED, EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, "
+					+ "  LAST_REPRICING_DATE, NEXT_REPRICING_DATE, SPREAD_OVER_BENCHMARK, "
+					+ "  CAP_FLOOR_RATE_OF_INTEREST, ENTITY_FLG, MODIFY_FLG, DEL_FLG"
+					+ ") = ("
+					+ "  SELECT S.FLOATING_FIXED, S.EXISTING_BENCHMARK, S.EXISTING_REPRICING_FREQUENCY, "
+					+ "         S.LAST_REPRICING_DATE, S.NEXT_REPRICING_DATE, S.SPREAD_OVER_BENCHMARK, "
+					+ "         S.CAP_FLOOR_RATE_OF_INTEREST, 'Y', 'N', 'N' "
+					+ "  FROM BRRS_IRRBB_ADV_MOD_SUMMARYTABLE S "
+					+ "  WHERE S.ACCOUNT_NUMBER = M.ACCOUNT_NUMBER AND TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+					+ ") WHERE M.ACCOUNT_NUMBER IN (SELECT S.ACCOUNT_NUMBER FROM BRRS_IRRBB_ADV_MOD_SUMMARYTABLE S WHERE S.MODIFY_FLG = 'Y' AND TRUNC(S.REPORT_DATE) = TRUNC(?)) "
+					+ "  AND TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+			int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate, reportDate);
+			logger.info("IRRBB_ADV Detail Table updated from MOD: {}", detailUpdated);
+		} catch (Exception ex) {
+			logger.warn("Could not update BRRS_IRRBB_ADV_DETAILTABLE directly: {}", ex.getMessage());
+		}
+
+		// Mark modified flag as 'N' (Approved) in the mod table
+		jdbcTemplate.update("UPDATE BRRS_IRRBB_ADV_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND MODIFY_FLG='Y'",
+				reportDate);
+
+		// Execute summary procedure after approval
+		String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+		try {
+			jdbcTemplate.update("BEGIN BRRS_IRRBB_ADV_SUMMARY_PROCEDURE(?); END;", formattedDate);
+		} catch (Exception ex) {
+			jdbcTemplate.update("BEGIN BRRS_IRRBB_ADV_SUMMARY_PROCEDURE; END;");
+		}
+
+		logger.info("IRRBB_ADV Checker Approved and Summary Procedure Executed Successfully for date: {}", formattedDate);
+	}
+
+	public ResponseEntity<?> updateReport(IRRBB_ADVANCES_Summary_Entity updatedEntity, String type, String version, String entry) {
+		try {
+			if ("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) {
+				return ResponseEntity.ok("Record updated successfully!");
+			} else {
+				updateReport1(updatedEntity);
+				return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
+			}
+		} catch (Exception e) {
+			logger.error("Error in updateReport", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
 
