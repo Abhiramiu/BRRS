@@ -897,9 +897,9 @@ function calculateAll() {
              processData: false,
              contentType: false,
              dataType: 'text',
-             success: function () {
+             success: function (response) {
                  $("#resultModalLabel").text("BRRS");
-                 $("#resultModalBody").text(" Modified Successfully.");
+                 $("#resultModalBody").text(response || "Modified Successfully. Record sent for Checker Approval.");
                  $("#resultModal").modal("show");
              },
              error: function (jqXHR) {

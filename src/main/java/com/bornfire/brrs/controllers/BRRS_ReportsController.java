@@ -7662,7 +7662,7 @@ public class BRRS_ReportsController {
 			// call services
 			BRRS_EXPOSURES_ReportService.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());

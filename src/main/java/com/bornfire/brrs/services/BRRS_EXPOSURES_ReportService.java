@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
@@ -53,6 +54,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -664,6 +666,10 @@ obj.setR64_AMOUNT(rs.getBigDecimal("R64_AMOUNT"));
         obj.setEntity_flg(rs.getString("entity_flg"));
         obj.setModify_flg(rs.getString("modify_flg"));
         obj.setDel_flg(rs.getString("del_flg"));
+        try {
+            obj.setReport_resubdate(rs.getDate("report_resubdate"));
+        } catch (Exception ignored) {
+        }
 
 
         return obj;
@@ -882,6 +888,9 @@ private BigDecimal R64_AMOUNT;
 	private String	entity_flg;
 	private String	modify_flg;
 	private String	del_flg;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	private Date	report_resubdate;
 	public BigDecimal getR4_AMOUNT() {
 		return R4_AMOUNT;
 	}
@@ -1811,6 +1820,18 @@ private BigDecimal R64_AMOUNT;
 	}
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
+	}
+	public Date getReport_resubdate() {
+		return report_resubdate;
+	}
+	public void setReport_resubdate(Date report_resubdate) {
+		this.report_resubdate = report_resubdate;
+	}
+	public Date getReportResubDate() {
+		return report_resubdate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.report_resubdate = reportResubDate;
 	}
 	
 	
@@ -3380,6 +3401,7 @@ private BigDecimal R64_AMOUNT;
 	}
 	
 
+
 	
 }
 	
@@ -4111,7 +4133,6 @@ public void setDelFlg(char delFlg) {
 
 	    mv.setViewName("BRRS/EXPOSURES");
 	    mv.addObject("displaymode", "summary");
-	   
 
 	    System.out.println("View Loaded: " + mv.getViewName());
 
@@ -4284,93 +4305,237 @@ public List<Object[]> getEXPOSURESArchival() {
 //=====================================================
 
 @Transactional
-public void updateReport(EXPOSURES_Summary_Entity updatedEntity) {
+	public void updateReport1(EXPOSURES_Summary_Entity updatedEntity) {
+		System.out.println("Came to services 3");
+		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-    System.out.println("Came to services");
-    System.out.println("Report Date: " + updatedEntity.getReport_date());
+		// 🔹 JdbcTemplate lookup with date truncation
+		String selectSql = "SELECT * FROM BRRS_EXPOSURES_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 
-    EXPOSURES_Summary_Entity existing =
-            findSummaryByDate(updatedEntity.getReport_date());
+		List<EXPOSURES_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new EXPOSURES_Summary_RowMapper(), updatedEntity.getReport_date());
 
-    if (existing == null) {
-        throw new RuntimeException(
-                "No EXPOSURES Summary record found for Report Date: "
-                + updatedEntity.getReport_date()
-        );
-    }
+		EXPOSURES_Summary_Entity existing;
 
-    // Audit old copy
-    EXPOSURES_Summary_Entity oldcopy = new EXPOSURES_Summary_Entity();
-    BeanUtils.copyProperties(existing, oldcopy);
+		if (list.isEmpty()) {
+			existing = new EXPOSURES_Summary_Entity();
+			existing.setReport_date(updatedEntity.getReport_date());
+			System.out.println("⚠️ No existing record found — creating new record");
+		} else {
+			existing = list.get(0);
+			System.out.println("Updating existing record");
+		}
 
-    // Only allowed R-numbers
-    int[] allowedIndexes = {58};
+		// 🔹 Audit copy: Create a clone of the original database state before making
+		// any changes
+		EXPOSURES_Summary_Entity oldcopy = new EXPOSURES_Summary_Entity();
+		BeanUtils.copyProperties(existing, oldcopy);
 
-    try {
+		try {
+			int[] allowedIndexes = { 58 };
 
-        for (int i : allowedIndexes) {
+			for (int i : allowedIndexes) {
+				String field = "AMOUNT";
+				String getterName = "getR" + i + "_" + field;
+				String setterName = "setR" + i + "_" + field;
 
-            String field = "AMOUNT";
+				try {
+					Method getter = EXPOSURES_Summary_Entity.class.getMethod(getterName);
+					Method setter = EXPOSURES_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-            String getterName = "getR" + i + "_" + field;
-            String setterName = "setR" + i + "_" + field;
+					Object value = getter.invoke(updatedEntity);
+					Object existingValue = getter.invoke(existing);
 
-            try {
+					// --- Normalize state differences to keep audit log payload minimal ---
+					String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+					String newValStr = (value == null) ? "" : value.toString().trim();
 
-                Method getter =
-                        EXPOSURES_Summary_Entity.class
-                                .getMethod(getterName);
+					if (currentValStr.equals(newValStr)) {
+						continue;
+					}
 
-                Method setter =
-                        EXPOSURES_Summary_Entity.class
-                                .getMethod(
-                                        setterName,
-                                        getter.getReturnType()
-                                );
+					setter.invoke(existing, value);
+				} catch (NoSuchMethodException e) {
+					System.out.println("Missing (R" + i + ") method: " + getterName);
+				}
+			}
 
-                Object newValue = getter.invoke(updatedEntity);
+		} catch (Exception e) {
+			throw new RuntimeException("Error updating record fields", e);
+		}
 
-                setter.invoke(existing, newValue);
+		// 🔹 Evaluate audit changes
+		String changes = auditService.getChanges(oldcopy, existing);
+		System.out.println("EXPOSURES Changes Length = " + (changes != null ? changes.length() : 0));
 
-            } catch (NoSuchMethodException e) {
+		// 🔹 Set Maker-Checker Flags
+		existing.setEntity_flg("Y");
+		existing.setModify_flg("Y");
+		existing.setDel_flg("N");
+		if (existing.getReport_version() == null) {
+			existing.setReport_version(new BigDecimal(1));
+		}
+		existing.setReport_resubdate(new Date());
 
-                // Safely skip if field doesn't exist
-                continue;
-            }
-        }
+		// 🔹 Save into MOD Summary Table for Checker Approval
+		saveModSummaryEntity(existing);
+		System.out.println("✔ Record saved into BRRS_EXPOSURES_MOD_SUMMARYTABLE for Checker Approval");
 
-    } catch (Exception e) {
+		// 🔹 Log Audit Trail if changes exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existing, updatedEntity.getReport_date().toString(),
+					"EXPOSURES", "BRRS_EXPOSURES_MOD_SUMMARYTABLE");
+		}
 
-        throw new RuntimeException(
-                "Error while updating report fields", e
-        );
-    }
+		// 🔹 Post-Commit Transaction Synchronization to execute Stored Procedure
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+			@Override
+			public void afterCommit() {
+				try {
+					String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(updatedEntity.getReport_date());
 
-    // Check changes before save
-    String changes = auditService.getChanges(oldcopy, existing);
+					logger.info("Transaction committed — calling BRRS_EXPOSURES_SUMMARY_PROCEDURE({})", formattedDate);
 
-    // Save R58_AMOUNT
-    jdbcTemplate.update(
-            "UPDATE BRRS_EXPOSURES_SUMMARYTABLE " +
-            "SET R58_AMOUNT = ? " +
-            "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+					jdbcTemplate.update("BEGIN BRRS_EXPOSURES_SUMMARY_PROCEDURE(?); END;", formattedDate);
 
-            existing.getR58_AMOUNT(),
-            existing.getReport_date()
-    );
+					logger.info("BRRS_EXPOSURES_SUMMARY_PROCEDURE executed successfully after commit.");
+				} catch (Exception e) {
+					logger.error("Procedure execution failed", e);
+					throw new RuntimeException("Procedure execution failed", e);
+				}
+			}
+		});
+	}
 
-    // Audit only if changes found
-    if (!changes.isEmpty()) {
+	public void saveModSummaryEntity(EXPOSURES_Summary_Entity entity) {
+		String sql = "MERGE INTO BRRS_EXPOSURES_MOD_SUMMARYTABLE dest "
+				+ "USING (SELECT ? AS report_date FROM dual) src "
+				+ "ON (TRUNC(dest.REPORT_DATE) = TRUNC(src.report_date)) "
+				+ "WHEN MATCHED THEN "
+				+ "  UPDATE SET "
+				+ "    R58_AMOUNT = ?, "
+				+ "    REPORT_VERSION = ?, "
+				+ "    REPORT_FREQUENCY = ?, "
+				+ "    REPORT_CODE = ?, "
+				+ "    REPORT_DESC = ?, "
+				+ "    ENTITY_FLG = ?, "
+				+ "    MODIFY_FLG = ?, "
+				+ "    DEL_FLG = ?, "
+				+ "    REPORT_RESUBDATE = ? "
+				+ "WHEN NOT MATCHED THEN "
+				+ "  INSERT ( "
+				+ "    REPORT_DATE, "
+				+ "    R58_AMOUNT, "
+				+ "    REPORT_VERSION, "
+				+ "    REPORT_FREQUENCY, "
+				+ "    REPORT_CODE, "
+				+ "    REPORT_DESC, "
+				+ "    ENTITY_FLG, "
+				+ "    MODIFY_FLG, "
+				+ "    DEL_FLG, "
+				+ "    REPORT_RESUBDATE "
+				+ "  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        auditService.compareEntitiesmanual(
-                oldcopy,
-                existing,
-                updatedEntity.getReport_date().toString(),
-                "EXPOSURES Summary Screen",
-                "BRRS_EXPOSURES_SUMMARY"
-        );
-    }
-}
+		Object[] params = {
+				// USING clause
+				entity.getReport_date(),
+
+				// UPDATE parameters
+				entity.getR58_AMOUNT(),
+				entity.getReport_version(),
+				entity.getReport_frequency(),
+				entity.getReport_code(),
+				entity.getReport_desc(),
+				entity.getEntity_flg(),
+				entity.getModify_flg(),
+				entity.getDel_flg(),
+				entity.getReport_resubdate(),
+
+				// INSERT parameters
+				entity.getReport_date(),
+				entity.getR58_AMOUNT(),
+				entity.getReport_version(),
+				entity.getReport_frequency(),
+				entity.getReport_code(),
+				entity.getReport_desc(),
+				entity.getEntity_flg(),
+				entity.getModify_flg(),
+				entity.getDel_flg(),
+				entity.getReport_resubdate()
+		};
+
+		jdbcTemplate.update(sql, params);
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_EXPOSURES_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND MODIFY_FLG='Y'";
+		List<EXPOSURES_Summary_Entity> list = jdbcTemplate.query(sql, (rs, rowNum) -> {
+			EXPOSURES_Summary_Entity e = new EXPOSURES_Summary_Entity();
+			e.setR58_AMOUNT(rs.getBigDecimal("R58_AMOUNT"));
+			e.setReport_date(rs.getDate("REPORT_DATE"));
+			e.setReport_version(rs.getBigDecimal("REPORT_VERSION"));
+			e.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			e.setReport_code(rs.getString("REPORT_CODE"));
+			e.setReport_desc(rs.getString("REPORT_DESC"));
+			e.setEntity_flg(rs.getString("ENTITY_FLG"));
+			e.setModify_flg(rs.getString("MODIFY_FLG"));
+			e.setDel_flg(rs.getString("DEL_FLG"));
+			try {
+				e.setReport_resubdate(rs.getDate("REPORT_RESUBDATE"));
+			} catch (Exception ignored) {
+			}
+			return e;
+		}, reportDate);
+
+		if (list.isEmpty()) {
+			throw new IllegalStateException("No pending modification found for approval on date: " + reportDate);
+		}
+
+		EXPOSURES_Summary_Entity modRecord = list.get(0);
+
+		// Copy/Merge MOD values to live SUMMARY table
+		jdbcTemplate.update(
+				"UPDATE BRRS_EXPOSURES_SUMMARYTABLE SET R58_AMOUNT = ?, ENTITY_FLG = 'Y', MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				modRecord.getR58_AMOUNT(), reportDate);
+
+		// Mark modified flag as 'N' (Approved) in the mod table
+		jdbcTemplate.update("UPDATE BRRS_EXPOSURES_MOD_SUMMARYTABLE SET MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				reportDate);
+
+		String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+
+		// Run procedure after approval
+		jdbcTemplate.update("BEGIN BRRS_EXPOSURES_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+		System.out.println("EXPOSURES Checker Approved Successfully");
+	}
+
+	@Transactional
+	public ResponseEntity<?> updateReport(EXPOSURES_Summary_Entity updatedEntity, String type, String version,
+			String entry) {
+		try {
+			Date reportDate = updatedEntity.getReport_date();
+			if (reportDate == null) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Report Date is required.");
+			}
+			String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+
+			System.out.println("Updating EXPOSURES Summary: type=" + type + ", version=" + version + ", entry=" + entry
+					+ ", date=" + formattedDate);
+
+			updateReport1(updatedEntity);
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
+		} catch (Exception e) {
+			logger.error("Error in updateReport", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+
+	@Transactional
+	public void updateReport(EXPOSURES_Summary_Entity updatedEntity) {
+		updateReport1(updatedEntity);
+	}
 
 
 //=====================================================

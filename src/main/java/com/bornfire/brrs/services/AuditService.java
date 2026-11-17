@@ -1567,6 +1567,8 @@ public class AuditService {
 			transferCPRData(auditRecord);
 		} else if (upperTable.contains("IRRBB_ADV")) {
 			transferIRRBB_ADVData(auditRecord);
+		} else if (upperTable.contains("EXPOSURES")) {
+			transferExposuresData(auditRecord);
 		} else if (upperTable.contains("BDISB2")) {
 			transferBDISB2Data(auditRecord);
 		} else if (upperTable.contains("BDISB3")) {
@@ -2539,6 +2541,50 @@ public class AuditService {
 
 		System.out.println("IRRBB_ADV Verification, Transfer and Summary Procedure Execution Completed Successfully");
 	}
+	
+	private void transferExposuresData(AuditServicesEntity auditRecord) {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_EXPOSURES_MOD_SUMMARYTABLE";
+		java.sql.Date reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified EXPOSURES record available for verification.");
+		}
+
+		System.out.println("EXPOSURES Report Date : " + reportDate);
+
+		String updateSql = "UPDATE BRRS_EXPOSURES_SUMMARYTABLE M " + "SET ("
+				+ "      R58_AMOUNT, "
+				+ "      ENTITY_FLG, MODIFY_FLG, DEL_FLG" + ") = (" + "    SELECT "
+				+ "         S.R58_AMOUNT, "
+				+ "         S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG " + "      FROM BRRS_EXPOSURES_MOD_SUMMARYTABLE S "
+				+ "      WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" + ") "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int inserted = jdbcTemplate.update(updateSql, reportDate);
+
+		if (inserted == 0) {
+			String insertSql = "INSERT INTO BRRS_EXPOSURES_SUMMARYTABLE (REPORT_DATE, R58_AMOUNT, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "SELECT REPORT_DATE, R58_AMOUNT, ENTITY_FLG, MODIFY_FLG, DEL_FLG FROM BRRS_EXPOSURES_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+			inserted = jdbcTemplate.update(insertSql, reportDate);
+			if (inserted == 0) {
+				throw new IllegalStateException("EXPOSURES modification record not found for date : " + reportDate);
+			}
+		}
+
+		System.out.println("EXPOSURES Main Updated : " + inserted);
+
+		String updateModSql = "UPDATE BRRS_EXPOSURES_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+		int updated = jdbcTemplate.update(updateModSql, reportDate);
+
+		System.out.println("EXPOSURES MOD Updated : " + updated);
+
+		// Execute stored procedure after verification/transfer
+		String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+		jdbcTemplate.update("BEGIN BRRS_EXPOSURES_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+		System.out.println("EXPOSURES Verification and Procedure Execution Completed Successfully");
+	}
+
 
 	private void transferBDISB2Data(AuditServicesEntity auditRecord) {
 		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_BDISB2_MOD_SUMMARYTABLE";
