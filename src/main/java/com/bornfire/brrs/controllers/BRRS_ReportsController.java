@@ -782,24 +782,43 @@ public class BRRS_ReportsController {
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
 			@ModelAttribute M_TOP_100_BORROWER_Manual_Summary_Entity1 request1,
-			@ModelAttribute M_TOP_100_BORROWER_Manual_Summary_Entity2 request2
+			@ModelAttribute M_TOP_100_BORROWER_Manual_Summary_Entity2 request2, HttpServletRequest req
 
 	) {
 		try {
-			System.out.println("Came to single controller");
+			System.out.println("Came to single controller. M_TOP_100_BORROWER Date : " + asondate);
+
+			// Checkers verify; they must not submit modifications
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userid != null ? userProfileRep.getUserRole(userid) : null;
+			if (isCheckerOnly(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Checker cannot modify M_TOP_100_BORROWER. Current role: " + role);
+			}
+			if (asondate == null) {
+				return ResponseEntity.badRequest().body("asondate is required.");
+			}
 
 			// set date into entities
 			request1.setReport_date(asondate);
 			request2.setReport_date(asondate);
 
-			// call services
-			M_TOP_100_BORROWER_ReportService.updateReport(request1);
-			M_TOP_100_BORROWER_ReportService.updateReport1(request2);
+			// Maker submit: both manual tables go to their MOD tables in ONE transaction;
+			// the live tables are updated only when the Checker verifies.
+			boolean submitted = M_TOP_100_BORROWER_ReportService.updateReportForChecker(request1, request2);
 
-			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
+			if (!submitted) {
+				return ResponseEntity.ok("No changes were made.");
+			}
+			return ResponseEntity.ok("Modification saved. Pending Checker verification.");
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+
+			Throwable root = e;
+			while (root.getCause() != null) {
+				root = root.getCause();
+			}
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + root.getMessage());
 		}
 	}
 

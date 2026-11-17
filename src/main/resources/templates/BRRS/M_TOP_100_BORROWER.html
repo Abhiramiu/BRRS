@@ -486,6 +486,13 @@ PURPOSE		: BRRS_M_TOP_100_BORROWERREPORT
 			Maker_Checker_Function();
 		});
 
+		// Same list the backend uses to block a Checker from submitting (isCheckerOnly)
+		function isCheckerRole(roleId) {
+			if (!roleId) return false;
+			const r = String(roleId).trim().toUpperCase();
+			return r === "C" || r === "CHECKER" || r === "ADM-C" || r === "USR-C" || r === "USER-AUDIT";
+		}
+
 		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
 		function Maker_Checker_Function() {
 			$.ajax({
@@ -494,10 +501,12 @@ PURPOSE		: BRRS_M_TOP_100_BORROWERREPORT
 				success: function (roleId) {
 					console.log("User Role ID:", roleId);
 
-					// ✅ Checker → hide Modify, show Download
-					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+					// ✅ Checker → hide Modify (Maker-Checker: Checker only verifies from the
+					//    Audit screen and cannot submit changes), show Download
+					if (isCheckerRole(roleId)) {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
+						$("#submitButton, #cancelRecord").hide();
 						$(".download-btn").show();
 					}
 					// ✅ Maker → show Modify, hide Download (MGR = Maker)
@@ -852,7 +861,17 @@ PURPOSE		: BRRS_M_TOP_100_BORROWERREPORT
 
 
 	<script>
+		// Numeric manual cells (all other manual cells are text)
+		const TOP100_NUMERIC_CELL = /^R\d+_(CRM|NFBLT|NFBOS|CRM_2|NFB)$/;
+
 		function showmodify(btn) {
+
+			// Remember what each cell held when editing started, so that on submit only the
+			// cells the Maker really changed are sent (the screen shows "-" / "0" for empty
+			// cells and rounds amounts, so posting every cell would create false changes).
+			$("#fileupload input.Show_input").not(".nonEditable").each(function () {
+				$(this).attr("data-original", $(this).val() === null ? "" : String($(this).val()));
+			});
 
 			// ✅ Enable all editable fields except those marked as nonEditable
 			$(".Show_input")
@@ -936,28 +955,69 @@ PURPOSE		: BRRS_M_TOP_100_BORROWERREPORT
 			const asondate = btn.getAttribute("data-todate");
 			$('#loader').modal('show');
 
-
-
-			// ✅ Step 2: Remove commas from visible inputs only
-			$("#fileupload input[type='text']").each(function () {
-				$(this).val($(this).val().replace(/,/g, ''));
-			});
-			// ✅ Step 3: Validate form
+			// ✅ Step 2: Validate form
 			if (!$("#fileupload").valid()) {
 				$('#loader').modal('hide');
 				return;
 			}
 
-			// ✅ Step 4: Build FormData object including hidden inputs
+			// ✅ Step 3: Build FormData with ONLY the cells the Maker changed.
+			// Untouched cells are left out; the backend treats a missing cell as "no change".
 			const formData = new FormData();
 			formData.append("asondate", asondate);
 
+			let changedCount = 0;
+			let invalidField = null;
+
 			$('#fileupload').find(':input[name]').each(function () {
 				const name = $(this).attr('name');
-				formData.append(name, $(this).val());
+				const original = $(this).attr('data-original');
+
+				// not an editable manual cell (or never put into edit mode) -> not sent
+				if (original === undefined) {
+					return;
+				}
+
+				let value = String($(this).val() === null ? "" : $(this).val());
+				let before = original;
+
+				if (TOP100_NUMERIC_CELL.test(name)) {
+					// amounts: commas are display-only
+					value = value.replace(/,/g, '').trim();
+					before = before.replace(/,/g, '').trim();
+					if (value === before) {
+						return;
+					}
+					if (!/^-?\d+(\.\d+)?$/.test(value)) {
+						invalidField = name;
+						return;
+					}
+				} else {
+					// text cells: sent exactly as typed (commas are kept)
+					value = value.trim();
+					before = before.trim();
+					if (value === before) {
+						return;
+					}
+				}
+
+				changedCount++;
+				formData.append(name, value);
 			});
 
-			// ✅ Step 5: Send Ajax request
+			if (invalidField) {
+				$('#loader').modal('hide');
+				showResultModal("Information", "Please enter a valid number for " + invalidField + ".");
+				return;
+			}
+
+			if (changedCount === 0) {
+				$('#loader').modal('hide');
+				showResultModal("Information", "No changes were made.");
+				return;
+			}
+
+			// ✅ Step 4: Send Ajax request
 			$.ajax({
 				url: './M_TOP_100_BORROWERupdateAll',
 				type: 'POST',
@@ -965,15 +1025,26 @@ PURPOSE		: BRRS_M_TOP_100_BORROWERREPORT
 				processData: false,
 				contentType: false,
 				dataType: 'text',
-				success: function () {
-					$("#resultModalLabel").text("BRRS");
-					$("#resultModalBody").text("Updated successfully.");
+
+				// Backend answers (Maker-Checker):
+				//   "Modification saved. Pending Checker verification."  -> saved to the MOD tables
+				//   "No changes were made."                              -> nothing submitted
+				success: function (response) {
+					const msg = (response && response.trim()) ? response.trim() : "Modification saved. Pending Checker verification.";
+					const noChange = msg.toLowerCase().indexOf("no changes") !== -1;
+
+					$("#resultModalLabel").text(noChange ? "Information" : "BRRS");
+					$("#resultModalBody").text(msg);
 					$("#resultModal").modal("show");
 				},
 				error: function (jqXHR) {
 					console.error("Error response:", jqXHR.responseText);
+
+					// 403 -> Checker is not allowed to modify; 500 -> "Update Failed : <reason>"
+					const serverMsg = jqXHR.responseText && jqXHR.responseText.length < 300 ? jqXHR.responseText : "";
+
 					$("#resultModalLabel").text("Error");
-					$("#resultModalBody").text("Update failed. Check console for details.");
+					$("#resultModalBody").text(serverMsg || "Update failed. Check console for details.");
 					$("#resultModal").modal("show");
 				},
 				complete: function () {

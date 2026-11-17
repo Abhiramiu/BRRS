@@ -1596,6 +1596,8 @@ public class AuditService {
 		    transferIRRBBDepositsData(auditRecord);
 		} else if (upperTable.equals("BRRS_DBS10_FINCON_III_1C_MOD_SUMMARYTABLE_MANUAL")) {
 		    transferDBS10FinconIII1CData(auditRecord);
+		} else if (upperTable.startsWith("BRRS_M_TOP_100_BORROWER_MOD_SUMMARYTABLE_MANUAL")) {
+			transferMTop100BorrowerData(auditRecord);
 		} else if (upperTable.equals("IRRBB_BORROWINGS_MOD_SUMMARYTABLE")) {
 			transferIRRBBBORROWINGSData(auditRecord);
 		} else {
@@ -7857,6 +7859,125 @@ public class AuditService {
 				reportDate);
 		System.out.println("DBS10_FINCON_III_1C MOD Updated : " + modUpdated);
 	}
+	
+	// =========================================================
+		// M_TOP_100_BORROWER - Checker transfer (MOD -> LIVE manual tables)
+		// Two manual tables, one audit row per table:
+		//   ..._MOD_SUMMARYTABLE_MANUAL1 -> BRRS_M_TOP_100_BORROWER_MANUAL_SUMMARYTABLE1 (R3  - R70)
+		//   ..._MOD_SUMMARYTABLE_MANUAL2 -> BRRS_M_TOP_100_BORROWER_MANUAL_SUMMARYTABLE2 (R71 - R102)
+		// One row per REPORT_DATE. The Maker stores the report date (dd-MM-yyyy)
+		// in change_details.
+		// =========================================================
+		public static final String[] TOP100_COLS = { "GROUP_CODE", "GROUP_NAME", "CRM", "NFBLT", "NFBOS", "CRM_2", "NFB",
+				"BOND", "CP", "EQULITY", "FOREX", "OTHERS", "INT_BANK", "DERIVATIVE" };
+
+		// VARCHAR2 columns; every other column in TOP100_COLS is NUMBER
+		public static final java.util.List<String> TOP100_TEXT_COLS = Arrays.asList("GROUP_CODE", "GROUP_NAME", "BOND",
+				"CP", "EQULITY", "FOREX", "OTHERS", "INT_BANK", "DERIVATIVE");
+
+		private void transferMTop100BorrowerData(AuditServicesEntity auditRecord) {
+
+			final String modTable = auditRecord.getAudit_table().trim().toUpperCase();
+			final String liveTable;
+			final int fromRow;
+			final int toRow;
+
+			if (modTable.endsWith("MANUAL1")) {
+				liveTable = "BRRS_M_TOP_100_BORROWER_MANUAL_SUMMARYTABLE1";
+				fromRow = 3;
+				toRow = 70;
+			} else if (modTable.endsWith("MANUAL2")) {
+				liveTable = "BRRS_M_TOP_100_BORROWER_MANUAL_SUMMARYTABLE2";
+				fromRow = 71;
+				toRow = 102;
+			} else {
+				throw new IllegalArgumentException("Verification not configured for table: " + modTable);
+			}
+
+			// 1. Report date of THIS audit row
+			java.sql.Date reportDate = null;
+			String raw = auditRecord.getChange_details();
+			if (raw != null && !raw.trim().isEmpty()) {
+				try {
+					reportDate = new java.sql.Date(new java.text.SimpleDateFormat("dd-MM-yyyy").parse(raw.trim()).getTime());
+				} catch (java.text.ParseException ignored) {
+					// legacy / unexpected text -> fall back below
+				}
+			}
+			if (reportDate == null) {
+				try {
+					reportDate = jdbcTemplate.queryForObject(
+							"SELECT MAX(REPORT_DATE) FROM " + modTable + " WHERE MODIFY_FLG = 'Y'", java.sql.Date.class);
+				} catch (Exception ignored) {
+				}
+			}
+			if (reportDate == null) {
+				throw new IllegalStateException("No pending M_TOP_100_BORROWER modification available for verification.");
+			}
+			System.out.println("M_TOP_100_BORROWER Report Date : " + reportDate + " (" + modTable + ")");
+
+			// 2. The MOD row for that date must exist
+			Integer modRows = jdbcTemplate.queryForObject(
+					"SELECT COUNT(*) FROM " + modTable + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", Integer.class,
+					reportDate);
+			if (modRows == null || modRows == 0) {
+				throw new IllegalStateException("No MOD row found in " + modTable + " for REPORT_DATE = " + reportDate);
+			}
+
+			// 3. LIVE manual table <- MOD (all manual cells), in chunks of columns so the
+			// statements stay small (table 1 has 952 manual columns).
+			java.util.List<String> allCols = new java.util.ArrayList<>();
+			for (int r = fromRow; r <= toRow; r++) {
+				for (String c : TOP100_COLS) {
+					allCols.add("R" + r + "_" + c);
+				}
+			}
+
+			final int CHUNK = 200;
+			int updated = 0;
+			for (int i = 0; i < allCols.size(); i += CHUNK) {
+				java.util.List<String> part = allCols.subList(i, Math.min(i + CHUNK, allCols.size()));
+
+				StringBuilder setCols = new StringBuilder();
+				StringBuilder selCols = new StringBuilder();
+				for (String c : part) {
+					if (setCols.length() > 0) {
+						setCols.append(", ");
+						selCols.append(", ");
+					}
+					setCols.append(c);
+					selCols.append("S.").append(c);
+				}
+
+				String updateSql = "UPDATE " + liveTable + " M SET (" + setCols + ") = (SELECT " + selCols + " FROM "
+						+ modTable + " S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) "
+						+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+				int n = jdbcTemplate.update(updateSql, reportDate);
+				if (n == 0) {
+					throw new IllegalStateException(
+							"M_TOP_100_BORROWER live record not found in " + liveTable + " for date : " + reportDate);
+				}
+				updated = n;
+			}
+			System.out.println("M_TOP_100_BORROWER Live Table Updated : " + updated + " (" + liveTable + ")");
+
+			// 4. Mark the MOD row as approved
+			int modUpdated = jdbcTemplate.update(
+					"UPDATE " + modTable + " SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+					reportDate);
+			System.out.println("M_TOP_100_BORROWER MOD Updated : " + modUpdated);
+
+			// 5. Re-run the summary procedure now that the live manual data is approved
+			// (the Maker no longer runs it, because the live tables were not touched then)
+			try {
+				String formattedDate = new java.text.SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+				jdbcTemplate.update("BEGIN BRRS_M_TOP_100_BORROWER_SUMMARY_PROCEDURE(?); END;", formattedDate);
+				System.out.println("M_TOP_100_BORROWER summary procedure executed for date: " + formattedDate);
+			} catch (Exception e) {
+				System.out.println("⚠ M_TOP_100_BORROWER summary procedure failed: " + e.getMessage());
+			}
+		}
 
 	private void transferAS11Data(AuditServicesEntity auditRecord) {
 		final String liveTable = "BRRS_AS_11_SUMMARYTABLE1";

@@ -1081,180 +1081,195 @@ public class BRRS_M_TOP_100_BORROWER_ReportService {
 	}
 
 
-	// ================= UPDATE REPORT =================
-    @Transactional
-    public void updateReport(M_TOP_100_BORROWER_Manual_Summary_Entity1 request) {
+	// ===========================================================
+	// MAKER-CHECKER : M_TOP_100_BORROWER manual entry
+	//   Table 1 : R3  - R70   (BRRS_M_TOP_100_BORROWER_MANUAL_SUMMARYTABLE1)
+	//   Table 2 : R71 - R102  (BRRS_M_TOP_100_BORROWER_MANUAL_SUMMARYTABLE2)
+	// ===========================================================
+	// The Maker's changes are written ONLY to the MOD tables (MODIFY_FLG='Y') and
+	// one MODIFY audit row is logged per MOD table that really changed. The live
+	// manual tables (and the summary procedure) are untouched until the Checker
+	// verifies the audit row (see AuditService.transferMTop100BorrowerData).
+	// A null value coming from the screen means "cell not touched".
 
-        System.out.println("Came to Service - Entity1");
+	public static final String TOP100_LIVE_TABLE1 = "BRRS_M_TOP_100_BORROWER_MANUAL_SUMMARYTABLE1";
+	public static final String TOP100_LIVE_TABLE2 = "BRRS_M_TOP_100_BORROWER_MANUAL_SUMMARYTABLE2";
+	public static final String TOP100_MOD_TABLE1 = "BRRS_M_TOP_100_BORROWER_MOD_SUMMARYTABLE_MANUAL1";
+	public static final String TOP100_MOD_TABLE2 = "BRRS_M_TOP_100_BORROWER_MOD_SUMMARYTABLE_MANUAL2";
+	private static final String TOP100_SCREEN = "M_TOP_100_BORROWER Manual Screen";
 
-        // 🔍 Fetch existing record
-        List<M_TOP_100_BORROWER_Manual_Summary_Entity1> existingList = queryEntities(
-                "SELECT * FROM BRRS_M_TOP_100_BORROWER_MANUAL_SUMMARYTABLE1 WHERE REPORT_DATE = ?",
-                M_TOP_100_BORROWER_Manual_Summary_Entity1.class, request.getReport_date());
-        if (existingList.isEmpty()) {
-            throw new RuntimeException("Record not found for REPORT_DATE: " + request.getReport_date());
-        }
-        M_TOP_100_BORROWER_Manual_Summary_Entity1 existing = existingList.get(0);
+	/**
+	 * Submits both manual tables in ONE transaction.
+	 * 
+	 * @return false when nothing changed in either table (no MOD write, no audit)
+	 */
+	@Transactional
+	public boolean updateReportForChecker(M_TOP_100_BORROWER_Manual_Summary_Entity1 request1,
+			M_TOP_100_BORROWER_Manual_Summary_Entity2 request2) {
 
-        try {
-            String[] fields = {
-                    "GROUP_CODE", "GROUP_NAME", "CRM",
-                    "NFBLT", "NFBOS", "CRM_2", "NFB", "BOND", "CP",
-                    "EQULITY", "FOREX", "OTHERS", "INT_BANK", "DERIVATIVE"
-            };
+		System.out.println("Came to M_TOP_100_BORROWER Maker submit");
 
-            // 🔁 Loop from R3 to R70
-            for (int i = 3; i <= 70; i++) {
-                copyFieldsEntity1(request, existing, i, fields);
-            }
+		boolean t1 = submitTop100ForChecker(request1, TOP100_LIVE_TABLE1, TOP100_MOD_TABLE1, 3, 70);
+		boolean t2 = submitTop100ForChecker(request2, TOP100_LIVE_TABLE2, TOP100_MOD_TABLE2, 71, 102);
 
-        } catch (Exception e) {
-            throw new RuntimeException("Error while updating Entity1", e);
-        }
+		System.out.println("M_TOP_100_BORROWER Maker submit completed. Table1 changed=" + t1 + ", Table2 changed="
+				+ t2 + ". Pending Checker verification.");
+		return t1 || t2;
+	}
 
-        // ✅ Save updated entity
-        updateEntityReflective("BRRS_M_TOP_100_BORROWER_MANUAL_SUMMARYTABLE1", existing, "REPORT_DATE",
-                existing.getReport_date());
+	private boolean submitTop100ForChecker(Object entity, String liveTable, String modTable, int fromRow,
+			int toRow) {
 
-        System.out.println("✅ Summary1 updated successfully");
+		try {
+			Object reportDateObj = entity.getClass().getMethod("getReport_date").invoke(entity);
+			if (reportDateObj == null) {
+				throw new IllegalStateException("Report Date is NULL");
+			}
+			Date reportDate = (Date) reportDateObj;
+			java.sql.Date sqlReportDate = new java.sql.Date(reportDate.getTime());
+			String showDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
 
-        // ================= PROCEDURE CALL =================
-        // ⚠️ If DB not updating, COMMENT THIS BLOCK and test
-        try {
-            String oracleDate = new SimpleDateFormat("dd-MM-yyyy")
-                    .format(request.getReport_date())
-                    .toUpperCase();
+			// 1. Current LIVE row (what the screen is showing)
+			List<java.util.Map<String, Object>> liveRows = jdbcTemplate.queryForList(
+					"SELECT * FROM " + liveTable + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", sqlReportDate);
+			if (liveRows.isEmpty()) {
+				throw new IllegalStateException("No record found in " + liveTable + " for report date " + showDate);
+			}
+			java.util.Map<String, Object> live = liveRows.get(0);
 
-            String sql = "BEGIN BRRS.BRRS_M_TOP_100_BORROWER_SUMMARY_PROCEDURE('" 
-                         + oracleDate + "'); END;";
+			// 2. Compare every manual cell. The MOD row keeps the Maker's value where it
+			// changed, otherwise the live value, so the Checker's copy back is complete.
+			List<String> colNames = new ArrayList<>();
+			List<Object> colValues = new ArrayList<>();
+			StringBuilder changes = new StringBuilder();
 
-            jdbcTemplate.execute(sql);
+			for (int r = fromRow; r <= toRow; r++) {
+				for (String col : AuditService.TOP100_COLS) {
 
-            System.out.println("Procedure executed for date: " + oracleDate);
+					String columnName = "R" + r + "_" + col;
+					Object liveVal = live.get(columnName);
+					Object storeVal = liveVal;
+					Object posted = top100Get(entity, "get" + columnName);
 
-        } catch (Exception e) {
-            System.out.println("⚠ Procedure execution failed: " + e.getMessage());
-        }
-    }
+					if (AuditService.TOP100_TEXT_COLS.contains(col)) {
+						// text cell: null = untouched, "" = cleared
+						String newVal = posted == null ? null : posted.toString().trim();
+						if (newVal != null && !top100SameText(liveVal, newVal)) {
+							appendTop100Change(changes, columnName, liveVal, newVal);
+							storeVal = newVal.isEmpty() ? null : newVal;
+						}
+					} else {
+						// numeric cell: null = untouched
+						BigDecimal newVal = top100ToDecimal(posted);
+						if (newVal != null && !top100SameNumber(liveVal, newVal)) {
+							appendTop100Change(changes, columnName, liveVal, newVal.toPlainString());
+							storeVal = newVal;
+						}
+					}
 
-    // ================= COPY FIELDS =================
-    private void copyFieldsEntity1(
-            M_TOP_100_BORROWER_Manual_Summary_Entity1 source,
-            M_TOP_100_BORROWER_Manual_Summary_Entity1 target,
-            int row,
-            String[] fields) {
+					colNames.add(columnName);
+					colValues.add(storeVal);
+				}
+			}
 
-        String prefix = "R" + row + "_";
+			if (changes.length() == 0) {
+				System.out.println("M_TOP_100_BORROWER " + modTable + ": no changes detected, nothing submitted.");
+				return false;
+			}
 
-        for (String field : fields) {
+			Object[] meta = { live.get("REPORT_VERSION"), live.get("REPORT_FREQUENCY"), live.get("REPORT_CODE"),
+					live.get("REPORT_DESC"), live.get("DEL_FLG") };
 
-            // ✅ Field/getter/setter names are stored as-is (e.g. R3_GROUP_CODE),
-            // they are NOT camelCase like getR3_GroupCode()
-            String getterName = "get" + prefix + field;
-            String setterName = "set" + prefix + field;
+			// 3. Update the pending/old MOD row for this report date (ONE row per date)
+			StringBuilder setSql = new StringBuilder();
+			for (String c : colNames) {
+				setSql.append(c).append(" = ?, ");
+			}
+			setSql.append("REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, REPORT_DESC = ?, ")
+					.append("DEL_FLG = ?, ENTITY_FLG = 'N', MODIFY_FLG = 'Y' ");
 
-            try {
-                Method getter = M_TOP_100_BORROWER_Manual_Summary_Entity1.class
-                        .getMethod(getterName);
+			List<Object> updArgs = new ArrayList<>(colValues);
+			java.util.Collections.addAll(updArgs, meta);
+			updArgs.add(sqlReportDate);
 
-                Method setter = M_TOP_100_BORROWER_Manual_Summary_Entity1.class
-                        .getMethod(setterName, getter.getReturnType());
+			int updated = jdbcTemplate.update(
+					"UPDATE " + modTable + " SET " + setSql + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+					updArgs.toArray());
 
-                Object newValue = getter.invoke(source);
+			// 4. Otherwise insert it
+			if (updated == 0) {
+				StringBuilder cols = new StringBuilder();
+				StringBuilder marks = new StringBuilder();
+				for (String c : colNames) {
+					cols.append(c).append(", ");
+					marks.append("?, ");
+				}
 
-                // 🔍 DEBUG LOG (VERY IMPORTANT)
-                System.out.println(getterName + " = " + newValue);
+				List<Object> insArgs = new ArrayList<>(colValues);
+				insArgs.add(sqlReportDate);
+				java.util.Collections.addAll(insArgs, meta);
 
-                // ✅ Always set (even null)
-                setter.invoke(target, newValue);
+				jdbcTemplate.update("INSERT INTO " + modTable + " (" + cols
+						+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+						+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG) VALUES (" + marks + "?, ?, ?, ?, ?, 'N', 'Y', ?)",
+						insArgs.toArray());
+			}
 
-            } catch (NoSuchMethodException e) {
-                throw new RuntimeException("❌ Missing Method: " + getterName, e);
-            } catch (Exception e) {
-                throw new RuntimeException("Error copying " + getterName, e);
-            }
-        }
-    }
+			// 5. Audit -> shows up in Modify Status for the Checker.
+			// change_details carries the report date (dd-MM-yyyy); the Checker reads it back.
+			auditService.saveModifyAudit(showDate, changes.toString(), TOP100_SCREEN, modTable);
 
-    
+			System.out.println("M_TOP_100_BORROWER " + modTable + " saved for Checker verification.");
+			return true;
 
-    // ================= UPDATE REPORT 1 =================
-    @Transactional
-    public void updateReport1(M_TOP_100_BORROWER_Manual_Summary_Entity2 request) {
+		} catch (Exception e) {
+			System.err.println("===== M_TOP_100_BORROWER MAKER SUBMIT ERROR (" + modTable + ") =====");
+			e.printStackTrace();
+			throw new RuntimeException("Error while submitting M_TOP_100_BORROWER Manual fields for Checker", e);
+		}
+	}
 
-        System.out.println("Came to Service - Entity2");
+	private void appendTop100Change(StringBuilder changes, String columnName, Object liveVal, String newVal) {
+		if (changes.length() > 0) {
+			changes.append("|||");
+		}
+		changes.append(columnName).append(": OldValue: ").append(liveVal == null ? "null" : liveVal.toString().trim())
+				.append(", NewValue: ").append(newVal);
+	}
 
-        // 🔍 Fetch existing record
-        List<M_TOP_100_BORROWER_Manual_Summary_Entity2> existingList2 = queryEntities(
-                "SELECT * FROM BRRS_M_TOP_100_BORROWER_MANUAL_SUMMARYTABLE2 WHERE REPORT_DATE = ?",
-                M_TOP_100_BORROWER_Manual_Summary_Entity2.class, request.getReport_date());
-        if (existingList2.isEmpty()) {
-            throw new RuntimeException("Record not found for REPORT_DATE: " + request.getReport_date());
-        }
-        M_TOP_100_BORROWER_Manual_Summary_Entity2 existing = existingList2.get(0);
+	private Object top100Get(Object entity, String getterName) throws Exception {
+		try {
+			return entity.getClass().getMethod(getterName).invoke(entity);
+		} catch (NoSuchMethodException ex) {
+			System.out.println("Method not found : " + getterName + " - Skipping");
+			return null;
+		}
+	}
 
-        try {
-            String[] fields = {
-                    "GROUP_CODE", "GROUP_NAME", "CRM",
-                    "NFBLT", "NFBOS", "CRM_2", "NFB", "BOND", "CP",
-                    "EQULITY", "FOREX", "OTHERS", "INT_BANK", "DERIVATIVE"
-            };
+	private BigDecimal top100ToDecimal(Object o) {
+		if (o == null)
+			return null;
+		if (o instanceof BigDecimal)
+			return (BigDecimal) o;
+		String s = o.toString().trim();
+		return s.isEmpty() ? null : new BigDecimal(s);
+	}
 
-            // 🔁 Loop R71 → R102
-            for (int i = 71; i <= 102; i++) {
-                copyFieldsEntity2(request, existing, i, fields);
-            }
+	private boolean top100SameNumber(Object liveVal, BigDecimal newVal) {
+		if (liveVal == null)
+			return false;
+		try {
+			return new BigDecimal(liveVal.toString().trim()).compareTo(newVal) == 0;
+		} catch (NumberFormatException e) {
+			return liveVal.toString().trim().equals(newVal.toString().trim());
+		}
+	}
 
-        } catch (Exception e) {
-            throw new RuntimeException("Error while updating Entity2", e);
-        }
-
-        // ✅ Save updated entity
-        updateEntityReflective("BRRS_M_TOP_100_BORROWER_MANUAL_SUMMARYTABLE2", existing, "REPORT_DATE",
-                existing.getReport_date());
-
-        System.out.println("✅ Summary2 updated successfully");
-    }
-
-    // ================= COPY FIELDS =================
-    private void copyFieldsEntity2(
-            M_TOP_100_BORROWER_Manual_Summary_Entity2 source,
-            M_TOP_100_BORROWER_Manual_Summary_Entity2 target,
-            int row,
-            String[] fields) {
-
-        // ✅ FIXED PREFIX (IMPORTANT)
-        String prefix = "R" + row + "_";
-
-        for (String field : fields) {
-
-            // ✅ Field/getter/setter names are stored as-is (e.g. R71_GROUP_CODE),
-            // they are NOT camelCase like getR71_GroupCode()
-            String getterName = "get" + prefix + field;
-            String setterName = "set" + prefix + field;
-
-            try {
-                Method getter = M_TOP_100_BORROWER_Manual_Summary_Entity2.class
-                        .getMethod(getterName);
-
-                Method setter = M_TOP_100_BORROWER_Manual_Summary_Entity2.class
-                        .getMethod(setterName, getter.getReturnType());
-
-                Object newValue = getter.invoke(source);
-
-                // 🔍 Debug log (VERY IMPORTANT)
-                System.out.println(getterName + " = " + newValue);
-
-                // ✅ Always update (even null)
-                setter.invoke(target, newValue);
-
-            } catch (NoSuchMethodException e) {
-                throw new RuntimeException("❌ Missing Method: " + getterName, e);
-            } catch (Exception e) {
-                throw new RuntimeException("Error copying " + getterName, e);
-            }
-        }
-    }
+	// live NULL and "" are the same thing (Oracle stores '' as NULL)
+	private boolean top100SameText(Object liveVal, String newVal) {
+		String liveStr = liveVal == null ? "" : liveVal.toString().trim();
+		return liveStr.equals(newVal);
+	}
 
     // ================= CAMEL CASE =================
     private String toCamelCase(String text) {
