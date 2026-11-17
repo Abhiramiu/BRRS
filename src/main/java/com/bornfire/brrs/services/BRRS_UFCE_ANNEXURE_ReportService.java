@@ -34,6 +34,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +42,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
 @Service
@@ -53,6 +55,9 @@ public class BRRS_UFCE_ANNEXURE_ReportService {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	private AuditService auditService;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -1436,6 +1441,7 @@ public class BRRS_UFCE_ANNEXURE_ReportService {
 
 
 
+	@Transactional
 	public void updateAllUfceAnnexureRows(List<UFCE_ANNEXURE_Update_Row> rows, String type) {
 		if (rows == null || rows.isEmpty())
 			return;
@@ -1540,10 +1546,9 @@ public class BRRS_UFCE_ANNEXURE_ReportService {
 		}
 
 		// =====================================================
-		// NORMAL MODE: Archive current un-modified snapshot FIRST, then Update Live Tables
+		// NORMAL MODE: Replicate M_FAS normal update workflow into MOD table
 		// =====================================================
 		String summaryTable = "BRRS_ANNEXURE_UFCE_SUMMARYTABLE";
-		String detailTable = "BRRS_ANNEXURE_UFCE_DETAILTABLE";
 
 		Date reportDate = null;
 		try {
@@ -1557,100 +1562,258 @@ public class BRRS_UFCE_ANNEXURE_ReportService {
 			}
 		}
 
-		// Step 1: Copy CURRENT un-modified record from SUMMARY/DETAIL table into ARCHIVAL table as maxVersion + 1 FIRST
-		if (reportDate != null) {
-			try {
-				BigDecimal nextVersion = getNextArchivalVersion(reportDate);
-				logger.info("Archiving un-modified current snapshot for date {} as version {} before modifying summary",
-						reportDate, nextVersion);
-
-				String archiveSummarySql = "INSERT INTO BRRS_ANNEXURE_UFCE_ARCHIVAL_SUMMARYTABLE "
-						+ "(SNO, NAME_OF_BORROWER, BRANCH, FINACLE_AC_ID, FINACLE_ID, TOT_FRGN_CCY_EXPOSURE, "
-						+ "UFCE, UFCE_PERCENT, LIKELY_LOSS, EBID, LIKELY_LOSS_EBID, INCREMENTAL_PROV_REQ, FUND_BASED_ON_DATE, "
-						+ "PROV_REQUIRED, REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
-						+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-						+ "SELECT (SELECT COALESCE(MAX(SNO), 0) FROM BRRS_ANNEXURE_UFCE_ARCHIVAL_SUMMARYTABLE) + ROWNUM, "
-						+ "NAME_OF_BORROWER, BRANCH, FINACLE_AC_ID, FINACLE_ID, TOT_FRGN_CCY_EXPOSURE, "
-						+ "UFCE, UFCE_PERCENT, LIKELY_LOSS, EBID, LIKELY_LOSS_EBID, INCREMENTAL_PROV_REQ, FUND_BASED_ON_DATE, "
-						+ "PROV_REQUIRED, REPORT_DATE, ?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
-						+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG "
-						+ "FROM BRRS_ANNEXURE_UFCE_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-
-				int summaryCount = jdbcTemplate.update(archiveSummarySql, nextVersion, reportDate);
-				logger.info("Archived {} summary records into BRRS_ANNEXURE_UFCE_ARCHIVAL_SUMMARYTABLE with version {}",
-						summaryCount, nextVersion);
-
-				String archiveDetailSql = "INSERT INTO BRRS_ANNEXURE_UFCE_ARCHIVAL_DETAILTABLE "
-						+ "(SNO, NAME_OF_BORROWER, BRANCH, FINACLE_AC_ID, FINACLE_ID, TOT_FRGN_CCY_EXPOSURE, "
-						+ "UFCE, UFCE_PERCENT, LIKELY_LOSS, EBID, LIKELY_LOSS_EBID, INCREMENTAL_PROV_REQ, FUND_BASED_ON_DATE, "
-						+ "PROV_REQUIRED, REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
-						+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-						+ "SELECT (SELECT COALESCE(MAX(SNO), 0) FROM BRRS_ANNEXURE_UFCE_ARCHIVAL_DETAILTABLE) + ROWNUM, "
-						+ "NAME_OF_BORROWER, BRANCH, FINACLE_AC_ID, FINACLE_ID, TOT_FRGN_CCY_EXPOSURE, "
-						+ "UFCE, UFCE_PERCENT, LIKELY_LOSS, EBID, LIKELY_LOSS_EBID, INCREMENTAL_PROV_REQ, FUND_BASED_ON_DATE, "
-						+ "PROV_REQUIRED, REPORT_DATE, ?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
-						+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG "
-						+ "FROM BRRS_ANNEXURE_UFCE_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-
-				int detailCount = jdbcTemplate.update(archiveDetailSql, nextVersion, reportDate);
-				logger.info("Archived {} detail records into BRRS_ANNEXURE_UFCE_ARCHIVAL_DETAILTABLE with version {}",
-						detailCount, nextVersion);
-			} catch (Exception e) {
-				logger.error("Error archiving current summary & detail snapshot before updates: {}", e.getMessage(), e);
-			}
+		if (reportDate == null) {
+			logger.warn("Could not determine REPORT_DATE for UFCE_ANNEXURE normal update");
+			return;
 		}
-
-		// Step 2: NOW apply user's inline updates to main summary and detail tables
-		String summarySql = "UPDATE " + summaryTable + " SET " + "BRANCH = ?, " + "TOT_FRGN_CCY_EXPOSURE = ?, "
-				+ "UFCE = ?, " + "UFCE_PERCENT = ?, " + "EBID = ?, " + "INCREMENTAL_PROV_REQ = ?, " + "PROV_REQUIRED = ? " + "WHERE SNO = ?";
-
-		String detailSql = "UPDATE " + detailTable + " SET " + "BRANCH = ?, " + "TOT_FRGN_CCY_EXPOSURE = ?, "
-				+ "UFCE = ?, " + "UFCE_PERCENT = ?, " + "EBID = ?, " + "INCREMENTAL_PROV_REQ = ?, " + "PROV_REQUIRED = ? " + "WHERE SNO = ?";
 
 		for (UFCE_ANNEXURE_Update_Row row : rows) {
 			if (row.getSno() == null)
 				continue;
 
-			jdbcTemplate.update(summarySql, row.getBranch(), row.getTotFrgnCcyExposure(), row.getUfce(),
-					row.getUfcePercent(), row.getEbid(), row.getIncrementalProvReq(), row.getProvRequired(), row.getSno());
+			// 🔹 JdbcTemplate lookup
+			String selectSql = "SELECT * FROM " + summaryTable + " WHERE SNO = ?";
+			List<UFCE_ANNEXURE_Summary_Entity> list = jdbcTemplate.query(selectSql,
+					new SummaryRowMapper(), row.getSno());
 
-			int detailRowsUpdated = jdbcTemplate.update(detailSql, row.getBranch(), row.getTotFrgnCcyExposure(),
-					row.getUfce(), row.getUfcePercent(), row.getEbid(), row.getIncrementalProvReq(), row.getProvRequired(), row.getSno());
+			if (list.isEmpty()) {
+				logger.warn("⚠️ No existing summary record found for SNO: {}", row.getSno());
+				continue;
+			}
 
-			if (detailRowsUpdated == 0) {
-				String detailSqlFallback = "UPDATE " + detailTable + " SET "
-						+ "BRANCH = ?, TOT_FRGN_CCY_EXPOSURE = ?, UFCE = ?, UFCE_PERCENT = ?, EBID = ?, INCREMENTAL_PROV_REQ = ?, PROV_REQUIRED = ? "
-						+ "WHERE TRUNC(REPORT_DATE) = TRUNC((SELECT REPORT_DATE FROM " + summaryTable
-						+ " WHERE SNO = ?)) "
-						+ "AND ("
-						+ "  (FINACLE_AC_ID IS NOT NULL AND FINACLE_AC_ID = (SELECT FINACLE_AC_ID FROM " + summaryTable
-						+ " WHERE SNO = ?)) OR " + "  (FINACLE_ID IS NOT NULL AND FINACLE_ID = (SELECT FINACLE_ID FROM "
-						+ summaryTable + " WHERE SNO = ?)) OR "
-						+ "  (NAME_OF_BORROWER IS NOT NULL AND NAME_OF_BORROWER = (SELECT NAME_OF_BORROWER FROM "
-						+ summaryTable + " WHERE SNO = ?))" + ")";
+			UFCE_ANNEXURE_Summary_Entity existing = list.get(0);
 
-				try {
-					int count = jdbcTemplate.update(detailSqlFallback, row.getBranch(), row.getTotFrgnCcyExposure(),
-							row.getUfce(), row.getUfcePercent(), row.getEbid(), row.getIncrementalProvReq(), row.getProvRequired(),
-							row.getSno(), row.getSno(), row.getSno(), row.getSno());
-					logger.info("Updated {} detail rows via fallback matching for SNO {}", count, row.getSno());
-				} catch (Exception ex) {
-					logger.warn("Detail table fallback update warning for SNO {}: {}", row.getSno(), ex.getMessage());
-				}
+			// 🔹 Audit copy: Create a clone of the original database state before making any changes
+			UFCE_ANNEXURE_Summary_Entity oldcopy = new UFCE_ANNEXURE_Summary_Entity();
+			BeanUtils.copyProperties(existing, oldcopy);
+
+			// Normalize state differences to keep audit log payload minimal
+			if (row.getBranch() != null && isDifferent(existing.getBranch(), row.getBranch())) {
+				existing.setBranch(row.getBranch().trim());
+			}
+			if (row.getTotFrgnCcyExposure() != null && isDifferent(existing.getTotFrgnCcyExposure(), row.getTotFrgnCcyExposure())) {
+				existing.setTotFrgnCcyExposure(row.getTotFrgnCcyExposure());
+			}
+			if (row.getUfce() != null && isDifferent(existing.getUfce(), row.getUfce())) {
+				existing.setUfce(row.getUfce());
+			}
+			if (row.getEbid() != null && isDifferent(existing.getEbid(), row.getEbid())) {
+				existing.setEbid(row.getEbid());
+			}
+			if (row.getIncrementalProvReq() != null && isDifferent(existing.getIncrementalProvReq(), row.getIncrementalProvReq())) {
+				existing.setIncrementalProvReq(row.getIncrementalProvReq());
+			}
+			if (row.getProvRequired() != null && isDifferent(existing.getProvRequired(), row.getProvRequired())) {
+				existing.setProvRequired(row.getProvRequired());
+			}
+			if (row.getUfcePercent() != null && isDifferent(existing.getUfcePercent(), row.getUfcePercent())) {
+				existing.setUfcePercent(row.getUfcePercent());
+			}
+
+			// 🔹 Evaluate audit changes
+			String changes = auditService.getChanges(oldcopy, existing);
+			logger.info("UFCE_ANNEXURE Changes Length for SNO {} = {}", row.getSno(), (changes != null ? changes.length() : 0));
+
+			// 🔹 Save into MOD Summary Table for Checker Approval if changes exist
+			if (changes != null && !changes.isEmpty()) {
+				// 🔹 Set Maker-Checker Flags
+				existing.setEntityFlg("Y");
+				existing.setModifyFlg("Y");
+				existing.setDelFlg("N");
+
+				saveModSummaryEntity(existing);
+				logger.info("✔ Record saved into BRRS_ANNEXURE_UFCE_MOD_SUMMARYTABLE for Checker Approval (SNO: {})", row.getSno());
+
+				String idVal = existing.getReportDate() != null ? existing.getReportDate().toString() : reportDate.toString();
+				auditService.compareEntitiesmanual(oldcopy, existing, idVal,
+						"UFCE_ANNEXURE", "BRRS_ANNEXURE_UFCE_MOD_SUMMARYTABLE");
 			}
 		}
+	}
 
-		if (rows.get(0).getUfcePercent() != null && reportDate != null) {
-			try {
-				String bulkSummaryUfcePercentSql = "UPDATE " + summaryTable + " SET UFCE_PERCENT = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-				jdbcTemplate.update(bulkSummaryUfcePercentSql, rows.get(0).getUfcePercent(), reportDate);
-
-				String bulkDetailUfcePercentSql = "UPDATE " + detailTable + " SET UFCE_PERCENT = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-				jdbcTemplate.update(bulkDetailUfcePercentSql, rows.get(0).getUfcePercent(), reportDate);
-			} catch (Exception ex) {
-				logger.warn("Bulk UFCE_PERCENT update warning: {}", ex.getMessage());
-			}
+	@Transactional
+	public void updateReport1(UFCE_ANNEXURE_Summary_Entity updatedEntity) {
+		if (updatedEntity == null || updatedEntity.getReportDate() == null) {
+			logger.warn("UFCE_ANNEXURE updateReport1: Entity or reportDate is null");
+			return;
 		}
+
+		String selectSql = "SELECT * FROM BRRS_ANNEXURE_UFCE_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND NVL(FINACLE_AC_ID, -1) = NVL(?, -1)";
+		List<UFCE_ANNEXURE_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new SummaryRowMapper(), updatedEntity.getReportDate(), updatedEntity.getFinacleAcId());
+
+		UFCE_ANNEXURE_Summary_Entity existing;
+		if (list.isEmpty()) {
+			existing = new UFCE_ANNEXURE_Summary_Entity();
+			BeanUtils.copyProperties(updatedEntity, existing);
+			logger.info("⚠️ No existing record found — creating new record");
+		} else {
+			existing = list.get(0);
+			logger.info("Updating existing record for FINACLE_AC_ID: {}", existing.getFinacleAcId());
+		}
+
+		UFCE_ANNEXURE_Summary_Entity oldcopy = new UFCE_ANNEXURE_Summary_Entity();
+		BeanUtils.copyProperties(existing, oldcopy);
+
+		if (updatedEntity.getBranch() != null && isDifferent(existing.getBranch(), updatedEntity.getBranch())) {
+			existing.setBranch(updatedEntity.getBranch().trim());
+		}
+		if (updatedEntity.getTotFrgnCcyExposure() != null && isDifferent(existing.getTotFrgnCcyExposure(), updatedEntity.getTotFrgnCcyExposure())) {
+			existing.setTotFrgnCcyExposure(updatedEntity.getTotFrgnCcyExposure());
+		}
+		if (updatedEntity.getUfce() != null && isDifferent(existing.getUfce(), updatedEntity.getUfce())) {
+			existing.setUfce(updatedEntity.getUfce());
+		}
+		if (updatedEntity.getEbid() != null && isDifferent(existing.getEbid(), updatedEntity.getEbid())) {
+			existing.setEbid(updatedEntity.getEbid());
+		}
+		if (updatedEntity.getIncrementalProvReq() != null && isDifferent(existing.getIncrementalProvReq(), updatedEntity.getIncrementalProvReq())) {
+			existing.setIncrementalProvReq(updatedEntity.getIncrementalProvReq());
+		}
+		if (updatedEntity.getProvRequired() != null && isDifferent(existing.getProvRequired(), updatedEntity.getProvRequired())) {
+			existing.setProvRequired(updatedEntity.getProvRequired());
+		}
+		if (updatedEntity.getUfcePercent() != null && isDifferent(existing.getUfcePercent(), updatedEntity.getUfcePercent())) {
+			existing.setUfcePercent(updatedEntity.getUfcePercent());
+		}
+
+		String changes = auditService.getChanges(oldcopy, existing);
+		logger.info("UFCE_ANNEXURE Changes Length = {}", (changes != null ? changes.length() : 0));
+
+		if (changes != null && !changes.isEmpty()) {
+			existing.setEntityFlg("Y");
+			existing.setModifyFlg("Y");
+			existing.setDelFlg("N");
+
+			saveModSummaryEntity(existing);
+			logger.info("✔ Record saved into BRRS_ANNEXURE_UFCE_MOD_SUMMARYTABLE for Checker Approval");
+
+			String idVal = existing.getReportDate() != null ? existing.getReportDate().toString() : "";
+			auditService.compareEntitiesmanual(oldcopy, existing, idVal,
+					"UFCE_ANNEXURE", "BRRS_ANNEXURE_UFCE_MOD_SUMMARYTABLE");
+		}
+	}
+
+	public void saveModSummaryEntity(UFCE_ANNEXURE_Summary_Entity entity) {
+		String sql = "MERGE INTO BRRS_ANNEXURE_UFCE_MOD_SUMMARYTABLE dest "
+				+ "USING (SELECT ? AS report_date, ? AS finacle_ac_id FROM dual) src "
+				+ "ON (TRUNC(dest.REPORT_DATE) = TRUNC(src.report_date) AND NVL(dest.FINACLE_AC_ID, -1) = NVL(src.finacle_ac_id, -1)) "
+				+ "WHEN MATCHED THEN "
+				+ "  UPDATE SET "
+				+ "    BRANCH = ?, "
+				+ "    TOT_FRGN_CCY_EXPOSURE = ?, "
+				+ "    UFCE = ?, "
+				+ "    EBID = ?, "
+				+ "    INCREMENTAL_PROV_REQ = ?, "
+				+ "    PROV_REQUIRED = ?, "
+				+ "    REPORT_VERSION = ?, "
+				+ "    REPORT_FREQUENCY = ?, "
+				+ "    REPORT_CODE = ?, "
+				+ "    REPORT_DESC = ?, "
+				+ "    ENTITY_FLG = ?, "
+				+ "    MODIFY_FLG = ?, "
+				+ "    DEL_FLG = ?, "
+				+ "    UFCE_PERCENT = ? "
+				+ "WHEN NOT MATCHED THEN "
+				+ "  INSERT ("
+				+ "    BRANCH, FINACLE_AC_ID, TOT_FRGN_CCY_EXPOSURE, UFCE, EBID, INCREMENTAL_PROV_REQ, PROV_REQUIRED, "
+				+ "    REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, UFCE_PERCENT"
+				+ "  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+		String reportVer = entity.getReportVersion() != null ? entity.getReportVersion().toString() : "1";
+		String reportFreq = entity.getReportFrequency() != null ? entity.getReportFrequency() : "MONTHLY";
+		String reportCode = entity.getReportCode() != null ? entity.getReportCode() : "UFCE_ANNEXURE";
+		String reportDesc = entity.getReportDesc() != null ? entity.getReportDesc() : "UFCE - ANNEXURE";
+
+		Object[] params = {
+				// USING
+				entity.getReportDate(),
+				entity.getFinacleAcId(),
+
+				// UPDATE
+				entity.getBranch(),
+				entity.getTotFrgnCcyExposure(),
+				entity.getUfce(),
+				entity.getEbid(),
+				entity.getIncrementalProvReq(),
+				entity.getProvRequired(),
+				reportVer,
+				reportFreq,
+				reportCode,
+				reportDesc,
+				entity.getEntityFlg(),
+				entity.getModifyFlg(),
+				entity.getDelFlg(),
+				entity.getUfcePercent(),
+
+				// INSERT
+				entity.getBranch(),
+				entity.getFinacleAcId(),
+				entity.getTotFrgnCcyExposure(),
+				entity.getUfce(),
+				entity.getEbid(),
+				entity.getIncrementalProvReq(),
+				entity.getProvRequired(),
+				entity.getReportDate(),
+				reportVer,
+				reportFreq,
+				reportCode,
+				reportDesc,
+				entity.getEntityFlg(),
+				entity.getModifyFlg(),
+				entity.getDelFlg(),
+				entity.getUfcePercent()
+		};
+
+		jdbcTemplate.update(sql, params);
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		String updateSql = "UPDATE BRRS_ANNEXURE_UFCE_SUMMARYTABLE M SET ("
+				+ "    BRANCH, TOT_FRGN_CCY_EXPOSURE, UFCE, EBID, INCREMENTAL_PROV_REQ, PROV_REQUIRED, UFCE_PERCENT, "
+				+ "    ENTITY_FLG, MODIFY_FLG, DEL_FLG" + ") = (" + "    SELECT "
+				+ "        S.BRANCH, S.TOT_FRGN_CCY_EXPOSURE, S.UFCE, S.EBID, S.INCREMENTAL_PROV_REQ, S.PROV_REQUIRED, S.UFCE_PERCENT, "
+				+ "        S.ENTITY_FLG, 'N', S.DEL_FLG " + "    FROM BRRS_ANNEXURE_UFCE_MOD_SUMMARYTABLE S "
+				+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE) AND NVL(S.FINACLE_AC_ID, -1) = NVL(M.FINACLE_AC_ID, -1)" + ") "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?) "
+				+ "  AND EXISTS (SELECT 1 FROM BRRS_ANNEXURE_UFCE_MOD_SUMMARYTABLE S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE) AND NVL(S.FINACLE_AC_ID, -1) = NVL(M.FINACLE_AC_ID, -1) AND S.MODIFY_FLG = 'Y')";
+
+		jdbcTemplate.update(updateSql, reportDate);
+
+		String updateDetailSql = "UPDATE BRRS_ANNEXURE_UFCE_DETAILTABLE D SET ("
+				+ "    BRANCH, TOT_FRGN_CCY_EXPOSURE, UFCE, EBID, INCREMENTAL_PROV_REQ, PROV_REQUIRED, UFCE_PERCENT, "
+				+ "    ENTITY_FLG, MODIFY_FLG, DEL_FLG" + ") = (" + "    SELECT "
+				+ "        S.BRANCH, S.TOT_FRGN_CCY_EXPOSURE, S.UFCE, S.EBID, S.INCREMENTAL_PROV_REQ, S.PROV_REQUIRED, S.UFCE_PERCENT, "
+				+ "        S.ENTITY_FLG, 'N', S.DEL_FLG " + "    FROM BRRS_ANNEXURE_UFCE_MOD_SUMMARYTABLE S "
+				+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(D.REPORT_DATE) AND NVL(S.FINACLE_AC_ID, -1) = NVL(D.FINACLE_AC_ID, -1)" + ") "
+				+ "WHERE TRUNC(D.REPORT_DATE) = TRUNC(?) "
+				+ "  AND EXISTS (SELECT 1 FROM BRRS_ANNEXURE_UFCE_MOD_SUMMARYTABLE S WHERE TRUNC(S.REPORT_DATE) = TRUNC(D.REPORT_DATE) AND NVL(S.FINACLE_AC_ID, -1) = NVL(D.FINACLE_AC_ID, -1) AND S.MODIFY_FLG = 'Y')";
+
+		try {
+			jdbcTemplate.update(updateDetailSql, reportDate);
+		} catch (Exception ex) {
+			logger.warn("Detail table update warning during approval: {}", ex.getMessage());
+		}
+
+		jdbcTemplate.update("UPDATE BRRS_ANNEXURE_UFCE_MOD_SUMMARYTABLE SET MODIFY_FLG='N', ENTITY_FLG='Y' WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND MODIFY_FLG='Y'",
+				reportDate);
+
+		System.out.println("UFCE_ANNEXURE Checker Approved Successfully");
+	}
+
+	private boolean isDifferent(BigDecimal a, BigDecimal b) {
+		if (a == null && b == null)
+			return false;
+		if (a == null || b == null)
+			return true;
+		return a.compareTo(b) != 0;
+	}
+
+	private boolean isDifferent(String a, String b) {
+		String s1 = (a == null) ? "" : a.trim();
+		String s2 = (b == null) ? "" : b.trim();
+		return !s1.equals(s2);
 	}
 
 	// ===========================================================

@@ -1569,12 +1569,16 @@ public class AuditService {
 			transferIRRBB_ADVData(auditRecord);
 		} else if (upperTable.contains("EXPOSURES")) {
 			transferExposuresData(auditRecord);
+		} else if (upperTable.contains("NSFR")) {
+			transferNSFRData(auditRecord);
+		} else if (upperTable.contains("ANNEXURE_UFCE") 
+				|| upperTable.contains("UFCE_ANNEXURE")) {
+			transferUFCEAnnexureData(auditRecord);
 		} else if (upperTable.contains("BDISB2")) {
 			transferBDISB2Data(auditRecord);
 		} else if (upperTable.contains("BDISB3")) {
 			transferBDISB3Data(auditRecord);
-		} 
-		else if (upperTable.contains("FORMAT_II")) {
+		} else if (upperTable.contains("FORMAT_II")) {
 			transferFORMATIIData(auditRecord);
 		} else if (upperTable.contains("GL_SCH")) {
 			transferGLSCHData(auditRecord);
@@ -2587,6 +2591,122 @@ public class AuditService {
 		jdbcTemplate.update("BEGIN BRRS_EXPOSURES_SUMMARY_PROCEDURE(?); END;", formattedDate);
 
 		System.out.println("EXPOSURES Verification and Procedure Execution Completed Successfully");
+	}
+
+	private void transferNSFRData(AuditServicesEntity auditRecord) {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_NSFR_MOD_SUMMARYTABLE WHERE MODIFY_FLG = 'Y'";
+		java.sql.Date reportDate = null;
+		try {
+			reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+		} catch (Exception e) {
+			reportDate = null;
+		}
+		if (reportDate == null) {
+			try {
+				reportDate = jdbcTemplate.queryForObject("SELECT MAX(REPORT_DATE) FROM BRRS_NSFR_MOD_SUMMARYTABLE", java.sql.Date.class);
+			} catch (Exception e) {
+				logger.warn("Could not query report date from BRRS_NSFR_MOD_SUMMARYTABLE: {}", e.getMessage());
+			}
+		}
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified NSFR record available for verification.");
+		}
+
+		System.out.println("NSFR Report Date : " + reportDate);
+
+		String updateSql = "UPDATE BRRS_NSFR_SUMMARYTABLE M " + "SET ("
+				+ "      R13_TOTAL_AMOUNT_BOB, R17_TOTAL_AMOUNT_BOB, R18_TOTAL_AMOUNT_BOB, "
+				+ "      R20_TOTAL_AMOUNT_BOB, R21_TOTAL_AMOUNT_BOB, R22_TOTAL_AMOUNT_BOB, "
+				+ "      R27_TOTAL_AMOUNT_BOB, R29_TOTAL_AMOUNT_BOB, R31_TOTAL_AMOUNT_BOB, "
+				+ "      ENTITY_FLG, MODIFY_FLG, DEL_FLG" + ") = (" + "    SELECT "
+				+ "         S.R13_TOTAL_AMOUNT_BOB, S.R17_TOTAL_AMOUNT_BOB, S.R18_TOTAL_AMOUNT_BOB, "
+				+ "         S.R20_TOTAL_AMOUNT_BOB, S.R21_TOTAL_AMOUNT_BOB, S.R22_TOTAL_AMOUNT_BOB, "
+				+ "         S.R27_TOTAL_AMOUNT_BOB, S.R29_TOTAL_AMOUNT_BOB, S.R31_TOTAL_AMOUNT_BOB, "
+				+ "         S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG " + "      FROM BRRS_NSFR_MOD_SUMMARYTABLE S "
+				+ "      WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" + ") "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int inserted = jdbcTemplate.update(updateSql, reportDate);
+
+		if (inserted == 0) {
+			throw new IllegalStateException("NSFR modification record not found for date : " + reportDate);
+		}
+
+		System.out.println("NSFR Main Updated : " + inserted);
+
+		String updateModSql = "UPDATE BRRS_NSFR_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+		int updated = jdbcTemplate.update(updateModSql, reportDate);
+
+		System.out.println("NSFR MOD Updated : " + updated);
+
+		// Execute stored procedure after verification/transfer
+		String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+		jdbcTemplate.update("BEGIN BRRS_NSFR_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+		System.out.println("NSFR Verification and Procedure Execution Completed Successfully");
+	}
+
+	private void transferUFCEAnnexureData(AuditServicesEntity auditRecord) {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_ANNEXURE_UFCE_MOD_SUMMARYTABLE WHERE MODIFY_FLG = 'Y'";
+		java.sql.Date reportDate = null;
+		try {
+			reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+		} catch (Exception e) {
+			logger.warn("Could not query pending report date from BRRS_ANNEXURE_UFCE_MOD_SUMMARYTABLE: {}", e.getMessage());
+		}
+
+		if (reportDate == null) {
+			try {
+				reportDate = jdbcTemplate.queryForObject("SELECT MAX(REPORT_DATE) FROM BRRS_ANNEXURE_UFCE_MOD_SUMMARYTABLE", java.sql.Date.class);
+			} catch (Exception ignored) {
+			}
+		}
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified UFCE_ANNEXURE record available for verification.");
+		}
+
+		System.out.println("UFCE_ANNEXURE Report Date : " + reportDate);
+
+		String updateSql = "UPDATE BRRS_ANNEXURE_UFCE_SUMMARYTABLE M SET ("
+				+ "    BRANCH, TOT_FRGN_CCY_EXPOSURE, UFCE, EBID, INCREMENTAL_PROV_REQ, PROV_REQUIRED, UFCE_PERCENT, "
+				+ "    ENTITY_FLG, MODIFY_FLG, DEL_FLG" + ") = (" + "    SELECT "
+				+ "        S.BRANCH, S.TOT_FRGN_CCY_EXPOSURE, S.UFCE, S.EBID, S.INCREMENTAL_PROV_REQ, S.PROV_REQUIRED, S.UFCE_PERCENT, "
+				+ "        S.ENTITY_FLG, 'N', S.DEL_FLG " + "    FROM BRRS_ANNEXURE_UFCE_MOD_SUMMARYTABLE S "
+				+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE) AND NVL(S.FINACLE_AC_ID, -1) = NVL(M.FINACLE_AC_ID, -1)" + ") "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?) "
+				+ "  AND EXISTS (SELECT 1 FROM BRRS_ANNEXURE_UFCE_MOD_SUMMARYTABLE S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE) AND NVL(S.FINACLE_AC_ID, -1) = NVL(M.FINACLE_AC_ID, -1) AND S.MODIFY_FLG = 'Y')";
+
+		int inserted = jdbcTemplate.update(updateSql, reportDate);
+
+		if (inserted == 0) {
+			throw new IllegalStateException("UFCE_ANNEXURE modification record not found for date : " + reportDate);
+		}
+
+		System.out.println("UFCE_ANNEXURE Main Updated : " + inserted);
+
+		String updateDetailSql = "UPDATE BRRS_ANNEXURE_UFCE_DETAILTABLE D SET ("
+				+ "    BRANCH, TOT_FRGN_CCY_EXPOSURE, UFCE, EBID, INCREMENTAL_PROV_REQ, PROV_REQUIRED, UFCE_PERCENT, "
+				+ "    ENTITY_FLG, MODIFY_FLG, DEL_FLG" + ") = (" + "    SELECT "
+				+ "        S.BRANCH, S.TOT_FRGN_CCY_EXPOSURE, S.UFCE, S.EBID, S.INCREMENTAL_PROV_REQ, S.PROV_REQUIRED, S.UFCE_PERCENT, "
+				+ "        S.ENTITY_FLG, 'N', S.DEL_FLG " + "    FROM BRRS_ANNEXURE_UFCE_MOD_SUMMARYTABLE S "
+				+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(D.REPORT_DATE) AND NVL(S.FINACLE_AC_ID, -1) = NVL(D.FINACLE_AC_ID, -1)" + ") "
+				+ "WHERE TRUNC(D.REPORT_DATE) = TRUNC(?) "
+				+ "  AND EXISTS (SELECT 1 FROM BRRS_ANNEXURE_UFCE_MOD_SUMMARYTABLE S WHERE TRUNC(S.REPORT_DATE) = TRUNC(D.REPORT_DATE) AND NVL(S.FINACLE_AC_ID, -1) = NVL(D.FINACLE_AC_ID, -1) AND S.MODIFY_FLG = 'Y')";
+
+		try {
+			int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+			System.out.println("UFCE_ANNEXURE Detail Updated : " + detailUpdated);
+		} catch (Exception ex) {
+			logger.warn("UFCE_ANNEXURE detail update warning: {}", ex.getMessage());
+		}
+
+		String updateModSql = "UPDATE BRRS_ANNEXURE_UFCE_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND MODIFY_FLG='Y'";
+		int updated = jdbcTemplate.update(updateModSql, reportDate);
+
+		System.out.println("UFCE_ANNEXURE MOD Updated : " + updated);
+		System.out.println("UFCE_ANNEXURE Verification Completed Successfully");
 	}
 
 

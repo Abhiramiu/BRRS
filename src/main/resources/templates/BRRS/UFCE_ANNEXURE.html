@@ -726,7 +726,7 @@ PURPOSE     : BRRS UFCE ANNEXURE REPORT
 					$('#loader').modal('hide');
 					isModifiedSuccess = true;
 					setTimeout(function () {
-						showResultModal('BRRS', 'Modified Successfully.');
+						showResultModal('BRRS', response || 'Modified Successfully. Record sent for Checker Approval.');
 					}, 300);
 				},
 				error: function (xhr) {

@@ -56,6 +56,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.ui.Model;
@@ -110,7 +111,7 @@ public class BRRS_NSFR_ReportService {
 	 */
 	@Transactional
 	public NSFR_Summary_Entity findSummaryByReportDate(Date reportDate) {
-		String sql = "SELECT * FROM BRRS_NSFR_SUMMARYTABLE WHERE REPORT_DATE = ?";
+		String sql = "SELECT * FROM BRRS_NSFR_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 		List<NSFR_Summary_Entity> list = jdbcTemplate.query(sql, new Object[] { reportDate },
 				new NSFRRowMapper());
 		return list.isEmpty() ? null : list.get(0);
@@ -402,6 +403,36 @@ public class BRRS_NSFR_ReportService {
     	            return obj;
     	        }
     	    }
+    		
+    		class NSFRModRowMapper implements RowMapper<NSFR_Summary_Entity> {
+    			@Override
+    			public NSFR_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+    				NSFR_Summary_Entity obj = new NSFR_Summary_Entity();
+    				obj.setR13_TOTAL_AMOUNT_BOB(rs.getBigDecimal("R13_TOTAL_AMOUNT_BOB"));
+    				obj.setR17_TOTAL_AMOUNT_BOB(rs.getBigDecimal("R17_TOTAL_AMOUNT_BOB"));
+    				obj.setR18_TOTAL_AMOUNT_BOB(rs.getBigDecimal("R18_TOTAL_AMOUNT_BOB"));
+    				obj.setR20_TOTAL_AMOUNT_BOB(rs.getBigDecimal("R20_TOTAL_AMOUNT_BOB"));
+    				obj.setR21_TOTAL_AMOUNT_BOB(rs.getBigDecimal("R21_TOTAL_AMOUNT_BOB"));
+    				obj.setR22_TOTAL_AMOUNT_BOB(rs.getBigDecimal("R22_TOTAL_AMOUNT_BOB"));
+    				obj.setR27_TOTAL_AMOUNT_BOB(rs.getBigDecimal("R27_TOTAL_AMOUNT_BOB"));
+    				obj.setR29_TOTAL_AMOUNT_BOB(rs.getBigDecimal("R29_TOTAL_AMOUNT_BOB"));
+    				obj.setR31_TOTAL_AMOUNT_BOB(rs.getBigDecimal("R31_TOTAL_AMOUNT_BOB"));
+    				obj.setReport_date(rs.getDate("REPORT_DATE"));
+    				String ver = rs.getString("REPORT_VERSION");
+    				if (ver != null) {
+    					try {
+    						obj.setReport_version(new BigDecimal(ver));
+    					} catch (Exception ignored) {}
+    				}
+    				obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+    				obj.setReport_code(rs.getString("REPORT_CODE"));
+    				obj.setReport_desc(rs.getString("REPORT_DESC"));
+    				obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+    				obj.setModify_flg(rs.getString("MODIFY_FLG"));
+    				obj.setDel_flg(rs.getString("DEL_FLG"));
+    				return obj;
+    			}
+    		}
     		
     	    
     	    public static class NSFR_Summary_Entity {
@@ -1182,6 +1213,208 @@ public class BRRS_NSFR_ReportService {
 
     	    public String getDel_flg() { return del_flg; }
     	    public void setDel_flg(String v) { this.del_flg = v; }
+
+    	    public Date getReportDate() { return report_date; }
+    	    public void setReportDate(Date v) { this.report_date = v; }
+
+    	    public BigDecimal getReportVersion() { return report_version; }
+    	    public void setReportVersion(BigDecimal v) { this.report_version = v; }
+    	}
+
+    	public static class NSFR_Manual_Summary_Entity {
+    		@Column(name = "R13_TOTAL_AMOUNT_BOB")
+    		private BigDecimal r13_total_amount_bob;
+
+    		@Column(name = "R17_TOTAL_AMOUNT_BOB")
+    		private BigDecimal r17_total_amount_bob;
+
+    		@Column(name = "R18_TOTAL_AMOUNT_BOB")
+    		private BigDecimal r18_total_amount_bob;
+
+    		@Column(name = "R20_TOTAL_AMOUNT_BOB")
+    		private BigDecimal r20_total_amount_bob;
+
+    		@Column(name = "R21_TOTAL_AMOUNT_BOB")
+    		private BigDecimal r21_total_amount_bob;
+
+    		@Column(name = "R22_TOTAL_AMOUNT_BOB")
+    		private BigDecimal r22_total_amount_bob;
+
+    		@Column(name = "R27_TOTAL_AMOUNT_BOB")
+    		private BigDecimal r27_total_amount_bob;
+
+    		@Column(name = "R29_TOTAL_AMOUNT_BOB")
+    		private BigDecimal r29_total_amount_bob;
+
+    		@Column(name = "R31_TOTAL_AMOUNT_BOB")
+    		private BigDecimal r31_total_amount_bob;
+
+    		@Id
+    		@Temporal(TemporalType.DATE)
+    		@DateTimeFormat(pattern = "dd/MM/yyyy")
+    		@Column(name = "REPORT_DATE")
+    		private Date report_date;
+
+    		@Column(name = "REPORT_VERSION")
+    		private String report_version;
+
+    		@Column(name = "REPORT_FREQUENCY")
+    		private String report_frequency;
+
+    		@Column(name = "REPORT_CODE")
+    		private String report_code;
+
+    		@Column(name = "REPORT_DESC")
+    		private String report_desc;
+
+    		@Column(name = "ENTITY_FLG")
+    		private String entity_flg;
+
+    		@Column(name = "MODIFY_FLG")
+    		private String modify_flg;
+
+    		@Column(name = "DEL_FLG")
+    		private String del_flg;
+
+    		public NSFR_Manual_Summary_Entity() {
+    			super();
+    		}
+
+    		public BigDecimal getR13_total_amount_bob() {
+    			return r13_total_amount_bob;
+    		}
+
+    		public void setR13_total_amount_bob(BigDecimal r13_total_amount_bob) {
+    			this.r13_total_amount_bob = r13_total_amount_bob;
+    		}
+
+    		public BigDecimal getR17_total_amount_bob() {
+    			return r17_total_amount_bob;
+    		}
+
+    		public void setR17_total_amount_bob(BigDecimal r17_total_amount_bob) {
+    			this.r17_total_amount_bob = r17_total_amount_bob;
+    		}
+
+    		public BigDecimal getR18_total_amount_bob() {
+    			return r18_total_amount_bob;
+    		}
+
+    		public void setR18_total_amount_bob(BigDecimal r18_total_amount_bob) {
+    			this.r18_total_amount_bob = r18_total_amount_bob;
+    		}
+
+    		public BigDecimal getR20_total_amount_bob() {
+    			return r20_total_amount_bob;
+    		}
+
+    		public void setR20_total_amount_bob(BigDecimal r20_total_amount_bob) {
+    			this.r20_total_amount_bob = r20_total_amount_bob;
+    		}
+
+    		public BigDecimal getR21_total_amount_bob() {
+    			return r21_total_amount_bob;
+    		}
+
+    		public void setR21_total_amount_bob(BigDecimal r21_total_amount_bob) {
+    			this.r21_total_amount_bob = r21_total_amount_bob;
+    		}
+
+    		public BigDecimal getR22_total_amount_bob() {
+    			return r22_total_amount_bob;
+    		}
+
+    		public void setR22_total_amount_bob(BigDecimal r22_total_amount_bob) {
+    			this.r22_total_amount_bob = r22_total_amount_bob;
+    		}
+
+    		public BigDecimal getR27_total_amount_bob() {
+    			return r27_total_amount_bob;
+    		}
+
+    		public void setR27_total_amount_bob(BigDecimal r27_total_amount_bob) {
+    			this.r27_total_amount_bob = r27_total_amount_bob;
+    		}
+
+    		public BigDecimal getR29_total_amount_bob() {
+    			return r29_total_amount_bob;
+    		}
+
+    		public void setR29_total_amount_bob(BigDecimal r29_total_amount_bob) {
+    			this.r29_total_amount_bob = r29_total_amount_bob;
+    		}
+
+    		public BigDecimal getR31_total_amount_bob() {
+    			return r31_total_amount_bob;
+    		}
+
+    		public void setR31_total_amount_bob(BigDecimal r31_total_amount_bob) {
+    			this.r31_total_amount_bob = r31_total_amount_bob;
+    		}
+
+    		public Date getReport_date() {
+    			return report_date;
+    		}
+
+    		public void setReport_date(Date report_date) {
+    			this.report_date = report_date;
+    		}
+
+    		public String getReport_version() {
+    			return report_version;
+    		}
+
+    		public void setReport_version(String report_version) {
+    			this.report_version = report_version;
+    		}
+
+    		public String getReport_frequency() {
+    			return report_frequency;
+    		}
+
+    		public void setReport_frequency(String report_frequency) {
+    			this.report_frequency = report_frequency;
+    		}
+
+    		public String getReport_code() {
+    			return report_code;
+    		}
+
+    		public void setReport_code(String report_code) {
+    			this.report_code = report_code;
+    		}
+
+    		public String getReport_desc() {
+    			return report_desc;
+    		}
+
+    		public void setReport_desc(String report_desc) {
+    			this.report_desc = report_desc;
+    		}
+
+    		public String getEntity_flg() {
+    			return entity_flg;
+    		}
+
+    		public void setEntity_flg(String entity_flg) {
+    			this.entity_flg = entity_flg;
+    		}
+
+    		public String getModify_flg() {
+    			return modify_flg;
+    		}
+
+    		public void setModify_flg(String modify_flg) {
+    			this.modify_flg = modify_flg;
+    		}
+
+    		public String getDel_flg() {
+    			return del_flg;
+    		}
+
+    		public void setDel_flg(String del_flg) {
+    			this.del_flg = del_flg;
+    		}
     	}
     	    
     	  //=========================================================
@@ -4144,87 +4377,210 @@ if (record.getR60_TOTAL_AMOUNT_BOB() != null) {
 		logger.info("Came to NSFR Update");
 		logger.info("Report Date: {}", updatedEntity.getReport_date());
 
-		// Fetch existing summary record for audit
-		NSFR_Summary_Entity existingSummary = findSummaryByReportDate(updatedEntity.getReport_date());
+		// 🔹 JdbcTemplate lookup with date truncation
+		String selectSql = "SELECT * FROM BRRS_NSFR_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 
-		if (existingSummary == null) {
-			throw new RuntimeException("Record not found for REPORT_DATE : " + updatedEntity.getReport_date());
+		List<NSFR_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new Object[] { updatedEntity.getReport_date() }, new NSFRRowMapper());
+
+		NSFR_Summary_Entity existing;
+
+		if (list.isEmpty()) {
+			existing = new NSFR_Summary_Entity();
+			existing.setReport_date(updatedEntity.getReport_date());
+			logger.warn("⚠️ No existing record found — creating new record");
+		} else {
+			existing = list.get(0);
+			logger.info("Updating existing record");
 		}
 
-		// Audit old copy
+		// 🔹 Audit copy: Create a clone of the original database state before making any changes
 		NSFR_Summary_Entity oldcopy = new NSFR_Summary_Entity();
-		BeanUtils.copyProperties(existingSummary, oldcopy);
+		BeanUtils.copyProperties(existing, oldcopy);
 
 		try {
-			
-
+			/*
+			 * Update editable fields: R13, R17, R18, R20, R21, R22, R27, R29, R31
+			 */
 			if (updatedEntity.getR13_TOTAL_AMOUNT_BOB() != null) {
-				existingSummary.setR13_TOTAL_AMOUNT_BOB(updatedEntity.getR13_TOTAL_AMOUNT_BOB());
-				String sql = "UPDATE BRRS_NSFR_SUMMARYTABLE SET R13_TOTAL_AMOUNT_BOB = ? WHERE REPORT_DATE = ?";
-				jdbcTemplate.update(sql, updatedEntity.getR13_TOTAL_AMOUNT_BOB(), updatedEntity.getReport_date());
+				existing.setR13_TOTAL_AMOUNT_BOB(updatedEntity.getR13_TOTAL_AMOUNT_BOB());
 			}
-			
 			if (updatedEntity.getR17_TOTAL_AMOUNT_BOB() != null) {
-				existingSummary.setR17_TOTAL_AMOUNT_BOB(updatedEntity.getR17_TOTAL_AMOUNT_BOB());
-				String sql = "UPDATE BRRS_NSFR_SUMMARYTABLE SET R17_TOTAL_AMOUNT_BOB = ? WHERE REPORT_DATE = ?";
-				jdbcTemplate.update(sql, updatedEntity.getR17_TOTAL_AMOUNT_BOB(), updatedEntity.getReport_date());
+				existing.setR17_TOTAL_AMOUNT_BOB(updatedEntity.getR17_TOTAL_AMOUNT_BOB());
 			}
-			
 			if (updatedEntity.getR18_TOTAL_AMOUNT_BOB() != null) {
-				existingSummary.setR18_TOTAL_AMOUNT_BOB(updatedEntity.getR18_TOTAL_AMOUNT_BOB());
-				String sql = "UPDATE BRRS_NSFR_SUMMARYTABLE SET R18_TOTAL_AMOUNT_BOB = ? WHERE REPORT_DATE = ?";
-				jdbcTemplate.update(sql, updatedEntity.getR18_TOTAL_AMOUNT_BOB(), updatedEntity.getReport_date());
+				existing.setR18_TOTAL_AMOUNT_BOB(updatedEntity.getR18_TOTAL_AMOUNT_BOB());
 			}
-			
 			if (updatedEntity.getR20_TOTAL_AMOUNT_BOB() != null) {
-				existingSummary.setR20_TOTAL_AMOUNT_BOB(updatedEntity.getR20_TOTAL_AMOUNT_BOB());
-				String sql = "UPDATE BRRS_NSFR_SUMMARYTABLE SET R20_TOTAL_AMOUNT_BOB = ? WHERE REPORT_DATE = ?";
-				jdbcTemplate.update(sql, updatedEntity.getR20_TOTAL_AMOUNT_BOB(), updatedEntity.getReport_date());
+				existing.setR20_TOTAL_AMOUNT_BOB(updatedEntity.getR20_TOTAL_AMOUNT_BOB());
 			}
-			
 			if (updatedEntity.getR21_TOTAL_AMOUNT_BOB() != null) {
-				existingSummary.setR21_TOTAL_AMOUNT_BOB(updatedEntity.getR21_TOTAL_AMOUNT_BOB());
-				String sql = "UPDATE BRRS_NSFR_SUMMARYTABLE SET R21_TOTAL_AMOUNT_BOB = ? WHERE REPORT_DATE = ?";
-				jdbcTemplate.update(sql, updatedEntity.getR21_TOTAL_AMOUNT_BOB(), updatedEntity.getReport_date());
+				existing.setR21_TOTAL_AMOUNT_BOB(updatedEntity.getR21_TOTAL_AMOUNT_BOB());
 			}
-			
 			if (updatedEntity.getR22_TOTAL_AMOUNT_BOB() != null) {
-				existingSummary.setR22_TOTAL_AMOUNT_BOB(updatedEntity.getR22_TOTAL_AMOUNT_BOB());
-				String sql = "UPDATE BRRS_NSFR_SUMMARYTABLE SET R22_TOTAL_AMOUNT_BOB = ? WHERE REPORT_DATE = ?";
-				jdbcTemplate.update(sql, updatedEntity.getR22_TOTAL_AMOUNT_BOB(), updatedEntity.getReport_date());
+				existing.setR22_TOTAL_AMOUNT_BOB(updatedEntity.getR22_TOTAL_AMOUNT_BOB());
 			}
-			
 			if (updatedEntity.getR27_TOTAL_AMOUNT_BOB() != null) {
-				existingSummary.setR27_TOTAL_AMOUNT_BOB(updatedEntity.getR27_TOTAL_AMOUNT_BOB());
-				String sql = "UPDATE BRRS_NSFR_SUMMARYTABLE SET R27_TOTAL_AMOUNT_BOB = ? WHERE REPORT_DATE = ?";
-				jdbcTemplate.update(sql, updatedEntity.getR27_TOTAL_AMOUNT_BOB(), updatedEntity.getReport_date());
+				existing.setR27_TOTAL_AMOUNT_BOB(updatedEntity.getR27_TOTAL_AMOUNT_BOB());
 			}
-			
 			if (updatedEntity.getR29_TOTAL_AMOUNT_BOB() != null) {
-				existingSummary.setR29_TOTAL_AMOUNT_BOB(updatedEntity.getR29_TOTAL_AMOUNT_BOB());
-				String sql = "UPDATE BRRS_NSFR_SUMMARYTABLE SET R29_TOTAL_AMOUNT_BOB = ? WHERE REPORT_DATE = ?";
-				jdbcTemplate.update(sql, updatedEntity.getR29_TOTAL_AMOUNT_BOB(), updatedEntity.getReport_date());
+				existing.setR29_TOTAL_AMOUNT_BOB(updatedEntity.getR29_TOTAL_AMOUNT_BOB());
 			}
-			
 			if (updatedEntity.getR31_TOTAL_AMOUNT_BOB() != null) {
-				existingSummary.setR31_TOTAL_AMOUNT_BOB(updatedEntity.getR31_TOTAL_AMOUNT_BOB());
-				String sql = "UPDATE BRRS_NSFR_SUMMARYTABLE SET R31_TOTAL_AMOUNT_BOB = ? WHERE REPORT_DATE = ?";
-				jdbcTemplate.update(sql, updatedEntity.getR31_TOTAL_AMOUNT_BOB(), updatedEntity.getReport_date());
+				existing.setR31_TOTAL_AMOUNT_BOB(updatedEntity.getR31_TOTAL_AMOUNT_BOB());
 			}
-
-			
-			// Audit only if changes found
-			String changes = auditService.getChanges(oldcopy, existingSummary);
-			if (!changes.isEmpty()) {
-				auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReport_date().toString(),
-						"NSFR Summary Screen", "BRRS_NSFR_SUMMARY");
-			}
-
-			logger.info("NSFRSummary Update Completed");
 		} catch (Exception e) {
-			logger.error("Error while updating NSFR fields", e);
-			throw new RuntimeException("Error while updating NSFR fields", e);
+			logger.error("Error updating record fields", e);
+			throw new RuntimeException("Error updating record fields", e);
 		}
+
+		// 🔹 Evaluate audit changes
+		String changes = auditService.getChanges(oldcopy, existing);
+		logger.info("NSFR Changes Length = {}", (changes != null ? changes.length() : 0));
+
+		// 🔹 Set Maker-Checker Flags
+		existing.setEntity_flg("Y");
+		existing.setModify_flg("Y");
+		existing.setDel_flg("N");
+
+		// 🔹 Save into MOD Summary Table for Checker Approval
+		saveModSummaryEntity(existing);
+		logger.info("✔ Record saved into BRRS_NSFR_MOD_SUMMARYTABLE for Checker Approval");
+
+		// 🔹 Log Audit Trail if changes exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existing, updatedEntity.getReport_date().toString(),
+					"NSFR", "BRRS_NSFR_MOD_SUMMARYTABLE");
+		}
+
+		// 🔹 Post-Commit Transaction Synchronization to execute Stored Procedure
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+			@Override
+			public void afterCommit() {
+				try {
+					String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(updatedEntity.getReport_date());
+
+					logger.info("Transaction committed — calling BRRS_NSFR_SUMMARY_PROCEDURE({})", formattedDate);
+
+					jdbcTemplate.update("BEGIN BRRS_NSFR_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+					logger.info("BRRS_NSFR_SUMMARY_PROCEDURE executed successfully after commit.");
+				} catch (Exception e) {
+					logger.error("Procedure execution failed", e);
+					throw new RuntimeException("Procedure execution failed", e);
+				}
+			}
+		});
+	}
+
+	public void saveModSummaryEntity(NSFR_Summary_Entity entity) {
+		String sql = "MERGE INTO BRRS_NSFR_MOD_SUMMARYTABLE dest "
+				+ "USING (SELECT ? AS report_date FROM dual) src "
+				+ "ON (TRUNC(dest.REPORT_DATE) = TRUNC(src.report_date)) "
+				+ "WHEN MATCHED THEN "
+				+ "  UPDATE SET "
+				+ "    R13_TOTAL_AMOUNT_BOB = ?, R17_TOTAL_AMOUNT_BOB = ?, R18_TOTAL_AMOUNT_BOB = ?, "
+				+ "    R20_TOTAL_AMOUNT_BOB = ?, R21_TOTAL_AMOUNT_BOB = ?, R22_TOTAL_AMOUNT_BOB = ?, "
+				+ "    R27_TOTAL_AMOUNT_BOB = ?, R29_TOTAL_AMOUNT_BOB = ?, R31_TOTAL_AMOUNT_BOB = ?, "
+				+ "    REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, REPORT_DESC = ?, "
+				+ "    ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
+				+ "WHEN NOT MATCHED THEN "
+				+ "  INSERT (REPORT_DATE, "
+				+ "    R13_TOTAL_AMOUNT_BOB, R17_TOTAL_AMOUNT_BOB, R18_TOTAL_AMOUNT_BOB, "
+				+ "    R20_TOTAL_AMOUNT_BOB, R21_TOTAL_AMOUNT_BOB, R22_TOTAL_AMOUNT_BOB, "
+				+ "    R27_TOTAL_AMOUNT_BOB, R29_TOTAL_AMOUNT_BOB, R31_TOTAL_AMOUNT_BOB, "
+				+ "    REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+				+ "    ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+				+ "  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+		String versionStr = entity.getReport_version() != null ? entity.getReport_version().toString() : "1";
+
+		Object[] params = {
+				// USING clause
+				entity.getReport_date(),
+
+				// UPDATE parameters
+				entity.getR13_TOTAL_AMOUNT_BOB(),
+				entity.getR17_TOTAL_AMOUNT_BOB(),
+				entity.getR18_TOTAL_AMOUNT_BOB(),
+				entity.getR20_TOTAL_AMOUNT_BOB(),
+				entity.getR21_TOTAL_AMOUNT_BOB(),
+				entity.getR22_TOTAL_AMOUNT_BOB(),
+				entity.getR27_TOTAL_AMOUNT_BOB(),
+				entity.getR29_TOTAL_AMOUNT_BOB(),
+				entity.getR31_TOTAL_AMOUNT_BOB(),
+				versionStr,
+				entity.getReport_frequency(),
+				entity.getReport_code() != null ? entity.getReport_code() : "NSFR",
+				entity.getReport_desc(),
+				entity.getEntity_flg(),
+				entity.getModify_flg(),
+				entity.getDel_flg(),
+
+				// INSERT parameters
+				entity.getReport_date(),
+				entity.getR13_TOTAL_AMOUNT_BOB(),
+				entity.getR17_TOTAL_AMOUNT_BOB(),
+				entity.getR18_TOTAL_AMOUNT_BOB(),
+				entity.getR20_TOTAL_AMOUNT_BOB(),
+				entity.getR21_TOTAL_AMOUNT_BOB(),
+				entity.getR22_TOTAL_AMOUNT_BOB(),
+				entity.getR27_TOTAL_AMOUNT_BOB(),
+				entity.getR29_TOTAL_AMOUNT_BOB(),
+				entity.getR31_TOTAL_AMOUNT_BOB(),
+				versionStr,
+				entity.getReport_frequency(),
+				entity.getReport_code() != null ? entity.getReport_code() : "NSFR",
+				entity.getReport_desc(),
+				entity.getEntity_flg(),
+				entity.getModify_flg(),
+				entity.getDel_flg()
+		};
+
+		jdbcTemplate.update(sql, params);
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_NSFR_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND MODIFY_FLG='Y'";
+		List<NSFR_Summary_Entity> list = jdbcTemplate.query(selectSql, new Object[] { reportDate },
+				new NSFRModRowMapper());
+
+		if (list.isEmpty()) {
+			throw new IllegalStateException("NSFR modification record not found for date : " + reportDate);
+		}
+
+		NSFR_Summary_Entity modRecord = list.get(0);
+
+		// Copy/Merge MOD values to live SUMMARY table
+		String updateLiveSql = "UPDATE BRRS_NSFR_SUMMARYTABLE M SET ("
+				+ "    R13_TOTAL_AMOUNT_BOB, R17_TOTAL_AMOUNT_BOB, R18_TOTAL_AMOUNT_BOB, "
+				+ "    R20_TOTAL_AMOUNT_BOB, R21_TOTAL_AMOUNT_BOB, R22_TOTAL_AMOUNT_BOB, "
+				+ "    R27_TOTAL_AMOUNT_BOB, R29_TOTAL_AMOUNT_BOB, R31_TOTAL_AMOUNT_BOB, "
+				+ "    ENTITY_FLG, MODIFY_FLG, DEL_FLG" + ") = (" + "    SELECT "
+				+ "       S.R13_TOTAL_AMOUNT_BOB, S.R17_TOTAL_AMOUNT_BOB, S.R18_TOTAL_AMOUNT_BOB, "
+				+ "       S.R20_TOTAL_AMOUNT_BOB, S.R21_TOTAL_AMOUNT_BOB, S.R22_TOTAL_AMOUNT_BOB, "
+				+ "       S.R27_TOTAL_AMOUNT_BOB, S.R29_TOTAL_AMOUNT_BOB, S.R31_TOTAL_AMOUNT_BOB, "
+				+ "       S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG " + "    FROM BRRS_NSFR_MOD_SUMMARYTABLE S "
+				+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" + ") "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int inserted = jdbcTemplate.update(updateLiveSql, reportDate);
+
+		if (inserted == 0) {
+			throw new IllegalStateException("NSFR summary record not found for date : " + reportDate);
+		}
+
+		// Mark modified flag as 'N' (Approved) in the mod table
+		jdbcTemplate.update("UPDATE BRRS_NSFR_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				reportDate);
+
+		String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+
+		// Run procedure after approval
+		jdbcTemplate.update("BEGIN BRRS_NSFR_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+		logger.info("NSFR Checker Approved Successfully");
 	}
 
 
