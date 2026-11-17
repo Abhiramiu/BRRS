@@ -6741,25 +6741,45 @@ public class BRRS_ReportsController {
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────
-	// IRRBB_BORROWINGS — UPDATE SUMMARY RECORD
-	// URL: POST /Reports/IRRBB_BORROWINGS/update
-	// ─────────────────────────────────────────────────────────────────────────
-	@PostMapping("IRRBB_BORROWINGS/update")
-	public String updateIRRBB_BORROWINGSRecord(
-			@ModelAttribute("irrbbBorrowings") BRRS_IRRBB_BORROWINGS_ReportService.IRRBB_BORROWINGS_Summary_Entity entity,
-			@RequestParam(value = "asondate", required = false, defaultValue = "") String asondate,
-			@RequestParam(value = "fromdate", required = false, defaultValue = "") String fromdate,
-			@RequestParam(value = "todate", required = false, defaultValue = "") String todate,
-			HttpServletRequest req) {
+		// IRRBB_BORROWINGS — UPDATE SUMMARY RECORD
+		// URL: POST /Reports/IRRBB_BORROWINGS/update
+		// ─────────────────────────────────────────────────────────────────────────
+		@PostMapping("IRRBB_BORROWINGS/update")
+		public String updateIRRBB_BORROWINGSRecord(
+				@ModelAttribute("irrbbBorrowings") BRRS_IRRBB_BORROWINGS_ReportService.IRRBB_BORROWINGS_Summary_Entity entity,
+				@RequestParam(value = "asondate", required = false, defaultValue = "") String asondate,
+				@RequestParam(value = "fromdate", required = false, defaultValue = "") String fromdate,
+				@RequestParam(value = "todate", required = false, defaultValue = "") String todate,
+				RedirectAttributes redirectAttributes, HttpServletRequest req) {
 
-		String userId = (String) req.getSession().getAttribute("USERID");
-		logger.info("IRRBB_BORROWINGS update - sno={} by user={}", entity.getSno(), userId);
+			String userId = (String) req.getSession().getAttribute("USERID");
+			logger.info("IRRBB_BORROWINGS update - sno={} date={} by user={}", entity.getSno(), entity.getReportDate(),
+					userId);
 
-		BRRS_IRRBB_BORROWINGS_reportService.updateRecord(entity);
+			try {
+				BRRS_IRRBB_BORROWINGS_reportService.updateRecord(entity);
 
-		return "redirect:/Reports/IRRBB_BORROWINGS" + "?asondate=" + asondate + "&fromdate=" + fromdate + "&todate="
-				+ todate + "&dtltype=report";
-	}
+				String formattedAson = formatDateForRedirect(asondate);
+				String formattedFrom = formatDateForRedirect(fromdate);
+				String formattedTo = formatDateForRedirect(todate);
+
+				redirectAttributes.addFlashAttribute("successMessage", "Modification saved. Pending Checker verification.");
+				redirectAttributes.addFlashAttribute("successType", "success");
+
+				return "redirect:/Reports/IRRBB_BORROWINGS" + "?asondate=" + formattedAson + "&fromdate=" + formattedFrom
+						+ "&todate=" + formattedTo + "&dtltype=report";
+			} catch (Exception e) {
+				logger.error("Error staging IRRBB_BORROWINGS modification", e);
+				redirectAttributes.addFlashAttribute("successMessage", "❌ Failed to save modification: " + e.getMessage());
+				redirectAttributes.addFlashAttribute("successType", "error");
+
+				// Preserve asondate so the modify page can reload the pending MOD record
+				return "redirect:/Reports/IRRBB_BORROWINGS/modify/" + entity.getSno() + "?asondate=" + asondate
+						+ "&fromdate=" + fromdate + "&todate=" + todate;
+			}
+		}
+
+
 
 	// ─────────────────────────────────────────────────────────────────────────
 	// IRRBB_BORROWINGS — DETAIL VIEW

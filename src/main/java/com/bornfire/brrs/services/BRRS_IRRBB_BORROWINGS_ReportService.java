@@ -40,6 +40,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.UserProfileRep;
 
+import java.util.Collections;
+import org.springframework.beans.BeanUtils;
+
 @Service
 @Transactional
 public class BRRS_IRRBB_BORROWINGS_ReportService {
@@ -111,61 +114,188 @@ public class BRRS_IRRBB_BORROWINGS_ReportService {
         logger.info("IRRBB_BORROWINGS saveRecord — new record inserted");
     }
 
-    // ── SUMMARY UPDATE ────────────────────────────────────────────────────────
-
+ // ── SUMMARY UPDATE (MAKER) ───────────────────────────────────────────────
+    /**
+     * Maker submission. Saves the changes into IRRBB_BORROWINGS_MOD_SUMMARYTABLE only.
+     * Live summary/detail tables are NOT touched; the Checker's verify step moves them.
+     */
     public void updateRecord(IRRBB_BORROWINGS_Summary_Entity e) {
-        IRRBB_BORROWINGS_Summary_Entity oldEntity = findById(e.getSno());
-        String sql =
-            "UPDATE IRRBB_BORROWINGS_SUMMARYTABLE SET" +
-            "  CUSTOMER_ID = ?, ACCOUNT_NUMBER = ?, GL_CODE = ?, GL_DESCRIPTION = ?," +
-            "  ACCOUNT_CURRENCY = ?, ACCOUNT_OPENING_DATE = ?, MATURITY_DATE = ?," +
-            "  OUTSTANDING_BALANCE_ACCT_CCY = ?, OUTSTANDING_BALANCE_INR = ?," +
-            "  FLOATING_FIXED = ?, EXISTING_BENCHMARK = ?, EXISTING_REPRICING_FREQUENCY = ?," +
-            "  LAST_REPRICING_DATE = ?, NEXT_REPRICING_DATE = ?, SPREAD_OVER_BENCHMARK = ?," +
-            "  FINAL_ROI_PERCENT = ?, CAP_FLOOR_RATE_OF_INTEREST = ?, REMARKS = ?," +
-            "  REPORT_DATE = ?, REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, REPORT_DESC = ?," +
-            "  ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ?, REPORT_RESUBDATE = ?" +
-            " WHERE SNO = ?";
-        jdbcTemplate.update(sql,
-            e.getCustomerId(), e.getAccountNumber(), e.getGlCode(), e.getGlDescription(),
-            e.getAccountCurrency(), e.getAccountOpeningDate(), e.getMaturityDate(),
-            e.getOutstandingBalanceAcctCcy(), e.getOutstandingBalanceInr(),
-            e.getFloatingFixed(), e.getExistingBenchmark(), e.getExistingRepricingFrequency(),
-            e.getLastRepricingDate(), e.getNextRepricingDate(), e.getSpreadOverBenchmark(),
-            e.getFinalRoiPercent(), e.getCapFloorRateOfInterest(), e.getRemarks(),
-            e.getReportDate(), e.getReportVersion(), e.getReportFrequency(), e.getReportCode(), e.getReportDesc(),
-            e.getEntityFlg(), e.getModifyFlg(), e.getDelFlg(), e.getReportResubdate(),
-            e.getSno()
-        );
-        // ── Sync to Detail table (same ACCOUNT_NUMBER + REPORT_DATE) ─────────
-        String detailSyncSql =
-            "UPDATE IRRBB_BORROWINGS_DETAILTABLE SET" +
-            "  CUSTOMER_ID=?, GL_CODE=?, GL_DESCRIPTION=?," +
-            "  ACCOUNT_CURRENCY=?, ACCOUNT_OPENING_DATE=?, MATURITY_DATE=?," +
-            "  OUTSTANDING_BALANCE_ACCT_CCY=?, OUTSTANDING_BALANCE_INR=?," +
-            "  FLOATING_FIXED=?, EXISTING_BENCHMARK=?, EXISTING_REPRICING_FREQUENCY=?," +
-            "  LAST_REPRICING_DATE=?, NEXT_REPRICING_DATE=?, SPREAD_OVER_BENCHMARK=?," +
-            "  FINAL_ROI_PERCENT=?, CAP_FLOOR_RATE_OF_INTEREST=?, REMARKS=?," +
-            "  REPORT_VERSION=?, REPORT_FREQUENCY=?, REPORT_CODE=?, REPORT_DESC=?," +
-            "  ENTITY_FLG=?, MODIFY_FLG=?, DEL_FLG=?, REPORT_RESUBDATE=?" +
-            " WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND ACCOUNT_NUMBER = ?";
-        jdbcTemplate.update(detailSyncSql,
-            e.getCustomerId(), e.getGlCode(), e.getGlDescription(),
-            e.getAccountCurrency(), e.getAccountOpeningDate(), e.getMaturityDate(),
-            e.getOutstandingBalanceAcctCcy(), e.getOutstandingBalanceInr(),
-            e.getFloatingFixed(), e.getExistingBenchmark(), e.getExistingRepricingFrequency(),
-            e.getLastRepricingDate(), e.getNextRepricingDate(), e.getSpreadOverBenchmark(),
-            e.getFinalRoiPercent(), e.getCapFloorRateOfInterest(), e.getRemarks(),
-            e.getReportVersion(), e.getReportFrequency(), e.getReportCode(), e.getReportDesc(),
-            e.getEntityFlg(), e.getModifyFlg(), e.getDelFlg(), e.getReportResubdate(),
-            e.getReportDate(), e.getAccountNumber()
-        );
-        logger.info("IRRBB_BORROWINGS updateRecord — sno={}", e.getSno());
+        logger.info("IRRBB_BORROWINGS updateRecord (MAKER) — sno={}", e.getSno());
 
-        auditService.compareEntitiesmanual(oldEntity, e, e.getSno().toString(),
-            "IRRBB_BORROWINGS Summary Screen", "IRRBB_BORROWINGS_SUMMARYTABLE");
+        if (e.getSno() == null) {
+            throw new IllegalArgumentException("SNO is required for maker submission.");
+        }
+
+        // 1) Baseline = LIVE summary row (also gives us the key: report date, account, version)
+        IRRBB_BORROWINGS_Summary_Entity live = findById(e.getSno());
+        if (live == null) {
+            throw new RuntimeException("No live summary row found for SNO : " + e.getSno());
+        }
+
+        // 2) MOD row to write: start from existing MOD if present, else clone LIVE
+        IRRBB_BORROWINGS_Summary_Entity modRecord =
+                findModRecord(live.getReportDate(), live.getAccountNumber(), live.getReportVersion());
+        if (modRecord == null) {
+            modRecord = new IRRBB_BORROWINGS_Summary_Entity();
+            BeanUtils.copyProperties(live, modRecord);
+        }
+
+        // 3) Baseline for audit comparison
+        IRRBB_BORROWINGS_Summary_Entity oldCopy = new IRRBB_BORROWINGS_Summary_Entity();
+        BeanUtils.copyProperties(modRecord, oldCopy);
+
+        // 4) Copy the maker's edited fields into MOD
+        copyEditableFields(e, modRecord);
+
+        // Keep the key fields tied to the live row so the checker can match them
+        modRecord.setAccountNumber(live.getAccountNumber());
+        modRecord.setReportDate(live.getReportDate());
+        modRecord.setReportVersion(live.getReportVersion());
+
+        // 5) Maker–Checker flags
+        modRecord.setEntityFlg("Y");
+        modRecord.setModifyFlg("Y");
+        modRecord.setDelFlg("N");
+
+        // 6) Persist to MOD (insert or update)
+        saveModSummaryEntity(modRecord);
+        logger.info("✔ IRRBB_BORROWINGS staged in IRRBB_BORROWINGS_MOD_SUMMARYTABLE (pending Checker)");
+
+        // 7) Audit row (Checker will consume this)
+        auditService.compareEntitiesmanual(oldCopy, modRecord, e.getSno().toString(),
+                "IRRBB_BORROWINGS Summary Screen", "IRRBB_BORROWINGS_MOD_SUMMARYTABLE");
     }
 
+    /** Copies business fields from source to target, leaving SNO, key fields and flags alone. */
+    private void copyEditableFields(IRRBB_BORROWINGS_Summary_Entity src, IRRBB_BORROWINGS_Summary_Entity dst) {
+        dst.setCustomerId(src.getCustomerId());
+        dst.setGlCode(src.getGlCode());
+        dst.setGlDescription(src.getGlDescription());
+        dst.setAccountCurrency(src.getAccountCurrency());
+        dst.setAccountOpeningDate(src.getAccountOpeningDate());
+        dst.setMaturityDate(src.getMaturityDate());
+        dst.setOutstandingBalanceAcctCcy(src.getOutstandingBalanceAcctCcy());
+        dst.setOutstandingBalanceInr(src.getOutstandingBalanceInr());
+        dst.setFloatingFixed(src.getFloatingFixed());
+        dst.setExistingBenchmark(src.getExistingBenchmark());
+        dst.setExistingRepricingFrequency(src.getExistingRepricingFrequency());
+        dst.setLastRepricingDate(src.getLastRepricingDate());
+        dst.setNextRepricingDate(src.getNextRepricingDate());
+        dst.setSpreadOverBenchmark(src.getSpreadOverBenchmark());
+        dst.setFinalRoiPercent(src.getFinalRoiPercent());
+        dst.setCapFloorRateOfInterest(src.getCapFloorRateOfInterest());
+        dst.setRemarks(src.getRemarks());
+
+        // report metadata: keep existing values unless explicitly supplied
+        dst.setReportFrequency(src.getReportFrequency() != null ? src.getReportFrequency() : dst.getReportFrequency());
+        dst.setReportCode(src.getReportCode() != null ? src.getReportCode() : dst.getReportCode());
+        dst.setReportDesc(src.getReportDesc() != null ? src.getReportDesc() : dst.getReportDesc());
+        dst.setReportResubdate(src.getReportResubdate() != null ? src.getReportResubdate() : dst.getReportResubdate());
+    }
+
+    // ── MOD TABLE LOOKUPS ────────────────────────────────────────────────────
+
+    /** Pending/any MOD row for one account on one report date (and version). */
+    public IRRBB_BORROWINGS_Summary_Entity findModRecord(Date reportDate, Long accountNumber, BigDecimal version) {
+        String sql = "SELECT * FROM IRRBB_BORROWINGS_MOD_SUMMARYTABLE "
+                + "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND ACCOUNT_NUMBER = ? "
+                + "AND NVL(REPORT_VERSION,0) = NVL(?,0)";
+        List<IRRBB_BORROWINGS_Summary_Entity> list =
+                jdbcTemplate.query(sql, new Object[]{reportDate, accountNumber, version}, new IRRBB_BORROWINGS_RowMapper());
+        return list.isEmpty() ? null : list.get(0);
+    }
+
+    /** All MOD rows for a date (e.g. for the checker's pending list). */
+    public List<IRRBB_BORROWINGS_Summary_Entity> getModByDateList(Date reportDate) {
+        String sql = "SELECT * FROM IRRBB_BORROWINGS_MOD_SUMMARYTABLE a WHERE TRUNC(a.REPORT_DATE) = TRUNC(?)";
+        return jdbcTemplate.query(sql, new Object[]{reportDate}, new IRRBB_BORROWINGS_RowMapper());
+    }
+
+    /**
+     * For the modify page: returns the pending MOD version of this record if one exists
+     * (so the maker sees their unverified changes), otherwise the live row.
+     */
+    public IRRBB_BORROWINGS_Summary_Entity findByIdWithPendingMod(Long sno) {
+        IRRBB_BORROWINGS_Summary_Entity live = findById(sno);
+        if (live == null) return null;
+        IRRBB_BORROWINGS_Summary_Entity mod =
+                findModRecord(live.getReportDate(), live.getAccountNumber(), live.getReportVersion());
+        if (mod != null && "Y".equals(mod.getModifyFlg())) {
+            mod.setSno(live.getSno());   // keep the live SNO so the form posts back the right id
+            return mod;
+        }
+        return live;
+    }
+
+    // ── MOD TABLE PERSIST ────────────────────────────────────────────────────
+    /**
+     * Persists a MOD row. Keyed on (REPORT_DATE, ACCOUNT_NUMBER, REPORT_VERSION).
+     * SNO is NVL(MAX(SNO),0)+1 on insert.
+     */
+    private void saveModSummaryEntity(IRRBB_BORROWINGS_Summary_Entity e) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM IRRBB_BORROWINGS_MOD_SUMMARYTABLE "
+                        + "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND ACCOUNT_NUMBER = ? "
+                        + "AND NVL(REPORT_VERSION,0) = NVL(?,0)",
+                Integer.class, e.getReportDate(), e.getAccountNumber(), e.getReportVersion());
+
+        if (count != null && count > 0) {
+            String updSql =
+                "UPDATE IRRBB_BORROWINGS_MOD_SUMMARYTABLE SET" +
+                "  CUSTOMER_ID=?, GL_CODE=?, GL_DESCRIPTION=?," +
+                "  ACCOUNT_CURRENCY=?, ACCOUNT_OPENING_DATE=?, MATURITY_DATE=?," +
+                "  OUTSTANDING_BALANCE_ACCT_CCY=?, OUTSTANDING_BALANCE_INR=?," +
+                "  FLOATING_FIXED=?, EXISTING_BENCHMARK=?, EXISTING_REPRICING_FREQUENCY=?," +
+                "  LAST_REPRICING_DATE=?, NEXT_REPRICING_DATE=?, SPREAD_OVER_BENCHMARK=?," +
+                "  FINAL_ROI_PERCENT=?, CAP_FLOOR_RATE_OF_INTEREST=?, REMARKS=?," +
+                "  REPORT_FREQUENCY=?, REPORT_CODE=?, REPORT_DESC=?," +
+                "  ENTITY_FLG=?, MODIFY_FLG=?, DEL_FLG=?, REPORT_RESUBDATE=?" +
+                " WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND ACCOUNT_NUMBER = ?" +
+                "   AND NVL(REPORT_VERSION,0) = NVL(?,0)";
+
+            jdbcTemplate.update(updSql,
+                e.getCustomerId(), e.getGlCode(), e.getGlDescription(),
+                e.getAccountCurrency(), e.getAccountOpeningDate(), e.getMaturityDate(),
+                e.getOutstandingBalanceAcctCcy(), e.getOutstandingBalanceInr(),
+                e.getFloatingFixed(), e.getExistingBenchmark(), e.getExistingRepricingFrequency(),
+                e.getLastRepricingDate(), e.getNextRepricingDate(), e.getSpreadOverBenchmark(),
+                e.getFinalRoiPercent(), e.getCapFloorRateOfInterest(), e.getRemarks(),
+                e.getReportFrequency(), e.getReportCode(), e.getReportDesc(),
+                e.getEntityFlg(), e.getModifyFlg(), e.getDelFlg(), e.getReportResubdate(),
+                e.getReportDate(), e.getAccountNumber(), e.getReportVersion()
+            );
+            logger.info("✔ IRRBB_BORROWINGS_MOD_SUMMARYTABLE updated (date={}, acct={}, ver={})",
+                    e.getReportDate(), e.getAccountNumber(), e.getReportVersion());
+        } else {
+            Long newSno = jdbcTemplate.queryForObject(
+                    "SELECT NVL(MAX(SNO),0)+1 FROM IRRBB_BORROWINGS_MOD_SUMMARYTABLE", Long.class);
+
+            String insSql =
+                "INSERT INTO IRRBB_BORROWINGS_MOD_SUMMARYTABLE (" +
+                "  SNO, CUSTOMER_ID, ACCOUNT_NUMBER, GL_CODE, GL_DESCRIPTION," +
+                "  ACCOUNT_CURRENCY, ACCOUNT_OPENING_DATE, MATURITY_DATE," +
+                "  OUTSTANDING_BALANCE_ACCT_CCY, OUTSTANDING_BALANCE_INR," +
+                "  FLOATING_FIXED, EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY," +
+                "  LAST_REPRICING_DATE, NEXT_REPRICING_DATE, SPREAD_OVER_BENCHMARK," +
+                "  FINAL_ROI_PERCENT, CAP_FLOOR_RATE_OF_INTEREST, REMARKS," +
+                "  REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC," +
+                "  ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE" +
+                ") VALUES (" + String.join(",", Collections.nCopies(28, "?")) + ")";
+
+            jdbcTemplate.update(insSql,
+                newSno, e.getCustomerId(), e.getAccountNumber(), e.getGlCode(), e.getGlDescription(),
+                e.getAccountCurrency(), e.getAccountOpeningDate(), e.getMaturityDate(),
+                e.getOutstandingBalanceAcctCcy(), e.getOutstandingBalanceInr(),
+                e.getFloatingFixed(), e.getExistingBenchmark(), e.getExistingRepricingFrequency(),
+                e.getLastRepricingDate(), e.getNextRepricingDate(), e.getSpreadOverBenchmark(),
+                e.getFinalRoiPercent(), e.getCapFloorRateOfInterest(), e.getRemarks(),
+                e.getReportDate(), e.getReportVersion(), e.getReportFrequency(), e.getReportCode(), e.getReportDesc(),
+                e.getEntityFlg(), e.getModifyFlg(), e.getDelFlg(), e.getReportResubdate()
+            );
+            logger.info("✔ IRRBB_BORROWINGS_MOD_SUMMARYTABLE inserted (SNO={}, date={}, acct={})",
+                    newSno, e.getReportDate(), e.getAccountNumber());
+        }
+    }
     // ── UNIFIED VIEW HELPER (M_OB-style: supports NORMAL / ARCHIVAL / RESUB) ─
 
     public ModelAndView getBRRS_IRRBB_BORROWINGS_View(String reportId, String fromdate, String todate,

@@ -1588,6 +1588,8 @@ public class AuditService {
 			transferAS11Data(auditRecord);
 		} else if (upperTable.equals("BRRS_IRRBB_DEPOSITS_MOD_SUMMARYTABLE")) {
 		    transferIRRBBDepositsData(auditRecord);
+		} else if (upperTable.equals("IRRBB_BORROWINGS_MOD_SUMMARYTABLE")) {
+			transferIRRBBBORROWINGSData(auditRecord);
 		} else {
 			throw new IllegalArgumentException("Verification not configured for table: " + auditTable);
 		}
@@ -7260,6 +7262,90 @@ public class AuditService {
 
 		System.out.println("CAP_RATIO_BUFFER MOD Updated : " + updated);
 		System.out.println("CAP_RATIO_BUFFER Verification Completed Successfully");
+	}
+	
+	private void transferIRRBBBORROWINGSData(AuditServicesEntity auditRecord) {
+
+		final String MOD  = "IRRBB_BORROWINGS_MOD_SUMMARYTABLE";
+		final String LIVE = "IRRBB_BORROWINGS_SUMMARYTABLE";
+		final String DET  = "IRRBB_BORROWINGS_DETAILTABLE";
+
+		// 1) Find the pending MOD date. Prefer MODIFY_FLG='Y', fall back to MAX.
+		java.sql.Date reportDate = null;
+		try {
+			reportDate = jdbcTemplate.queryForObject(
+					"SELECT MAX(REPORT_DATE) FROM " + MOD + " WHERE MODIFY_FLG = 'Y'", java.sql.Date.class);
+		} catch (Exception ignored) {
+			/* fall through */ }
+		if (reportDate == null) {
+			reportDate = jdbcTemplate.queryForObject("SELECT MAX(REPORT_DATE) FROM " + MOD, java.sql.Date.class);
+		}
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified IRRBB_BORROWINGS record available for verification.");
+		}
+
+		// 2) Guard: must still be pending (blocks double-verify).
+		Integer pending = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM " + MOD + " WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				Integer.class, reportDate);
+		if (pending == null || pending == 0) {
+			throw new IllegalStateException(
+					"No pending IRRBB_BORROWINGS modification for date " + reportDate + " (already verified?).");
+		}
+
+		System.out.println("IRRBB_BORROWINGS Verify — date=" + reportDate + ", pending rows=" + pending);
+
+		// 3) Business columns copied from MOD -> LIVE.
+		//    ACCOUNT_NUMBER is the join key, so it is not in the SET list.
+		//    ENTITY_FLG / MODIFY_FLG are set explicitly in step 5, not copied from MOD.
+		String cols = "CUSTOMER_ID, GL_CODE, GL_DESCRIPTION, ACCOUNT_CURRENCY, "
+				+ "ACCOUNT_OPENING_DATE, MATURITY_DATE, "
+				+ "OUTSTANDING_BALANCE_ACCT_CCY, OUTSTANDING_BALANCE_INR, "
+				+ "FLOATING_FIXED, EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, "
+				+ "LAST_REPRICING_DATE, NEXT_REPRICING_DATE, SPREAD_OVER_BENCHMARK, "
+				+ "FINAL_ROI_PERCENT, CAP_FLOOR_RATE_OF_INTEREST, REMARKS, "
+				+ "REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+				+ "DEL_FLG, REPORT_RESUBDATE";
+
+		String srcCols = "S." + cols.replace(", ", ", S.");
+
+		// Only touch live rows that have a pending MOD row (same date + account number)
+		String matchSub = " FROM " + MOD + " S "
+				+ " WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+				+ "   AND S.ACCOUNT_NUMBER = M.ACCOUNT_NUMBER"
+				+ "   AND S.MODIFY_FLG = 'Y'";
+
+		String updSummary = "UPDATE " + LIVE + " M SET (" + cols + ") = (SELECT " + srcCols + matchSub + ")"
+				+ " WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)"
+				+ "   AND EXISTS (SELECT 1" + matchSub + ")";
+
+		int summaryUpdated = jdbcTemplate.update(updSummary, reportDate);
+		if (summaryUpdated == 0) {
+			throw new IllegalStateException("IRRBB_BORROWINGS live summary row missing for date " + reportDate);
+		}
+		System.out.println("IRRBB_BORROWINGS Summary Table Updated : " + summaryUpdated);
+
+		// 4) Copy MOD business columns -> LIVE Detail (same columns, same match)
+		String updDetail = "UPDATE " + DET + " M SET (" + cols + ") = (SELECT " + srcCols + matchSub + ")"
+				+ " WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)"
+				+ "   AND EXISTS (SELECT 1" + matchSub + ")";
+
+		int detailUpdated = jdbcTemplate.update(updDetail, reportDate);
+		System.out.println("IRRBB_BORROWINGS Detail Table Updated : " + detailUpdated);
+
+		// 5) Flip MOD -> approved (and mark live rows as verified)
+		int modUpdated = jdbcTemplate.update(
+				"UPDATE " + MOD + " SET ENTITY_FLG='Y', MODIFY_FLG='N' "
+						+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				reportDate);
+		System.out.println("IRRBB_BORROWINGS MOD Updated : " + modUpdated);
+
+		jdbcTemplate.update("UPDATE " + LIVE + " SET ENTITY_FLG='Y', MODIFY_FLG='N' "
+				+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate);
+		jdbcTemplate.update("UPDATE " + DET + " SET ENTITY_FLG='Y', MODIFY_FLG='N' "
+				+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate);
+
+		System.out.println("✔ IRRBB_BORROWINGS Verification and Transfer Completed Successfully");
 	}
 
 	private void transferAS11Data(AuditServicesEntity auditRecord) {
