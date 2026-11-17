@@ -7774,6 +7774,14 @@ public class BRRS_ReportsController {
 
 			System.out.println("Came to single controller. Type : " + type + " Date : " + asondate);
 
+			// Checkers verify; they must not submit modifications
+			String userid = (String) request.getSession().getAttribute("USERID");
+			String role = userid != null ? userProfileRep.getUserRole(userid) : null;
+			if (isCheckerOnly(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Checker cannot modify DBS10_FINCON_III_1C. Current role: " + role);
+			}
+
 			boolean isResub = "RESUB".equalsIgnoreCase(type);
 
 			Object entityInstance = isResub
@@ -7791,9 +7799,16 @@ public class BRRS_ReportsController {
 
 			System.out.println("Entity Created : " + entityInstance.getClass().getSimpleName());
 
-			BRRS_DBS10_FINCON_III_1C_ReportService.updateReport(entityInstance, type);
+			boolean submitted = BRRS_DBS10_FINCON_III_1C_ReportService.updateReport(entityInstance, type);
 
-			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
+			// Resubmission is not part of the Maker-Checker flow (unchanged behaviour)
+			if (isResub) {
+				return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
+			}
+			if (!submitted) {
+				return ResponseEntity.ok("No changes were made.");
+			}
+			return ResponseEntity.ok("Modification saved. Pending Checker verification.");
 
 		} catch (Exception e) {
 

@@ -1588,6 +1588,8 @@ public class AuditService {
 			transferAS11Data(auditRecord);
 		} else if (upperTable.equals("BRRS_IRRBB_DEPOSITS_MOD_SUMMARYTABLE")) {
 		    transferIRRBBDepositsData(auditRecord);
+		} else if (upperTable.equals("BRRS_DBS10_FINCON_III_1C_MOD_SUMMARYTABLE_MANUAL")) {
+		    transferDBS10FinconIII1CData(auditRecord);
 		} else if (upperTable.equals("IRRBB_BORROWINGS_MOD_SUMMARYTABLE")) {
 			transferIRRBBBORROWINGSData(auditRecord);
 		} else {
@@ -7346,6 +7348,85 @@ public class AuditService {
 				+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate);
 
 		System.out.println("✔ IRRBB_BORROWINGS Verification and Transfer Completed Successfully");
+	}
+	
+	
+	// =========================================================
+	// DBS10_FINCON_III_1C — Checker transfer (MOD → LIVE manual table)
+	// One row per REPORT_DATE; manual cells are R8..R14 x 11 columns.
+	// The Maker stores the report date (dd-MM-yyyy) in change_details.
+	// =========================================================
+	public static final int[] FINCON_1C_ROWS = { 8, 9, 10, 11, 12, 13, 14 };
+
+	public static final String[] FINCON_1C_COLS = { "SHORT_TERM_AMT", "EQUITY", "BONDS_AMT", "CP_AMT", "CD_AMT",
+			"TIER_AMT", "UNIT_AMT", "VENTURE_AMT", "PTC_AMT", "PURCHASE_AMT", "OTHER_AMT" };
+
+	private void transferDBS10FinconIII1CData(AuditServicesEntity auditRecord) {
+		final String liveTable = "BRRS_DBS10_FINCON_III_1C_SUMMARYTABLE_MANUAL";
+		final String modTable = "BRRS_DBS10_FINCON_III_1C_MOD_SUMMARYTABLE_MANUAL";
+
+		// 1. Report date of THIS audit row
+		java.sql.Date reportDate = null;
+		String raw = auditRecord.getChange_details();
+		if (raw != null && !raw.trim().isEmpty()) {
+			try {
+				reportDate = new java.sql.Date(
+						new java.text.SimpleDateFormat("dd-MM-yyyy").parse(raw.trim()).getTime());
+			} catch (java.text.ParseException ignored) {
+				// legacy / unexpected text -> fall back below
+			}
+		}
+		if (reportDate == null) {
+			try {
+				reportDate = jdbcTemplate.queryForObject(
+						"SELECT MAX(REPORT_DATE) FROM " + modTable + " WHERE MODIFY_FLG = 'Y'", java.sql.Date.class);
+			} catch (Exception ignored) {
+			}
+		}
+		if (reportDate == null) {
+			throw new IllegalStateException("No pending DBS10_FINCON_III_1C modification available for verification.");
+		}
+		System.out.println("DBS10_FINCON_III_1C Report Date : " + reportDate);
+
+		// 2. The MOD row for that date must exist
+		Integer modRows = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM " + modTable + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", Integer.class,
+				reportDate);
+		if (modRows == null || modRows == 0) {
+			throw new IllegalStateException(
+					"No MOD row found in " + modTable + " for REPORT_DATE = " + reportDate);
+		}
+
+		// 3. LIVE manual table <- MOD (all 77 manual cells)
+		StringBuilder setCols = new StringBuilder();
+		StringBuilder selCols = new StringBuilder();
+		for (int r : FINCON_1C_ROWS) {
+			for (String c : FINCON_1C_COLS) {
+				if (setCols.length() > 0) {
+					setCols.append(", ");
+					selCols.append(", ");
+				}
+				setCols.append("R").append(r).append("_").append(c);
+				selCols.append("S.R").append(r).append("_").append(c);
+			}
+		}
+
+		String updateSql = "UPDATE " + liveTable + " M SET (" + setCols + ") = (SELECT " + selCols + " FROM "
+				+ modTable + " S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int updated = jdbcTemplate.update(updateSql, reportDate);
+		if (updated == 0) {
+			throw new IllegalStateException(
+					"DBS10_FINCON_III_1C live record not found in " + liveTable + " for date : " + reportDate);
+		}
+		System.out.println("DBS10_FINCON_III_1C Live Table Updated : " + updated);
+
+		// 4. Mark the MOD row as approved
+		int modUpdated = jdbcTemplate.update(
+				"UPDATE " + modTable + " SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				reportDate);
+		System.out.println("DBS10_FINCON_III_1C MOD Updated : " + modUpdated);
 	}
 
 	private void transferAS11Data(AuditServicesEntity auditRecord) {

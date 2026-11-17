@@ -3832,7 +3832,7 @@ public class BRRS_DBS10_FINCON_III_1C_ReportService {
 	}
 
 @Transactional
-public void updateReport(Object entity, String type) {
+public void updateReportDirect(Object entity, String type) {
 
     boolean isResub = "RESUB".equalsIgnoreCase(type);
 
@@ -3963,6 +3963,178 @@ public void updateReport(Object entity, String type) {
         throw new RuntimeException("Error while updating DBS10_FINCON_III_1C Manual fields for type: " + type, e);
     }
 }
+
+
+
+// ===========================================================
+// MAKER-CHECKER : DBS10_FINCON_III_1C manual entry (R8 - R14)
+// ===========================================================
+// NORMAL type -> writes ONLY to the MOD table (MODIFY_FLG='Y') and logs one
+// MODIFY audit row. The live manual table is untouched until the Checker
+// verifies (see AuditService.transferDBS10FinconIII1CData).
+// RESUB type  -> unchanged behaviour (direct update, see updateReportDirect).
+// Returns false when nothing actually changed (no MOD write, no audit).
+
+public static final String FINCON_1C_LIVE_TABLE = "BRRS_DBS10_FINCON_III_1C_SUMMARYTABLE_MANUAL";
+public static final String FINCON_1C_MOD_TABLE = "BRRS_DBS10_FINCON_III_1C_MOD_SUMMARYTABLE_MANUAL";
+
+@Transactional
+public boolean updateReport(Object entity, String type) {
+
+	if ("RESUB".equalsIgnoreCase(type)) {
+		updateReportDirect(entity, type);
+		return true;
+	}
+	return submitFincon1CForChecker(entity);
+}
+
+private boolean submitFincon1CForChecker(Object entity) {
+
+	System.out.println("Came to DBS10_FINCON_III_1C Maker submit (NORMAL)");
+
+	try {
+		Class<?> entityClass = entity.getClass();
+
+		Object reportDateObj = entityClass.getMethod("getReport_date").invoke(entity);
+		if (reportDateObj == null) {
+			throw new IllegalStateException("Report Date is NULL");
+		}
+		Date reportDate = (Date) reportDateObj;
+		java.sql.Date sqlReportDate = new java.sql.Date(reportDate.getTime());
+		String showDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+
+		// 1. Current LIVE row (what the screen is showing)
+		java.util.List<java.util.Map<String, Object>> liveRows = jdbcTemplate.queryForList(
+				"SELECT * FROM " + FINCON_1C_LIVE_TABLE + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", sqlReportDate);
+		if (liveRows.isEmpty()) {
+			throw new IllegalStateException(
+					"No record found in " + FINCON_1C_LIVE_TABLE + " for report date " + showDate);
+		}
+		java.util.Map<String, Object> live = liveRows.get(0);
+
+		// 2. Compare every manual cell. The MOD row keeps the Maker's value where
+		// it changed, otherwise the live value, so the Checker's copy back is complete.
+		java.util.List<String> colNames = new ArrayList<>();
+		java.util.List<Object> colValues = new ArrayList<>();
+		StringBuilder changes = new StringBuilder();
+
+		for (int r : AuditService.FINCON_1C_ROWS) {
+			for (String col : AuditService.FINCON_1C_COLS) {
+
+				String columnName = "R" + r + "_" + col;
+				Object liveVal = live.get(columnName);
+				Object storeVal = liveVal;
+
+				BigDecimal newVal = fincon1CToDecimal(
+						fincon1CGet(entity, "getR" + r + "_" + col.toLowerCase()));
+
+				// null input = untouched cell (same rule as before)
+				if (newVal != null && !fincon1CSame(liveVal, newVal)) {
+					if (changes.length() > 0) {
+						changes.append("|||");
+					}
+					changes.append(columnName).append(": OldValue: ")
+							.append(liveVal == null ? "null" : liveVal.toString().trim())
+							.append(", NewValue: ").append(newVal.toPlainString());
+					storeVal = newVal;
+				}
+
+				colNames.add(columnName);
+				colValues.add(storeVal);
+			}
+		}
+
+		if (changes.length() == 0) {
+			System.out.println("DBS10_FINCON_III_1C: no changes detected, nothing submitted.");
+			return false;
+		}
+
+		Object[] meta = { live.get("REPORT_VERSION"), live.get("REPORT_FREQUENCY"), live.get("REPORT_CODE"),
+				live.get("REPORT_DESC"), live.get("DEL_FLG") };
+
+		// 3) Update the pending/old MOD row for this report date (ONE row per date)
+		StringBuilder setSql = new StringBuilder();
+		for (String c : colNames) {
+			setSql.append(c).append(" = ?, ");
+		}
+		setSql.append("REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, REPORT_DESC = ?, ")
+				.append("DEL_FLG = ?, ENTITY_FLG = 'N', MODIFY_FLG = 'Y' ");
+
+		java.util.List<Object> updArgs = new ArrayList<>(colValues);
+		java.util.Collections.addAll(updArgs, meta);
+		updArgs.add(sqlReportDate);
+
+		int updated = jdbcTemplate.update("UPDATE " + FINCON_1C_MOD_TABLE + " SET " + setSql
+				+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?)", updArgs.toArray());
+
+		// 4) Otherwise insert it
+		if (updated == 0) {
+			StringBuilder cols = new StringBuilder();
+			StringBuilder marks = new StringBuilder();
+			for (String c : colNames) {
+				cols.append(c).append(", ");
+				marks.append("?, ");
+			}
+
+			java.util.List<Object> insArgs = new ArrayList<>(colValues);
+			insArgs.add(sqlReportDate);
+			insArgs.add(meta[0]);
+			insArgs.add(meta[1]);
+			insArgs.add(meta[2]);
+			insArgs.add(meta[3]);
+			insArgs.add(meta[4]);
+
+			jdbcTemplate.update("INSERT INTO " + FINCON_1C_MOD_TABLE + " (" + cols
+					+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+					+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG) VALUES (" + marks + "?, ?, ?, ?, ?, 'N', 'Y', ?)",
+					insArgs.toArray());
+		}
+
+		// Audit -> shows up in Modify Status for the Checker.
+		// change_details carries the report date (dd-MM-yyyy); the Checker reads it back.
+		auditService.saveModifyAudit(showDate, changes.toString(), "DBS10_FINCON_III_1C Manual Screen",
+				FINCON_1C_MOD_TABLE);
+
+		System.out.println("DBS10_FINCON_III_1C Maker submit completed. Pending Checker verification.");
+		return true;
+
+	} catch (Exception e) {
+		System.err.println("===== DBS10_FINCON_III_1C MAKER SUBMIT ERROR =====");
+		e.printStackTrace();
+		throw new RuntimeException("Error while submitting DBS10_FINCON_III_1C Manual fields for Checker", e);
+	}
+}
+
+private Object fincon1CGet(Object entity, String getterName) throws Exception {
+	try {
+		return entity.getClass().getMethod(getterName).invoke(entity);
+	} catch (NoSuchMethodException ex) {
+		System.out.println("Method not found : " + getterName + " - Skipping");
+		return null;
+	}
+}
+
+private BigDecimal fincon1CToDecimal(Object o) {
+	if (o == null)
+		return null;
+	if (o instanceof BigDecimal)
+		return (BigDecimal) o;
+	String s = o.toString().trim();
+	return s.isEmpty() ? null : new BigDecimal(s);
+}
+
+private boolean fincon1CSame(Object liveVal, BigDecimal newVal) {
+	if (liveVal == null)
+		return false;
+	try {
+		return new BigDecimal(liveVal.toString().trim()).compareTo(newVal) == 0;
+	} catch (NumberFormatException e) {
+		return liveVal.toString().trim().equals(newVal.toString().trim());
+	}
+}
+
+
+
 	public ModelAndView getViewOrEditPage(String SNO, String formMode, String type) {
 		ModelAndView mv = new ModelAndView("BRRS/DBS10_FINCON_III_1C");
 

@@ -409,10 +409,12 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1CREPORT
 				success: function (roleId) {
 					console.log("User Role ID:", roleId);
 
-					// ✅ Checker → hide Modify, show Download
-					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+					// ✅ Checker → hide Modify (Maker-Checker: Checker only verifies from the
+					//    Audit screen and cannot submit changes), show Download
+					if (isCheckerRole(roleId)) {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
+						$("#submitButton, #cancelRecord").hide();
 						$(".download-btn").show();
 					}
 					// ✅ Maker → show Modify, hide Download (MGR = Maker)
@@ -433,6 +435,13 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1CREPORT
 					$(".download-btn").show();
 				}
 			});
+		}
+
+		// Same list the backend uses to block a Checker from submitting (isCheckerOnly)
+		function isCheckerRole(roleId) {
+			if (!roleId) return false;
+			const r = String(roleId).trim().toUpperCase();
+			return r === "C" || r === "CHECKER" || r === "ADM-C" || r === "USR-C" || r === "USER-AUDIT";
 		}
 
 		function home() {
@@ -664,6 +673,12 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1CREPORT
 
 	<script>
 		function showmodify(btn) {
+			// Remember the value each manual cell had when editing started, so that on
+			// submit only the cells the Maker really changed are sent to the Checker.
+			$("#fileupload input.Show_input").not(".nonEditable").each(function () {
+				$(this).attr("data-original", String($(this).val() || "").replace(/,/g, "").trim());
+			});
+
 			// Enable all input fields with class .Show_input except non-editable ones
 			$(".Show_input").not(".nonEditable")
 				.removeAttr("readonly")
@@ -1004,12 +1019,45 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1CREPORT
 				formData.append("asondate", asondate);
 				formData.append("type", type);
 
+				let changedCount = 0;
+				let invalidField = null;
+
 				$('#fileupload').find(':input').each(function () {
 					const name = $(this).attr('id');
-					if (name) {
-						formData.append(name, $(this).val());
+					if (!name) {
+						return;
 					}
+
+					const value = String($(this).val() || "").trim();
+					const original = $(this).attr('data-original');
+
+					// Manual cells: send only the ones the Maker actually changed.
+					// (Untouched cells are left out, the backend treats them as "no change".)
+					if (original !== undefined) {
+						if (value === original) {
+							return;
+						}
+						if (value !== "" && !/^-?\d+(\.\d+)?$/.test(value)) {
+							invalidField = name;
+							return;
+						}
+						changedCount++;
+					}
+
+					formData.append(name, value);
 				});
+
+				if (invalidField) {
+					$('#loader').modal('hide');
+					showResultModal("Information", "Please enter a valid number for " + invalidField.toUpperCase() + ".");
+					return;
+				}
+
+				if (changedCount === 0) {
+					$('#loader').modal('hide');
+					showResultModal("Information", "No changes were made.");
+					return;
+				}
 
 				$.ajax({
 					url: './DBS10_FINCON_III_1CupdateAll',
@@ -1019,17 +1067,27 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1CREPORT
 					contentType: false,
 					dataType: 'text',
 
-					success: function () {
-						$("#resultModalLabel").text("BRRS");
-						$("#resultModalBody").text("Updated Successfully.");
+					// Backend answers (Maker-Checker):
+					//   "Modification saved. Pending Checker verification."  -> saved to MOD table
+					//   "No changes were made."                              -> nothing submitted
+					//   RESUB                                                -> direct update message
+					success: function (response) {
+						const msg = (response && response.trim()) ? response.trim() : "Modification saved. Pending Checker verification.";
+						const noChange = msg.toLowerCase().indexOf("no changes") !== -1;
+
+						$("#resultModalLabel").text(noChange ? "Information" : "BRRS");
+						$("#resultModalBody").text(msg);
 						$("#resultModal").modal("show");
 					},
 
 					error: function (jqXHR) {
 						console.error("Error response:", jqXHR.responseText);
 
+						// 403 -> Checker is not allowed to modify; 500 -> "Update Failed : <reason>"
+						const serverMsg = jqXHR.responseText && jqXHR.responseText.length < 300 ? jqXHR.responseText : "";
+
 						$("#resultModalLabel").text("Error");
-						$("#resultModalBody").text("Update failed. Check console for details.");
+						$("#resultModalBody").text(serverMsg || "Update failed. Check console for details.");
 						$("#resultModal").modal("show");
 					},
 
