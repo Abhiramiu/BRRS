@@ -2128,23 +2128,67 @@ public class BRRS_ReportsController {
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 			@ModelAttribute BRRS_MDISB5_ReportService.MDISB5_Summary_Entity1 request1,
 			@ModelAttribute BRRS_MDISB5_ReportService.MDISB5_Summary_Entity2 request2,
-			@ModelAttribute BRRS_MDISB5_ReportService.MDISB5_Summary_Entity3 request3) {
+			@ModelAttribute BRRS_MDISB5_ReportService.MDISB5_Summary_Entity3 request3,
+			HttpServletRequest req) {
 		try {
-			if (asondate != null) {
-				request1.setREPORT_DATE(asondate);
-				request2.setREPORT_DATE(asondate);
-				request3.setREPORT_DATE(asondate);
+			logger.info("Came to MDISB5updateAll controller");
+
+			// ✅ 1. Fallback date extraction if Spring @DateTimeFormat received duplicate or unparsed date
+			if (asondate == null && req != null) {
+				String rawDate = req.getParameter("asondate");
+				if (rawDate == null || rawDate.trim().isEmpty()) {
+					rawDate = req.getParameter("todate");
+				}
+				if (rawDate != null && !rawDate.trim().isEmpty()) {
+					// Handle duplicate comma-separated values like "30/09/2026,30/09/2026"
+					if (rawDate.contains(",")) {
+						rawDate = rawDate.split(",")[0].trim();
+					}
+					String[] formats = { "dd/MM/yyyy", "dd-MMM-yyyy", "dd-MM-yyyy", "yyyy-MM-dd", "yyyy/MM/dd" };
+					for (String fmt : formats) {
+						try {
+							asondate = new SimpleDateFormat(fmt, Locale.ENGLISH).parse(rawDate.trim());
+							break;
+						} catch (Exception ignored) {
+						}
+					}
+				}
 			}
+
+			// ✅ 2. Validate that asondate is available
+			if (asondate == null) {
+				logger.warn("MDISB5updateAll: asondate is null or could not be parsed");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body("Update Failed: Report Date (asondate) is required.");
+			}
+
+			logger.info("MDISB5updateAll: Using report date: {}", asondate);
+
+			// ✅ 3. Explicitly set REPORT_DATE into all 3 entity parts
+			request1.setREPORT_DATE(asondate);
+			request2.setREPORT_DATE(asondate);
+			request3.setREPORT_DATE(asondate);
+
+			// ✅ 4. Execute updates into MOD tables for Part 1, Part 2, and Part 3
 			MDISB5reportService.updateReport(request1);
 			MDISB5reportService.updateReport2(request2);
 			MDISB5reportService.updateReport3(request3);
+
 			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
+
 		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + e.getMessage());
+			logger.error("Error in MDISB5updateAll", e);
+
+			// Extract the deepest root cause (e.g., Oracle ORA- error or missing record)
+			Throwable root = e;
+			while (root.getCause() != null) {
+				root = root.getCause();
+			}
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Update Failed : " + root.getMessage());
 		}
 	}
-
 	@RequestMapping(value = "/UpdateMDISB5_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(

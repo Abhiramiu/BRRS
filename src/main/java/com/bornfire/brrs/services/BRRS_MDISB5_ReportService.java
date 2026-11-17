@@ -4,6 +4,7 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,8 +42,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,6 +78,86 @@ public class BRRS_MDISB5_ReportService {
 			@Autowired
 			private JdbcTemplate jdbcTemplate;
 			
+	
+			// ============================================================
+			// MDISB5 PART 1 - FIND LIVE AND MOD
+			// ============================================================
+
+			public MDISB5_Summary_Entity1 findMDISB5Part1ByDate(Date reportDate) {
+
+			    List<MDISB5_Summary_Entity1> records = jdbcTemplate.query(
+			            "SELECT * FROM BRRS_MDISB5_SUMMARYTABLE1 "
+			            + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+			            new BeanPropertyRowMapper<>(MDISB5_Summary_Entity1.class),
+			            reportDate);
+
+			    return records.isEmpty() ? null : records.get(0);
+			}
+
+			public MDISB5_Summary_Entity1 findMDISB5Part1ModByDate(Date reportDate) {
+
+			    List<MDISB5_Summary_Entity1> records = jdbcTemplate.query(
+			            "SELECT * FROM BRRS_MDISB5_MOD_SUMMARYTABLE1 "
+			            + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+			            new BeanPropertyRowMapper<>(MDISB5_Summary_Entity1.class),
+			            reportDate);
+
+			    return records.isEmpty() ? null : records.get(0);
+			}
+
+
+			// ============================================================
+			// MDISB5 PART 2 - FIND LIVE AND MOD
+			// ============================================================
+
+			public MDISB5_Summary_Entity2 findMDISB5Part2ByDate(Date reportDate) {
+
+			    List<MDISB5_Summary_Entity2> records = jdbcTemplate.query(
+			            "SELECT * FROM BRRS_MDISB5_SUMMARYTABLE2 "
+			            + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+			            new BeanPropertyRowMapper<>(MDISB5_Summary_Entity2.class),
+			            reportDate);
+
+			    return records.isEmpty() ? null : records.get(0);
+			}
+
+			public MDISB5_Summary_Entity2 findMDISB5Part2ModByDate(Date reportDate) {
+
+			    List<MDISB5_Summary_Entity2> records = jdbcTemplate.query(
+			            "SELECT * FROM BRRS_MDISB5_MOD_SUMMARYTABLE2 "
+			            + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+			            new BeanPropertyRowMapper<>(MDISB5_Summary_Entity2.class),
+			            reportDate);
+
+			    return records.isEmpty() ? null : records.get(0);
+			}
+
+
+			// ============================================================
+			// MDISB5 PART 3 - FIND LIVE AND MOD
+			// ============================================================
+
+			public MDISB5_Summary_Entity3 findMDISB5Part3ByDate(Date reportDate) {
+
+			    List<MDISB5_Summary_Entity3> records = jdbcTemplate.query(
+			            "SELECT * FROM BRRS_MDISB5_SUMMARYTABLE3 "
+			            + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+			            new BeanPropertyRowMapper<>(MDISB5_Summary_Entity3.class),
+			            reportDate);
+
+			    return records.isEmpty() ? null : records.get(0);
+			}
+
+			public MDISB5_Summary_Entity3 findMDISB5Part3ModByDate(Date reportDate) {
+
+			    List<MDISB5_Summary_Entity3> records = jdbcTemplate.query(
+			            "SELECT * FROM BRRS_MDISB5_MOD_SUMMARYTABLE3 "
+			            + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+			            new BeanPropertyRowMapper<>(MDISB5_Summary_Entity3.class),
+			            reportDate);
+
+			    return records.isEmpty() ? null : records.get(0);
+			}
 			
 
 			// SUMMARY
@@ -13192,446 +13276,624 @@ public class BRRS_MDISB5_ReportService {
 	}
 
 	
+	// ============================================================
+	// MDISB5 PART 1 - MAKER UPDATE
+	// ============================================================
+
 	@Transactional
 	public void updateReport(MDISB5_Summary_Entity1 request1) {
 
 	    try {
-
-	        logger.info("Came to services");
+	        logger.info("Came to MDISB5 Part 1 Maker Update");
 	        logger.info("Report Date: {}", request1.getREPORT_DATE());
 
-	        // Fetch existing record
-	        List<MDISB5_Summary_Entity1> records =
-	                getDataByDate1(request1.getREPORT_DATE());
+	        MDISB5_Summary_Entity1 liveRecord = findMDISB5Part1ByDate(
+	                request1.getREPORT_DATE());
 
-	        if (records == null || records.isEmpty()) {
-
-	            throw new RuntimeException(
-	                    "Record not found for REPORT_DATE: "
-	                            + request1.getREPORT_DATE());
+	        if (liveRecord == null) {
+	            throw new RuntimeException("Live MDISB5 Part 1 record not found");
 	        }
 
-	        MDISB5_Summary_Entity1 existing = records.get(0);
+	        MDISB5_Summary_Entity1 modRecord = findMDISB5Part1ModByDate(
+	                request1.getREPORT_DATE());
 
-	        // Audit old copy
-	        MDISB5_Summary_Entity1 oldcopy =
-	                new MDISB5_Summary_Entity1();
+	        if (modRecord == null) {
+	            modRecord = new MDISB5_Summary_Entity1();
+	            BeanUtils.copyProperties(liveRecord, modRecord);
+	        }
 
-	        BeanUtils.copyProperties(existing, oldcopy);
+	        MDISB5_Summary_Entity1 oldcopy = new MDISB5_Summary_Entity1();
+	        BeanUtils.copyProperties(modRecord, oldcopy);
 
-	        String changes = auditService.getChanges(oldcopy, request1);
+	        String[] fields = {
+	                "NAME_OF_SHAREHOLDER",
+	                "PERCENTAGE_SHAREHOLDING",
+	                "NUMBER_OF_ACCOUNTS",
+	                "AMOUNT"
+	        };
 
-	        if (!changes.isEmpty()) {
+	        applyMDISB5Changes(
+	                5, 15, fields, request1, modRecord,
+	                MDISB5_Summary_Entity1.class);
 
-	            String sql =
-	                    "UPDATE BRRS_MDISB5_SUMMARYTABLE1 SET " +
-	                    "R5_NAME_OF_SHAREHOLDER=?, R5_PERCENTAGE_SHAREHOLDING=?, R5_NUMBER_OF_ACCOUNTS=?, R5_AMOUNT=?, " +
-	                    "R6_NAME_OF_SHAREHOLDER=?, R6_PERCENTAGE_SHAREHOLDING=?, R6_NUMBER_OF_ACCOUNTS=?, R6_AMOUNT=?, " +
-	                    "R7_NAME_OF_SHAREHOLDER=?, R7_PERCENTAGE_SHAREHOLDING=?, R7_NUMBER_OF_ACCOUNTS=?, R7_AMOUNT=?, " +
-	                    "R8_NAME_OF_SHAREHOLDER=?, R8_PERCENTAGE_SHAREHOLDING=?, R8_NUMBER_OF_ACCOUNTS=?, R8_AMOUNT=?, " +
-	                    "R9_NAME_OF_SHAREHOLDER=?, R9_PERCENTAGE_SHAREHOLDING=?, R9_NUMBER_OF_ACCOUNTS=?, R9_AMOUNT=?, " +
-	                    "R10_NAME_OF_SHAREHOLDER=?, R10_PERCENTAGE_SHAREHOLDING=?, R10_NUMBER_OF_ACCOUNTS=?, R10_AMOUNT=?, " +
-	                    "R11_NAME_OF_SHAREHOLDER=?, R11_PERCENTAGE_SHAREHOLDING=?, R11_NUMBER_OF_ACCOUNTS=?, R11_AMOUNT=?, " +
-	                    "R12_NAME_OF_SHAREHOLDER=?, R12_PERCENTAGE_SHAREHOLDING=?, R12_NUMBER_OF_ACCOUNTS=?, R12_AMOUNT=?, " +
-	                    "R13_NAME_OF_SHAREHOLDER=?, R13_PERCENTAGE_SHAREHOLDING=?, R13_NUMBER_OF_ACCOUNTS=?, R13_AMOUNT=?, " +
-	                    "R14_NAME_OF_SHAREHOLDER=?, R14_PERCENTAGE_SHAREHOLDING=?, R14_NUMBER_OF_ACCOUNTS=?, R14_AMOUNT=?, " +
-	                    "R15_NAME_OF_SHAREHOLDER=?, R15_PERCENTAGE_SHAREHOLDING=?, R15_NUMBER_OF_ACCOUNTS=?, R15_AMOUNT=? " +
-	                    "WHERE REPORT_DATE=?";
+	        String changes = auditService.getChanges(oldcopy, modRecord);
 
-	            int count = jdbcTemplate.update(
-	                    sql,
+	        setMDISB5Flags(modRecord);
 
-	                    request1.getR5_NAME_OF_SHAREHOLDER(),
-	                    request1.getR5_PERCENTAGE_SHAREHOLDING(),
-	                    request1.getR5_NUMBER_OF_ACCOUNTS(),
-	                    request1.getR5_AMOUNT(),
+	        saveMDISB5ModRecord(
+	                modRecord,
+	                "BRRS_MDISB5_MOD_SUMMARYTABLE1",
+	                5, 15, fields,
+	                MDISB5_Summary_Entity1.class);
 
-	                    request1.getR6_NAME_OF_SHAREHOLDER(),
-	                    request1.getR6_PERCENTAGE_SHAREHOLDING(),
-	                    request1.getR6_NUMBER_OF_ACCOUNTS(),
-	                    request1.getR6_AMOUNT(),
+	        logger.info("MDISB5 Part 1 saved into MOD table");
 
-	                    request1.getR7_NAME_OF_SHAREHOLDER(),
-	                    request1.getR7_PERCENTAGE_SHAREHOLDING(),
-	                    request1.getR7_NUMBER_OF_ACCOUNTS(),
-	                    request1.getR7_AMOUNT(),
-
-	                    request1.getR8_NAME_OF_SHAREHOLDER(),
-	                    request1.getR8_PERCENTAGE_SHAREHOLDING(),
-	                    request1.getR8_NUMBER_OF_ACCOUNTS(),
-	                    request1.getR8_AMOUNT(),
-
-	                    request1.getR9_NAME_OF_SHAREHOLDER(),
-	                    request1.getR9_PERCENTAGE_SHAREHOLDING(),
-	                    request1.getR9_NUMBER_OF_ACCOUNTS(),
-	                    request1.getR9_AMOUNT(),
-
-	                    request1.getR10_NAME_OF_SHAREHOLDER(),
-	                    request1.getR10_PERCENTAGE_SHAREHOLDING(),
-	                    request1.getR10_NUMBER_OF_ACCOUNTS(),
-	                    request1.getR10_AMOUNT(),
-
-	                    request1.getR11_NAME_OF_SHAREHOLDER(),
-	                    request1.getR11_PERCENTAGE_SHAREHOLDING(),
-	                    request1.getR11_NUMBER_OF_ACCOUNTS(),
-	                    request1.getR11_AMOUNT(),
-
-	                    request1.getR12_NAME_OF_SHAREHOLDER(),
-	                    request1.getR12_PERCENTAGE_SHAREHOLDING(),
-	                    request1.getR12_NUMBER_OF_ACCOUNTS(),
-	                    request1.getR12_AMOUNT(),
-
-	                    request1.getR13_NAME_OF_SHAREHOLDER(),
-	                    request1.getR13_PERCENTAGE_SHAREHOLDING(),
-	                    request1.getR13_NUMBER_OF_ACCOUNTS(),
-	                    request1.getR13_AMOUNT(),
-
-	                    request1.getR14_NAME_OF_SHAREHOLDER(),
-	                    request1.getR14_PERCENTAGE_SHAREHOLDING(),
-	                    request1.getR14_NUMBER_OF_ACCOUNTS(),
-	                    request1.getR14_AMOUNT(),
-
-	                    request1.getR15_NAME_OF_SHAREHOLDER(),
-	                    request1.getR15_PERCENTAGE_SHAREHOLDING(),
-	                    request1.getR15_NUMBER_OF_ACCOUNTS(),
-	                    request1.getR15_AMOUNT(),
-
-	                    request1.getREPORT_DATE()
-	            );
-
-	            if (count > 0) {
-
-	                auditService.compareEntitiesmanual(
-	                        oldcopy,
-	                        request1,
-	                        request1.getREPORT_DATE().toString(),
-	                        "MDISB5 Summary Screen",
-	                        "BRRS_MDISB5_SUMMARYTABLE1"
-	                );
-
-	                logger.info(
-	                        "Audit completed for REPORT_DATE {}",
-	                        request1.getREPORT_DATE());
-
-	                logger.info(
-	                        "MDISB5 Summary Updated Successfully. Rows Updated: {}",
-	                        count);
-	            }
-
-	        } else {
-
-	            logger.info(
-	                    "No changes detected for REPORT_DATE {}",
-	                    request1.getREPORT_DATE());
+	        if (changes != null && !changes.isEmpty()) {
+	            auditService.compareEntitiesmanual(
+	                    oldcopy,
+	                    modRecord,
+	                    request1.getREPORT_DATE().toString(),
+	                    "MDISB5 Summary Screen",
+	                    "BRRS_MDISB5_MOD_SUMMARYTABLE1");
 	        }
 
 	    } catch (Exception e) {
-
-	        logger.error(
-	                "Error while updating BRRS_MDISB5 Report",
-	                e);
-
-	        throw new RuntimeException(
-	                "Error while updating BRRS_MDISB5 Report",
-	                e);
+	        logger.error("Error updating MDISB5 Part 1", e);
+	        throw new RuntimeException("Error updating MDISB5 Part 1", e);
 	    }
 	}
-	
-	
+
+
+	// ============================================================
+	// MDISB5 PART 2 - MAKER UPDATE
+	// ============================================================
+
 	@Transactional
 	public void updateReport2(MDISB5_Summary_Entity2 request2) {
 
 	    try {
-
-	        logger.info("Came to services");
+	        logger.info("Came to MDISB5 Part 2 Maker Update");
 	        logger.info("Report Date: {}", request2.getREPORT_DATE());
 
-	        // Fetch existing record
-	        List<MDISB5_Summary_Entity2> records =
-	                getDataByDate2(request2.getREPORT_DATE());
+	        MDISB5_Summary_Entity2 liveRecord = findMDISB5Part2ByDate(
+	                request2.getREPORT_DATE());
 
-	        if (records == null || records.isEmpty()) {
-
-	            throw new RuntimeException(
-	                    "Record not found for REPORT_DATE: "
-	                            + request2.getREPORT_DATE());
+	        if (liveRecord == null) {
+	            throw new RuntimeException("Live MDISB5 Part 2 record not found");
 	        }
 
-	        MDISB5_Summary_Entity2 existing = records.get(0);
+	        MDISB5_Summary_Entity2 modRecord = findMDISB5Part2ModByDate(
+	                request2.getREPORT_DATE());
 
-	        // Audit old copy
-	        MDISB5_Summary_Entity2 oldcopy =
-	                new MDISB5_Summary_Entity2();
-
-	        BeanUtils.copyProperties(existing, oldcopy);
-
-	        String changes = auditService.getChanges(oldcopy, request2);
-
-	        if (!changes.isEmpty()) {
-
-	            String sql =
-	                "UPDATE BRRS_MDISB5_SUMMARYTABLE2 SET " +
-
-	                "R20_NAME_OF_BOARD_MEMBERS=?, R20_EXECUTIVE_OR_NONEXECUTIVE=?, R20_NUMBER_OF_ACCOUNTS=?, R20_AMOUNT=?, " +
-	                "R21_NAME_OF_BOARD_MEMBERS=?, R21_EXECUTIVE_OR_NONEXECUTIVE=?, R21_NUMBER_OF_ACCOUNTS=?, R21_AMOUNT=?, " +
-	                "R22_NAME_OF_BOARD_MEMBERS=?, R22_EXECUTIVE_OR_NONEXECUTIVE=?, R22_NUMBER_OF_ACCOUNTS=?, R22_AMOUNT=?, " +
-	                "R23_NAME_OF_BOARD_MEMBERS=?, R23_EXECUTIVE_OR_NONEXECUTIVE=?, R23_NUMBER_OF_ACCOUNTS=?, R23_AMOUNT=?, " +
-	                "R24_NAME_OF_BOARD_MEMBERS=?, R24_EXECUTIVE_OR_NONEXECUTIVE=?, R24_NUMBER_OF_ACCOUNTS=?, R24_AMOUNT=?, " +
-	                "R25_NAME_OF_BOARD_MEMBERS=?, R25_EXECUTIVE_OR_NONEXECUTIVE=?, R25_NUMBER_OF_ACCOUNTS=?, R25_AMOUNT=?, " +
-	                "R26_NAME_OF_BOARD_MEMBERS=?, R26_EXECUTIVE_OR_NONEXECUTIVE=?, R26_NUMBER_OF_ACCOUNTS=?, R26_AMOUNT=?, " +
-	                "R27_NAME_OF_BOARD_MEMBERS=?, R27_EXECUTIVE_OR_NONEXECUTIVE=?, R27_NUMBER_OF_ACCOUNTS=?, R27_AMOUNT=?, " +
-	                "R28_NAME_OF_BOARD_MEMBERS=?, R28_EXECUTIVE_OR_NONEXECUTIVE=?, R28_NUMBER_OF_ACCOUNTS=?, R28_AMOUNT=?, " +
-	                "R29_NAME_OF_BOARD_MEMBERS=?, R29_EXECUTIVE_OR_NONEXECUTIVE=?, R29_NUMBER_OF_ACCOUNTS=?, R29_AMOUNT=?, " +
-	                "R30_NAME_OF_BOARD_MEMBERS=?, R30_EXECUTIVE_OR_NONEXECUTIVE=?, R30_NUMBER_OF_ACCOUNTS=?, R30_AMOUNT=?, " +
-	                "R31_NAME_OF_BOARD_MEMBERS=?, R31_EXECUTIVE_OR_NONEXECUTIVE=?, R31_NUMBER_OF_ACCOUNTS=?, R31_AMOUNT=?, " +
-	                "R32_NAME_OF_BOARD_MEMBERS=?, R32_EXECUTIVE_OR_NONEXECUTIVE=?, R32_NUMBER_OF_ACCOUNTS=?, R32_AMOUNT=?, " +
-	                "R33_NAME_OF_BOARD_MEMBERS=?, R33_EXECUTIVE_OR_NONEXECUTIVE=?, R33_NUMBER_OF_ACCOUNTS=?, R33_AMOUNT=? " +
-
-	                "WHERE REPORT_DATE=?";
-
-	            int count = jdbcTemplate.update(
-
-	                sql,
-
-	                request2.getR20_NAME_OF_BOARD_MEMBERS(),
-	                request2.getR20_EXECUTIVE_OR_NONEXECUTIVE(),
-	                request2.getR20_NUMBER_OF_ACCOUNTS(),
-	                request2.getR20_AMOUNT(),
-
-	                request2.getR21_NAME_OF_BOARD_MEMBERS(),
-	                request2.getR21_EXECUTIVE_OR_NONEXECUTIVE(),
-	                request2.getR21_NUMBER_OF_ACCOUNTS(),
-	                request2.getR21_AMOUNT(),
-
-	                request2.getR22_NAME_OF_BOARD_MEMBERS(),
-	                request2.getR22_EXECUTIVE_OR_NONEXECUTIVE(),
-	                request2.getR22_NUMBER_OF_ACCOUNTS(),
-	                request2.getR22_AMOUNT(),
-
-	                request2.getR23_NAME_OF_BOARD_MEMBERS(),
-	                request2.getR23_EXECUTIVE_OR_NONEXECUTIVE(),
-	                request2.getR23_NUMBER_OF_ACCOUNTS(),
-	                request2.getR23_AMOUNT(),
-
-	                request2.getR24_NAME_OF_BOARD_MEMBERS(),
-	                request2.getR24_EXECUTIVE_OR_NONEXECUTIVE(),
-	                request2.getR24_NUMBER_OF_ACCOUNTS(),
-	                request2.getR24_AMOUNT(),
-
-	                request2.getR25_NAME_OF_BOARD_MEMBERS(),
-	                request2.getR25_EXECUTIVE_OR_NONEXECUTIVE(),
-	                request2.getR25_NUMBER_OF_ACCOUNTS(),
-	                request2.getR25_AMOUNT(),
-
-	                request2.getR26_NAME_OF_BOARD_MEMBERS(),
-	                request2.getR26_EXECUTIVE_OR_NONEXECUTIVE(),
-	                request2.getR26_NUMBER_OF_ACCOUNTS(),
-	                request2.getR26_AMOUNT(),
-
-	                request2.getR27_NAME_OF_BOARD_MEMBERS(),
-	                request2.getR27_EXECUTIVE_OR_NONEXECUTIVE(),
-	                request2.getR27_NUMBER_OF_ACCOUNTS(),
-	                request2.getR27_AMOUNT(),
-
-	                request2.getR28_NAME_OF_BOARD_MEMBERS(),
-	                request2.getR28_EXECUTIVE_OR_NONEXECUTIVE(),
-	                request2.getR28_NUMBER_OF_ACCOUNTS(),
-	                request2.getR28_AMOUNT(),
-
-	                request2.getR29_NAME_OF_BOARD_MEMBERS(),
-	                request2.getR29_EXECUTIVE_OR_NONEXECUTIVE(),
-	                request2.getR29_NUMBER_OF_ACCOUNTS(),
-	                request2.getR29_AMOUNT(),
-
-	                request2.getR30_NAME_OF_BOARD_MEMBERS(),
-	                request2.getR30_EXECUTIVE_OR_NONEXECUTIVE(),
-	                request2.getR30_NUMBER_OF_ACCOUNTS(),
-	                request2.getR30_AMOUNT(),
-
-	                request2.getR31_NAME_OF_BOARD_MEMBERS(),
-	                request2.getR31_EXECUTIVE_OR_NONEXECUTIVE(),
-	                request2.getR31_NUMBER_OF_ACCOUNTS(),
-	                request2.getR31_AMOUNT(),
-
-	                request2.getR32_NAME_OF_BOARD_MEMBERS(),
-	                request2.getR32_EXECUTIVE_OR_NONEXECUTIVE(),
-	                request2.getR32_NUMBER_OF_ACCOUNTS(),
-	                request2.getR32_AMOUNT(),
-
-	                request2.getR33_NAME_OF_BOARD_MEMBERS(),
-	                request2.getR33_EXECUTIVE_OR_NONEXECUTIVE(),
-	                request2.getR33_NUMBER_OF_ACCOUNTS(),
-	                request2.getR33_AMOUNT(),
-
-	                request2.getREPORT_DATE()
-	            );
-
-	            if (count > 0) {
-
-	                auditService.compareEntitiesmanual(
-	                        oldcopy,
-	                        request2,
-	                        request2.getREPORT_DATE().toString(),
-	                        "MDISB5 Summary Part 2 Screen",
-	                        "BRRS_MDISB5_SUMMARYTABLE2"
-	                );
-
-	                logger.info(
-	                        "Audit completed for REPORT_DATE {}",
-	                        request2.getREPORT_DATE());
-	            }
-
-	        } else {
-
-	            logger.info(
-	                    "No changes detected for REPORT_DATE {}",
-	                    request2.getREPORT_DATE());
+	        if (modRecord == null) {
+	            modRecord = new MDISB5_Summary_Entity2();
+	            BeanUtils.copyProperties(liveRecord, modRecord);
 	        }
 
-	        logger.info("MDISB5 Summary Part 2 Updated Successfully");
+	        MDISB5_Summary_Entity2 oldcopy = new MDISB5_Summary_Entity2();
+	        BeanUtils.copyProperties(modRecord, oldcopy);
+
+	        String[] fields = {
+	                "NAME_OF_BOARD_MEMBERS",
+	                "EXECUTIVE_OR_NONEXECUTIVE",
+	                "NUMBER_OF_ACCOUNTS",
+	                "AMOUNT"
+	        };
+
+	        applyMDISB5Changes(
+	                20, 33, fields, request2, modRecord,
+	                MDISB5_Summary_Entity2.class);
+
+	        String changes = auditService.getChanges(oldcopy, modRecord);
+
+	        setMDISB5Flags(modRecord);
+
+	        saveMDISB5ModRecord(
+	                modRecord,
+	                "BRRS_MDISB5_MOD_SUMMARYTABLE2",
+	                20, 33, fields,
+	                MDISB5_Summary_Entity2.class);
+
+	        logger.info("MDISB5 Part 2 saved into MOD table");
+
+	        if (changes != null && !changes.isEmpty()) {
+	            auditService.compareEntitiesmanual(
+	                    oldcopy,
+	                    modRecord,
+	                    request2.getREPORT_DATE().toString(),
+	                    "MDISB5 Summary Part 2 Screen",
+	                    "BRRS_MDISB5_MOD_SUMMARYTABLE2");
+	        }
 
 	    } catch (Exception e) {
-
-	        logger.error(
-	                "Error while updating BRRS_MDISB5 Report Part 2",
-	                e);
-
-	        throw new RuntimeException(
-	                "Error while updating BRRS_MDISB5 Report Part 2",
-	                e);
+	        logger.error("Error updating MDISB5 Part 2", e);
+	        throw new RuntimeException("Error updating MDISB5 Part 2", e);
 	    }
 	}
-	
-	
+
+
+	// ============================================================
+	// MDISB5 PART 3 - MAKER UPDATE
+	// ============================================================
+
 	@Transactional
 	public void updateReport3(MDISB5_Summary_Entity3 request3) {
 
 	    try {
-
-	        logger.info("Came to services");
+	        logger.info("Came to MDISB5 Part 3 Maker Update");
 	        logger.info("Report Date: {}", request3.getREPORT_DATE());
 
-	        // Fetch existing record
-	        List<MDISB5_Summary_Entity3> records =
-	                getDataByDate3(request3.getREPORT_DATE());
+	        MDISB5_Summary_Entity3 liveRecord = findMDISB5Part3ByDate(
+	                request3.getREPORT_DATE());
 
-	        if (records == null || records.isEmpty()) {
-
-	            throw new RuntimeException(
-	                    "Record not found for REPORT_DATE: "
-	                            + request3.getREPORT_DATE());
+	        if (liveRecord == null) {
+	            throw new RuntimeException("Live MDISB5 Part 3 record not found");
 	        }
 
-	        MDISB5_Summary_Entity3 existing = records.get(0);
+	        MDISB5_Summary_Entity3 modRecord = findMDISB5Part3ModByDate(
+	                request3.getREPORT_DATE());
 
-	        // Audit old copy
-	        MDISB5_Summary_Entity3 oldcopy =
-	                new MDISB5_Summary_Entity3();
+	        if (modRecord == null) {
+	            modRecord = new MDISB5_Summary_Entity3();
+	            BeanUtils.copyProperties(liveRecord, modRecord);
+	        }
 
-	        BeanUtils.copyProperties(existing, oldcopy);
+	        MDISB5_Summary_Entity3 oldcopy = new MDISB5_Summary_Entity3();
+	        BeanUtils.copyProperties(modRecord, oldcopy);
 
-	        String changes = auditService.getChanges(oldcopy, request3);
+	        String[] fields = {
+	                "NAME",
+	                "DESIGNATION_OR_POSITION",
+	                "NUMBER_OF_ACCOUNTS",
+	                "AMOUNT"
+	        };
 
-	        if (!changes.isEmpty()) {
+	        applyMDISB5Changes(
+	                37, 44, fields, request3, modRecord,
+	                MDISB5_Summary_Entity3.class);
 
-	            String sql =
-	                "UPDATE BRRS_MDISB5_SUMMARYTABLE3 SET " +
+	        String changes = auditService.getChanges(oldcopy, modRecord);
 
-	                "R37_NAME=?, R37_DESIGNATION_OR_POSITION=?, R37_NUMBER_OF_ACCOUNTS=?, R37_AMOUNT=?, " +
-	                "R38_NAME=?, R38_DESIGNATION_OR_POSITION=?, R38_NUMBER_OF_ACCOUNTS=?, R38_AMOUNT=?, " +
-	                "R39_NAME=?, R39_DESIGNATION_OR_POSITION=?, R39_NUMBER_OF_ACCOUNTS=?, R39_AMOUNT=?, " +
-	                "R40_NAME=?, R40_DESIGNATION_OR_POSITION=?, R40_NUMBER_OF_ACCOUNTS=?, R40_AMOUNT=?, " +
-	                "R41_NAME=?, R41_DESIGNATION_OR_POSITION=?, R41_NUMBER_OF_ACCOUNTS=?, R41_AMOUNT=?, " +
-	                "R42_NAME=?, R42_DESIGNATION_OR_POSITION=?, R42_NUMBER_OF_ACCOUNTS=?, R42_AMOUNT=?, " +
-	                "R43_NAME=?, R43_DESIGNATION_OR_POSITION=?, R43_NUMBER_OF_ACCOUNTS=?, R43_AMOUNT=?, " +
-	                "R44_NAME=?, R44_DESIGNATION_OR_POSITION=?, R44_NUMBER_OF_ACCOUNTS=?, R44_AMOUNT=? " +
+	        setMDISB5Flags(modRecord);
 
-	                "WHERE REPORT_DATE=?";
+	        saveMDISB5ModRecord(
+	                modRecord,
+	                "BRRS_MDISB5_MOD_SUMMARYTABLE3",
+	                37, 44, fields,
+	                MDISB5_Summary_Entity3.class);
 
-	            int count = jdbcTemplate.update(
+	        logger.info("MDISB5 Part 3 saved into MOD table");
 
-	                sql,
-
-	                request3.getR37_NAME(),
-	                request3.getR37_DESIGNATION_OR_POSITION(),
-	                request3.getR37_NUMBER_OF_ACCOUNTS(),
-	                request3.getR37_AMOUNT(),
-
-	                request3.getR38_NAME(),
-	                request3.getR38_DESIGNATION_OR_POSITION(),
-	                request3.getR38_NUMBER_OF_ACCOUNTS(),
-	                request3.getR38_AMOUNT(),
-
-	                request3.getR39_NAME(),
-	                request3.getR39_DESIGNATION_OR_POSITION(),
-	                request3.getR39_NUMBER_OF_ACCOUNTS(),
-	                request3.getR39_AMOUNT(),
-
-	                request3.getR40_NAME(),
-	                request3.getR40_DESIGNATION_OR_POSITION(),
-	                request3.getR40_NUMBER_OF_ACCOUNTS(),
-	                request3.getR40_AMOUNT(),
-
-	                request3.getR41_NAME(),
-	                request3.getR41_DESIGNATION_OR_POSITION(),
-	                request3.getR41_NUMBER_OF_ACCOUNTS(),
-	                request3.getR41_AMOUNT(),
-
-	                request3.getR42_NAME(),
-	                request3.getR42_DESIGNATION_OR_POSITION(),
-	                request3.getR42_NUMBER_OF_ACCOUNTS(),
-	                request3.getR42_AMOUNT(),
-
-	                request3.getR43_NAME(),
-	                request3.getR43_DESIGNATION_OR_POSITION(),
-	                request3.getR43_NUMBER_OF_ACCOUNTS(),
-	                request3.getR43_AMOUNT(),
-
-	                request3.getR44_NAME(),
-	                request3.getR44_DESIGNATION_OR_POSITION(),
-	                request3.getR44_NUMBER_OF_ACCOUNTS(),
-	                request3.getR44_AMOUNT(),
-
-	                request3.getREPORT_DATE()
-	            );
-
-	            if (count > 0) {
-
-	                auditService.compareEntitiesmanual(
-	                        oldcopy,
-	                        request3,
-	                        request3.getREPORT_DATE().toString(),
-	                        "MDISB5 Summary Part 3 Screen",
-	                        "BRRS_MDISB5_SUMMARYTABLE3"
-	                );
-
-	                logger.info(
-	                        "Audit completed for REPORT_DATE {}",
-	                        request3.getREPORT_DATE());
-
-	                logger.info(
-	                        "MDISB5 Summary Part 3 Updated Successfully. Rows Updated: {}",
-	                        count);
-	            }
-
-	        } else {
-
-	            logger.info(
-	                    "No changes detected for REPORT_DATE {}",
-	                    request3.getREPORT_DATE());
+	        if (changes != null && !changes.isEmpty()) {
+	            auditService.compareEntitiesmanual(
+	                    oldcopy,
+	                    modRecord,
+	                    request3.getREPORT_DATE().toString(),
+	                    "MDISB5 Summary Part 3 Screen",
+	                    "BRRS_MDISB5_MOD_SUMMARYTABLE3");
 	        }
 
 	    } catch (Exception e) {
-
-	        logger.error(
-	                "Error while updating BRRS_MDISB5 Report Part 3",
-	                e);
-
-	        throw new RuntimeException(
-	                "Error while updating BRRS_MDISB5 Report Part 3",
-	                e);
+	        logger.error("Error updating MDISB5 Part 3", e);
+	        throw new RuntimeException("Error updating MDISB5 Part 3", e);
 	    }
 	}
+
+
+	// ============================================================
+	// COMMON METHOD - APPLY MDISB5 CHANGES TO MOD ENTITY
+	// ============================================================
+
+	private <T> void applyMDISB5Changes(
+	        int startRow,
+	        int endRow,
+	        String[] fields,
+	        Object updatedEntity,
+	        T targetEntity,
+	        Class<T> entityClass) {
+
+	    for (int i = startRow; i <= endRow; i++) {
+
+	        String prefix = "R" + i + "_";
+
+	        for (String field : fields) {
+
+	            String getterName = "get" + prefix + field;
+	            String setterName = "set" + prefix + field;
+
+	            try {
+	                Method getter = entityClass.getMethod(getterName);
+
+	                Object value = getter.invoke(updatedEntity);
+
+	                // Preserve existing value if incoming value is null
+	                if (value == null) {
+	                    continue;
+	                }
+
+	                Method setter = entityClass.getMethod(
+	                        setterName, getter.getReturnType());
+
+	                setter.invoke(targetEntity, value);
+
+	            } catch (NoSuchMethodException e) {
+	                throw new RuntimeException(
+	                        "MDISB5 getter/setter not found: " + getterName, e);
+
+	            } catch (Exception e) {
+	                throw new RuntimeException(
+	                        "Error applying MDISB5 field: " + getterName, e);
+	            }
+	        }
+	    }
+	}
+
+
+	// ============================================================
+	// COMMON METHOD - SET MAKER CHECKER FLAGS
+	// ============================================================
+
+	private void setMDISB5Flags(Object entity) {
+
+	    try {
+	        entity.getClass()
+	                .getMethod("setENTITY_FLG", String.class)
+	                .invoke(entity, "Y");
+
+	        entity.getClass()
+	                .getMethod("setMODIFY_FLG", String.class)
+	                .invoke(entity, "Y");
+
+	        entity.getClass()
+	                .getMethod("setDEL_FLG", String.class)
+	                .invoke(entity, "N");
+
+	    } catch (Exception e) {
+	        throw new RuntimeException(
+	                "Error setting MDISB5 Maker Checker flags", e);
+	    }
+	}
+
+
+	// ============================================================
+	// COMMON METHOD - SAVE MOD RECORD
+	// ============================================================
+
+	private <T> void saveMDISB5ModRecord(
+	        T entity,
+	        String tableName,
+	        int startRow,
+	        int endRow,
+	        String[] fields,
+	        Class<T> entityClass) {
+
+	    NamedParameterJdbcTemplate namedParamJdbc =
+	            new NamedParameterJdbcTemplate(jdbcTemplate);
+
+	    String checkSql =
+	            "SELECT COUNT(*) FROM " + tableName
+	            + " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+
+	    Date reportDate = (Date) getMDISB5Value(entity, "getREPORT_DATE");
+
+	    MapSqlParameterSource params = new MapSqlParameterSource()
+	            .addValue("reportDate", reportDate)
+	            .addValue("entityFlg", "Y")
+	            .addValue("modifyFlg", "Y")
+	            .addValue("delFlg", "N");
+
+	    Integer count = namedParamJdbc.queryForObject(
+	            checkSql, params, Integer.class);
+
+	    StringBuilder updateSetSql = new StringBuilder(
+	            "ENTITY_FLG = :entityFlg, "
+	            + "MODIFY_FLG = :modifyFlg, "
+	            + "DEL_FLG = :delFlg");
+
+	    List<String> insertColumns = new ArrayList<>();
+	    List<String> insertValues = new ArrayList<>();
+
+	    insertColumns.add("REPORT_DATE");
+	    insertValues.add(":reportDate");
+
+	    insertColumns.add("ENTITY_FLG");
+	    insertValues.add(":entityFlg");
+
+	    insertColumns.add("MODIFY_FLG");
+	    insertValues.add(":modifyFlg");
+
+	    insertColumns.add("DEL_FLG");
+	    insertValues.add(":delFlg");
+
+	    for (int i = startRow; i <= endRow; i++) {
+
+	        String prefix = "R" + i + "_";
+
+	        for (String field : fields) {
+
+	            String getterName = "get" + prefix + field;
+	            String columnName = prefix + field;
+	            String paramName = "r" + i + "_" + field.toLowerCase();
+
+	            try {
+	                Method getter = entityClass.getMethod(getterName);
+
+	                Object value = getter.invoke(entity);
+
+	                params.addValue(paramName, value);
+
+	                updateSetSql.append(", ")
+	                        .append(columnName)
+	                        .append(" = :")
+	                        .append(paramName);
+
+	                insertColumns.add(columnName);
+	                insertValues.add(":" + paramName);
+
+	            } catch (Exception e) {
+	                throw new RuntimeException(
+	                        "Error mapping MDISB5 column: " + columnName, e);
+	            }
+	        }
+	    }
+
+	    if (count != null && count > 0) {
+
+	        String updateSql =
+	                "UPDATE " + tableName
+	                + " SET " + updateSetSql
+	                + " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+
+	        namedParamJdbc.update(updateSql, params);
+
+	        logger.info("{} updated successfully", tableName);
+
+	    } else {
+
+	        String insertSql =
+	                "INSERT INTO " + tableName
+	                + " (" + String.join(", ", insertColumns) + ")"
+	                + " VALUES ("
+	                + String.join(", ", insertValues) + ")";
+
+	        namedParamJdbc.update(insertSql, params);
+
+	        logger.info("{} inserted successfully", tableName);
+	    }
+	}
+
+
+	// ============================================================
+	// COMMON METHOD - GET VALUE USING REFLECTION
+	// ============================================================
+
+	private Object getMDISB5Value(Object entity, String methodName) {
+
+	    try {
+	        Method method = entity.getClass().getMethod(methodName);
+	        return method.invoke(entity);
+
+	    } catch (Exception e) {
+	        throw new RuntimeException(
+	                "Error getting MDISB5 value: " + methodName, e);
+	    }
+	}
+	
+	
+	// ============================================================
+	// MDISB5 PART 1 - CHECKER APPROVAL
+	// ============================================================
+
+	@Transactional
+	public void approveMDISB5Part1(Date reportDate) {
+
+	    List<MDISB5_Summary_Entity1> records = jdbcTemplate.query(
+	            "SELECT * FROM BRRS_MDISB5_MOD_SUMMARYTABLE1 "
+	            + "WHERE TRUNC(REPORT_DATE) = TRUNC(?) "
+	            + "AND MODIFY_FLG = 'Y'",
+	            new BeanPropertyRowMapper<>(MDISB5_Summary_Entity1.class),
+	            reportDate);
+
+	    if (records == null || records.isEmpty()) {
+	        throw new RuntimeException(
+	                "No pending MDISB5 Part 1 modification found: " + reportDate);
+	    }
+
+	    MDISB5_Summary_Entity1 modRecord = records.get(0);
+
+	    transferMDISB5Part1ToLive(modRecord, reportDate);
+
+	    jdbcTemplate.update(
+	            "UPDATE BRRS_MDISB5_MOD_SUMMARYTABLE1 "
+	            + "SET MODIFY_FLG = 'N' "
+	            + "WHERE TRUNC(REPORT_DATE) = TRUNC(?) "
+	            + "AND MODIFY_FLG = 'Y'",
+	            reportDate);
+
+	    logger.info("MDISB5 Part 1 Checker Approved Successfully");
+	}
+
+
+	// ============================================================
+	// MDISB5 PART 2 - CHECKER APPROVAL
+	// ============================================================
+
+	@Transactional
+	public void approveMDISB5Part2(Date reportDate) {
+
+	    List<MDISB5_Summary_Entity2> records = jdbcTemplate.query(
+	            "SELECT * FROM BRRS_MDISB5_MOD_SUMMARYTABLE2 "
+	            + "WHERE TRUNC(REPORT_DATE) = TRUNC(?) "
+	            + "AND MODIFY_FLG = 'Y'",
+	            new BeanPropertyRowMapper<>(MDISB5_Summary_Entity2.class),
+	            reportDate);
+
+	    if (records == null || records.isEmpty()) {
+	        throw new RuntimeException(
+	                "No pending MDISB5 Part 2 modification found: " + reportDate);
+	    }
+
+	    MDISB5_Summary_Entity2 modRecord = records.get(0);
+
+	    transferMDISB5Part2ToLive(modRecord, reportDate);
+
+	    jdbcTemplate.update(
+	            "UPDATE BRRS_MDISB5_MOD_SUMMARYTABLE2 "
+	            + "SET MODIFY_FLG = 'N' "
+	            + "WHERE TRUNC(REPORT_DATE) = TRUNC(?) "
+	            + "AND MODIFY_FLG = 'Y'",
+	            reportDate);
+
+	    logger.info("MDISB5 Part 2 Checker Approved Successfully");
+	}
+
+
+	// ============================================================
+	// MDISB5 PART 3 - CHECKER APPROVAL
+	// ============================================================
+
+	@Transactional
+	public void approveMDISB5Part3(Date reportDate) {
+
+	    List<MDISB5_Summary_Entity3> records = jdbcTemplate.query(
+	            "SELECT * FROM BRRS_MDISB5_MOD_SUMMARYTABLE3 "
+	            + "WHERE TRUNC(REPORT_DATE) = TRUNC(?) "
+	            + "AND MODIFY_FLG = 'Y'",
+	            new BeanPropertyRowMapper<>(MDISB5_Summary_Entity3.class),
+	            reportDate);
+
+	    if (records == null || records.isEmpty()) {
+	        throw new RuntimeException(
+	                "No pending MDISB5 Part 3 modification found: " + reportDate);
+	    }
+
+	    MDISB5_Summary_Entity3 modRecord = records.get(0);
+
+	    transferMDISB5Part3ToLive(modRecord, reportDate);
+
+	    jdbcTemplate.update(
+	            "UPDATE BRRS_MDISB5_MOD_SUMMARYTABLE3 "
+	            + "SET MODIFY_FLG = 'N' "
+	            + "WHERE TRUNC(REPORT_DATE) = TRUNC(?) "
+	            + "AND MODIFY_FLG = 'Y'",
+	            reportDate);
+
+	    logger.info("MDISB5 Part 3 Checker Approved Successfully");
+	}
+	
+	// ============================================================
+	// MDISB5 PART 1 - MOD TO LIVE
+	// ============================================================
+
+	private void transferMDISB5Part1ToLive(
+	        MDISB5_Summary_Entity1 modRecord, Date reportDate) {
+
+	    String[] fields = {
+	            "NAME_OF_SHAREHOLDER",
+	            "PERCENTAGE_SHAREHOLDING",
+	            "NUMBER_OF_ACCOUNTS",
+	            "AMOUNT"
+	    };
+
+	    transferMDISB5Values(
+	            modRecord,
+	            reportDate,
+	            "BRRS_MDISB5_SUMMARYTABLE1",
+	            5, 15, fields,
+	            MDISB5_Summary_Entity1.class);
+	}
+
+
+	// ============================================================
+	// MDISB5 PART 2 - MOD TO LIVE
+	// ============================================================
+
+	private void transferMDISB5Part2ToLive(
+	        MDISB5_Summary_Entity2 modRecord, Date reportDate) {
+
+	    String[] fields = {
+	            "NAME_OF_BOARD_MEMBERS",
+	            "EXECUTIVE_OR_NONEXECUTIVE",
+	            "NUMBER_OF_ACCOUNTS",
+	            "AMOUNT"
+	    };
+
+	    transferMDISB5Values(
+	            modRecord,
+	            reportDate,
+	            "BRRS_MDISB5_SUMMARYTABLE2",
+	            20, 33, fields,
+	            MDISB5_Summary_Entity2.class);
+	}
+
+
+	// ============================================================
+	// MDISB5 PART 3 - MOD TO LIVE
+	// ============================================================
+
+	private void transferMDISB5Part3ToLive(
+	        MDISB5_Summary_Entity3 modRecord, Date reportDate) {
+
+	    String[] fields = {
+	            "NAME",
+	            "DESIGNATION_OR_POSITION",
+	            "NUMBER_OF_ACCOUNTS",
+	            "AMOUNT"
+	    };
+
+	    transferMDISB5Values(
+	            modRecord,
+	            reportDate,
+	            "BRRS_MDISB5_SUMMARYTABLE3",
+	            37, 44, fields,
+	            MDISB5_Summary_Entity3.class);
+	}
+
+
+	// ============================================================
+	// COMMON METHOD - TRANSFER MOD VALUES TO LIVE TABLE
+	// ============================================================
+
+	private <T> void transferMDISB5Values(
+	        T modRecord,
+	        Date reportDate,
+	        String liveTable,
+	        int startRow,
+	        int endRow,
+	        String[] fields,
+	        Class<T> entityClass) {
+
+	    for (int i = startRow; i <= endRow; i++) {
+
+	        String prefix = "R" + i + "_";
+
+	        for (String field : fields) {
+
+	            String getterName = "get" + prefix + field;
+	            String columnName = prefix + field;
+
+	            try {
+	                Method getter = entityClass.getMethod(getterName);
+
+	                Object value = getter.invoke(modRecord);
+
+	                String updateSql =
+	                        "UPDATE " + liveTable
+	                        + " SET " + columnName + " = ? "
+	                        + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+	                jdbcTemplate.update(updateSql, value, reportDate);
+
+	            } catch (Exception e) {
+	                throw new RuntimeException(
+	                        "Error transferring MDISB5 column: " + columnName, e);
+	            }
+	        }
+	    }
+
+	    logger.info("{} MOD values transferred to LIVE successfully", liveTable);
+	}
+	
 	
 	
 ////////////////////////////////////////// RESUBMISSION///////////////////////////////////////////////////////////////////

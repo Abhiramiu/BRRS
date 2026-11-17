@@ -1578,7 +1578,9 @@ public class AuditService {
 			transferBDISB2Data(auditRecord);
 		} else if (upperTable.contains("BDISB3")) {
 			transferBDISB3Data(auditRecord);
-		} else if (upperTable.contains("FORMAT_II")) {
+		} else if (upperTable.contains("MDISB5")) {
+            transferMDISB5Data(auditRecord);
+        } else if (upperTable.contains("FORMAT_II")) {
 			transferFORMATIIData(auditRecord);
 		} else if (upperTable.contains("GL_SCH")) {
 			transferGLSCHData(auditRecord);
@@ -2833,6 +2835,313 @@ public class AuditService {
 		System.out.println("BDISB3 MOD Updated : " + modUpdated);
 		System.out.println("BDISB3 Verification and Transfer Completed Successfully");
 	}
+	
+
+
+	
+	
+
+
+
+	// ============================================================
+	// MDISB5 - CHECKER TRANSFER (MOD -> LIVE SUMMARY + DETAIL)
+	// ============================================================
+
+	private void transferMDISB5Data(AuditServicesEntity auditRecord) {
+
+	    try {
+
+	        logger.info("MDISB5 Checker Transfer Started");
+
+	        // ----------------------------------------------------
+	        // 1. GET PENDING REPORT DATE
+	        // ----------------------------------------------------
+
+	        String dateSql =
+	                "SELECT MAX(REPORT_DATE) FROM (" +
+	                " SELECT TRUNC(REPORT_DATE) AS REPORT_DATE " +
+	                " FROM BRRS_MDISB5_MOD_SUMMARYTABLE1 " +
+	                " WHERE MODIFY_FLG = 'Y' " +
+
+	                " UNION ALL " +
+
+	                " SELECT TRUNC(REPORT_DATE) AS REPORT_DATE " +
+	                " FROM BRRS_MDISB5_MOD_SUMMARYTABLE2 " +
+	                " WHERE MODIFY_FLG = 'Y' " +
+
+	                " UNION ALL " +
+
+	                " SELECT TRUNC(REPORT_DATE) AS REPORT_DATE " +
+	                " FROM BRRS_MDISB5_MOD_SUMMARYTABLE3 " +
+	                " WHERE MODIFY_FLG = 'Y' " +
+	                ")";
+
+	        Date reportDate = jdbcTemplate.queryForObject(
+	                dateSql,
+	                new Object[] {},
+	                Date.class
+	        );
+
+	        if (reportDate == null) {
+
+	            logger.info("No pending MDISB5 modification records found");
+
+	            throw new RuntimeException(
+	                    "No pending MDISB5 modification records found");
+	        }
+
+	        logger.info("MDISB5 Report Date: {}", reportDate);
+
+	        // ----------------------------------------------------
+	        // 2. TRANSFER PART 1
+	        // ----------------------------------------------------
+
+	        transferMDISB5Part(
+	                1,
+	                reportDate,
+	                5,
+	                15,
+	                new String[] {
+	                    "NAME_OF_SHAREHOLDER",
+	                    "PERCENTAGE_SHAREHOLDING",
+	                    "NUMBER_OF_ACCOUNTS",
+	                    "AMOUNT"
+	                }
+	        );
+
+	        // ----------------------------------------------------
+	        // 3. TRANSFER PART 2
+	        // ----------------------------------------------------
+
+	        transferMDISB5Part(
+	                2,
+	                reportDate,
+	                20,
+	                33,
+	                new String[] {
+	                    "NAME_OF_BOARD_MEMBERS",
+	                    "EXECUTIVE_OR_NONEXECUTIVE",
+	                    "NUMBER_OF_ACCOUNTS",
+	                    "AMOUNT"
+	                }
+	        );
+
+	        // ----------------------------------------------------
+	        // 4. TRANSFER PART 3
+	        // ----------------------------------------------------
+
+	        transferMDISB5Part(
+	                3,
+	                reportDate,
+	                37,
+	                44,
+	                new String[] {
+	                    "NAME",
+	                    "DESIGNATION_OR_POSITION",
+	                    "NUMBER_OF_ACCOUNTS",
+	                    "AMOUNT"
+	                }
+	        );
+
+	        logger.info("MDISB5 Checker Transfer Completed Successfully");
+
+	    } catch (Exception e) {
+
+	        logger.error("MDISB5 Checker Transfer Failed", e);
+
+	        throw new RuntimeException(
+	                "Failed to verify and transfer MDISB5 data: "
+	                + e.getMessage(), e);
+	    }
+	}
+
+
+	// ============================================================
+	// MDISB5 - COMMON PART TRANSFER METHOD
+	// ============================================================
+
+	private void transferMDISB5Part(
+	        int tableNo,
+	        Date reportDate,
+	        int startRow,
+	        int endRow,
+	        String[] fields) {
+
+	    String modTable =
+	            "BRRS_MDISB5_MOD_SUMMARYTABLE" + tableNo;
+
+	    String liveSummaryTable =
+	            "BRRS_MDISB5_SUMMARYTABLE" + tableNo;
+
+	    String liveDetailTable =
+	            "BRRS_MDISB5_DETAILTABLE" + tableNo;
+
+	    try {
+
+	        // ----------------------------------------------------
+	        // 1. CHECK PENDING MOD RECORD
+	        // ----------------------------------------------------
+
+	        String checkSql =
+	                "SELECT COUNT(*) FROM " + modTable +
+	                " WHERE TRUNC(REPORT_DATE) = TRUNC(?) " +
+	                " AND MODIFY_FLG = 'Y'";
+
+	        Integer pendingCount = jdbcTemplate.queryForObject(
+	                checkSql,
+	                new Object[] { reportDate },
+	                Integer.class
+	        );
+
+	        if (pendingCount == null || pendingCount == 0) {
+	            logger.info(
+	                    "MDISB5 Part {} has no pending modifications",
+	                    tableNo);
+	            return;
+	        }
+
+	        // ----------------------------------------------------
+	        // 2. BUILD DATA COLUMN LIST
+	        // ----------------------------------------------------
+
+	        StringBuilder dataColumnList = new StringBuilder();
+	        StringBuilder dataSelectList = new StringBuilder();
+
+	        for (int i = startRow; i <= endRow; i++) {
+
+	            for (String field : fields) {
+
+	                String column = "R" + i + "_" + field;
+
+	                if (dataColumnList.length() > 0) {
+	                    dataColumnList.append(", ");
+	                    dataSelectList.append(", ");
+	                }
+
+	                dataColumnList.append(column);
+	                dataSelectList.append("S.").append(column);
+	            }
+	        }
+
+	        // ----------------------------------------------------
+	        // 3. UPDATE LIVE SUMMARY TABLE FROM MOD SUMMARY
+	        // SUMMARY USES DEL_FLG
+	        // ----------------------------------------------------
+
+	        String summaryColumnList =
+	                dataColumnList +
+	                ", ENTITY_FLG, MODIFY_FLG, DEL_FLG";
+
+	        String summarySelectList =
+	                dataSelectList +
+	                ", 'Y', 'N', 'N'";
+
+	        String updateSummarySql =
+	                "UPDATE " + liveSummaryTable + " M " +
+	                " SET (" + summaryColumnList + ") = (" +
+	                " SELECT " + summarySelectList +
+	                " FROM " + modTable + " S " +
+	                " WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE) " +
+	                " AND S.MODIFY_FLG = 'Y' " +
+	                " ) " +
+	                " WHERE TRUNC(M.REPORT_DATE) = TRUNC(?) " +
+	                " AND EXISTS (" +
+	                " SELECT 1 FROM " + modTable + " S " +
+	                " WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE) " +
+	                " AND S.MODIFY_FLG = 'Y' " +
+	                " )";
+
+	        int summaryUpdated = jdbcTemplate.update(
+	                updateSummarySql, reportDate);
+
+	        if (summaryUpdated == 0) {
+	            throw new RuntimeException(
+	                    "MDISB5 Part " + tableNo +
+	                    " LIVE Summary record not found for date: "
+	                    + reportDate);
+	        }
+
+	        logger.info(
+	                "MDISB5 Part {} LIVE Summary Updated: {}",
+	                tableNo, summaryUpdated);
+
+	        // ----------------------------------------------------
+	        // 4. UPDATE LIVE DETAIL TABLE FROM MOD SUMMARY
+	        // DETAIL USES DELETE_FLG
+	        // ----------------------------------------------------
+
+	        String detailColumnList =
+	                dataColumnList +
+	                ", ENTITY_FLG, MODIFY_FLG, DELETE_FLG";
+
+	        String detailSelectList =
+	                dataSelectList +
+	                ", 'Y', 'N', 'N'";
+
+	        String updateDetailSql =
+	                "UPDATE " + liveDetailTable + " M " +
+	                " SET (" + detailColumnList + ") = (" +
+	                " SELECT " + detailSelectList +
+	                " FROM " + modTable + " S " +
+	                " WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE) " +
+	                " AND S.MODIFY_FLG = 'Y' " +
+	                " ) " +
+	                " WHERE TRUNC(M.REPORT_DATE) = TRUNC(?) " +
+	                " AND EXISTS (" +
+	                " SELECT 1 FROM " + modTable + " S " +
+	                " WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE) " +
+	                " AND S.MODIFY_FLG = 'Y' " +
+	                " )";
+
+	        int detailUpdated = jdbcTemplate.update(
+	                updateDetailSql, reportDate);
+
+	        if (detailUpdated == 0) {
+	            throw new RuntimeException(
+	                    "MDISB5 Part " + tableNo +
+	                    " LIVE Detail record not found for date: "
+	                    + reportDate);
+	        }
+
+	        logger.info(
+	                "MDISB5 Part {} LIVE Detail Updated: {}",
+	                tableNo, detailUpdated);
+
+	        // ----------------------------------------------------
+	        // 5. MARK MOD RECORD AS APPROVED
+	        // MOD SUMMARY USES DEL_FLG
+	        // ----------------------------------------------------
+
+	        String updateModSql =
+	                "UPDATE " + modTable +
+	                " SET ENTITY_FLG = 'Y', " +
+	                " MODIFY_FLG = 'N', " +
+	                " DEL_FLG = 'N' " +
+	                " WHERE TRUNC(REPORT_DATE) = TRUNC(?) " +
+	                " AND MODIFY_FLG = 'Y'";
+
+	        int modUpdated = jdbcTemplate.update(
+	                updateModSql, reportDate);
+
+	        logger.info(
+	                "MDISB5 Part {} MOD Approved: {}",
+	                tableNo, modUpdated);
+
+	        logger.info(
+	                "MDISB5 Part {} Checker Transfer Successful",
+	                tableNo);
+
+	    } catch (Exception e) {
+
+	        logger.error(
+	                "Error transferring MDISB5 Part " + tableNo, e);
+
+	        throw new RuntimeException(
+	                "MDISB5 Part " + tableNo +
+	                " Checker Transfer Failed: " + e.getMessage(), e);
+	    }
+	}
+
 
 	// =========================================================
 	// M_SRWA_12F — Checker transfer (MOD → LIVE Summary + Detail)
