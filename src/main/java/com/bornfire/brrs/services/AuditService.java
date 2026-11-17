@@ -1269,45 +1269,51 @@ public class AuditService {
 //		return auditData.orElse(null);
 //	}
 //
-//	@Transactional
-//	public void verifyAndTransferColumn(Long auditId, String columnName) {
-//
-//		AuditServicesEntity auditRecord = findById(auditId);
-//
-//		if (auditRecord == null) {
-//			throw new IllegalArgumentException("Audit record not found for ID: " + auditId);
-//		}
-//
-//		// Block if the whole audit record is already finalized/verified
-//		if (auditRecord.getAuth_user() != null && !auditRecord.getAuth_user().trim().isEmpty()) {
-//			throw new IllegalStateException("This audit record has already been fully verified.");
-//		}
-//
-//		if (auditRecord.getFunc_code() == null || !"MODIFY".equalsIgnoreCase(auditRecord.getFunc_code())) {
-//			throw new IllegalStateException(
-//					"Only MODIFY records can be verified. Current Function: " + auditRecord.getFunc_code());
-//		}
-//
-//		String auditTable = auditRecord.getAudit_table();
-//		if (auditTable == null || auditTable.trim().isEmpty()) {
-//			throw new IllegalStateException("Audit table name missing for ID: " + auditId);
-//		}
-//
-//		String upperTable = auditTable.trim().toUpperCase();
-//
-//		// Transfer data for this specific column
-//		if (upperTable.contains("SFINP2")) {
-//			transferSfinp2ColumnData(auditRecord, columnName);
-//		} else if (upperTable.contains("FAS")) {
-//			transferFASColumnData(auditRecord, columnName);
-//		} else {
-//			throw new IllegalArgumentException("Verification not configured for table: " + auditTable);
-//		}
-//
-//		// NOTE: We removed setting auth_user here so other columns can still be
-//		// verified!
-//		System.out.println("Column " + columnName + " for Audit Record ID " + auditId + " transferred successfully.");
-//	}
+	@Transactional
+	public void verifyAndTransferColumn(Long auditId, String columnName) {
+
+		AuditServicesEntity auditRecord = findById(auditId);
+
+		if (auditRecord == null) {
+			throw new IllegalArgumentException("Audit record not found for ID: " + auditId);
+		}
+
+		// Block if the whole audit record is already finalized/verified
+		if (auditRecord.getAuth_user() != null && !auditRecord.getAuth_user().trim().isEmpty()) {
+			throw new IllegalStateException("This audit record has already been fully verified.");
+		}
+
+		if (auditRecord.getFunc_code() == null || !"MODIFY".equalsIgnoreCase(auditRecord.getFunc_code())) {
+			throw new IllegalStateException(
+					"Only MODIFY records can be verified. Current Function: " + auditRecord.getFunc_code());
+		}
+
+		String auditTable = auditRecord.getAudit_table();
+		if (auditTable == null || auditTable.trim().isEmpty()) {
+			throw new IllegalStateException("Audit table name missing for ID: " + auditId);
+		}
+
+		String upperTable = auditTable.trim().toUpperCase();
+
+		// Derive the base (non-mod) table name: 
+		//   BRRS_IRRBB_DEPOSITS_MOD_SUMMARYTABLE -> BRRS_IRRBB_DEPOSITS_SUMMARYTABLE
+		String baseTable = deriveBaseTableName(upperTable);
+
+		// Fail fast if the base table does not exist
+		Integer exists = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM USER_TABLES WHERE TABLE_NAME = ?", Integer.class, baseTable);
+		if (exists == null || exists == 0) {
+			throw new IllegalStateException("Verification not configured — base table not found: " + baseTable);
+		}
+
+		// Guard against SQL injection via columnName
+		validateColumn(upperTable, columnName);
+
+		transferColumnData(upperTable, baseTable, columnName);
+
+		// NOTE: auth_user is set in finalizeAuditRecord so other columns can still be verified
+		System.out.println("Column " + columnName + " for Audit Record ID " + auditId + " transferred successfully.");
+	}
 //
 //	@Transactional
 //	public void finalizeAuditRecord(Long auditId) {
@@ -1329,63 +1335,49 @@ public class AuditService {
 //		System.out.println("Audit Record ID " + auditId + " fully finalized and verified.");
 //	}
 //
-//	private void transferSfinp2ColumnData(AuditServicesEntity auditRecord, String columnName) {
-//		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_SFINP2_MOD_SUMMARYTABLE";
-//		java.sql.Date reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
-//
-//		if (reportDate == null) {
-//			throw new IllegalStateException("No modified SFINP2 record available for verification.");
-//		}
-//
-//		// Validate column name against allowed list to prevent SQL injection
-//		if (!isValidSfinp2Column(columnName)) {
-//			throw new IllegalArgumentException("Invalid or unauthorized column name for SFINP2: " + columnName);
-//		}
-//
-//		// Dynamic single-column update query
-//		String updateSql = "UPDATE BRRS_M_SFINP2_SUMMARYTABLE M " + "SET " + columnName + " = (SELECT S." + columnName
-//				+ " FROM BRRS_M_SFINP2_MOD_SUMMARYTABLE S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) "
-//				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
-//
-//		int inserted = jdbcTemplate.update(updateSql, reportDate);
-//
-//		if (inserted == 0) {
-//			throw new IllegalStateException("SFINP2 modification record not found for date : " + reportDate);
-//		}
-//
-//		System.out.println("SFINP2 Column " + columnName + " Updated : " + inserted);
-//	}
-//
-//	private void transferFASColumnData(AuditServicesEntity auditRecord, String columnName) {
-//		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_FAS_MOD_SUMMARYTABLE";
-//		java.sql.Date reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
-//
-//		if (reportDate == null) {
-//			throw new IllegalStateException("No modified FAS record available for verification.");
-//		}
-//
-//		// Validate column name against allowed list to prevent SQL injection
-//		if (!isValidFasColumn(columnName)) {
-//			throw new IllegalArgumentException("Invalid or unauthorized column name for FAS: " + columnName);
-//		}
-//
-//		// Dynamic single-column update query
-//		String updateSql = "UPDATE BRRS_M_FAS_SUMMARYTABLE M " + "SET " + columnName + " = (SELECT S." + columnName
-//				+ " FROM BRRS_M_FAS_MOD_SUMMARYTABLE S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) "
-//				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
-//
-//		int inserted = jdbcTemplate.update(updateSql, reportDate);
-//
-//		if (inserted == 0) {
-//			throw new IllegalStateException("M_FAS modification record not found for date : " + reportDate);
-//		}
-//
-//		System.out.println("M_FAS Column " + columnName + " Updated : " + inserted);
-//
-//		// Optionally execute stored procedure if needed after column update
-//		String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
-//		jdbcTemplate.update("BEGIN BRRS_M_FAS_SUMMARY_PROCEDURE(?); END;", formattedDate);
-//	}
+
+	private String deriveBaseTableName(String auditTable) {
+		// Handles both _MOD_SUMMARYTABLE and _MOD_SUMMARY_TABLE naming variants
+		return auditTable
+				.replace("_MOD_SUMMARYTABLE", "_SUMMARYTABLE")
+				.replace("_MOD_SUMMARY_TABLE", "_SUMMARY_TABLE");
+	}
+
+	private void validateColumn(String table, String column) {
+		Integer cnt = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM USER_TAB_COLUMNS WHERE TABLE_NAME = ? AND COLUMN_NAME = ?",
+				Integer.class, table, column.toUpperCase());
+		if (cnt == null || cnt == 0) {
+			throw new IllegalArgumentException("Invalid column '" + column + "' for table " + table);
+		}
+	}
+
+	private void transferColumnData(String modTable, String baseTable, String columnName) {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM " + modTable;
+		java.sql.Date reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified records available for verification in: " + modTable);
+		}
+
+		String updateSql =
+				"UPDATE " + baseTable + " M SET " + columnName + " = (" +
+				"  SELECT S." + columnName + " FROM " + modTable + " S " +
+				"  WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" +
+				") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int updated = jdbcTemplate.update(updateSql, reportDate);
+		if (updated == 0) {
+			throw new IllegalStateException("No rows updated in " + baseTable + " for date: " + reportDate);
+		}
+		System.out.println(baseTable + " column " + columnName + " updated: " + updated);
+
+		// If you still need the FAS stored-procedure call after a FAS column update:
+		if (baseTable.contains("_FAS_")) {
+			String formattedDate = new java.text.SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+			jdbcTemplate.update("BEGIN BRRS_M_FAS_SUMMARY_PROCEDURE(?); END;", formattedDate);
+		}
+	}
 //
 //	// Security validation helpers to prevent SQL Injection on column names
 //	private boolean isValidSfinp2Column(String col) {
@@ -1592,7 +1584,9 @@ public class AuditService {
 			transferCAPRATIOBUFFERData(auditRecord);
 		} else if (upperTable.contains("AS_11")) {
 			transferAS11Data(auditRecord);
-		}else {
+		} else if (upperTable.equals("BRRS_IRRBB_DEPOSITS_MOD_SUMMARYTABLE")) {
+		    transferIRRBBDepositsData(auditRecord);
+		} else {
 			throw new IllegalArgumentException("Verification not configured for table: " + auditTable);
 		}
 		try {
@@ -7280,7 +7274,7 @@ public class AuditService {
 
 		System.out.println("AS_11 Main Updated : " + affected + ", MOD Updated : " + updated);
 	}
-
+	
 	// =========================================================
 		// NOSVOS — Checker transfer (MOD -> LIVE Summary + Detail)
 		// =========================================================
@@ -7462,5 +7456,196 @@ public class AuditService {
 				System.out.println("Note on " + tableName + " row check: " + e.getMessage());
 			}
 		}
-		
+	
+        // =========================================================
+    // IRRBB_DEPOSITS — Checker transfer (MOD → LIVE Summary)
+    // One audit row can cover MANY accounts (batch submit), so every account
+    // listed in the audit's modi_details is transferred.
+    // Match key per account: ACCOUNT_NUMBER + REPORT_DATE
+    // =========================================================
+    private void transferIRRBBDepositsData(AuditServicesEntity auditRecord) {
+
+        final String liveTable = "BRRS_IRRBB_DEPOSITS_SUMMARYTABLE";
+        final String modTable  = "BRRS_IRRBB_DEPOSITS_MOD_SUMMARYTABLE";
+
+        // ── 1. Pull ALL account numbers being verified from the audit row ──
+        java.util.List<String> accounts = extractIrrbbDepositAccountNumbers(auditRecord, modTable);
+        if (accounts.isEmpty()) {
+            throw new IllegalStateException(
+                "Cannot determine any ACCOUNT_NUMBER from audit record ID: " + auditRecord.getSno());
+        }
+        System.out.println("IRRBB_DEPOSITS Verify — " + accounts.size() + " account(s): " + accounts);
+
+        // ── 3. Row-level update of the LIVE table from the MOD row (built once) ──
+        //    ACCOUNT_NUMBER is the join key (not updated).
+        //    REPORT_* descriptor columns are intentionally NOT copied back.
+        String updateSql =
+            "UPDATE " + liveTable + " M SET ("
+          + "    FLOATING_FIXED, EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, "
+          + "    LAST_REPRICING_DATE, NEXT_REPRICING_DATE, SPREAD_OVER_BENCHMARK, "
+          + "    CAP_FLOOR_RATE_OF_INTEREST, REMARKS, ENTITY_FLG, MODIFY_FLG, DEL_FLG"
+          + ") = ("
+          + "    SELECT "
+          + "        S.FLOATING_FIXED, S.EXISTING_BENCHMARK, S.EXISTING_REPRICING_FREQUENCY, "
+          + "        S.LAST_REPRICING_DATE, S.NEXT_REPRICING_DATE, S.SPREAD_OVER_BENCHMARK, "
+          + "        S.CAP_FLOOR_RATE_OF_INTEREST, S.REMARKS, S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG "
+          + "    FROM " + modTable + " S "
+          + "    WHERE S.ACCOUNT_NUMBER = M.ACCOUNT_NUMBER "
+          + "      AND TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+          + ") "
+          + "WHERE M.ACCOUNT_NUMBER = ? "
+          + "  AND TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+        String updateModSql = "UPDATE " + modTable
+                + " SET ENTITY_FLG='Y', MODIFY_FLG='N' "
+                + " WHERE ACCOUNT_NUMBER = ? AND TRUNC(REPORT_DATE)=TRUNC(?)";
+
+        for (String accountNumber : accounts) {
+
+            // ── 2. Find the pending MOD row for this account ──
+            String dateSql = "SELECT MAX(REPORT_DATE) FROM " + modTable
+                    + " WHERE ACCOUNT_NUMBER = ? AND MODIFY_FLG = 'Y'";
+            java.sql.Date reportDate = null;
+            try {
+                reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class, accountNumber);
+            } catch (Exception e) {
+                // fall through to fallback
+            }
+            if (reportDate == null) {
+                reportDate = jdbcTemplate.queryForObject(
+                        "SELECT MAX(REPORT_DATE) FROM " + modTable + " WHERE ACCOUNT_NUMBER = ?",
+                        java.sql.Date.class, accountNumber);
+            }
+            if (reportDate == null) {
+                throw new IllegalStateException(
+                        "No MOD row found in " + modTable + " for ACCOUNT_NUMBER = " + accountNumber);
+            }
+            System.out.println("IRRBB_DEPOSITS [" + accountNumber + "] Report Date : " + reportDate);
+
+            // ── 3. LIVE update ──
+            int summaryUpdated = jdbcTemplate.update(updateSql, accountNumber, reportDate);
+            if (summaryUpdated == 0) {
+                throw new IllegalStateException(
+                    "IRRBB_DEPOSITS live row not found for ACCOUNT_NUMBER = " + accountNumber
+                    + " on REPORT_DATE = " + reportDate);
+            }
+            System.out.println("IRRBB_DEPOSITS [" + accountNumber + "] Live Table Updated : " + summaryUpdated);
+
+            // ── 4. Mark the MOD row as approved ──
+            int modUpdated = jdbcTemplate.update(updateModSql, accountNumber, reportDate);
+            System.out.println("IRRBB_DEPOSITS [" + accountNumber + "] MOD Updated : " + modUpdated);
+        }
+
+        System.out.println("IRRBB_DEPOSITS Verification and Transfer Completed Successfully ("
+                + accounts.size() + " account(s))");
+    }
+
+    // Matches the "[ACCOUNT] field: OldValue…" tags written by
+    // BRRS_IRRBB_DEPOSITS_ReportService.irrdepAppendChange(); a tag only counts
+    // at the start of the text or right after the ||| separator.
+    private static final java.util.regex.Pattern IRRDEP_ACCOUNT_TAG =
+            java.util.regex.Pattern.compile("(?:^|\\|\\|\\|)\\[([^\\]]+)\\]\\s");
+
+    private java.util.List<String> extractIrrbbDepositAccountNumbers(AuditServicesEntity auditRecord,
+                                                                      String modTable) {
+        java.util.Set<String> accounts = new java.util.LinkedHashSet<>();
+
+        String details = auditRecord.getModi_details();
+        if (details != null) {
+            java.util.regex.Matcher m = IRRDEP_ACCOUNT_TAG.matcher(details);
+            while (m.find()) {
+                String acct = m.group(1).trim();
+                if (!acct.isEmpty()) accounts.add(acct);
+            }
+
+            // saveModifyAudit() cuts very long text, so the account list may be
+            // incomplete. In that case also take every still-pending MOD row.
+            if (details.contains("(truncated, see")) {
+                java.util.List<String> pending = jdbcTemplate.queryForList(
+                        "SELECT DISTINCT ACCOUNT_NUMBER FROM " + modTable
+                      + " WHERE MODIFY_FLG = 'Y' AND ENTITY_FLG = 'N'", String.class);
+                for (String p : pending) {
+                    if (p != null && !p.trim().isEmpty()) accounts.add(p.trim());
+                }
+            }
+        }
+
+        // Old-style audit rows: change_details held just the account number
+        if (accounts.isEmpty()) {
+            String raw = auditRecord.getChange_details();
+            if (raw != null && !raw.trim().isEmpty() && !raw.contains("account(s)")) {
+                accounts.add(raw.trim());
+            }
+        }
+        return new java.util.ArrayList<>(accounts);
+    }
+
+    /**
+     * Writes ONE MODIFY audit row for a batch (multi-record) maker submission,
+     * e.g. inline edits of many accounts in BRRS_IRRBB_DEPOSITS.
+     * Same audit fields as compareEntitiesmanual(), but the change text is
+     * supplied by the caller. Used by BRRS_IRRBB_DEPOSITS_ReportService.
+     */
+    public void saveModifyAudit(String id_values, String modiDetails, String Screenname, String tableName) {
+
+        final int MAX_LEN = 3900; // stay safely inside a VARCHAR2(4000) audit column
+
+        String details = modiDetails == null ? "" : modiDetails;
+        if (details.length() > MAX_LEN) {
+            String suffix = "|||... (truncated, see " + tableName + " for the full list)";
+            details = details.substring(0, MAX_LEN - suffix.length()) + suffix;
+        }
+
+        String ids = id_values;
+        if (ids != null && ids.length() > MAX_LEN) {
+            ids = ids.substring(0, MAX_LEN);
+        }
+
+        ServletRequestAttributes attr =
+                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        String userId = null;
+        String username = null;
+        if (attr != null) {
+            HttpServletRequest request = attr.getRequest();
+            userId   = (String) request.getSession().getAttribute("USERID");
+            username = (String) request.getSession().getAttribute("USERNAME");
+        }
+        final Date currentDate = new Date();
+
+        AuditServicesEntity audit = new AuditServicesEntity();
+        audit.setAudit_date(currentDate);
+        audit.setEntry_time(currentDate);
+        audit.setEntry_user(userId);
+        audit.setEntry_user_name(username);
+        audit.setFunc_code("MODIFY");
+        audit.setAudit_table(tableName);
+        audit.setAudit_screen(Screenname);
+        audit.setEvent_id(userId);
+        audit.setEvent_name(username);
+        audit.setModi_details(details);
+        audit.setChange_details(ids);
+
+        auditServicesRep.save(audit);
+    }
+    private String extractIrrbbDepositAccountNumber(AuditServicesEntity auditRecord) {
+        String raw = auditRecord.getChange_details();
+        if (raw == null) return null;
+        raw = raw.trim();
+
+        String marker = "account number";
+        int idx = raw.toLowerCase().indexOf(marker);
+        if (idx >= 0) {
+            String tail = raw.substring(idx + marker.length());
+            tail = tail.replaceFirst("^\\s*[:=]\\s*", "");
+            int cut = tail.length();
+            for (String sep : new String[] { ";", "|||", " " }) {
+                int p = tail.indexOf(sep);
+                if (p > 0 && p < cut) cut = p;
+            }
+            String val = tail.substring(0, cut).trim();
+            return val.isEmpty() ? null : val;
+        }
+        return raw;   // Case (b): whole string is the account number
+    }
+
 }

@@ -7515,10 +7515,29 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateAllBRRSIrrdep(
 			@RequestBody List<BRRS_IRRBB_DEPOSITS_ReportService.IRRBB_DEPOSITS_Update_Row> rows,
-			@RequestParam(value = "type", required = false) String type) {
+			@RequestParam(value = "type", required = false) String type, HttpServletRequest req) {
 		try {
-			BRRS_IRRBB_DEPOSITS_reportservice.updateAllIrrdepRows(rows, type);
-			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userid != null ? userProfileRep.getUserRole(userid) : null;
+
+			// Checkers verify; they must not submit modifications
+			if (isCheckerOnly(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Checker cannot modify IRRBB_DEPOSITS. Current role: " + role);
+			}
+
+			// Resubmission data is not part of the Maker-Checker flow (unchanged behaviour)
+			if ("RESUB".equalsIgnoreCase(type)) {
+				BRRS_IRRBB_DEPOSITS_reportservice.updateAllIrrdepRows(rows, type);
+				return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
+			}
+
+			// Maker: goes into BRRS_IRRBB_DEPOSITS_MOD_SUMMARYTABLE only; live tables untouched
+			boolean submitted = BRRS_IRRBB_DEPOSITS_reportservice.submitIrrdepForChecker(rows);
+			if (!submitted) {
+				return ResponseEntity.ok("No changes were made.");
+			}
+			return ResponseEntity.ok("Modification saved. Pending Checker verification.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());

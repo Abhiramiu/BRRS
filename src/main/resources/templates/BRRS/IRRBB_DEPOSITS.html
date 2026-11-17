@@ -375,7 +375,7 @@ PURPOSE		: BRRS IRRBB DEPOSITS REPORT
 					}
 
 					// Makers -> hide all download buttons
-					if (roleId === "ADM-M" || roleId === "USR-M") {
+					if (roleId === "ADM-M" || roleId === "USR-M" || roleId === "MGR") {
 						document.querySelectorAll("#btn-format, #btn-detail, .PDF-download-menu, #btn-pdf, #custom-tab-btnAdd").forEach(el => el.style.display = "none");
 					}
 				},
@@ -831,7 +831,7 @@ PURPOSE		: BRRS IRRBB DEPOSITS REPORT
 
 						<!-- FORMAT Download Button -->
 						<button type="button" class="custom-tab-btn" id="btn-format" onclick="downloadfile(this)"
-							th:if="${(displaymode == 'summary' or displaymode == 'archivalSummary' or displaymode == 'resubSummary') and role != 'M'}"
+							th:if="${(displaymode == 'summary' or displaymode == 'archivalSummary' or displaymode == 'resubSummary') and role != 'M' and role != 'MGR'}"
 							th:attr="data-reportid=${reportid},
 							        data-asondate=${asondate},
 							        data-fromdate=${fromdate},
@@ -848,7 +848,7 @@ PURPOSE		: BRRS IRRBB DEPOSITS REPORT
 						<!-- PDF Download Dropdown -->
 						<div class="nav-item dropdown PDF-download-menu" id="btn-pdf"
 							style="list-style: none; display: inline-block;"
-							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary' or displaymode == 'Details' or displaymode == 'archivalSummary') and role != 'M'}">
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary' or displaymode == 'Details' or displaymode == 'archivalSummary') and role != 'M' and role != 'MGR'}">
 							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown"
 								style="font-family: Arial; font-weight: bold;">
 								<i class="fa fa-download"></i> PDF
@@ -870,7 +870,7 @@ PURPOSE		: BRRS IRRBB DEPOSITS REPORT
 
 						<!-- MODIFY / CANCEL BUTTONS-->
 						<button type="button" class="custom-tab-btn" id="modifyBtn" onclick="enableInlineEdit();"
-							th:if="${(role == 'M' or role == 'MAN') and (displaymode == 'summary' or displaymode == 'resubSummary')}"
+							th:if="${role != 'C' and role != 'ADM-C' and role != 'USR-C' and role != 'USER-AUDIT' and (displaymode == 'summary' or displaymode == 'resubSummary')}"
 							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit' : ''"
 							title="Click to EDIT Records">
 							Modify
@@ -1874,7 +1874,7 @@ PURPOSE		: BRRS IRRBB DEPOSITS REPORT
 					success: function (response) {
 						$('#loader').modal('hide');
 						setTimeout(function () {
-							showResultModal('BRRS', 'Modified Successfully.');
+							showResultModal('BRRS', (response && String(response).trim()) ? response : 'Modified Successfully.');
 						}, 300);
 					},
 					error: function (xhr) {

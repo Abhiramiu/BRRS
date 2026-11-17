@@ -11,10 +11,14 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.math.BigDecimal;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -53,6 +57,9 @@ public class BRRS_IRRBB_DEPOSITS_ReportService {
 
 	@Autowired
 	UserProfileRep userProfileRep;
+
+	@Autowired
+	AuditService auditService;
 
 	// Used to parse/format the incoming "todate" request parameter (e.g.
 	// 31-MAY-2026)
@@ -2235,6 +2242,168 @@ public class BRRS_IRRBB_DEPOSITS_ReportService {
 		// Sequentially execute procedures: FIRST BRRS_IRRBB_DEP_DETAIL_PROCEDURE, THEN
 		// BRRS_IRRBB_DEP_SUMMARY_PROCEDURE
 		executeIrrdepProcedures(reportDateStr);
+	}
+
+	// ===========================================================
+	// MAKER: submit inline edits for Checker approval
+	// ===========================================================
+	// Writes ONLY to BRRS_IRRBB_DEPOSITS_MOD_SUMMARYTABLE (MODIFY_FLG='Y') and logs
+	// one MODIFY audit row. The live Summary / Detail tables are untouched until the
+	// Checker verifies (see AuditService.transferIRRBBDepositsData).
+	// Returns false when nothing actually changed (no MOD row, no audit).
+
+	public static final String IRRDEP_MOD_TABLE = "BRRS_IRRBB_DEPOSITS_MOD_SUMMARYTABLE";
+
+	@Transactional
+	public boolean submitIrrdepForChecker(List<IRRBB_DEPOSITS_Update_Row> rows) {
+		if (rows == null || rows.isEmpty())
+			return false;
+
+		final String liveSummary = "BRRS_IRRBB_DEPOSITS_SUMMARYTABLE";
+		SimpleDateFormat sdf1 = new SimpleDateFormat("dd-MM-yyyy");
+		SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy");
+		SimpleDateFormat cmpFmt = new SimpleDateFormat("yyyyMMdd");
+		SimpleDateFormat showFmt = new SimpleDateFormat("dd-MM-yyyy");
+
+		StringBuilder changes = new StringBuilder();
+		Set<String> reportDates = new LinkedHashSet<>();
+		int changedAccounts = 0;
+
+		for (IRRBB_DEPOSITS_Update_Row row : rows) {
+			if (row.getSno() == null)
+				continue;
+
+			List<IRRBB_DEPOSITS_Summary_Entity> found = jdbcTemplate.query(
+					"SELECT * FROM " + liveSummary + " WHERE SNO = ?", new Object[] { row.getSno() },
+					new SummaryRowMapper());
+			if (found.isEmpty()) {
+				logger.warn("IRRBB_DEPOSITS: no summary row for SNO {} - skipped", row.getSno());
+				continue;
+			}
+			IRRBB_DEPOSITS_Summary_Entity cur = found.get(0);
+			String acct = cur.getAccountNumber();
+
+			Date newLast = irrdepParseDate(row.getLastRepricingDate(), sdf1, sdf2, "Last Repricing Date", acct);
+			Date newNext = irrdepParseDate(row.getNextRepricingDate(), sdf1, sdf2, "Next Repricing Date", acct);
+
+			int before = changes.length();
+
+			// The screen shows these defaults when the live value is empty, so an
+			// untouched empty cell is not treated as a change.
+			String floatingFixed = irrdepPickText("floatingFixed", cur.getFloatingFixed(), row.getFloatingFixed(),
+					"Floating", acct, changes);
+			String benchmark = irrdepPickText("existingBenchmark", cur.getExistingBenchmark(),
+					row.getExistingBenchmark(), "BPLR", acct, changes);
+			String frequency = irrdepPickText("existingRepricingFrequency", cur.getExistingRepricingFrequency(),
+					row.getExistingRepricingFrequency(), "On resetting of MoPR", acct, changes);
+			Date lastDate = irrdepPickDate("lastRepricingDate", cur.getLastRepricingDate(), newLast, cmpFmt, showFmt,
+					acct, changes);
+			Date nextDate = irrdepPickDate("nextRepricingDate", cur.getNextRepricingDate(), newNext, cmpFmt, showFmt,
+					acct, changes);
+			String spread = irrdepPickText("spreadOverBenchmark", cur.getSpreadOverBenchmark(),
+					row.getSpreadOverBenchmark(), null, acct, changes);
+			String capFloor = irrdepPickText("capFloorRateOfInterest", cur.getCapFloorRateOfInterest(),
+					row.getCapFloorRateOfInterest(), null, acct, changes);
+			String remarks = irrdepPickText("remarks", cur.getRemarks(), row.getRemarks(), null, acct, changes);
+
+			if (changes.length() == before)
+				continue; // this account was not modified
+
+			if (acct == null || acct.trim().isEmpty()) {
+				throw new IllegalStateException("Account number is missing for SNO " + row.getSno()
+						+ "; the change cannot be sent for approval.");
+			}
+			if (cur.getReportDate() == null) {
+				throw new IllegalStateException("Report date is missing for account " + acct);
+			}
+
+			java.sql.Date reportDate = new java.sql.Date(cur.getReportDate().getTime());
+			java.sql.Date sqlLast = lastDate == null ? null : new java.sql.Date(lastDate.getTime());
+			java.sql.Date sqlNext = nextDate == null ? null : new java.sql.Date(nextDate.getTime());
+
+			// 1) Update the pending/old MOD row for this account + date (ONE row each)
+			int updated = jdbcTemplate.update("UPDATE " + IRRDEP_MOD_TABLE + " SET FLOATING_FIXED = ?, "
+					+ "EXISTING_BENCHMARK = ?, EXISTING_REPRICING_FREQUENCY = ?, LAST_REPRICING_DATE = ?, "
+					+ "NEXT_REPRICING_DATE = ?, SPREAD_OVER_BENCHMARK = ?, CAP_FLOOR_RATE_OF_INTEREST = ?, "
+					+ "REMARKS = ?, REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, REPORT_DESC = ?, "
+					+ "DEL_FLG = ?, ENTITY_FLG = 'N', MODIFY_FLG = 'Y' "
+					+ "WHERE ACCOUNT_NUMBER = ? AND TRUNC(REPORT_DATE) = TRUNC(?)", floatingFixed, benchmark,
+					frequency, sqlLast, sqlNext, spread, capFloor, remarks, cur.getReportVersion(),
+					cur.getReportFrequency(), cur.getReportCode(), cur.getReportDesc(), cur.getDelFlg(), acct,
+					reportDate);
+
+			// 2) Otherwise insert it
+			if (updated == 0) {
+				jdbcTemplate.update("INSERT INTO " + IRRDEP_MOD_TABLE + " (ACCOUNT_NUMBER, FLOATING_FIXED, "
+						+ "EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, LAST_REPRICING_DATE, "
+						+ "NEXT_REPRICING_DATE, SPREAD_OVER_BENCHMARK, CAP_FLOOR_RATE_OF_INTEREST, REMARKS, "
+						+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+						+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+						+ "'N', 'Y', ?)", acct, floatingFixed, benchmark, frequency, sqlLast, sqlNext, spread,
+						capFloor, remarks, reportDate, cur.getReportVersion(), cur.getReportFrequency(),
+						cur.getReportCode(), cur.getReportDesc(), cur.getDelFlg());
+			}
+
+			reportDates.add(showFmt.format(reportDate));
+			changedAccounts++;
+		}
+
+		if (changedAccounts == 0) {
+			logger.info("IRRBB_DEPOSITS: no changes detected, nothing submitted.");
+			return false;
+		}
+
+		// Audit -> shows up in Modify Status for the Checker
+		String idValues = String.join(", ", reportDates) + " | " + changedAccounts + " account(s)";
+		auditService.saveModifyAudit(idValues, changes.toString(), "IRRBB_DEPOSITS Summary Screen",
+				IRRDEP_MOD_TABLE);
+		return true;
+	}
+
+	private String irrdepText(String s) {
+		return (s == null || s.trim().isEmpty()) ? null : s.trim();
+	}
+
+	private void irrdepAppendChange(StringBuilder sb, String acct, String field, Object oldV, Object newV) {
+		if (sb.length() > 0)
+			sb.append("|||");
+		sb.append("[").append(acct).append("] ").append(field).append(": OldValue: ").append(oldV)
+				.append(", NewValue: ").append(newV);
+	}
+
+	/** Returns the value to store in MOD: the Maker's value if changed, else the live value. */
+	private String irrdepPickText(String field, String oldV, String newV, String uiDefault, String acct,
+			StringBuilder changes) {
+		String o = irrdepText(oldV);
+		String n = irrdepText(newV);
+		boolean same = Objects.equals(o, n) || (o == null && uiDefault != null && uiDefault.equals(n));
+		if (same)
+			return oldV;
+		irrdepAppendChange(changes, acct, field, o, n);
+		return n;
+	}
+
+	private Date irrdepPickDate(String field, Date oldV, Date newV, SimpleDateFormat cmpFmt, SimpleDateFormat showFmt,
+			String acct, StringBuilder changes) {
+		String o = oldV == null ? null : cmpFmt.format(oldV);
+		String n = newV == null ? null : cmpFmt.format(newV);
+		if (Objects.equals(o, n))
+			return oldV;
+		irrdepAppendChange(changes, acct, field, oldV == null ? null : showFmt.format(oldV),
+				newV == null ? null : showFmt.format(newV));
+		return newV;
+	}
+
+	private Date irrdepParseDate(String str, SimpleDateFormat sdf1, SimpleDateFormat sdf2, String field,
+			String acct) {
+		if (str == null || str.trim().isEmpty())
+			return null;
+		Date d = parseDate(str, sdf1, sdf2);
+		if (d == null) {
+			throw new IllegalArgumentException(
+					"Invalid " + field + " '" + str + "' for account " + acct + ". Expected format dd-MM-yyyy.");
+		}
+		return d;
 	}
 
 	private void executeIrrdepProcedures(String reportDateStr) {
