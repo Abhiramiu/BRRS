@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,10 +15,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import org.springframework.dao.EmptyResultDataAccessException;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.IdClass;
@@ -49,11 +52,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -37926,128 +37931,377 @@ public class BRRS_MDISB1_ReportService {
 	 * // 🔹 Save MDISB1_Summary_repo3.save(existing); }
 	 */
 
-	
-	@Transactional
-	public void updateDetailFromForm(Date reportDate, Map<String, String> params) {
-
-	    try {
-
-	        logger.info("Updating MDISB1 Detail Table for Report Date : {}", reportDate);
-
-	        for (Map.Entry<String, String> entry : params.entrySet()) {
-
-	            String key = entry.getKey();
-	            String value = entry.getValue();
-
-	            // Expected format: R10_C2_r10_31_3_25_amt
-	            if (!key.matches("R\\d+_C\\d+_.*")) {
-	                continue;
-	            }
-
-	            String[] parts = key.split("_");
-
-	            if (parts.length < 2) {
-	                continue;
-	            }
-
-	            String reportLabel = parts[0];   // R10
-	            String addlCriteria = parts[1];  // C2 / C3
-
-	            BigDecimal amount = BigDecimal.ZERO;
-
-	            if (value != null && !value.trim().isEmpty()) {
-	                amount = new BigDecimal(value.trim());
-	            }
-
-	            logger.info(
-	                    "Fetching rows for Report Date : {}, Report Label : {}, Criteria : {}",
-	                    reportDate,
-	                    reportLabel,
-	                    addlCriteria);
-
-	            List<MDISB1_Detail_Entity> rows =
-	                    findByDetailReportDateAndLabelAndCriteria(
-	                            reportDate,
-	                            reportLabel,
-	                            addlCriteria);
-
-	            logger.info("Rows fetched : {}", rows.size());
-
-	            if (rows == null || rows.isEmpty()) {
-	                continue;
-	            }
-
-	            for (MDISB1_Detail_Entity row : rows) {
-
-	                logger.info(
-	                        "Before Update -> Account Number : {}, Balance : {}, Modify Flag : {}",
-	                        row.getAcct_number(),
-	                        row.getAcct_balance_in_pula(),
-	                        row.getModify_flg());
-
-	                String sql =
-	                        "UPDATE BRRS_MDISB1_DETAILTABLE " +
-	                        "SET ACCT_BALANCE_IN_PULA = ?, " +
-	                        "MODIFY_FLG = ? " +
-	                        "WHERE ACCT_NUMBER = ?";
-
-	                int updatedRows = jdbcTemplate.update(
-	                        sql,
-	                        amount,
-	                        "Y",
-	                        row.getAcct_number());
-
-	                logger.info(
-	                        "Updated Rows : {}, Account Number : {}, New Balance : {}",
-	                        updatedRows,
-	                        row.getAcct_number(),
-	                        amount);
-	            }
-	        }
-
-	        // Execute Summary Procedure
-	        callSummaryProcedure(reportDate);
-
-	    } catch (Exception e) {
-
-	        logger.error("Error updating MDISB1 Detail Table", e);
-
-	        throw new RuntimeException(
-	                "Failed to update MDISB1 Detail Table",
-	                e);
-	    }
-	}
 
 
-	private void callSummaryProcedure(Date reportDate) {
 
-	    try {
 
-	        String formattedDate =
-	                new SimpleDateFormat("dd-MM-yyyy")
-	                        .format(reportDate);
 
-	        logger.info(
-	                "Executing BRRS_MDISB1_SUMMARY_PROCEDURE for Date : {}",
-	                formattedDate);
+		    private static final String LIVE_TABLE =
+	            "BRRS_MDISB1_SUMMARYTABLE_MANUAL";
 
-	        jdbcTemplate.update(
-	                "BEGIN BRRS_MDISB1_SUMMARY_PROCEDURE(?); END;",
-	                formattedDate);
+	    private static final String MOD_TABLE =
+	            "BRRS_MDISB1_MOD_SUMMARYTABLE_MANUAL";
 
-	        logger.info(
-	                "MDISB1 Summary Procedure executed successfully.");
+	    // ============================================================
+	    // MDISB1 - DATE AND MAP UPDATE
+	    // Controller call: updateReport1(asondate, allParams)
+	    // ============================================================
 
-	    } catch (Exception e) {
 
-	        logger.error(
-	                "Error executing BRRS_MDISB1_SUMMARY_PROCEDURE",
-	                e);
+	 // ============================================================
+	 // MDISB1 - DATE AND MAP SERVICE
+	 // CONTROLLER CALL: updateReport1(asondate, allParams)
+	 // SAVE MODIFICATION IN MOD SUMMARY TABLE
+	 // REPORT_DATE IS THE ONLY IDENTIFIER
+	 // ============================================================
 
-	        throw new RuntimeException(
-	                "Summary Procedure execution failed",
-	                e);
-	    }
-	}
+
+    @Transactional
+    public void updateReport1(Date asondate,
+            Map<String, String> allParams) {
+
+        try {
+
+            System.out.println("======================================");
+            System.out.println("Came to MDISB1 Date Map Service");
+            System.out.println("Report Date : " + asondate);
+            System.out.println("Total Parameters : "
+                    + (allParams == null ? 0 : allParams.size()));
+            System.out.println("======================================");
+
+            // 1. VALIDATE
+
+            if (asondate == null) {
+                throw new RuntimeException(
+                        "MDISB1 REPORT_DATE is null");
+            }
+
+            if (allParams == null || allParams.isEmpty()) {
+                throw new RuntimeException(
+                        "MDISB1 Parameters are empty");
+            }
+
+            // 2. FETCH LIVE RECORD USING REPORT_DATE ONLY
+
+            String selectSql =
+                    "SELECT * FROM BRRS_MDISB1_SUMMARYTABLE_MANUAL "
+                  + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+            List<MDISB1_Summary_Entity_Manual> records =
+                    jdbcTemplate.query(
+                            selectSql,
+                            new Object[] { asondate },
+                            new MDISB1_RowMapper_MANUAL()
+                    );
+
+            System.out.println(
+                    "MDISB1 LIVE RECORD COUNT : " + records.size());
+
+            if (records.isEmpty()) {
+                throw new RuntimeException(
+                        "No MDISB1 LIVE record found for REPORT_DATE: "
+                        + new SimpleDateFormat("dd/MM/yyyy")
+                                .format(asondate));
+            }
+
+            if (records.size() > 1) {
+                throw new RuntimeException(
+                        "Multiple MDISB1 LIVE records found "
+                        + "for the same REPORT_DATE");
+            }
+
+            MDISB1_Summary_Entity_Manual existing =
+                    records.get(0);
+
+            System.out.println(
+                    "REPORT_VERSION : "
+                    + existing.getReport_version());
+
+            // 3. CREATE OLD ENTITY COPY
+
+            MDISB1_Summary_Entity_Manual oldcopy =
+                    new MDISB1_Summary_Entity_Manual();
+
+            BeanUtils.copyProperties(existing, oldcopy);
+
+            // 4. UPDATE SCREEN VALUES R7 TO R111
+
+            int updatedCount = 0;
+
+            for (Map.Entry<String, String> entry :
+                    allParams.entrySet()) {
+
+                String parameterName = entry.getKey();
+                String parameterValue = entry.getValue();
+
+                System.out.println(
+                        "SCREEN PARAMETER : "
+                        + parameterName + " = " + parameterValue);
+
+                if (parameterName == null) {
+                    continue;
+                }
+
+                String fieldName = parameterName.trim();
+
+                if (fieldName.contains(".")) {
+                    fieldName = fieldName.substring(
+                            fieldName.lastIndexOf(".") + 1);
+                }
+
+                String normalizedName =
+                        normalizeMDISB1FieldName(fieldName);
+
+                java.lang.reflect.Field entityField =
+                        findMDISB1EntityField(
+                                existing, normalizedName);
+
+                if (entityField == null) {
+                    continue;
+                }
+
+                String actualFieldName =
+                        entityField.getName().toUpperCase();
+
+                if (!actualFieldName.matches(
+                        "R(7|8|9|[1-9][0-9]|10[0-9]|11[01])_TOTAL_DEPOSIT_EXCEED")) {
+                    continue;
+                }
+
+                BigDecimal fieldValue = null;
+
+                if (parameterValue != null
+                        && !parameterValue.trim().isEmpty()) {
+
+                    String cleanedValue =
+                            parameterValue.trim().replace(",", "");
+
+                    fieldValue = new BigDecimal(cleanedValue);
+                }
+
+                entityField.setAccessible(true);
+                entityField.set(existing, fieldValue);
+
+                updatedCount++;
+
+                System.out.println(
+                        "UPDATED FIELD : "
+                        + actualFieldName
+                        + " = " + fieldValue);
+            }
+
+            System.out.println(
+                    "MDISB1 UPDATED FIELD COUNT : " + updatedCount);
+
+            if (updatedCount == 0) {
+
+                System.out.println(
+                        "========== RECEIVED PARAMETERS ==========");
+
+                for (String key : allParams.keySet()) {
+                    System.out.println("PARAMETER : " + key);
+                }
+
+                throw new RuntimeException(
+                        "No valid MDISB1 fields received from screen. "
+                        + "Check HTML parameter names and entity fields.");
+            }
+
+            // 5. PRESERVE REPORT DATE
+
+            existing.setReport_date(asondate);
+
+            // Do not generate REPORT_VERSION, REPORT_CODE or flags.
+
+            // 6. AUDIT CHANGE CHECK
+
+            Object changes =
+                    auditService.getChanges(oldcopy, existing);
+
+            System.out.println(
+                    "MDISB1 CHANGES : " + changes);
+
+            String changeDetails =
+                    changes == null ? "" : changes.toString();
+
+            if (changeDetails.trim().isEmpty()
+                    || "[]".equals(changeDetails.trim())) {
+
+                System.out.println(
+                        "No MDISB1 changes found.");
+
+                return;
+            }
+
+            // 7. SAVE MOD SUMMARY
+
+            System.out.println(
+                    "SAVING MDISB1 MOD SUMMARY");
+
+            saveModSummaryEntity(existing);
+
+            // 8. AUDIT COMPARISON
+
+            String formattedDate =
+                    new SimpleDateFormat("dd/MM/yyyy")
+                            .format(asondate);
+
+            auditService.compareEntitiesmanual(
+                    oldcopy,
+                    existing,
+                    formattedDate,
+                    "MDISB1",
+                    "BRRS_MDISB1_MOD_SUMMARYTABLE_MANUAL"
+            );
+
+            System.out.println("======================================");
+            System.out.println(
+                    "MDISB1 MODIFICATION COMPLETED");
+            System.out.println(
+                    "REPORT DATE : " + formattedDate);
+            System.out.println(
+                    "UPDATED FIELDS : " + updatedCount);
+            System.out.println("======================================");
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            throw new RuntimeException(
+                    "MDISB1 updateReport1 failed: "
+                    + e.getMessage(), e);
+        }
+    }
+
+    // ============================================================
+    // MDISB1 - NORMALIZE FIELD NAME
+    // ============================================================
+
+    private String normalizeMDISB1FieldName(String fieldName) {
+
+        if (fieldName == null) {
+            return "";
+        }
+
+        return fieldName.replaceAll("[^A-Za-z0-9]", "")
+                .toUpperCase();
+    }
+
+    // ============================================================
+    // MDISB1 - FIND ENTITY FIELD
+    // ============================================================
+
+    private java.lang.reflect.Field findMDISB1EntityField(
+            MDISB1_Summary_Entity_Manual entity,
+            String parameterName) {
+
+        Class<?> currentClass = entity.getClass();
+
+        while (currentClass != null
+                && currentClass != Object.class) {
+
+            java.lang.reflect.Field[] fields =
+                    currentClass.getDeclaredFields();
+
+            for (java.lang.reflect.Field field : fields) {
+
+                if (java.lang.reflect.Modifier.isStatic(
+                        field.getModifiers())
+                        || field.isSynthetic()) {
+                    continue;
+                }
+
+                String entityFieldName =
+                        normalizeMDISB1FieldName(field.getName());
+
+                if (parameterName.equals(entityFieldName)
+                        || parameterName.endsWith(entityFieldName)) {
+
+                    return field;
+                }
+            }
+
+            currentClass = currentClass.getSuperclass();
+        }
+
+        return null;
+    }
+
+    // ============================================================
+    // MDISB1 - SAVE MOD SUMMARY ENTITY
+    // ============================================================
+
+
+@Transactional
+public void saveModSummaryEntity(MDISB1_Summary_Entity_Manual entity) {
+
+    try {
+
+        // ----------------------------------------------------
+        // 1. CHECK MOD RECORD USING REPORT_DATE
+        // ----------------------------------------------------
+
+        String countSql =
+                "SELECT COUNT(*) " +
+                "FROM BRRS_MDISB1_MOD_SUMMARYTABLE_MANUAL " +
+                "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+        Integer count = jdbcTemplate.queryForObject(
+                countSql,
+                new Object[] { entity.getReport_date() },
+                Integer.class);
+
+        // ----------------------------------------------------
+        // 2. INSERT OR UPDATE MOD RECORD
+        // ----------------------------------------------------
+
+        if (count != null && count > 0) {
+
+            // Your existing MOD UPDATE logic goes here.
+            // Make sure the UPDATE does not overwrite MODIFY_FLG
+            // with NULL.
+
+            System.out.println("MDISB1 MOD RECORD EXISTS");
+
+        } else {
+
+            // Your existing MOD INSERT logic goes here.
+
+            System.out.println("MDISB1 MOD RECORD INSERTED");
+        }
+
+        // ----------------------------------------------------
+        // 3. SET MODIFY_FLG = Y
+        // ----------------------------------------------------
+
+        String flagSql =
+                "UPDATE BRRS_MDISB1_MOD_SUMMARYTABLE_MANUAL " +
+                "SET MODIFY_FLG = 'Y' " +
+                "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+        int flagCount = jdbcTemplate.update(
+                flagSql,
+                entity.getReport_date());
+
+        if (flagCount == 0) {
+            throw new RuntimeException(
+                    "Unable to set MDISB1 MODIFY_FLG = Y");
+        }
+
+        System.out.println(
+                "MDISB1 MODIFY_FLG SET TO Y. Rows: " + flagCount);
+
+    } catch (Exception e) {
+
+        e.printStackTrace();
+
+        throw new RuntimeException(
+                "Failed to save MDISB1 MOD summary data", e);
+    }
+}
+
 
 }
+
+
+

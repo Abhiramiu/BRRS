@@ -575,53 +575,68 @@ PURPOSE		: BRRSREPORT
 
 
 	<script>
+
 		function fileuploads(btn) {
-			const asondate = btn.getAttribute("data-todate");
-			$('#loader').modal('show');
-			// ✅ Step 1: Calculate totals
 
-			calculateR13Totals();
+		    const asondate = btn.getAttribute("data-todate");
 
+		    $('#loader').modal('show');
 
-			// ✅ Step 2: Remove commas safely
-			$("#fileupload input[type='text']").each(function () {
-				const cleanValue = $(this).val().replace(/,/g, '');
-				$(this).val(cleanValue);
-			});
-			// ✅ Step 3: Validate form
-			if (!$("#fileupload").valid()) {
-				$('#loader').modal('hide');
-				return;
-			}
-			// ✅ Step 4: Prepare FormData
-			const formData = new FormData();
-			formData.append("asondate", asondate);
-			$('#fileupload :input[name]').each(function () {
-				formData.append($(this).attr('name'), $(this).val());
-			});
-			// ✅ Step 5: Send AJAX
-			$.ajax({
-				url: './updateReportMDISB1',
-				type: 'POST',
-				data: formData,
-				processData: false,
-				contentType: false,
-				success: function () {
-					$("#resultModalLabel").text("BRRS");
-					$("#resultModalBody").text("Updated Successfully");
-					$("#resultModal").modal("show");
-				},
-				error: function (jqXHR) {
-					console.error("Error:", jqXHR.responseText);
-					$("#resultModalLabel").text("Error");
-					$("#resultModalBody").text("Update failed. Check console for details.");
-					$("#resultModal").modal("show");
-				},
-				complete: function () {
-					$('#loader').modal('hide');
-				}
-			});
+		    // Step 1: Calculate totals
+		    calculateR13Totals();
+
+		    // Step 2: Remove commas safely
+		    $("#fileupload input[type='text']").each(function () {
+		        const cleanValue = $(this).val().replace(/,/g, '');
+		        $(this).val(cleanValue);
+		    });
+
+		    // Step 3: Validate form
+		    if (!$("#fileupload").valid()) {
+		        $('#loader').modal('hide');
+		        return;
+		    }
+
+		    // Step 4: Prepare FormData
+		    const formData = new FormData();
+
+		    formData.append("asondate", asondate);
+
+		    $('#fileupload :input[name]').each(function () {
+		        formData.append($(this).attr('name'), $(this).val());
+		    });
+
+		    // Step 5: Send AJAX
+		    $.ajax({
+		        url: './MDISB1updateAll',
+		        type: 'POST',
+		        data: formData,
+		        processData: false,
+		        contentType: false,
+
+		        success: function (response) {
+		            $("#resultModalLabel").text("BRRS");
+		            $("#resultModalBody").text("MDISB1 Updated Successfully");
+		            $("#resultModal").modal("show");
+		        },
+
+		        error: function (jqXHR) {
+		            console.error("MDISB1 Update Error:", jqXHR.responseText);
+
+		            $("#resultModalLabel").text("Error");
+		            $("#resultModalBody").text(
+		                jqXHR.responseText || "MDISB1 update failed. Please check the server logs."
+		            );
+
+		            $("#resultModal").modal("show");
+		        },
+
+		        complete: function () {
+		            $('#loader').modal('hide');
+		        }
+		    });
 		}
+
 	</script>
 
 
@@ -830,23 +845,23 @@ PURPOSE		: BRRSREPORT
 				}
 			});
 		}
-		
+
 		function downloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function editRecord() {
@@ -1332,14 +1347,14 @@ PURPOSE		: BRRSREPORT
 
 						<!-- Title -->
 						<h5 class="header-title">
-							MDISB1 HOUSEHOLD DEPOSITS BY SIZE AND TYPE OF ACCOUNT	
+							MDISB1 HOUSEHOLD DEPOSITS BY SIZE AND TYPE OF ACCOUNT
 						</h5>
 
 						<!-- Bus Scrolling Text -->
-						       <div class="boards" style="min-width: 250px;">
-						           <p class="scrolling-text">Bank of Baroda(Botswana)Ltd</p>
-						       </div>
-						   </div>
+						<div class="boards" style="min-width: 250px;">
+							<p class="scrolling-text">Bank of Baroda(Botswana)Ltd</p>
+						</div>
+					</div>
 
 
 
@@ -1362,9 +1377,11 @@ PURPOSE		: BRRSREPORT
 							th:if="${displaymode == 'summary'}">Details</button>
 
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and displaymode == 'summary'}"
-							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							id="addRecord">Modify</button>
+							title="Click to EDIT Records"
+							th:if="${type != 'ARCHIVAL' and (displaymode == 'summary' or displaymode == 'resubSummary')}"
+							id="addRecord">
+							Modify
+						</button>
 
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							style="display:none;" onclick="openCancelModal();">
@@ -1385,25 +1402,22 @@ PURPOSE		: BRRSREPORT
 		                      data-version=${version != null ? version : ''}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
-						
-						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
-							<button type="button" class="custom-tab-btn dropdown-toggle"
-								data-toggle="dropdown">
+
+						<div class="nav-item dropdown PDF-download-menu"
+							style="list-style: none; display: inline-block;"
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
-							<div class="dropdown-menu" >
-								<a href="#"
-								   class="nav-link"
-							 	   th:attr=	"data-reportid=${reportid},
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											 data-fromdate=${fromdate},
-											 data-todate=${todate}"
-								   onclick="downloadSummaryPdf(this);">
+											 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
 								</a>
 							</div>
 						</div>
-						
+
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
 							th:if="${displaymode == 'Details' and role != 'M'}" onclick="startReport(this);" th:attr="
 										    data-fromdate=${fromdate},
@@ -5276,11 +5290,9 @@ PURPOSE		: BRRSREPORT
 								</div>
 
 								<div style="text-align: center; margin-top: 10px;">
-									<button id="submitButton" type="button" class="custom-tab-btn" form="fileupload"
-										th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
-										style="display: none;">
-										Submit
-									</button>
+									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+										form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+										style="display: none;">Submit</button>
 								</div>
 							</form>
 						</div>
@@ -5312,7 +5324,8 @@ PURPOSE		: BRRSREPORT
 										<tr th:each="report, srlno : ${reportdetails}">
 											<td>
 												<a data-toggle="tooltip" class="editrec"
-													title="Click to Edit this Record" th:if="${role == 'M' or role == 'MAN'}">
+													title="Click to Edit this Record"
+													th:if="${role == 'M' or role == 'MAN'}">
 													<i class="fas fa-edit" style="color: black; cursor:pointer;"
 														th:attr="data-acctNo=${report.acct_number},
 														data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')}	"

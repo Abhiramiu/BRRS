@@ -4063,8 +4063,8 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	@RequestMapping(value = "/updateReportMDISB1", method = { RequestMethod.GET, RequestMethod.POST })
-	/*
+	/*@RequestMapping(value = "/updateReportMDISB1", method = { RequestMethod.GET, RequestMethod.POST })
+	
 	 * @ResponseBody
 	 * 
 	 * public ResponseEntity<String> updateAllReports(
@@ -4087,21 +4087,38 @@ public class BRRS_ReportsController {
 	 * body("Update Failed: " + e.getMessage()); } }
 	 */
 
+
+	// ============================================================
+	// MDISB1 - UPDATE ALL (MAKER MODIFICATION)
+	// SEND DATA TO CHECKER APPROVAL
+	// ============================================================
+
+	@Autowired
+	BRRS_MDISB1_ReportService brrsMDISB1ReportService;
+
 	@PostMapping("/MDISB1updateAll")
 	@ResponseBody
-	public ResponseEntity<String> updateMDISB1(@RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@RequestParam Map<String, String> allParams) {
+	public ResponseEntity<String> updateMDISB1(
+	        @RequestParam("asondate")
+	        @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @RequestParam Map<String, String> allParams) {
 
-		try {
-			System.out.println("Came to MDISB1 controller");
+	    try {
+	        System.out.println("======================================");
+	        System.out.println("MDISB1 CONTROLLER STARTED");
+	        System.out.println("Report Date: " + asondate);
+	        System.out.println("======================================");
 
-			BRRS_MDISB1_ReportService.updateDetailFromForm(asondate, allParams);
+	        brrsMDISB1ReportService.updateReport1(asondate, allParams);
 
-			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + e.getMessage());
-		}
+	        return ResponseEntity.ok("MDISB1 Modification Saved Successfully");
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+
+	        return ResponseEntity.badRequest().body(
+	                "Update Failed : " + e.getMessage());
+	    }
 	}
 
 	/*
