@@ -418,6 +418,13 @@ PURPOSE  : BRRSREPORT
 		//    - Maker   (M / MGR)       → show Modify, hide Download
 		//    - Manager (MAN / USR-MAN) → show BOTH Modify + Download
 		// ========================
+		// Same list the backend uses to block a Checker from submitting (isCheckerOnly)
+		function isCheckerRole(roleId) {
+			if (!roleId) return false;
+			const r = String(roleId).trim().toUpperCase();
+			return r === "C" || r === "CHECKER" || r === "ADM-C" || r === "USR-C" || r === "USER-AUDIT";
+		}
+
 		function Maker_Checker_Function() {
 		    $.ajax({
 		        url: "/BRRS/getUserRole",
@@ -426,9 +433,11 @@ PURPOSE  : BRRSREPORT
 		            console.log("User Role ID:", roleId);
 
 		            // ✅ Checker → hide Modify, show Download
-		            if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+		            if (isCheckerRole(roleId)) {
 		                const modifyBtn = document.getElementById("addRecord");
 		                if (modifyBtn) modifyBtn.style.display = "none";
+		                // Maker-Checker: a Checker only verifies from the Audit screen
+		                $("#submitButton, #cancelRecord").hide();
 		                $(".download-btn, .PDF-download-menu").show();
 		            }
 		            // ✅ Maker → show Modify, hide Download (MGR = Maker)
@@ -794,6 +803,13 @@ PURPOSE  : BRRSREPORT
 	<script>
 		function showmodify(btn) {
 
+			// Remember what each cell held when editing started, so that on submit only the
+			// cells the Maker really changed are sent (the screen shows "0" for empty cells
+			// and rounds amounts, so posting every cell would create false changes).
+			$("#fileupload input.Show_input").not(".nonEditable").each(function () {
+				$(this).attr("data-original", $(this).val() === null ? "" : String($(this).val()));
+			});
+
 			// Enable editable fields
 			$(".Show_input").not(".nonEditable")
 				.removeAttr("readonly")
@@ -861,32 +877,63 @@ function fileuploads(btn) {
     $('#loader').modal('show');
 
     try {
-        // ✅ Step 1: Calculate totals (Custom logic if any)
-
-        // ✅ Step 2: Remove commas from all text inputs
-        $("#fileupload input[type='text']").each(function () {
-            $(this).val($(this).val().replace(/,/g, ''));
-        });
-
-        // ✅ Step 3: Validate form
+        // ✅ Step 1: Validate form
         if (!$("#fileupload").valid()) {
             $('#loader').modal('hide');
             return;
         }
 
-        // ✅ Step 4: Build FormData
+        // ✅ Step 2: Build FormData with ONLY the cells the Maker changed.
+        // Untouched cells are left out; the backend treats a missing cell as "no change".
         const formData = new FormData();
         formData.append("asondate", asondate);
         formData.append("type", type); // Sent to Spring controller
 
+        let changedCount = 0;
+        let invalidField = null;
+
         $('#fileupload').find(':input').each(function () {
             const name = $(this).attr('id'); // Ensure elements have matching 'id' attributes or use 'name'
-            if (name) {
-                formData.append(name, $(this).val());
+            const original = $(this).attr('data-original');
+
+            // only editable manual cells (put into edit mode) are candidates
+            if (!name || original === undefined) {
+                return;
             }
+
+            // amounts: commas are display-only
+            const value = String($(this).val() === null ? "" : $(this).val()).replace(/,/g, '').trim();
+            const before = original.replace(/,/g, '').trim();
+
+            if (value === before) {
+                return;
+            }
+            if (!/^-?\d+(\.\d+)?$/.test(value)) {
+                invalidField = name;
+                return;
+            }
+
+            changedCount++;
+            formData.append(name, value);
         });
 
-        // ✅ Step 5: AJAX submission
+        if (invalidField) {
+            $('#loader').modal('hide');
+            $("#resultModalLabel").text("Information");
+            $("#resultModalBody").text("Please enter a valid number for " + invalidField.toUpperCase() + ".");
+            $("#resultModal").modal("show");
+            return;
+        }
+
+        if (changedCount === 0) {
+            $('#loader').modal('hide');
+            $("#resultModalLabel").text("Information");
+            $("#resultModalBody").text("No changes were made.");
+            $("#resultModal").modal("show");
+            return;
+        }
+
+        // ✅ Step 3: AJAX submission
         $.ajax({
             url: './ADISB1updateAll',
             type: 'POST',
@@ -894,15 +941,27 @@ function fileuploads(btn) {
             processData: false,
             contentType: false,
             dataType: 'text',
-            success: function () {
-                $("#resultModalLabel").text("BRRS");
-                $("#resultModalBody").text("Updated Successfully.");
+
+            // Backend answers (Maker-Checker):
+            //   "Modification saved. Pending Checker verification."  -> saved to the MOD table
+            //   "No changes were made."                              -> nothing submitted
+            //   RESUB                                                -> direct update message
+            success: function (response) {
+                const msg = (response && response.trim()) ? response.trim() : "Modification saved. Pending Checker verification.";
+                const noChange = msg.toLowerCase().indexOf("no changes") !== -1;
+
+                $("#resultModalLabel").text(noChange ? "Information" : "BRRS");
+                $("#resultModalBody").text(msg);
                 $("#resultModal").modal("show");
             },
             error: function (jqXHR) {
                 console.error("Error response:", jqXHR.responseText);
+
+                // 403 -> Checker is not allowed to modify; 500 -> "Update Failed : <reason>"
+                const serverMsg = jqXHR.responseText && jqXHR.responseText.length < 300 ? jqXHR.responseText : "";
+
                 $("#resultModalLabel").text("Error");
-                $("#resultModalBody").text("Update failed. Check console for details.");
+                $("#resultModalBody").text(serverMsg || "Update failed. Check console for details.");
                 $("#resultModal").modal("show");
             },
             complete: function () {

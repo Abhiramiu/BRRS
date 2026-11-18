@@ -2248,7 +2248,7 @@ public class BRRS_ADISB1_ReportService {
 	}
 
 	@Transactional
-	public void updateReport(Object entity, String type) {
+	public void updateReportDirect(Object entity, String type) {
 
 		boolean isResub = "RESUB".equalsIgnoreCase(type);
 
@@ -2377,6 +2377,168 @@ public class BRRS_ADISB1_ReportService {
 			System.err.println("ROOT CAUSE : " + root.getMessage());
 
 			throw new RuntimeException("Error while updating ADISB1 Manual fields for type: " + type, e);
+		}
+	}
+
+	// ===========================================================
+	// MAKER-CHECKER : ADISB1 manual entry
+	// ===========================================================
+	// NORMAL type -> writes ONLY to the MOD table (MODIFY_FLG='Y') and logs one
+	// MODIFY audit row. The live manual table is untouched until the Checker
+	// verifies (see AuditService.transferADISB1Data).
+	// RESUB type  -> unchanged behaviour (direct update, see updateReportDirect).
+	// Returns false when nothing actually changed (no MOD write, no audit).
+
+	public static final String ADISB1_LIVE_TABLE = "BRRS_ADISB1_MANUAL_SUMMARYTABLE";
+	public static final String ADISB1_MOD_TABLE = "BRRS_ADISB1_MOD_SUMMARYTABLE_MANUAL";
+
+	@Transactional
+	public boolean updateReport(Object entity, String type) {
+
+		if ("RESUB".equalsIgnoreCase(type)) {
+			updateReportDirect(entity, type);
+			return true;
+		}
+		return submitADISB1ForChecker(entity);
+	}
+
+	private boolean submitADISB1ForChecker(Object entity) {
+
+		System.out.println("Came to ADISB1 Maker submit (NORMAL)");
+
+		try {
+			Class<?> entityClass = entity.getClass();
+
+			Object reportDateObj = entityClass.getMethod("getReport_date").invoke(entity);
+			if (reportDateObj == null) {
+				throw new IllegalStateException("Report Date is NULL");
+			}
+			Date reportDate = (Date) reportDateObj;
+			java.sql.Date sqlReportDate = new java.sql.Date(reportDate.getTime());
+			String showDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+
+			// 1. Current LIVE row (what the screen is showing)
+			List<java.util.Map<String, Object>> liveRows = jdbcTemplate.queryForList(
+					"SELECT * FROM " + ADISB1_LIVE_TABLE + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", sqlReportDate);
+			if (liveRows.isEmpty()) {
+				throw new IllegalStateException(
+						"No record found in " + ADISB1_LIVE_TABLE + " for report date " + showDate);
+			}
+			java.util.Map<String, Object> live = liveRows.get(0);
+
+			// 2. Compare every manual cell. The MOD row keeps the Maker's value where
+			// it changed, otherwise the live value, so the Checker's copy back is complete.
+			List<String> colNames = new ArrayList<>();
+			List<Object> colValues = new ArrayList<>();
+			StringBuilder changes = new StringBuilder();
+
+			for (int r : AuditService.ADISB1_ROWS) {
+				for (String col : AuditService.ADISB1_COLS) {
+
+					String columnName = "R" + r + "_" + col;
+					Object liveVal = live.get(columnName);
+					Object storeVal = liveVal;
+
+					BigDecimal newVal = adisb1ToDecimal(adisb1Get(entity, "getR" + r + "_" + col.toLowerCase()));
+
+					// null input = untouched cell (same rule as before)
+					if (newVal != null && !adisb1Same(liveVal, newVal)) {
+						if (changes.length() > 0) {
+							changes.append("|||");
+						}
+						changes.append(columnName).append(": OldValue: ")
+								.append(liveVal == null ? "null" : liveVal.toString().trim())
+								.append(", NewValue: ").append(newVal.toPlainString());
+						storeVal = newVal;
+					}
+
+					colNames.add(columnName);
+					colValues.add(storeVal);
+				}
+			}
+
+			if (changes.length() == 0) {
+				System.out.println("ADISB1: no changes detected, nothing submitted.");
+				return false;
+			}
+
+			Object[] meta = { live.get("REPORT_VERSION"), live.get("REPORT_FREQUENCY"), live.get("REPORT_CODE"),
+					live.get("REPORT_DESC"), live.get("DEL_FLG") };
+
+			// 3) Update the pending/old MOD row for this report date (ONE row per date)
+			StringBuilder setSql = new StringBuilder();
+			for (String c : colNames) {
+				setSql.append(c).append(" = ?, ");
+			}
+			setSql.append("REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, REPORT_DESC = ?, ")
+					.append("DEL_FLG = ?, ENTITY_FLG = 'N', MODIFY_FLG = 'Y' ");
+
+			List<Object> updArgs = new ArrayList<>(colValues);
+			java.util.Collections.addAll(updArgs, meta);
+			updArgs.add(sqlReportDate);
+
+			int updated = jdbcTemplate.update(
+					"UPDATE " + ADISB1_MOD_TABLE + " SET " + setSql + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+					updArgs.toArray());
+
+			// 4) Otherwise insert it
+			if (updated == 0) {
+				StringBuilder cols = new StringBuilder();
+				StringBuilder marks = new StringBuilder();
+				for (String c : colNames) {
+					cols.append(c).append(", ");
+					marks.append("?, ");
+				}
+
+				List<Object> insArgs = new ArrayList<>(colValues);
+				insArgs.add(sqlReportDate);
+				java.util.Collections.addAll(insArgs, meta);
+
+				jdbcTemplate.update("INSERT INTO " + ADISB1_MOD_TABLE + " (" + cols
+						+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+						+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG) VALUES (" + marks + "?, ?, ?, ?, ?, 'N', 'Y', ?)",
+						insArgs.toArray());
+			}
+
+			// Audit -> shows up in Modify Status for the Checker.
+			// change_details carries the report date (dd-MM-yyyy); the Checker reads it back.
+			auditService.saveModifyAudit(showDate, changes.toString(), "ADISB1 Manual Screen", ADISB1_MOD_TABLE);
+
+			System.out.println("ADISB1 Maker submit completed. Pending Checker verification.");
+			return true;
+
+		} catch (Exception e) {
+			System.err.println("===== ADISB1 MAKER SUBMIT ERROR =====");
+			e.printStackTrace();
+			throw new RuntimeException("Error while submitting ADISB1 Manual fields for Checker", e);
+		}
+	}
+
+	private Object adisb1Get(Object entity, String getterName) throws Exception {
+		try {
+			return entity.getClass().getMethod(getterName).invoke(entity);
+		} catch (NoSuchMethodException ex) {
+			System.out.println("Method not found : " + getterName + " - Skipping");
+			return null;
+		}
+	}
+
+	private BigDecimal adisb1ToDecimal(Object o) {
+		if (o == null)
+			return null;
+		if (o instanceof BigDecimal)
+			return (BigDecimal) o;
+		String s = o.toString().trim();
+		return s.isEmpty() ? null : new BigDecimal(s);
+	}
+
+	private boolean adisb1Same(Object liveVal, BigDecimal newVal) {
+		if (liveVal == null)
+			return false;
+		try {
+			return new BigDecimal(liveVal.toString().trim()).compareTo(newVal) == 0;
+		} catch (NumberFormatException e) {
+			return liveVal.toString().trim().equals(newVal.toString().trim());
 		}
 	}
 

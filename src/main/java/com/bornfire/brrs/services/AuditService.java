@@ -1600,6 +1600,8 @@ public class AuditService {
 			transferMTop100BorrowerData(auditRecord);
 		} else if (upperTable.equals("IRRBB_BORROWINGS_MOD_SUMMARYTABLE")) {
 			transferIRRBBBORROWINGSData(auditRecord);
+		} else if (upperTable.equals("BRRS_ADISB1_MOD_SUMMARYTABLE_MANUAL")) {
+			transferADISB1Data(auditRecord);
 		} else {
 			throw new IllegalArgumentException("Verification not configured for table: " + auditTable);
 		}
@@ -7978,6 +7980,83 @@ public class AuditService {
 				System.out.println("⚠ M_TOP_100_BORROWER summary procedure failed: " + e.getMessage());
 			}
 		}
+		
+		// =========================================================
+	// ADISB1 - Checker transfer (MOD -> LIVE manual table)
+	// One row per REPORT_DATE; manual cells are 11 rows x 2 columns.
+	// (R34 is not a manual cell in this report.)
+	// The Maker stores the report date (dd-MM-yyyy) in change_details.
+	// =========================================================
+	public static final int[] ADISB1_ROWS = { 23, 25, 26, 30, 35, 38, 39, 42, 43, 44, 46 };
+
+	public static final String[] ADISB1_COLS = { "TOTAL_NO_OF_ACCT", "TOTAL_VALUE" };
+
+	private void transferADISB1Data(AuditServicesEntity auditRecord) {
+		final String liveTable = "BRRS_ADISB1_MANUAL_SUMMARYTABLE";
+		final String modTable = "BRRS_ADISB1_MOD_SUMMARYTABLE_MANUAL";
+
+		// 1. Report date of THIS audit row
+		java.sql.Date reportDate = null;
+		String raw = auditRecord.getChange_details();
+		if (raw != null && !raw.trim().isEmpty()) {
+			try {
+				reportDate = new java.sql.Date(
+						new java.text.SimpleDateFormat("dd-MM-yyyy").parse(raw.trim()).getTime());
+			} catch (java.text.ParseException ignored) {
+				// legacy / unexpected text -> fall back below
+			}
+		}
+		if (reportDate == null) {
+			try {
+				reportDate = jdbcTemplate.queryForObject(
+						"SELECT MAX(REPORT_DATE) FROM " + modTable + " WHERE MODIFY_FLG = 'Y'", java.sql.Date.class);
+			} catch (Exception ignored) {
+			}
+		}
+		if (reportDate == null) {
+			throw new IllegalStateException("No pending ADISB1 modification available for verification.");
+		}
+		System.out.println("ADISB1 Report Date : " + reportDate);
+
+		// 2. The MOD row for that date must exist
+		Integer modRows = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM " + modTable + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", Integer.class,
+				reportDate);
+		if (modRows == null || modRows == 0) {
+			throw new IllegalStateException("No MOD row found in " + modTable + " for REPORT_DATE = " + reportDate);
+		}
+
+		// 3. LIVE manual table <- MOD (all 22 manual cells)
+		StringBuilder setCols = new StringBuilder();
+		StringBuilder selCols = new StringBuilder();
+		for (int r : ADISB1_ROWS) {
+			for (String c : ADISB1_COLS) {
+				if (setCols.length() > 0) {
+					setCols.append(", ");
+					selCols.append(", ");
+				}
+				setCols.append("R").append(r).append("_").append(c);
+				selCols.append("S.R").append(r).append("_").append(c);
+			}
+		}
+
+		String updateSql = "UPDATE " + liveTable + " M SET (" + setCols + ") = (SELECT " + selCols + " FROM "
+				+ modTable + " S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int updated = jdbcTemplate.update(updateSql, reportDate);
+		if (updated == 0) {
+			throw new IllegalStateException(
+					"ADISB1 live record not found in " + liveTable + " for date : " + reportDate);
+		}
+		System.out.println("ADISB1 Live Table Updated : " + updated);
+
+		// 4. Mark the MOD row as approved
+		int modUpdated = jdbcTemplate.update(
+				"UPDATE " + modTable + " SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				reportDate);
+		System.out.println("ADISB1 MOD Updated : " + modUpdated);
+	}
 
 	private void transferAS11Data(AuditServicesEntity auditRecord) {
 		final String liveTable = "BRRS_AS_11_SUMMARYTABLE1";
