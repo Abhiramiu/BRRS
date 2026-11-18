@@ -102,6 +102,7 @@ public class BFDB_Services {
 	                                   String username) {
 
 	   // logger.info("Starting BFDB upload job: {}", jobId);
+		System.out.println("Processing the DB File Upload");
 
 	    try {
 	        String resultMsg = processBFDBFile(file, userid, username);
@@ -253,6 +254,15 @@ public class BFDB_Services {
 
 	            	java.sql.Date reportDate = getCellDateSafe(row, 24, formatter, evaluator);
 
+	            	// Check whether ACCOUNT_NO is in scientific (E) notation
+	            	if (accountNo != null && accountNo.trim().matches(
+	            	        "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[eE][+-]?\\d+$")) {
+
+	            	    return "Invalid Account Number at Excel Row "
+	            	            + (row.getRowNum() + 1) + ": " + accountNo
+	            	            + ". Account Number must not be in E-format (Scientific Notation).";
+	            	}
+
 	            	// Skip rows where mandatory values are missing
 	            	if (accountNo == null || accountNo.trim().isEmpty() || reportDate == null) {
 	            	    skippedCount++;
@@ -268,15 +278,22 @@ public class BFDB_Services {
 	            	            + ". Report Date must be the last day of the month.";
 	            	}
 
-	            	// Validation 2: SEGMENT must be uppercase
+	            	// Convert SEGMENT to uppercase
 	            	String segment = getCellStringSafe(row, 19, formatter, evaluator);
 
-	            	if (segment != null && !segment.trim().isEmpty()
-	            	        && !segment.equals(segment.toUpperCase(Locale.ROOT))) {
-	            	    return "Invalid Segment at Excel Row "
-	            	            + (row.getRowNum() + 1) + ": " + segment
-	            	            + ". Segment must be in uppercase.";
+	            	if (segment != null && !segment.trim().isEmpty()) {
+	            	    segment = segment.trim().toUpperCase(Locale.ROOT);
 	            	}
+	            	
+	            	// Validate CCY must not be null or empty
+	            	String ccy = getCellStringSafe(row, 10, formatter, evaluator);
+
+	            	if (ccy == null || ccy.trim().isEmpty()) {
+	            	    return "CCY cannot be empty at Excel Row "
+	            	            + (row.getRowNum() + 1)
+	            	            + ". Please provide a valid CCY value.";
+	            	}
+	            	
 	                // Set current timestamp once for all time fields
 	                java.sql.Date currentTime = new java.sql.Date(System.currentTimeMillis());
 
@@ -349,7 +366,7 @@ public class BFDB_Services {
 	                stmtBFDB.setString(++col, getCellStringSafe(row, 16, formatter, evaluator));      // GL_SUB_HEAD_CODE
 	                stmtBFDB.setString(++col, getCellStringSafe(row, 17, formatter, evaluator));      // GL_SUB_HEAD_DESC
 	                stmtBFDB.setString(++col, getCellStringSafe(row, 18, formatter, evaluator));      // TYPE_OF_ACCOUNTS
-	                stmtBFDB.setString(++col, getCellStringSafe(row, 19, formatter, evaluator));      // SEGMENT
+	                stmtBFDB.setString(++col, segment); // SEGMENT     
 	                stmtBFDB.setString(++col, getCellStringSafe(row, 20, formatter, evaluator));      // PERIOD
 	                stmtBFDB.setBigDecimal(++col, getCellDecimalSafe(row, 21, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
 	                stmtBFDB.setString(++col, getCellStringSafe(row, 22, formatter, evaluator));      // SMME
@@ -394,7 +411,7 @@ public class BFDB_Services {
 	                stmtMaster.setString(++col, getCellStringSafe(row, 16, formatter, evaluator));   // GL_SUB_HEAD_CODE
 	                stmtMaster.setString(++col, getCellStringSafe(row, 17, formatter, evaluator));   // GL_SUB_HEAD_DESC
 	                stmtMaster.setString(++col, getCellStringSafe(row, 18, formatter, evaluator));   // TYPE_OF_ACCOUNTS
-	                stmtMaster.setString(++col, getCellStringSafe(row, 19, formatter, evaluator));   // SEGMENT
+	                stmtMaster.setString(++col, segment); // SEGMENT   
 	                stmtMaster.setString(++col, getCellStringSafe(row, 20, formatter, evaluator));   // PERIOD
 	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 21, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
 	                stmtMaster.setString(++col, getCellStringSafe(row, 22, formatter, evaluator));   // SMME
@@ -439,7 +456,7 @@ public class BFDB_Services {
 	                stmtMasterSrc.setString(++col, getCellStringSafe(row, 16, formatter, evaluator));   // GL_SUB_HEAD_CODE
 	                stmtMasterSrc.setString(++col, getCellStringSafe(row, 17, formatter, evaluator));   // GL_SUB_HEAD_DESC
 	                stmtMasterSrc.setString(++col, getCellStringSafe(row, 18, formatter, evaluator));   // TYPE_OF_ACCOUNTS
-	                stmtMasterSrc.setString(++col, getCellStringSafe(row, 19, formatter, evaluator));   // SEGMENT
+	                stmtMasterSrc.setString(++col, segment); // SEGMENT
 	                stmtMasterSrc.setString(++col, getCellStringSafe(row, 20, formatter, evaluator));   // PERIOD
 	                stmtMasterSrc.setBigDecimal(++col, getCellDecimalSafe(row, 21, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
 	                stmtMasterSrc.setString(++col, getCellStringSafe(row, 22, formatter, evaluator));   // SMME

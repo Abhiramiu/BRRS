@@ -1313,6 +1313,7 @@
 </script>
 <script>
 	function submitFileUpload(uploadType, formId, branchId, fileId, startUrl, checkUrl) {
+		alert("Called");
 		const displayName = getUploadDisplayName(uploadType);
 		const requiredFields = ["#" + fileId];
 		const isValid = validateFields(requiredFields);
