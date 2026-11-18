@@ -44,6 +44,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
@@ -491,6 +492,9 @@ public class BRRS_FORMAT_II_ReportService {
 	// =========================================================
 	// Update summary (manual fields: R21_AMT and R25_AMT_SUB_DEL)
 	// =========================================================
+	private static final String F2_LIVE_TABLE = "BRRS_FORMAT_II_SUMMARYTABLE";
+	private static final String F2_MOD_TABLE  = "BRRS_FORMAT_II_MOD_SUMMARYTABLE";
+
 	@Transactional
 	public ResponseEntity<?> updateReport(FORMAT_II_Summary_Entity updatedEntity) {
 		return updateReport(updatedEntity, null, null, null);
@@ -508,8 +512,8 @@ public class BRRS_FORMAT_II_ReportService {
 			java.sql.Date sqlDate = new java.sql.Date(reportDate.getTime());
 			String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
 
-			System.out.println("Updating FORMAT_II Summary: type=" + type + ", version=" + version + ", entry="
-					+ entry + ", date=" + formattedDate);
+			System.out.println("Updating FORMAT_II Summary: type=" + type + ", version=" + version + ", entry=" + entry
+					+ ", date=" + formattedDate);
 
 			// =========================================
 			// FETCH EXISTING RECORD
@@ -618,7 +622,6 @@ public class BRRS_FORMAT_II_ReportService {
 
 						String columnsPart = summaryColumns();
 
-						// Copy base archival row to live summary
 						String copyToLiveSql = "INSERT INTO BRRS_FORMAT_II_SUMMARYTABLE (" + columnsPart
 								+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
 								+ "SELECT " + columnsPart
@@ -626,7 +629,6 @@ public class BRRS_FORMAT_II_ReportService {
 								+ "FROM BRRS_FORMAT_II_ARCHIVALTABLE_SUMMARY WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
 						jdbcTemplate.update(copyToLiveSql, sqlDate, ver);
 
-						// Apply modified manual values so the procedure uses them
 						jdbcTemplate.update(
 								"UPDATE BRRS_FORMAT_II_SUMMARYTABLE SET R21_AMT=?, R25_AMT_SUB_DEL=? WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
 								existing.getR21_amt(), existing.getR25_amt_sub_del(), sqlDate);
@@ -641,7 +643,6 @@ public class BRRS_FORMAT_II_ReportService {
 						return ResponseEntity.ok("Record updated and Report Regenerated successfully!");
 
 					} else {
-						// MODIFY ONLY: update current version in archival summary
 						jdbcTemplate.update(
 								"UPDATE BRRS_FORMAT_II_ARCHIVALTABLE_SUMMARY SET R21_AMT=?, R25_AMT_SUB_DEL=? "
 										+ "WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND REPORT_VERSION=?",
@@ -655,19 +656,20 @@ public class BRRS_FORMAT_II_ReportService {
 					}
 
 				} else {
-					jdbcTemplate.update(
-							"UPDATE BRRS_FORMAT_II_SUMMARYTABLE SET R21_AMT=?, R25_AMT_SUB_DEL=?, "
-									+ "REPORT_VERSION=?, REPORT_FREQUENCY=?, REPORT_CODE=?, REPORT_DESC=?, ENTITY_FLG=?, MODIFY_FLG=?, DEL_FLG=? "
-									+ "WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
-							existing.getR21_amt(), existing.getR25_amt_sub_del(), existing.getReport_version(),
-							existing.getReport_frequency(), existing.getReport_code(), existing.getReport_desc(),
-							existing.getEntity_flg(), existing.getModify_flg(), existing.getDel_flg(), sqlDate);
+					// 🔹 Set Maker-Checker Flags
+					existing.setEntity_flg("Y");
+					existing.setModify_flg("Y");
+					existing.setDel_flg("N");
 
+					// 🔹 Save into MOD Summary Table for Checker Approval
+					saveModSummaryEntity(existing);
+					System.out.println("✔ Record saved into " + F2_MOD_TABLE + " for Checker Approval");
+
+					// 🔹 Log Audit Trail
 					auditService.compareEntitiesmanual(oldcopy, existing, reportDate.toString(),
-							"FORMAT II Summary Screen", "BRRS_FORMAT_II_SUMMARYTABLE");
+							"FORMAT II Summary Screen", F2_MOD_TABLE);
 
-					System.out.println("FORMAT_II Summary updated successfully");
-					return ResponseEntity.ok("FORMAT_II Summary updated successfully");
+					return ResponseEntity.ok("FORMAT_II Summary saved for Checker Approval");
 				}
 			} else {
 				if (isResubNoEntry) {
@@ -684,6 +686,53 @@ public class BRRS_FORMAT_II_ReportService {
 		}
 	}
 
+	// Saves into BRRS_FORMAT_II_MOD_SUMMARYTABLE (insert if no row for the date, else update)
+	public void saveModSummaryEntity(FORMAT_II_Summary_Entity e) {
+		java.sql.Date sqlDate = new java.sql.Date(e.getReport_date().getTime());
+
+		Integer count = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM " + F2_MOD_TABLE + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)", Integer.class,
+				sqlDate);
+
+		if (count != null && count > 0) {
+			jdbcTemplate.update("UPDATE " + F2_MOD_TABLE + " SET R21_AMT=?, R25_AMT_SUB_DEL=?, REPORT_VERSION=?, "
+					+ "REPORT_FREQUENCY=?, REPORT_CODE=?, REPORT_DESC=?, ENTITY_FLG=?, MODIFY_FLG=?, DEL_FLG=? "
+					+ "WHERE TRUNC(REPORT_DATE)=TRUNC(?)", e.getR21_amt(), e.getR25_amt_sub_del(),
+					e.getReport_version(), e.getReport_frequency(), e.getReport_code(), e.getReport_desc(),
+					e.getEntity_flg(), e.getModify_flg(), e.getDel_flg(), sqlDate);
+		} else {
+			jdbcTemplate.update("INSERT INTO " + F2_MOD_TABLE + " (REPORT_DATE, R21_AMT, R25_AMT_SUB_DEL, "
+					+ "REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", sqlDate, e.getR21_amt(), e.getR25_amt_sub_del(),
+					e.getReport_version(), e.getReport_frequency(), e.getReport_code(), e.getReport_desc(),
+					e.getEntity_flg(), e.getModify_flg(), e.getDel_flg());
+		}
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		java.sql.Date sqlDate = new java.sql.Date(reportDate.getTime());
+
+		FORMAT_II_Summary_Entity mod = jdbcTemplate.queryForObject(
+				"SELECT * FROM " + F2_MOD_TABLE + " WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND MODIFY_FLG='Y'",
+				new BeanPropertyRowMapper<>(FORMAT_II_Summary_Entity.class), sqlDate);
+
+		// Copy MOD values into the LIVE summary table
+		int updated = jdbcTemplate.update(
+				"UPDATE " + F2_LIVE_TABLE + " SET R21_AMT=?, R25_AMT_SUB_DEL=? WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				mod.getR21_amt(), mod.getR25_amt_sub_del(), sqlDate);
+		if (updated == 0) {
+			jdbcTemplate.update(
+					"INSERT INTO " + F2_LIVE_TABLE + " (REPORT_DATE, R21_AMT, R25_AMT_SUB_DEL) VALUES (?, ?, ?)",
+					sqlDate, mod.getR21_amt(), mod.getR25_amt_sub_del());
+		}
+
+		// Mark modified flag as 'N' (Approved) in the MOD table
+		jdbcTemplate.update("UPDATE " + F2_MOD_TABLE + " SET MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				sqlDate);
+
+		System.out.println("FORMAT_II Checker Approved Successfully");
+	}
 	// =========================================================
 	// View / edit detail page
 	// =========================================================
