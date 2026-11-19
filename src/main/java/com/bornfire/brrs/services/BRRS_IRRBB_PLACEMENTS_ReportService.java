@@ -726,7 +726,10 @@ public class BRRS_IRRBB_PLACEMENTS_ReportService {
 	}
 
 	private static final int PLACEMENTS_NUM_COLS = 17;
-	private static final int PLACEMENTS_FIRST_DATA = 1;
+	// 0-based index of the first DATA row in IRRBB_PLACEMENTS.xlsx.
+	// Template layout: row index 0 = H1 SUBTOTAL, index 1 = column headers, index 2+ = data.
+	// Must be 2 so the header row is preserved and H1 (SUBTOTAL of H3:H12) lines up with the data.
+	private static final int PLACEMENTS_FIRST_DATA = 2;
 
 	private byte[] buildExcel(List<IRRBB_PLACEMENTS_Summary_Entity> data) throws Exception {
 		String templateDir = env.getProperty("output.exportpathtemp");

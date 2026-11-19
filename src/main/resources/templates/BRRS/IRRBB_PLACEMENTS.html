@@ -594,11 +594,7 @@
 							th:if="${resubMode == true and displaymode == 'detail'}"
 							onclick="goToResubSummary()">&#8592; Resub Summary</button>
 
-						<!-- Header Modify placeholder -->
-						<button type="button" class="custom-tab-btn"
-							th:if="${displaymode == 'summary' and archiveMode != true
-						             and (role == 'M' or role == 'MAN' or role == 'MAKER' or role == 'MANAGER' or role == 'ADMIN' or role == 'A' or role == 'B')}" id="addRecord"
-							title="Use the Modify button on each row">Modify</button>
+						<!--/* Header 'Modify' button intentionally removed. Per-row Modify buttons in the table are unchanged. */-->
 
 						<!-- Download split button — live summary -->
 						<div th:if="${displaymode == 'summary' and archiveMode != true and resubMode != true
