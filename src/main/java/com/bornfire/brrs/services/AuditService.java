@@ -1448,6 +1448,8 @@ public class AuditService {
 			transferSFINP1Data(auditRecord);
 		} else if (upperTable.contains("FAS")) {
 			transferFASData(auditRecord);
+		}else if (upperTable.contains("SLS")) {
+			transferSLSData(auditRecord);
 		} else if (upperTable.contains("DEP3")) {
 			transferDEP3Data(auditRecord);
 		} else if (upperTable.contains("Q_STAFF")) {
@@ -8658,6 +8660,55 @@ public class AuditService {
             return val.isEmpty() ? null : val;
         }
         return raw;   // Case (b): whole string is the account number
+    }
+    
+    private void transferSLSData(AuditServicesEntity auditRecord) {
+
+    	// 1. Latest report date in the MOD table
+    	String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_SLS_INPUT_SHT_MOD_SUMMARYTABLE";
+    	java.sql.Date reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+
+    	if (reportDate == null) {
+    		throw new IllegalStateException("No modified SLS record available for verification.");
+    	}
+
+    	System.out.println("SLS Report Date : " + reportDate);
+
+    	// 2. Copy MOD -> MAIN summary table
+
+    	String updateSql =
+    		    "UPDATE BRRS_SLS_INPUT_SHT_SUMMARYTABLE M SET ("
+    		  + " R75_DAY1, R75_DAY2_7, R75_DAY8_14, R75_DAY15_30, R75_DAY31_TO_2M,"
+    		  + " R75_MORE2M_TO_3M, R75_OVER3M_TO_6M, R75_OVER6M_TO_1Y, R75_OVER1Y_TO_3Y,"
+    		  + " R75_OVER3Y_TO_5Y, R75_OVER5Y, R75_TOTAL, ENTITY_FLG, MODIFY_FLG, DEL_FLG"
+    		  + ") = (SELECT S.R75_DAY1, S.R75_DAY2_7, S.R75_DAY8_14, S.R75_DAY15_30, S.R75_DAY31_TO_2M,"
+    		  + "        S.R75_MORE2M_TO_3M, S.R75_OVER3M_TO_6M, S.R75_OVER6M_TO_1Y, S.R75_OVER1Y_TO_3Y,"
+    		  + "        S.R75_OVER3Y_TO_5Y, S.R75_OVER5Y, S.R75_TOTAL, S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG"
+    		  + "   FROM BRRS_SLS_INPUT_SHT_MOD_SUMMARYTABLE S"
+    		  + "  WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) "
+    		  + "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?) "
+    		  + "AND EXISTS (SELECT 1 FROM BRRS_SLS_INPUT_SHT_MOD_SUMMARYTABLE S2 "
+    		  + "             WHERE TRUNC(S2.REPORT_DATE) = TRUNC(M.REPORT_DATE))";
+    	int inserted = jdbcTemplate.update(updateSql, reportDate);
+
+    	if (inserted == 0) {
+    		throw new IllegalStateException("SLS modification record not found for date : " + reportDate);
+    	}
+
+    	System.out.println("SLS Main Updated : " + inserted);
+
+    	// 3. Mark MOD record as verified
+    	String updateModSql = "UPDATE BRRS_SLS_INPUT_SHT_MOD_SUMMARYTABLE "
+    			+ "SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+    	int updated = jdbcTemplate.update(updateModSql, reportDate);
+
+    	System.out.println("SLS MOD Updated : " + updated);
+
+    	// 4. Re-run summary procedure after verification/transfer
+    	String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+    	jdbcTemplate.update("BEGIN BRRS_SLS_INPUT_SHT_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+    	System.out.println("SLS Verification and Procedure Execution Completed Successfully");
     }
 
 }

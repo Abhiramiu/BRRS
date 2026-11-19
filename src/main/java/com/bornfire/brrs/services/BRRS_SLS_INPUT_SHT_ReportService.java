@@ -968,111 +968,125 @@ public class BRRS_SLS_INPUT_SHT_ReportService {
 	// ------------------------------
 	@Transactional
 	public void updateReport(SLS_INPUT_SHT_Summary_Entity updatedEntity) {
-		logger.info("Came to SLS updateReport service");
-		logger.info("Report Date: {}", updatedEntity.getREPORT_DATE());
+	    logger.info("Came to SLS updateReport service");
 
-		// =====================================================
-		// STEP 1 : FETCH RECORD
-		// =====================================================
-		Date reportDate = updatedEntity.getREPORT_DATE();
-		if (reportDate == null) {
-			throw new RuntimeException("REPORT_DATE cannot be null for SLS report update");
-		}
+	    Date reportDate = updatedEntity.getREPORT_DATE();
+	    if (reportDate == null) {
+	        throw new RuntimeException("REPORT_DATE cannot be null for SLS report update");
+	    }
 
-		List<SLS_INPUT_SHT_Summary_Entity> list = jdbcTemplate.query(
-				"SELECT * FROM BRRS_SLS_INPUT_SHT_SUMMARYTABLE WHERE REPORT_DATE = ?",
-				new Object[] { reportDate }, new SLSSummaryRowMapper());
-		if (list.isEmpty()) {
-			throw new RuntimeException("Record not found for REPORT_DATE : " + reportDate);
-		}
-		SLS_INPUT_SHT_Summary_Entity existing = list.get(0);
+	    // 1) Load the CURRENT live record (read only - it is NOT modified)
+	    List<SLS_INPUT_SHT_Summary_Entity> list = jdbcTemplate.query(
+	            "SELECT * FROM BRRS_SLS_INPUT_SHT_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+	            new Object[] { reportDate }, new SLSSummaryRowMapper());
+	    if (list.isEmpty()) {
+	        throw new RuntimeException("Record not found for REPORT_DATE : " + reportDate);
+	    }
+	    SLS_INPUT_SHT_Summary_Entity existing = list.get(0);
 
-		// FIX: Create audit copy of the ORIGINAL database state before applying changes
-		SLS_INPUT_SHT_Summary_Entity oldcopy = new SLS_INPUT_SHT_Summary_Entity();
-		BeanUtils.copyProperties(existing, oldcopy);
+	    // Audit copy of the original state
+	    SLS_INPUT_SHT_Summary_Entity oldcopy = new SLS_INPUT_SHT_Summary_Entity();
+	    BeanUtils.copyProperties(existing, oldcopy);
 
-		// =====================================================
-		// STEP 2 : UPDATE ONLY MANUAL FIELDS
-		// =====================================================
-		String[] manualFields = {
-				"R75_DAY1", "R75_DAY2_7", "R75_DAY8_14", "R75_DAY15_30",
-				"R75_DAY31_TO_2M", "R75_MORE2M_TO_3M", "R75_OVER3M_TO_6M",
-				"R75_OVER6M_TO_1Y", "R75_OVER1Y_TO_3Y", "R75_OVER3Y_TO_5Y", "R75_OVER5Y"
-		};
+	    // 2) Apply manual R75 changes on the in-memory object only
+	    String[] manualFields = { "R75_DAY1", "R75_DAY2_7", "R75_DAY8_14", "R75_DAY15_30", "R75_DAY31_TO_2M",
+	            "R75_MORE2M_TO_3M", "R75_OVER3M_TO_6M", "R75_OVER6M_TO_1Y", "R75_OVER1Y_TO_3Y",
+	            "R75_OVER3Y_TO_5Y", "R75_OVER5Y" };
 
-		for (String field : manualFields) {
-			String getterName = "get" + field;
-			String setterName = "set" + field;
+	    for (String field : manualFields) {
+	        try {
+	            Method getter = SLS_INPUT_SHT_Summary_Entity.class.getMethod("get" + field);
+	            Method setter = SLS_INPUT_SHT_Summary_Entity.class.getMethod("set" + field, getter.getReturnType());
 
-			try {
-				Method getter = SLS_INPUT_SHT_Summary_Entity.class.getMethod(getterName);
-				Method setter = SLS_INPUT_SHT_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+	            Object newValue = getter.invoke(updatedEntity);
+	            Object existingValue = getter.invoke(existing);
 
-				Object newValue = getter.invoke(updatedEntity);
-				Object existingValue = getter.invoke(existing);
+	            String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+	            String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+	            if (currentValStr.equals(newValStr)) {
+	                continue;
+	            }
+	            setter.invoke(existing, newValue);
+	        } catch (Exception e) {
+	            logger.error("Error setting field: {}", field, e);
+	        }
+	    }
 
-				// Normalize nulls vs empty strings to prevent audit bloat
-				String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
-				String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+	    // R75_TOTAL
+	    BigDecimal r75Total = BigDecimal.ZERO;
+	    BigDecimal[] vals = { existing.getR75_DAY1(), existing.getR75_DAY2_7(), existing.getR75_DAY8_14(),
+	            existing.getR75_DAY15_30(), existing.getR75_DAY31_TO_2M(), existing.getR75_MORE2M_TO_3M(),
+	            existing.getR75_OVER3M_TO_6M(), existing.getR75_OVER6M_TO_1Y(), existing.getR75_OVER1Y_TO_3Y(),
+	            existing.getR75_OVER3Y_TO_5Y(), existing.getR75_OVER5Y() };
+	    for (BigDecimal v : vals) {
+	        if (v != null) r75Total = r75Total.add(v);
+	    }
+	    existing.setR75_TOTAL(r75Total);
 
-				if (currentValStr.equals(newValStr)) {
-					continue;
-				}
+	    // 3) Maker-Checker flags
+	    existing.setENTITY_FLG("Y");
+	    existing.setMODIFY_FLG("Y");
+	    existing.setDEL_FLG("N");
 
-				setter.invoke(existing, newValue);
+	    // 4) Save into MOD table for Checker approval (NOT the summary table)
+	    saveModSummaryEntity(existing);
+	    logger.info("SLS record saved into BRRS_SLS_INPUT_SHT_MOD_SUMMARYTABLE for Checker Approval");
 
-			} catch (NoSuchMethodException e) {
-				logger.warn("Method not found for field: {}", field);
-			} catch (Exception e) {
-				logger.error("Error setting field: {}", field, e);
-			}
-		}
+	    // 5) Audit against the MOD table name
+	    try {
+	        String changes = auditService.getChanges(oldcopy, existing);
+	        if (changes != null && !changes.isEmpty()) {
+	            auditService.compareEntitiesmanual(oldcopy, existing, reportDate.toString(),
+	                    "SLS", "BRRS_SLS_INPUT_SHT_MOD_SUMMARYTABLE");
+	        }
+	    } catch (Exception ex) {
+	        logger.warn("Audit log error in SLS updateReport: {}", ex.getMessage());
+	    }
+	}
+	
+	public void saveModSummaryEntity(SLS_INPUT_SHT_Summary_Entity e) {
+	    String sql = "MERGE INTO BRRS_SLS_INPUT_SHT_MOD_SUMMARYTABLE dest "
+	            + "USING (SELECT ? AS report_date FROM dual) src "
+	            + "ON (TRUNC(dest.REPORT_DATE) = TRUNC(src.report_date)) "
+	            + "WHEN MATCHED THEN UPDATE SET "
+	            + " R75_DAY1=?, R75_DAY2_7=?, R75_DAY8_14=?, R75_DAY15_30=?, R75_DAY31_TO_2M=?, "
+	            + " R75_MORE2M_TO_3M=?, R75_OVER3M_TO_6M=?, R75_OVER6M_TO_1Y=?, R75_OVER1Y_TO_3Y=?, "
+	            + " R75_OVER3Y_TO_5Y=?, R75_OVER5Y=?, R75_TOTAL=?, ENTITY_FLG=?, MODIFY_FLG=?, DEL_FLG=? "
+	            + "WHEN NOT MATCHED THEN INSERT (REPORT_DATE, R75_DAY1, R75_DAY2_7, R75_DAY8_14, R75_DAY15_30, "
+	            + " R75_DAY31_TO_2M, R75_MORE2M_TO_3M, R75_OVER3M_TO_6M, R75_OVER6M_TO_1Y, R75_OVER1Y_TO_3Y, "
+	            + " R75_OVER3Y_TO_5Y, R75_OVER5Y, R75_TOTAL, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+	            + "VALUES (?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-		// Calculate R75_TOTAL
-		BigDecimal r75Total = BigDecimal.ZERO;
-		if (existing.getR75_DAY1() != null) r75Total = r75Total.add(existing.getR75_DAY1());
-		if (existing.getR75_DAY2_7() != null) r75Total = r75Total.add(existing.getR75_DAY2_7());
-		if (existing.getR75_DAY8_14() != null) r75Total = r75Total.add(existing.getR75_DAY8_14());
-		if (existing.getR75_DAY15_30() != null) r75Total = r75Total.add(existing.getR75_DAY15_30());
-		if (existing.getR75_DAY31_TO_2M() != null) r75Total = r75Total.add(existing.getR75_DAY31_TO_2M());
-		if (existing.getR75_MORE2M_TO_3M() != null) r75Total = r75Total.add(existing.getR75_MORE2M_TO_3M());
-		if (existing.getR75_OVER3M_TO_6M() != null) r75Total = r75Total.add(existing.getR75_OVER3M_TO_6M());
-		if (existing.getR75_OVER6M_TO_1Y() != null) r75Total = r75Total.add(existing.getR75_OVER6M_TO_1Y());
-		if (existing.getR75_OVER1Y_TO_3Y() != null) r75Total = r75Total.add(existing.getR75_OVER1Y_TO_3Y());
-		if (existing.getR75_OVER3Y_TO_5Y() != null) r75Total = r75Total.add(existing.getR75_OVER3Y_TO_5Y());
-		if (existing.getR75_OVER5Y() != null) r75Total = r75Total.add(existing.getR75_OVER5Y());
-		existing.setR75_TOTAL(r75Total);
+	    jdbcTemplate.update(sql,
+	            // USING
+	            e.getREPORT_DATE(),
+	            // UPDATE
+	            e.getR75_DAY1(), e.getR75_DAY2_7(), e.getR75_DAY8_14(), e.getR75_DAY15_30(),
+	            e.getR75_DAY31_TO_2M(), e.getR75_MORE2M_TO_3M(), e.getR75_OVER3M_TO_6M(),
+	            e.getR75_OVER6M_TO_1Y(), e.getR75_OVER1Y_TO_3Y(), e.getR75_OVER3Y_TO_5Y(),
+	            e.getR75_OVER5Y(), e.getR75_TOTAL(), e.getENTITY_FLG(), e.getMODIFY_FLG(), e.getDEL_FLG(),
+	            // INSERT
+	            e.getREPORT_DATE(),
+	            e.getR75_DAY1(), e.getR75_DAY2_7(), e.getR75_DAY8_14(), e.getR75_DAY15_30(),
+	            e.getR75_DAY31_TO_2M(), e.getR75_MORE2M_TO_3M(), e.getR75_OVER3M_TO_6M(),
+	            e.getR75_OVER6M_TO_1Y(), e.getR75_OVER1Y_TO_3Y(), e.getR75_OVER3Y_TO_5Y(),
+	            e.getR75_OVER5Y(), e.getR75_TOTAL(), e.getENTITY_FLG(), e.getMODIFY_FLG(), e.getDEL_FLG());
+	}
+	
+	@Transactional
+	public void approveReport(Date reportDate) {
+	    jdbcTemplate.update(
+	        "UPDATE BRRS_SLS_INPUT_SHT_SUMMARYTABLE s SET ("
+	        + "R75_DAY1,R75_DAY2_7,R75_DAY8_14,R75_DAY15_30,R75_DAY31_TO_2M,R75_MORE2M_TO_3M,"
+	        + "R75_OVER3M_TO_6M,R75_OVER6M_TO_1Y,R75_OVER1Y_TO_3Y,R75_OVER3Y_TO_5Y,R75_OVER5Y,R75_TOTAL) = "
+	        + "(SELECT R75_DAY1,R75_DAY2_7,R75_DAY8_14,R75_DAY15_30,R75_DAY31_TO_2M,R75_MORE2M_TO_3M,"
+	        + "R75_OVER3M_TO_6M,R75_OVER6M_TO_1Y,R75_OVER1Y_TO_3Y,R75_OVER3Y_TO_5Y,R75_OVER5Y,R75_TOTAL "
+	        + "FROM BRRS_SLS_INPUT_SHT_MOD_SUMMARYTABLE m WHERE TRUNC(m.REPORT_DATE)=TRUNC(?) AND m.MODIFY_FLG='Y') "
+	        + "WHERE TRUNC(s.REPORT_DATE)=TRUNC(?)", reportDate, reportDate);
 
-		// =====================================================
-		// STEP 3 : SAVE SUMMARY TABLE
-		// =====================================================
-		String sql = "UPDATE BRRS_SLS_INPUT_SHT_SUMMARYTABLE SET "
-				+ "R75_DAY1 = ?, R75_DAY2_7 = ?, R75_DAY8_14 = ?, R75_DAY15_30 = ?, "
-				+ "R75_DAY31_TO_2M = ?, R75_MORE2M_TO_3M = ?, R75_OVER3M_TO_6M = ?, R75_OVER6M_TO_1Y = ?, "
-				+ "R75_OVER1Y_TO_3Y = ?, R75_OVER3Y_TO_5Y = ?, R75_OVER5Y = ?, R75_TOTAL = ? "
-				+ "WHERE REPORT_DATE = ?";
-
-		jdbcTemplate.update(sql,
-				existing.getR75_DAY1(), existing.getR75_DAY2_7(), existing.getR75_DAY8_14(), existing.getR75_DAY15_30(),
-				existing.getR75_DAY31_TO_2M(), existing.getR75_MORE2M_TO_3M(), existing.getR75_OVER3M_TO_6M(),
-				existing.getR75_OVER6M_TO_1Y(), existing.getR75_OVER1Y_TO_3Y(), existing.getR75_OVER3Y_TO_5Y(),
-				existing.getR75_OVER5Y(), existing.getR75_TOTAL(),
-				reportDate);
-
-		// =====================================================
-		// STEP 4 : EVALUATE AND LOG AUDIT TRAIL
-		// =====================================================
-		try {
-			String changes = auditService.getChanges(oldcopy, existing);
-			if (changes != null && !changes.isEmpty()) {
-				auditService.compareEntitiesmanual(oldcopy, existing, reportDate.toString(),
-						"SLS Summary Screen", "BRRS_SLS_INPUT_SHT_SUMMARYTABLE");
-			}
-		} catch (Exception ex) {
-			logger.warn("Audit log error in SLS updateReport: {}", ex.getMessage());
-		}
-
-		logger.info("SLS Summary Table updated successfully for date: {}", reportDate);
+	    jdbcTemplate.update(
+	        "UPDATE BRRS_SLS_INPUT_SHT_MOD_SUMMARYTABLE SET MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+	        reportDate);
 	}
 
 	// ==============================
