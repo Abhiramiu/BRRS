@@ -1584,7 +1584,15 @@ public class AuditService {
           System.out.println("MDISB1 CHECKER APPROVAL STARTED");
             transferMDISB1Data(auditRecord);
            System.out.println("MDISB1 CHECKER APPROVAL COMPLETED");
-		} else if (upperTable.contains("MDISB5")) {
+		} else if (upperTable.contains("MDISB2")) {
+	          System.out.println("MDISB2 CHECKER APPROVAL STARTED");
+	            transferMDISB2Data(auditRecord);
+	           System.out.println("MDISB2 CHECKER APPROVAL COMPLETED");
+			}else if (upperTable.contains("MDISB3")) {
+		          System.out.println("MDISB3 CHECKER APPROVAL STARTED");
+		            transferMDISB3Data(auditRecord);
+		           System.out.println("MDISB3 CHECKER APPROVAL COMPLETED");
+				} else if (upperTable.contains("MDISB5")) {
             transferMDISB5Data(auditRecord);
         } else if (upperTable.contains("FORMAT_II")) {
 			transferFORMATIIData(auditRecord);
@@ -1994,6 +2002,7 @@ public class AuditService {
 	
 
 
+
 	// ============================================================
 	// MDISB1 - CHECKER TRANSFER (MOD -> LIVE SUMMARY)
 	// IDENTIFICATION USING REPORT_DATE ONLY
@@ -2043,15 +2052,53 @@ public class AuditService {
 	                new Object[] { reportDate },
 	                Integer.class);
 
-	        if (modCount == null || modCount == 0) {
+	        if (modCount == null || modCount != 1) {
 	            throw new IllegalStateException(
-	                    "No pending MDISB1 MOD record for report date: " + reportDate);
+	                    "Expected one pending MDISB1 MOD record. Found: "
+	                    + modCount);
 	        }
 
 	        System.out.println("Pending MOD Records : " + modCount);
 
 	        // ----------------------------------------------------
-	        // 3. GENERATE COLUMN LIST R7 TO R111
+	        // 3. CHECK LIVE SUMMARY RECORD
+	        // ----------------------------------------------------
+
+	        String liveCheckSql =
+	                "SELECT COUNT(*) " +
+	                "FROM BRRS_MDISB1_SUMMARYTABLE_MANUAL " +
+	                "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+	        Integer liveCount = jdbcTemplate.queryForObject(
+	                liveCheckSql,
+	                new Object[] { reportDate },
+	                Integer.class);
+
+	        if (liveCount == null || liveCount != 1) {
+	            throw new IllegalStateException(
+	                    "Expected one MDISB1 LIVE summary record. Found: "
+	                    + liveCount);
+	        }
+
+	        System.out.println("LIVE SUMMARY RECORD COUNT : " + liveCount);
+
+	        // ----------------------------------------------------
+	        // 4. EXECUTE SUMMARY PROCEDURE FIRST
+	        // ----------------------------------------------------
+
+	        String procedureSql =
+	                "CALL BRRS_MDISB1_SUMMARY_PROCEDURE(?)";
+
+	        jdbcTemplate.update(
+	                procedureSql,
+	                new Object[] {
+	                    new SimpleDateFormat("dd-MM-yyyy").format(reportDate)
+	                });
+
+	        System.out.println("MDISB1 SUMMARY PROCEDURE EXECUTED");
+
+	        // ----------------------------------------------------
+	        // 5. GENERATE COLUMN LIST R7 TO R111
 	        // ----------------------------------------------------
 
 	        StringBuilder targetColumns = new StringBuilder();
@@ -2071,7 +2118,7 @@ public class AuditService {
 	        }
 
 	        // ----------------------------------------------------
-	        // 4. UPDATE LIVE SUMMARY FROM MOD SUMMARY
+	        // 6. UPDATE LIVE SUMMARY FROM MOD SUMMARY
 	        // ----------------------------------------------------
 
 	        String summarySql =
@@ -2096,17 +2143,38 @@ public class AuditService {
 	                reportDate,
 	                reportDate);
 
-	        if (summaryCount == 0) {
+	        if (summaryCount != 1) {
 	            throw new IllegalStateException(
-	                    "No matching live MDISB1 summary row found for report date: "
-	                    + reportDate);
+	                    "MDISB1 LIVE SUMMARY UPDATE FAILED. Rows updated: "
+	                    + summaryCount);
 	        }
 
 	        System.out.println(
 	                "MDISB1 LIVE SUMMARY UPDATED. Rows: " + summaryCount);
 
 	        // ----------------------------------------------------
-	        // 5. UPDATE MOD STATUS AFTER SUCCESSFUL TRANSFER
+	        // 7. VERIFY LIVE SUMMARY RECORD
+	        // ----------------------------------------------------
+
+	        String verifySql =
+	                "SELECT COUNT(*) " +
+	                "FROM BRRS_MDISB1_SUMMARYTABLE_MANUAL " +
+	                "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+	        Integer verifyCount = jdbcTemplate.queryForObject(
+	                verifySql,
+	                new Object[] { reportDate },
+	                Integer.class);
+
+	        if (verifyCount == null || verifyCount != 1) {
+	            throw new IllegalStateException(
+	                    "MDISB1 LIVE SUMMARY VERIFICATION FAILED");
+	        }
+
+	        System.out.println("MDISB1 LIVE SUMMARY VERIFICATION SUCCESS");
+
+	        // ----------------------------------------------------
+	        // 8. RESET MOD STATUS AFTER SUCCESSFUL TRANSFER
 	        // ----------------------------------------------------
 
 	        String statusSql =
@@ -2120,31 +2188,23 @@ public class AuditService {
 	                statusSql,
 	                reportDate);
 
-	        System.out.println(
-	                "MDISB1 MOD STATUS UPDATED: " + statusCount);
+	        if (statusCount != 1) {
+	            throw new IllegalStateException(
+	                    "MDISB1 MOD STATUS UPDATE FAILED. Rows: "
+	                    + statusCount);
+	        }
+
+	        System.out.println("MDISB1 MOD STATUS UPDATED: " + statusCount);
 
 	        // ----------------------------------------------------
-	        // 6. EXECUTE MDISB1 SUMMARY PROCEDURE
-	        // ----------------------------------------------------
-
-	        String procedureSql =
-	                "CALL BRRS_MDISB1_SUMMARY_PROCEDURE(?)";
-
-	        jdbcTemplate.update(
-	                procedureSql,
-	                new Object[] {
-	                    new SimpleDateFormat("dd-MM-yyyy").format(reportDate)
-	                });
-
-	        System.out.println(
-	                "MDISB1 SUMMARY PROCEDURE EXECUTED");
-
-	        // ----------------------------------------------------
-	        // 7. COMPLETED
+	        // 9. COMPLETED
 	        // ----------------------------------------------------
 
 	        System.out.println("======================================");
 	        System.out.println("MDISB1 CHECKER TRANSFER COMPLETED");
+	        System.out.println("REPORT DATE : " + reportDate);
+	        System.out.println("LIVE ROWS UPDATED : " + summaryCount);
+	        System.out.println("MODIFY_FLG : N");
 	        System.out.println("======================================");
 
 	    } catch (Exception e) {
@@ -2157,6 +2217,450 @@ public class AuditService {
 	    }
 	}
 
+	
+	// ----------------------------------------------------
+    // MDISB2
+    // ----------------------------------------------------
+
+
+
+@Transactional
+private void transferMDISB2Data(AuditServicesEntity auditRecord) {
+
+    try {
+
+        System.out.println("======================================");
+        System.out.println("MDISB2 CHECKER TRANSFER STARTED");
+        System.out.println("======================================");
+
+        // ----------------------------------------------------
+        // 1. GET LATEST PENDING REPORT DATE
+        // ----------------------------------------------------
+
+        String dateSql =
+                "SELECT MAX(REPORT_DATE) " +
+                "FROM BRRS_MDISB2_MOD_SUMMARYTABLE_MANUAL " +
+                "WHERE MODIFY_FLG = 'Y' " +
+                "AND DEL_FLG = 'N'";
+
+        java.sql.Date reportDate =
+                jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+
+        if (reportDate == null) {
+            throw new IllegalStateException(
+                    "No pending MDISB2 modification found.");
+        }
+
+        System.out.println("MDISB2 Report Date : " + reportDate);
+
+        // ----------------------------------------------------
+        // 2. CHECK PENDING MOD RECORD
+        // ----------------------------------------------------
+
+        String checkSql =
+                "SELECT COUNT(*) " +
+                "FROM BRRS_MDISB2_MOD_SUMMARYTABLE_MANUAL " +
+                "WHERE TRUNC(REPORT_DATE) = TRUNC(?) " +
+                "AND MODIFY_FLG = 'Y' " +
+                "AND DEL_FLG = 'N'";
+
+        Integer modCount = jdbcTemplate.queryForObject(
+                checkSql,
+                new Object[] { reportDate },
+                Integer.class);
+
+        if (modCount == null || modCount != 1) {
+            throw new IllegalStateException(
+                    "Expected one pending MDISB2 MOD record. Found: "
+                    + modCount);
+        }
+
+        System.out.println("Pending MOD Records : " + modCount);
+
+        // ----------------------------------------------------
+        // 3. CHECK LIVE SUMMARY RECORD
+        // ----------------------------------------------------
+
+        String liveCheckSql =
+                "SELECT COUNT(*) " +
+                "FROM BRRS_MDISB2_SUMMARYTABLE_MANUAL " +
+                "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+        Integer liveCount = jdbcTemplate.queryForObject(
+                liveCheckSql,
+                new Object[] { reportDate },
+                Integer.class);
+
+        if (liveCount == null || liveCount != 1) {
+            throw new IllegalStateException(
+                    "Expected one MDISB2 LIVE summary record. Found: "
+                    + liveCount);
+        }
+
+        System.out.println("LIVE SUMMARY RECORD COUNT : " + liveCount);
+
+        // ----------------------------------------------------
+        // 4. EXECUTE SUMMARY PROCEDURE FIRST
+        // IMPORTANT: PROCEDURE MUST RUN BEFORE MOD TRANSFER
+        // ----------------------------------------------------
+
+        String procedureSql =
+                "CALL BRRS_MDISB2_SUMMARY_PROCEDURE(?)";
+
+        jdbcTemplate.update(
+                procedureSql,
+                new Object[] {
+                    new SimpleDateFormat("dd-MM-yyyy").format(reportDate)
+                });
+
+        System.out.println(
+                "MDISB2 SUMMARY PROCEDURE EXECUTED");
+
+        // ----------------------------------------------------
+        // 5. GENERATE COLUMN LIST R7 TO R111
+        // ----------------------------------------------------
+
+        StringBuilder targetColumns = new StringBuilder();
+        StringBuilder sourceColumns = new StringBuilder();
+
+        for (int i = 7; i <= 111; i++) {
+
+            String column = "R" + i + "_TOTAL_DEPOSIT_EXCEED";
+
+            if (i > 7) {
+                targetColumns.append(", ");
+                sourceColumns.append(", ");
+            }
+
+            targetColumns.append(column);
+            sourceColumns.append("M.").append(column);
+        }
+
+        // ----------------------------------------------------
+        // 6. TRANSFER MOD DATA INTO LIVE SUMMARY
+        // ----------------------------------------------------
+
+        String summarySql =
+                "UPDATE BRRS_MDISB2_SUMMARYTABLE_MANUAL L " +
+                "SET (" + targetColumns.toString() + ") = ( " +
+                "    SELECT " + sourceColumns.toString() +
+                "    FROM BRRS_MDISB2_MOD_SUMMARYTABLE_MANUAL M " +
+                "    WHERE TRUNC(M.REPORT_DATE) = TRUNC(?) " +
+                "    AND M.MODIFY_FLG = 'Y' " +
+                "    AND M.DEL_FLG = 'N' " +
+                ") " +
+                "WHERE TRUNC(L.REPORT_DATE) = TRUNC(?) " +
+                "AND EXISTS ( " +
+                "    SELECT 1 " +
+                "    FROM BRRS_MDISB2_MOD_SUMMARYTABLE_MANUAL M " +
+                "    WHERE TRUNC(M.REPORT_DATE) = TRUNC(?) " +
+                "    AND M.MODIFY_FLG = 'Y' " +
+                "    AND M.DEL_FLG = 'N' " +
+                ")";
+
+        int summaryCount = jdbcTemplate.update(
+                summarySql,
+                reportDate,
+                reportDate,
+                reportDate);
+
+        if (summaryCount != 1) {
+            throw new IllegalStateException(
+                    "MDISB2 LIVE SUMMARY UPDATE FAILED. Rows updated: "
+                    + summaryCount);
+        }
+
+        System.out.println(
+                "MDISB2 LIVE SUMMARY UPDATED. Rows: " + summaryCount);
+
+        // ----------------------------------------------------
+        // 7. VERIFY LIVE SUMMARY DATA
+        // ----------------------------------------------------
+
+        String verifyLiveSql =
+                "SELECT COUNT(*) " +
+                "FROM BRRS_MDISB2_SUMMARYTABLE_MANUAL " +
+                "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+        Integer verifyLiveCount = jdbcTemplate.queryForObject(
+                verifyLiveSql,
+                new Object[] { reportDate },
+                Integer.class);
+
+        if (verifyLiveCount == null || verifyLiveCount != 1) {
+            throw new IllegalStateException(
+                    "MDISB2 LIVE SUMMARY VERIFICATION FAILED");
+        }
+
+        System.out.println("MDISB2 LIVE SUMMARY VERIFICATION SUCCESS");
+
+        // ----------------------------------------------------
+        // 8. RESET MOD STATUS ONLY AFTER SUCCESSFUL TRANSFER
+        // ----------------------------------------------------
+
+        String statusSql =
+                "UPDATE BRRS_MDISB2_MOD_SUMMARYTABLE_MANUAL " +
+                "SET ENTITY_FLG = 'Y', " +
+                "MODIFY_FLG = 'N' " +
+                "WHERE TRUNC(REPORT_DATE) = TRUNC(?) " +
+                "AND MODIFY_FLG = 'Y' " +
+                "AND DEL_FLG = 'N'";
+
+        int statusCount = jdbcTemplate.update(
+                statusSql,
+                reportDate);
+
+        if (statusCount != 1) {
+            throw new IllegalStateException(
+                    "MDISB2 MOD STATUS UPDATE FAILED. Rows: "
+                    + statusCount);
+        }
+
+        System.out.println(
+                "MDISB2 MOD STATUS UPDATED: " + statusCount);
+
+        // ----------------------------------------------------
+        // 9. COMPLETED
+        // ----------------------------------------------------
+
+        System.out.println("======================================");
+        System.out.println("MDISB2 CHECKER TRANSFER COMPLETED");
+        System.out.println("REPORT DATE : " + reportDate);
+        System.out.println("LIVE ROWS UPDATED : " + summaryCount);
+        System.out.println("MOD FLAG RESET : N");
+        System.out.println("======================================");
+
+    } catch (Exception e) {
+
+        e.printStackTrace();
+
+        throw new RuntimeException(
+                "Failed to verify and transfer MDISB2 report",
+                e);
+    }
+}
+
+//----------------------------------------------------
+// MDISB3
+// ----------------------------------------------------
+
+
+
+@Transactional
+private void transferMDISB3Data(AuditServicesEntity auditRecord) {
+
+try {
+
+    System.out.println("======================================");
+    System.out.println("MDISB3 CHECKER TRANSFER STARTED");
+    System.out.println("======================================");
+
+    // ----------------------------------------------------
+    // 1. GET LATEST PENDING REPORT DATE
+    // ----------------------------------------------------
+
+    String dateSql =
+            "SELECT MAX(REPORT_DATE) " +
+            "FROM BRRS_MDISB3_MOD_SUMMARYTABLE_MANUAL " +
+            "WHERE MODIFY_FLG = 'Y' " +
+            "AND DEL_FLG = 'N'";
+
+    java.sql.Date reportDate =
+            jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+
+    if (reportDate == null) {
+        throw new IllegalStateException(
+                "No pending MDISB3 modification found.");
+    }
+
+    System.out.println("MDISB3 Report Date : " + reportDate);
+
+    // ----------------------------------------------------
+    // 2. CHECK PENDING MOD RECORD
+    // ----------------------------------------------------
+
+    String checkSql =
+            "SELECT COUNT(*) " +
+            "FROM BRRS_MDISB3_MOD_SUMMARYTABLE_MANUAL " +
+            "WHERE TRUNC(REPORT_DATE) = TRUNC(?) " +
+            "AND MODIFY_FLG = 'Y' " +
+            "AND DEL_FLG = 'N'";
+
+    Integer modCount = jdbcTemplate.queryForObject(
+            checkSql,
+            new Object[] { reportDate },
+            Integer.class);
+
+    if (modCount == null || modCount != 1) {
+        throw new IllegalStateException(
+                "Expected one pending MDISB3 MOD record. Found: "
+                + modCount);
+    }
+
+    System.out.println("Pending MOD Records : " + modCount);
+
+    // ----------------------------------------------------
+    // 3. CHECK LIVE SUMMARY RECORD
+    // ----------------------------------------------------
+
+    String liveCheckSql =
+            "SELECT COUNT(*) " +
+            "FROM BRRS_MDISB3_SUMMARYTABLE_MANUAL " +
+            "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+    Integer liveCount = jdbcTemplate.queryForObject(
+            liveCheckSql,
+            new Object[] { reportDate },
+            Integer.class);
+
+    if (liveCount == null || liveCount != 1) {
+        throw new IllegalStateException(
+                "Expected one MDISB3 LIVE summary record. Found: "
+                + liveCount);
+    }
+
+    System.out.println("LIVE SUMMARY RECORD COUNT : " + liveCount);
+
+    // ----------------------------------------------------
+    // 4. EXECUTE SUMMARY PROCEDURE FIRST
+    // IMPORTANT: PROCEDURE MUST RUN BEFORE MOD TRANSFER
+    // ----------------------------------------------------
+
+    String procedureSql =
+            "CALL BRRS_MDISB3_SUMMARY_PROCEDURE(?)";
+
+    jdbcTemplate.update(
+            procedureSql,
+            new Object[] {
+                new SimpleDateFormat("dd-MM-yyyy").format(reportDate)
+            });
+
+    System.out.println(
+            "MDISB3 SUMMARY PROCEDURE EXECUTED");
+
+    // ----------------------------------------------------
+    // 5. GENERATE COLUMN LIST R7 TO R111
+    // ----------------------------------------------------
+
+    StringBuilder targetColumns = new StringBuilder();
+    StringBuilder sourceColumns = new StringBuilder();
+
+    for (int i = 7; i <= 111; i++) {
+
+        String column = "R" + i + "_TOTAL_DEPOSIT_EXCEED";
+
+        if (i > 7) {
+            targetColumns.append(", ");
+            sourceColumns.append(", ");
+        }
+
+        targetColumns.append(column);
+        sourceColumns.append("M.").append(column);
+    }
+
+    // ----------------------------------------------------
+    // 6. TRANSFER MOD DATA INTO LIVE SUMMARY
+    // ----------------------------------------------------
+
+    String summarySql =
+            "UPDATE BRRS_MDISB3_SUMMARYTABLE_MANUAL L " +
+            "SET (" + targetColumns.toString() + ") = ( " +
+            "    SELECT " + sourceColumns.toString() +
+            "    FROM BRRS_MDISB3_MOD_SUMMARYTABLE_MANUAL M " +
+            "    WHERE TRUNC(M.REPORT_DATE) = TRUNC(?) " +
+            "    AND M.MODIFY_FLG = 'Y' " +
+            "    AND M.DEL_FLG = 'N' " +
+            ") " +
+            "WHERE TRUNC(L.REPORT_DATE) = TRUNC(?) " +
+            "AND EXISTS ( " +
+            "    SELECT 1 " +
+            "    FROM BRRS_MDISB3_MOD_SUMMARYTABLE_MANUAL M " +
+            "    WHERE TRUNC(M.REPORT_DATE) = TRUNC(?) " +
+            "    AND M.MODIFY_FLG = 'Y' " +
+            "    AND M.DEL_FLG = 'N' " +
+            ")";
+
+    int summaryCount = jdbcTemplate.update(
+            summarySql,
+            reportDate,
+            reportDate,
+            reportDate);
+
+    if (summaryCount != 1) {
+        throw new IllegalStateException(
+                "MDISB3 LIVE SUMMARY UPDATE FAILED. Rows updated: "
+                + summaryCount);
+    }
+
+    System.out.println(
+            "MDISB3 LIVE SUMMARY UPDATED. Rows: " + summaryCount);
+
+    // ----------------------------------------------------
+    // 7. VERIFY LIVE SUMMARY DATA
+    // ----------------------------------------------------
+
+    String verifyLiveSql =
+            "SELECT COUNT(*) " +
+            "FROM BRRS_MDISB3_SUMMARYTABLE_MANUAL " +
+            "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+    Integer verifyLiveCount = jdbcTemplate.queryForObject(
+            verifyLiveSql,
+            new Object[] { reportDate },
+            Integer.class);
+
+    if (verifyLiveCount == null || verifyLiveCount != 1) {
+        throw new IllegalStateException(
+                "MDISB3 LIVE SUMMARY VERIFICATION FAILED");
+    }
+
+    System.out.println("MDISB3 LIVE SUMMARY VERIFICATION SUCCESS");
+
+    // ----------------------------------------------------
+    // 8. RESET MOD STATUS ONLY AFTER SUCCESSFUL TRANSFER
+    // ----------------------------------------------------
+
+    String statusSql =
+            "UPDATE BRRS_MDISB3_MOD_SUMMARYTABLE_MANUAL " +
+            "SET ENTITY_FLG = 'Y', " +
+            "MODIFY_FLG = 'N' " +
+            "WHERE TRUNC(REPORT_DATE) = TRUNC(?) " +
+            "AND MODIFY_FLG = 'Y' " +
+            "AND DEL_FLG = 'N'";
+
+    int statusCount = jdbcTemplate.update(
+            statusSql,
+            reportDate);
+
+    if (statusCount != 1) {
+        throw new IllegalStateException(
+                "MDISB3 MOD STATUS UPDATE FAILED. Rows: "
+                + statusCount);
+    }
+
+    System.out.println(
+            "MDISB3 MOD STATUS UPDATED: " + statusCount);
+
+    // ----------------------------------------------------
+    // 9. COMPLETED
+    // ----------------------------------------------------
+
+    System.out.println("======================================");
+    System.out.println("MDISB3 CHECKER TRANSFER COMPLETED");
+    System.out.println("REPORT DATE : " + reportDate);
+    System.out.println("LIVE ROWS UPDATED : " + summaryCount);
+    System.out.println("MOD FLAG RESET : N");
+    System.out.println("======================================");
+
+} catch (Exception e) {
+
+    e.printStackTrace();
+
+    throw new RuntimeException(
+            "Failed to verify and transfer MDISB3 report",
+            e);
+}
+}
 
 	private BigDecimal sfinp1AbsValue(Object value) {
 		return value == null ? BigDecimal.ZERO : new BigDecimal(value.toString()).abs();
