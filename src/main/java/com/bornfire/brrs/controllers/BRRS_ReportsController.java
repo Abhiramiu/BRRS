@@ -8292,26 +8292,49 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> regenUFCECalculation(@RequestParam("reportid") String reportid,
 			@RequestParam("asondate") String asondate,
-			@RequestParam(value = "todate", required = false) String todate) {
+			@RequestParam(value = "todate", required = false) String todate, HttpServletRequest request) {
 
 		logger.info("UFCE_CALCULATION regenprocedure called — reportid={} asondate={} todate={}", reportid, asondate,
 				todate);
 
 		try {
-			// Normalise asondate → dd-MM-yyyy (the format the procedure expects)
-			String procDate = asondate;
-			try {
-				Date d = BRRS_UFCE_CALCULATION_ReportService.parseFlexibleDate(asondate);
-				if (d != null) {
-					procDate = new SimpleDateFormat("dd-MM-yyyy").format(d);
-				}
-			} catch (Exception ignore) {
-				/* fallback to raw */ }
+			// Regenerate overwrites the calculated block (R6-R8, R27-R33), so it is limited to
+			// Maker / Checker style roles (same role helpers as Modify / Verify).
+			String userid = (String) request.getSession().getAttribute("USERID");
+			String role = userid != null ? userProfileRep.getUserRole(userid) : null;
+			if (!isMaker(role) && !isChecker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Maker/Checker (or MAN/ADMIN) can regenerate UFCE_CALCULATION. Current role: "
+								+ role);
+			}
+
+			// Never call the procedure with a date we could not understand.
+			Date d = BRRS_UFCE_CALCULATION_ReportService.parseFlexibleDate(asondate);
+			if (d == null) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body("Regeneration failed: invalid or missing report date: " + asondate);
+			}
+			// The procedure expects dd-MM-yyyy (same as BRRS_M_FAS / MDISB1 procedures)
+			String procDate = new SimpleDateFormat("dd-MM-yyyy").format(d);
 
 			// Call the PL/SQL procedure
 			jdbcTemplate.update("BEGIN BRRS_UFCE_CALCULATION_SUMMARY_PROCEDURE(?); END;", procDate);
-
 			logger.info("UFCE_CALCULATION regenprocedure completed for {}", procDate);
+
+			// Confirm the procedure really produced the calculation row the screen reads.
+			List<?> produced = BRRS_UFCE_CALCULATION_ReportService.getCalculationSummaryDataByDate(d);
+
+			try {
+				auditService.createBusinessAudit(userid, "REGENERATE", "UFCE Calculation Summary Screen", null,
+						"BRRS_UFCE_CALCULATION_SUMMARYTABLE");
+			} catch (Exception ae) {
+				logger.warn("UFCE_CALCULATION regenerate audit failed (non-fatal): {}", ae.getMessage());
+			}
+
+			if (produced == null || produced.isEmpty()) {
+				return ResponseEntity.ok("Regeneration ran, but no calculation row exists for " + procDate
+						+ ". Please check the source data for this date.");
+			}
 			return ResponseEntity.ok("Regeneration completed successfully.");
 
 		} catch (Exception e) {
@@ -8358,8 +8381,11 @@ public class BRRS_ReportsController {
 					"UFCE_CALCULATION downloadPdf — reportId={} filename={} fromdate={} todate={} type={} version={}",
 					reportId, defaultFilename, fromdate, todate, type, versionDecimal);
 
-			byte[] pdfBytes = regreportServices.getPdfDownloadFile(reportId, defaultFilename, null, fromdate, todate,
-					currency, null, null, dtltype, type, versionDecimal);
+			// Built directly by the UFCE service (a real PDF). The central
+			// regreportServices.getPdfDownloadFile() did not produce a PDF for UFCE_CALCULATION,
+			// which ended in "No PDF data generated" / HTTP 204 (nothing downloaded).
+			byte[] pdfBytes = BRRS_UFCE_CALCULATION_ReportService.getUFCEUploadablePDF(defaultFilename, reportId,
+					fromdate, todate, currency, dtltype, type, versionDecimal, null);
 
 			if (pdfBytes == null || pdfBytes.length == 0) {
 				logger.warn("UFCE_CALCULATION: No PDF data generated");

@@ -1,6 +1,10 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -261,8 +265,19 @@ public class BRRS_UFCE_CALCULATION_ReportService {
 	// CELL + STYLE HELPERS FOR EXCEL EXPORT
 	// =====================================================
 
+	/**
+	 * Writes a value into an Excel cell. If the cell already exists in the template
+	 * its own style (font, border, alignment, number format) is KEPT; the supplied
+	 * style is only a fallback for cells that did not exist. Numbers written into a
+	 * "General" formatted template cell get a #,##0.00 format on top of the
+	 * template's own look.
+	 */
 	private void setCellValue(Row row, int column, Object value, CellStyle style) {
-		Cell cell = row.createCell(column);
+		Cell cell = row.getCell(column);
+		boolean isNew = (cell == null);
+		if (isNew) {
+			cell = row.createCell(column);
+		}
 		if (value == null) {
 			cell.setCellValue("");
 		} else if (value instanceof String) {
@@ -280,8 +295,18 @@ public class BRRS_UFCE_CALCULATION_ReportService {
 		} else {
 			cell.setCellValue(value.toString());
 		}
-		if (style != null)
-			cell.setCellStyle(style);
+
+		if (isNew) {
+			if (style != null)
+				cell.setCellStyle(style);
+		} else if (value instanceof BigDecimal && cell.getCellStyle() != null
+				&& cell.getCellStyle().getDataFormat() == 0) {
+			Workbook wb = row.getSheet().getWorkbook();
+			CellStyle numeric = wb.createCellStyle();
+			numeric.cloneStyleFrom(cell.getCellStyle());
+			numeric.setDataFormat(wb.getCreationHelper().createDataFormat().getFormat("#,##0.00"));
+			cell.setCellStyle(numeric);
+		}
 	}
 
 	private CellStyle createTextStyle(Workbook workbook) {
@@ -1419,6 +1444,111 @@ public class BRRS_UFCE_CALCULATION_ReportService {
 	// SECTION 16: EXCEL EXPORT
 	// =====================================================
 
+	// Template column indexes (0-based, Apache POI). The merged areas in
+	// UFCE_CALCULATION.xlsx are: name B:D, advance E:H, provision I:L and the
+	// calculation amount sits in L (A:J = label, K = code). Values MUST be written
+	// into the FIRST cell of each merged area, otherwise Excel hides them.
+	private static final int XL_COL_NAME = 1; // B  (merged B:D)
+	private static final int XL_COL_ADVANCE = 4; // E  (merged E:H)
+	private static final int XL_COL_PROVISION = 8; // I  (merged I:L)
+	private static final int XL_COL_CALC_VALUE = 11; // L  (A:J label, K code)
+
+	/** R6..R8 and R27..R33 of the report, all taken from ONE source row. */
+	private static final class CalcValues {
+		BigDecimal r6, r7, r8, r27, r28, r29, r30, r31, r32, r33;
+
+		boolean hasCalc() {
+			return r27 != null || r28 != null || r29 != null || r30 != null || r31 != null || r32 != null
+					|| r33 != null;
+		}
+	}
+
+	/** Everything the Excel and the PDF need for one report date/version. */
+	private static final class ReportModel {
+		BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY record; // R10..R22 (manual entry)
+		CalcValues calc; // R6..R8, R27..R33
+	}
+
+	private static <T> T first(List<T> list) {
+		return (list == null || list.isEmpty()) ? null : list.get(0);
+	}
+
+	private Date resolveReportDate(String todate, String fromdate) {
+		Date reportDate = parseDate(todate);
+		if (reportDate == null)
+			reportDate = parseDate(fromdate);
+		if (reportDate == null)
+			reportDate = new Date();
+		return reportDate;
+	}
+
+	/**
+	 * Picks the first candidate row that really carries calculation values
+	 * (R27..R33). The screen reads the calculation SUMMARY table, so it is tried
+	 * first; the DETAIL table is only a fallback.
+	 */
+	private CalcValues pickCalcValues(Object... candidates) {
+		CalcValues firstAny = null;
+		for (Object candidate : candidates) {
+			if (candidate == null)
+				continue;
+			BRRS_UFCE_CALCULATION_DETAILTABLE_ENTITY d = new BRRS_UFCE_CALCULATION_DETAILTABLE_ENTITY();
+			BeanUtils.copyProperties(candidate, d);
+			CalcValues v = new CalcValues();
+			v.r6 = d.getR6_value();
+			v.r7 = d.getR7_value();
+			v.r8 = d.getR8_value();
+			v.r27 = d.getR27_value();
+			v.r28 = d.getR28_value();
+			v.r29 = d.getR29_value();
+			v.r30 = d.getR30_value();
+			v.r31 = d.getR31_value();
+			v.r32 = d.getR32_value();
+			v.r33 = d.getR33_value();
+			if (v.hasCalc())
+				return v;
+			if (firstAny == null)
+				firstAny = v;
+		}
+		return firstAny;
+	}
+
+	private ReportModel loadReportModel(String type, BigDecimal version, Date reportDate) {
+		ReportModel m = new ReportModel();
+
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+			BRRS_UFCE_CALCULATION_ARCHIVAL_SUMMARYTABLE_MANUAL_ENTITY manual = first(
+					getManualEntryArchivalSummaryDataByDate(reportDate, version));
+			if (manual != null) {
+				m.record = new BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY();
+				BeanUtils.copyProperties(manual, m.record);
+			}
+			m.calc = pickCalcValues(first(getCalculationArchivalSummaryDataByDate(reportDate, version)),
+					first(getCalculationArchivalDetailDataByDate(reportDate, version)));
+
+		} else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+			BRRS_UFCE_CALCULATION_ARCHIVAL_SUMMARYTABLE_MANUAL_ENTITY manual = first(
+					getResubManualEntrySummaryDataByDate(reportDate, version));
+			if (manual != null) {
+				m.record = new BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY();
+				BeanUtils.copyProperties(manual, m.record);
+			}
+			m.calc = pickCalcValues(first(getResubCalculationSummaryDataByDate(reportDate, version)),
+					first(getResubCalculationDetailDataByDate(reportDate, version)));
+
+		} else if (version != null) {
+			m.record = first(getManualEntrySummaryDataByDateAndVersion(reportDate, version));
+			m.calc = pickCalcValues(first(getCalculationSummaryDataByDateAndVersion(reportDate, version)),
+					first(getCalculationDetailDataByDateAndVersion(reportDate, version)));
+
+		} else {
+			m.record = first(getManualEntrySummaryDataByDate(reportDate));
+			m.calc = pickCalcValues(first(getCalculationSummaryDataByDate(reportDate)),
+					first(getCalculationDetailDataByDate(reportDate)));
+		}
+		return m;
+	}
+
 	public byte[] getUFCEUploadableExcel(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version, HttpServletRequest req1)
 			throws Exception {
@@ -1426,45 +1556,26 @@ public class BRRS_UFCE_CALCULATION_ReportService {
 				version);
 
 		try {
-			Date reportDate = parseDate(todate);
-			if (reportDate == null)
-				reportDate = parseDate(fromdate);
-			if (reportDate == null)
-				reportDate = new Date();
-
-			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-				List<BRRS_UFCE_CALCULATION_ARCHIVAL_SUMMARYTABLE_MANUAL_ENTITY> archivalData = getManualEntryArchivalSummaryDataByDate(
-						reportDate, version);
-				List<BRRS_UFCE_CALCULATION_DETAIL_ARCHIVALTABLE_ENTITY> archivalDetailData = getCalculationArchivalDetailDataByDate(
-						reportDate, version);
-				return generateUploadableExcelFromArchivalData(archivalData, archivalDetailData, filename, reportDate);
-			} else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-				List<BRRS_UFCE_CALCULATION_ARCHIVAL_SUMMARYTABLE_MANUAL_ENTITY> resubData = getResubManualEntrySummaryDataByDate(
-						reportDate, version);
-				List<BRRS_UFCE_CALCULATION_DETAIL_ARCHIVALTABLE_ENTITY> resubDetailData = getResubCalculationDetailDataByDate(
-						reportDate, version);
-				return generateUploadableExcelFromArchivalData(resubData, resubDetailData, filename, reportDate);
-			} else {
-				List<BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY> summaryData = getManualEntrySummaryDataByDate(
-						reportDate);
-				List<BRRS_UFCE_CALCULATION_DETAILTABLE_ENTITY> detailData = getCalculationDetailDataByDate(reportDate);
-				return generateUploadableExcelFromNormalData(summaryData, detailData, filename, reportDate);
-			}
+			Date reportDate = resolveReportDate(todate, fromdate);
+			ReportModel model = loadReportModel(type, version, reportDate);
+			return generateUploadableExcel(model, filename, reportDate);
 		} catch (Exception e) {
 			logger.error("Error generating uploadable Excel: {}", e.getMessage(), e);
 			throw new RuntimeException("Error generating uploadable Excel: " + e.getMessage(), e);
 		}
 	}
 
-	private byte[] generateUploadableExcelFromNormalData(
-			List<BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY> summaryData,
-			List<BRRS_UFCE_CALCULATION_DETAILTABLE_ENTITY> detailData, String filename, Date reportDate)
-			throws Exception {
+	private byte[] generateUploadableExcel(ReportModel model, String filename, Date reportDate) throws Exception {
 
-		if (summaryData == null || summaryData.isEmpty()) {
-			logger.warn("No summary data found for UFCE report.");
+		if (model.record == null && model.calc == null) {
+			logger.warn("No summary/calculation data found for UFCE report date {}.", reportDate);
 			return new byte[0];
 		}
+		// A report without subsidiaries is valid (all rows blank / 0), so a missing
+		// manual-entry row must not block the download.
+		BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY record = model.record != null ? model.record
+				: new BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY();
+		CalcValues calc = model.calc != null ? model.calc : new CalcValues();
 
 		String templateDir = env.getProperty("output.exportpathtemp");
 		if (templateDir == null || templateDir.trim().isEmpty()) {
@@ -1489,191 +1600,155 @@ public class BRRS_UFCE_CALCULATION_ReportService {
 
 			Sheet sheet = workbook.getSheetAt(0);
 
+			// Fallback styles - used ONLY for cells that do not exist in the template.
+			// Existing template cells keep their own font / border / number format.
 			CellStyle textStyle = createTextStyle(workbook);
 			CellStyle numberStyle = createNumberStyle(workbook);
-			CellStyle totalHeaderStyle = createTotalHeaderStyle(workbook);
 			CellStyle totalNumberStyle = createTotalNumberStyle(workbook);
 
-			BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY record = summaryData.get(0);
+			// Titles carry the report date as text (dd.MM.yyyy) - keep them in step with the data.
+			refreshDateText(sheet, new SimpleDateFormat("dd.MM.yyyy").format(reportDate));
 
-			Row row5 = sheet.getRow(4);
-			if (row5 == null)
-				row5 = sheet.createRow(4);
-			setCellValue(row5, 6, "Rs in Lacs", textStyle);
+			// ---- R5..R8 : Provision for UFCE (value column G, merged G:H) ----
+			setCellValue(getOrCreateRow(sheet, 4), 6, "Rs in Lacs", textStyle);
 
-			Row row6 = sheet.getRow(5);
-			if (row6 == null)
-				row6 = sheet.createRow(5);
-			setCellValue(row6, 6, "NIL", textStyle);
+			BigDecimal r6 = calc.r6;
+			BigDecimal r7 = calc.r7 != null ? calc.r7 : calc.r33;
+			BigDecimal r8 = calc.r8 != null ? calc.r8 : nvl(r6).add(nvl(r7));
+			setCellValue(getOrCreateRow(sheet, 5), 6, (r6 != null && r6.signum() != 0) ? (Object) r6 : "NIL",
+					numberStyle);
+			setCellValue(getOrCreateRow(sheet, 6), 6, nvl(r7), numberStyle);
+			setCellValue(getOrCreateRow(sheet, 7), 6, nvl(r8), numberStyle);
 
-			BigDecimal r33 = (detailData != null && !detailData.isEmpty() && detailData.get(0).getR33_value() != null)
-					? detailData.get(0).getR33_value()
-					: BigDecimal.ZERO;
+			// ---- R10 : header row. Template headers are kept unless the DB holds text ----
+			Row row10 = getOrCreateRow(sheet, 9);
+			setTextIfPresent(row10, 0, record.getR10_serial_no(), textStyle);
+			setTextIfPresent(row10, XL_COL_NAME, record.getR10_subsidiary(), textStyle);
+			setTextIfPresent(row10, XL_COL_ADVANCE, record.getR10_total_adv(), textStyle);
+			setTextIfPresent(row10, XL_COL_PROVISION, record.getR10_provision(), textStyle);
 
-			Row row7 = sheet.getRow(6);
-			if (row7 == null)
-				row7 = sheet.createRow(6);
-			setCellValue(row7, 6, r33, numberStyle);
-
-			Row row8 = sheet.getRow(7);
-			if (row8 == null)
-				row8 = sheet.createRow(7);
-			setCellValue(row8, 6, r33, numberStyle);
-
-			Row row10 = sheet.getRow(9);
-			if (row10 == null)
-				row10 = sheet.createRow(9);
-			setCellValue(row10, 0, nvlStr(record.getR10_serial_no()), textStyle);
-			setCellValue(row10, 1, nvlStr(record.getR10_subsidiary()), textStyle);
-			setCellValue(row10, 4, nvlStr(record.getR10_total_adv()), textStyle);
-			setCellValue(row10, 7, nvlStr(record.getR10_provision()), textStyle);
-
+			// ---- R11..R21 : subsidiary rows (sheet rows 11..21 -> index 10..20) ----
 			int subRow = 10;
-			setSubsidiaryRow(sheet, subRow++, record.getR11_subsidiary(), record.getR11_total_adv(),
-					record.getR11_provision(), textStyle, numberStyle);
-			setSubsidiaryRow(sheet, subRow++, record.getR12_subsidiary(), record.getR12_total_adv(),
-					record.getR12_provision(), textStyle, numberStyle);
-			setSubsidiaryRow(sheet, subRow++, record.getR13_subsidiary(), record.getR13_total_adv(),
-					record.getR13_provision(), textStyle, numberStyle);
-			setSubsidiaryRow(sheet, subRow++, record.getR14_subsidiary(), record.getR14_total_adv(),
-					record.getR14_provision(), textStyle, numberStyle);
-			setSubsidiaryRow(sheet, subRow++, record.getR15_subsidiary(), record.getR15_total_adv(),
-					record.getR15_provision(), textStyle, numberStyle);
-			setSubsidiaryRow(sheet, subRow++, record.getR16_subsidiary(), record.getR16_total_adv(),
-					record.getR16_provision(), textStyle, numberStyle);
-			setSubsidiaryRow(sheet, subRow++, record.getR17_subsidiary(), record.getR17_total_adv(),
-					record.getR17_provision(), textStyle, numberStyle);
-			setSubsidiaryRow(sheet, subRow++, record.getR18_subsidiary(), record.getR18_total_adv(),
-					record.getR18_provision(), textStyle, numberStyle);
-			setSubsidiaryRow(sheet, subRow++, record.getR19_subsidiary(), record.getR19_total_adv(),
-					record.getR19_provision(), textStyle, numberStyle);
-			setSubsidiaryRow(sheet, subRow++, record.getR20_subsidiary(), record.getR20_total_adv(),
-					record.getR20_provision(), textStyle, numberStyle);
-			setSubsidiaryRow(sheet, subRow++, record.getR21_subsidiary(), record.getR21_total_adv(),
-					record.getR21_provision(), textStyle, numberStyle);
+			for (int r = 11; r <= 21; r++) {
+				Row row = getOrCreateRow(sheet, subRow++);
+				setCellValue(row, XL_COL_NAME, ufceManualValue(record, "R" + r + "_SUBSIDIARY"), textStyle);
+				setCellValue(row, XL_COL_ADVANCE, ufceManualValue(record, "R" + r + "_TOTAL_ADV"), numberStyle);
+				setCellValue(row, XL_COL_PROVISION, ufceManualValue(record, "R" + r + "_PROVISION"), numberStyle);
+			}
 
-			Row row22 = sheet.getRow(subRow);
-			if (row22 == null)
-				row22 = sheet.createRow(subRow);
-			setCellValue(row22, 0, "TOTAL", textStyle);
-			setCellValue(row22, 4, nvl(record.getR22_total_adv()), totalNumberStyle);
-			setCellValue(row22, 7, nvl(record.getR22_provision()), totalNumberStyle);
+			// ---- R22 : TOTAL (label "TOTAL" already exists in B22 of the template) ----
+			BigDecimal totAdv = record.getR22_total_adv() != null ? record.getR22_total_adv()
+					: calculateTotalAdvance(record);
+			BigDecimal totProv = record.getR22_provision() != null ? record.getR22_provision()
+					: calculateTotalProvision(record);
+			Row row22 = getOrCreateRow(sheet, subRow); // subRow == 21
+			setCellValue(row22, XL_COL_ADVANCE, nvl(totAdv), totalNumberStyle);
+			setCellValue(row22, XL_COL_PROVISION, nvl(totProv), totalNumberStyle);
 
-			if (detailData != null && !detailData.isEmpty()) {
-				BRRS_UFCE_CALCULATION_DETAILTABLE_ENTITY d = detailData.get(0);
-				int calcRow = 26;
-
-				Row r27 = sheet.getRow(calcRow);
-				if (r27 == null)
-					r27 = sheet.createRow(calcRow);
-				setCellValue(r27, 9, d.getR27_value(), numberStyle);
-
-				Row r28 = sheet.getRow(++calcRow);
-				if (r28 == null)
-					r28 = sheet.createRow(calcRow);
-				setCellValue(r28, 9, d.getR28_value(), numberStyle);
-
-				Row r29 = sheet.getRow(++calcRow);
-				if (r29 == null)
-					r29 = sheet.createRow(calcRow);
-				setCellValue(r29, 9, d.getR29_value(), numberStyle);
-
-				Row r30 = sheet.getRow(++calcRow);
-				if (r30 == null)
-					r30 = sheet.createRow(calcRow);
-				setCellValue(r30, 9, d.getR30_value(), numberStyle);
-
-				Row r31 = sheet.getRow(++calcRow);
-				if (r31 == null)
-					r31 = sheet.createRow(calcRow);
-				setCellValue(r31, 9, d.getR31_value(), numberStyle);
-
-				Row r32 = sheet.getRow(++calcRow);
-				if (r32 == null)
-					r32 = sheet.createRow(calcRow);
-				setCellValue(r32, 9, d.getR32_value(), numberStyle);
-
-				Row r33Row = sheet.getRow(++calcRow);
-				if (r33Row == null)
-					r33Row = sheet.createRow(calcRow);
-				setCellValue(r33Row, 9, d.getR33_value(), numberStyle);
+			// ---- R27..R33 : calculation A..G (amount column L) ----
+			BigDecimal[] calcValues = { calc.r27, calc.r28, calc.r29, calc.r30, calc.r31, calc.r32, calc.r33 };
+			for (int i = 0; i < calcValues.length; i++) {
+				setCellValue(getOrCreateRow(sheet, 26 + i), XL_COL_CALC_VALUE, nvl(calcValues[i]), numberStyle);
 			}
 
 			workbook.setForceFormulaRecalculation(true);
 			workbook.write(out);
 
-			try {
-				ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-				if (attrs != null && auditService != null) {
-					HttpServletRequest request = attrs.getRequest();
-					String userid = (String) request.getSession().getAttribute("USERID");
-					auditService.createBusinessAudit(userid, "DOWNLOAD_UPLOADABLE", "UFCE Uploadable Excel", null,
-							"BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL");
-				}
-			} catch (Exception ae) {
-				logger.warn("Audit logging failed (non-fatal): {}", ae.getMessage());
-			}
+			auditDownload("DOWNLOAD_UPLOADABLE", "UFCE Uploadable Excel");
 
 			logger.info("Uploadable Excel generated successfully ({} bytes).", out.size());
 			return out.toByteArray();
 		}
 	}
 
-	private void setSubsidiaryRow(Sheet sheet, int rowIndex, String name, BigDecimal advance, BigDecimal provision,
-			CellStyle textStyle, CellStyle numberStyle) {
-		Row row = sheet.getRow(rowIndex);
-		if (row == null)
-			row = sheet.createRow(rowIndex);
-		setCellValue(row, 1, nvlStr(name), textStyle);
-		setCellValue(row, 4, nvl(advance), numberStyle);
-		setCellValue(row, 7, nvl(provision), numberStyle);
+	private Row getOrCreateRow(Sheet sheet, int index) {
+		Row row = sheet.getRow(index);
+		return row != null ? row : sheet.createRow(index);
 	}
 
-	private byte[] generateUploadableExcelFromArchivalData(
-			List<BRRS_UFCE_CALCULATION_ARCHIVAL_SUMMARYTABLE_MANUAL_ENTITY> dataList,
-			List<BRRS_UFCE_CALCULATION_DETAIL_ARCHIVALTABLE_ENTITY> detailList, String filename, Date reportDate)
-			throws Exception {
-
-		if (dataList == null || dataList.isEmpty()) {
-			logger.warn("No archival data found for UFCE report.");
-			return new byte[0];
+	/** Writes text only when the DB value is not blank, so template headers survive. */
+	private void setTextIfPresent(Row row, int column, String value, CellStyle style) {
+		if (value != null && !value.trim().isEmpty()) {
+			setCellValue(row, column, value.trim(), style);
 		}
+	}
 
-		List<BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY> convertedList = new ArrayList<>();
-		for (BRRS_UFCE_CALCULATION_ARCHIVAL_SUMMARYTABLE_MANUAL_ENTITY archival : dataList) {
-			BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY normal = new BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY();
-			BeanUtils.copyProperties(archival, normal);
-			convertedList.add(normal);
-		}
-
-		List<BRRS_UFCE_CALCULATION_DETAILTABLE_ENTITY> convertedDetailList = null;
-		if (detailList != null && !detailList.isEmpty()) {
-			convertedDetailList = new ArrayList<>();
-			for (BRRS_UFCE_CALCULATION_DETAIL_ARCHIVALTABLE_ENTITY archivalDetail : detailList) {
-				BRRS_UFCE_CALCULATION_DETAILTABLE_ENTITY normalDetail = new BRRS_UFCE_CALCULATION_DETAILTABLE_ENTITY();
-				BeanUtils.copyProperties(archivalDetail, normalDetail);
-				convertedDetailList.add(normalDetail);
+	/** Replaces any dd.MM.yyyy inside the title cells (A3, A5, A27) with the report date. */
+	private void refreshDateText(Sheet sheet, String dotDate) {
+		int[] rows = { 2, 4, 26 };
+		for (int r : rows) {
+			Row row = sheet.getRow(r);
+			if (row == null)
+				continue;
+			Cell cell = row.getCell(0);
+			if (cell == null)
+				continue;
+			String text;
+			try {
+				text = cell.getStringCellValue();
+			} catch (Exception notText) {
+				continue;
+			}
+			if (text != null && text.matches("(?s).*\\d{2}\\.\\d{2}\\.\\d{4}.*")) {
+				cell.setCellValue(text.replaceAll("\\d{2}\\.\\d{2}\\.\\d{4}", dotDate));
 			}
 		}
+	}
 
-		return generateUploadableExcelFromNormalData(convertedList, convertedDetailList, filename, reportDate);
+	private void auditDownload(String functionCode, String screen) {
+		try {
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null && auditService != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, functionCode, screen, null,
+						"BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL");
+			}
+		} catch (Exception ae) {
+			logger.warn("Audit logging failed (non-fatal): {}", ae.getMessage());
+		}
 	}
 
 	// =====================================================
-	// SECTION 17: PDF (delegates to Excel builder)
+	// SECTION 17: PDF (built directly from the data - no Excel/LibreOffice needed)
 	// =====================================================
 
 	public byte[] getUFCEUploadablePDF(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version, HttpServletRequest req1)
 			throws Exception {
-		logger.info("Service: Starting Uploadable PDF generation process.");
-		byte[] excelBytes = getUFCEUploadableExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
-				version, req1);
-		if (excelBytes == null || excelBytes.length == 0) {
-			throw new RuntimeException("No data available for PDF generation");
+		logger.info("Service: Starting UFCE PDF generation. type={} version={}", type, version);
+
+		Date reportDate = resolveReportDate(todate, fromdate);
+		ReportModel model = loadReportModel(type, version, reportDate);
+		if (model.record == null && model.calc == null) {
+			logger.warn("No summary/calculation data found for UFCE report date {}.", reportDate);
+			return new byte[0];
 		}
-		logger.info("Uploadable Excel bytes ready for PDF conversion ({} bytes).", excelBytes.length);
-		return excelBytes;
+
+		BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY record = model.record != null ? model.record
+				: new BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY();
+		CalcValues calc = model.calc != null ? model.calc : new CalcValues();
+
+		UfcePdfBuilder.Data d = new UfcePdfBuilder.Data();
+		d.dateText = new SimpleDateFormat("dd.MM.yyyy").format(reportDate);
+		d.r6 = calc.r6;
+		d.r7 = calc.r7 != null ? calc.r7 : calc.r33;
+		d.r8 = calc.r8 != null ? calc.r8 : nvl(d.r6).add(nvl(d.r7));
+		for (int i = 0; i < UfcePdfBuilder.SUBSIDIARY_ROWS; i++) {
+			int r = 11 + i;
+			d.names[i] = (String) ufceManualValue(record, "R" + r + "_SUBSIDIARY");
+			d.advance[i] = (BigDecimal) ufceManualValue(record, "R" + r + "_TOTAL_ADV");
+			d.provision[i] = (BigDecimal) ufceManualValue(record, "R" + r + "_PROVISION");
+		}
+		d.totalAdvance = record.getR22_total_adv() != null ? record.getR22_total_adv() : calculateTotalAdvance(record);
+		d.totalProvision = record.getR22_provision() != null ? record.getR22_provision()
+				: calculateTotalProvision(record);
+		d.calc = new BigDecimal[] { calc.r27, calc.r28, calc.r29, calc.r30, calc.r31, calc.r32, calc.r33 };
+
+		byte[] pdf = UfcePdfBuilder.build(d);
+		auditDownload("DOWNLOAD_PDF", "UFCE PDF");
+		logger.info("UFCE PDF generated successfully ({} bytes).", pdf.length);
+		return pdf;
 	}
 
 	// =====================================================
@@ -4844,6 +4919,362 @@ public class BRRS_UFCE_CALCULATION_ReportService {
 			obj.setR33_value(rs.getBigDecimal("R33_VALUE"));
 
 			return obj;
+		}
+	}
+
+	// =====================================================
+	// NESTED: UfcePdfBuilder (plain-JDK PDF writer, used by SECTION 17)
+	// =====================================================
+
+	/**
+	 * Builds the UFCE_CALCULATION PDF with plain JDK code only (no iText / Jasper /
+	 * LibreOffice needed on the server). The layout mirrors the Excel report:
+	 * header, "Provision for UFCE" summary, subsidiary table (11 rows + TOTAL) and
+	 * the A..G calculation block.
+	 *
+	 * Fonts are the built-in PDF Helvetica / Helvetica-Bold (WinAnsi), so nothing
+	 * has to be embedded.
+	 */
+	public static final class UfcePdfBuilder {
+
+		public static final int SUBSIDIARY_ROWS = 11;
+		public static final int CALC_ROWS = 7; // A, B, C, D, E, F, G
+
+		/** Plain input holder - keeps this class independent of the JPA entities. */
+		public static final class Data {
+			public String dateText = ""; // dd.MM.yyyy
+			public BigDecimal r6; // null / zero -> printed as NIL
+			public BigDecimal r7;
+			public BigDecimal r8;
+			public String[] names = new String[SUBSIDIARY_ROWS];
+			public BigDecimal[] advance = new BigDecimal[SUBSIDIARY_ROWS];
+			public BigDecimal[] provision = new BigDecimal[SUBSIDIARY_ROWS];
+			public BigDecimal totalAdvance;
+			public BigDecimal totalProvision;
+			public BigDecimal[] calc = new BigDecimal[CALC_ROWS]; // A..G
+		}
+
+		// ------------------------------------------------------------------
+		// Layout constants (points). A4 portrait.
+		// ------------------------------------------------------------------
+		private static final float PAGE_W = 595.28f;
+		private static final float PAGE_H = 841.89f;
+		private static final float MARGIN = 40f;
+		private static final float CONTENT_W = PAGE_W - 2 * MARGIN;
+		private static final float PAD = 4f;
+		private static final float BODY = 9f;
+		private static final float LEAD = 11.5f;
+
+		private static final String[] CALC_LABELS = { "Total Standard Advances as on %s",
+				"Less: Standard Advances above Rs. 25 crore (for which provision has been calculated based on UFCE details)",
+				"Total Standard Advances to borrowers with exposure upto Rs. 25 crore",
+				"Less: Standard Advance to Individual borrowers (under retail, agriculture & staff segment) with exposure upto Rs. 25 crore",
+				"Less: Total advance to Banks with exposure upto Rs.25.00 crores",
+				"Balance Standard advance on which provision to be created", "Provision @ 0.10%" };
+		private static final String[] CALC_CODES = { "A", "B", "C = A - B", "D", "E", "F = C - D - E", "G = F x 0.10%" };
+
+		// Helvetica advance widths (1/1000 em) for ASCII 32..126
+		private static final int[] W = { 278, 278, 355, 556, 556, 889, 667, 191, 333, 333, 389, 584, 278, 333, 278, 278, 556,
+				556, 556, 556, 556, 556, 556, 556, 556, 556, 278, 278, 584, 584, 584, 556, 1015, 667, 667, 722, 722, 667,
+				611, 778, 722, 278, 500, 667, 556, 833, 722, 778, 667, 778, 722, 667, 611, 722, 667, 944, 667, 667, 611,
+				278, 278, 278, 469, 556, 333, 556, 556, 500, 556, 556, 278, 556, 556, 222, 222, 500, 222, 833, 556, 556,
+				556, 556, 333, 500, 278, 556, 500, 722, 500, 500, 500, 334, 260, 334, 584 };
+
+		private final List<StringBuilder> pages = new ArrayList<>();
+		private StringBuilder cur;
+		private float y; // distance from bottom of the page to the top of the next row
+
+		private UfcePdfBuilder() {
+		}
+
+		public static byte[] build(Data d) {
+			try {
+				return new UfcePdfBuilder().render(d == null ? new Data() : d);
+			} catch (IOException e) {
+				throw new IllegalStateException("Unable to build UFCE PDF: " + e.getMessage(), e);
+			}
+		}
+
+		// ------------------------------------------------------------------
+		// Report layout
+		// ------------------------------------------------------------------
+		private byte[] render(Data d) throws IOException {
+			newPage();
+
+			centerText("BANK OF BARODA", 14f, true);
+			centerText("Trade, FX & Remittance, BCC Mumbai", 10f, false);
+			centerText(d.dateText + " - Provision for Unhedged Foreign Currency Exposure", 10f, true);
+			y -= 8f;
+
+			// ---- Section 1: Provision for UFCE ---------------------------------
+			float[] w1 = { CONTENT_W - 120f, 120f };
+			row(w1, new String[] { "Provision for UFCE as on " + d.dateText, "Rs in Lacs" }, new int[] { 0, 2 }, true, true);
+			boolean r6Nil = d.r6 == null || d.r6.signum() == 0;
+			row(w1, new String[] { "Provision for accounts with exposure above Rs.25 crore", r6Nil ? "NIL" : fmt(d.r6) },
+					new int[] { 0, 2 }, false, false);
+			row(w1, new String[] { "Provision for accounts with exposure upto Rs.25 crore", fmt(d.r7) }, new int[] { 0, 2 },
+					false, false);
+			BigDecimal total = d.r8 != null ? d.r8 : nz(d.r6).add(nz(d.r7));
+			row(w1, new String[] { "Total", fmt(total) }, new int[] { 0, 2 }, true, false);
+			y -= 12f;
+
+			// ---- Section 2: Subsidiary table -----------------------------------
+			float[] w2 = { 40f, CONTENT_W - 40f - 130f - 130f, 130f, 130f };
+			row(w2, new String[] { "S. No.", "NAME OF THE SUBSIDIARY", "Total advance above Rs. 25 crore",
+					"Provision for accounts above Rs. 25 crore" }, new int[] { 1, 0, 1, 1 }, true, true);
+			for (int i = 0; i < SUBSIDIARY_ROWS; i++) {
+				row(w2, new String[] { String.valueOf(i + 1), nvl(d.names[i]), fmt(d.advance[i]), fmt(d.provision[i]) },
+						new int[] { 1, 0, 2, 2 }, false, false);
+			}
+			BigDecimal ta = d.totalAdvance, tp = d.totalProvision;
+			if (ta == null) {
+				ta = BigDecimal.ZERO;
+				for (BigDecimal b : d.advance)
+					ta = ta.add(nz(b));
+			}
+			if (tp == null) {
+				tp = BigDecimal.ZERO;
+				for (BigDecimal b : d.provision)
+					tp = tp.add(nz(b));
+			}
+			row(w2, new String[] { "", "TOTAL", fmt(ta), fmt(tp) }, new int[] { 1, 0, 2, 2 }, true, false);
+			y -= 12f;
+
+			// ---- Section 3: Calculation ------------------------------------------
+			float[] w3 = { CONTENT_W };
+			row(w3, new String[] { "Calculation of provision for accounts with exposure upto Rs. 25 crore" },
+					new int[] { 0 }, true, true);
+			float[] w3b = { CONTENT_W - 110f - 120f, 110f, 120f };
+			row(w3b, new String[] { "", "", "(Rs in Lacs)" }, new int[] { 0, 0, 2 }, false, false);
+			for (int i = 0; i < CALC_ROWS; i++) {
+				String label = i == 0 ? String.format(CALC_LABELS[0], d.dateText) : CALC_LABELS[i];
+				boolean bold = (i == 2 || i == 5 || i == 6);
+				row(w3b, new String[] { label, CALC_CODES[i], fmt(d.calc[i]) }, new int[] { 0, 0, 2 }, bold, false);
+			}
+
+			return assemble();
+		}
+
+		// ------------------------------------------------------------------
+		// Table row drawing (with wrapping + automatic page break)
+		// ------------------------------------------------------------------
+		/** align: 0 = left, 1 = centre, 2 = right */
+		private void row(float[] widths, String[] texts, int[] align, boolean bold, boolean shaded) {
+			List<List<String>> lines = new ArrayList<>();
+			int maxLines = 1;
+			for (int i = 0; i < widths.length; i++) {
+				List<String> l = wrap(texts[i], widths[i] - 2 * PAD, bold, BODY);
+				lines.add(l);
+				maxLines = Math.max(maxLines, l.size());
+			}
+			float h = maxLines * LEAD + 2 * PAD - 2f;
+
+			if (y - h < MARGIN + 14f) { // keep room for the footer
+				newPage();
+			}
+
+			float x = MARGIN;
+			float top = y;
+			float bottom = y - h;
+			for (int i = 0; i < widths.length; i++) {
+				if (shaded) {
+					cur.append("0.88 g ").append(f(x)).append(' ').append(f(bottom)).append(' ').append(f(widths[i]))
+							.append(' ').append(f(h)).append(" re f 0 g\n");
+				}
+				cur.append("0.5 w ").append(f(x)).append(' ').append(f(bottom)).append(' ').append(f(widths[i]))
+						.append(' ').append(f(h)).append(" re S\n");
+
+				float ty = top - PAD - BODY + 1.5f;
+				for (String line : lines.get(i)) {
+					float tw = textWidth(line, bold, BODY);
+					float tx;
+					if (align[i] == 2) {
+						tx = x + widths[i] - PAD - tw;
+					} else if (align[i] == 1) {
+						tx = x + (widths[i] - tw) / 2f;
+					} else {
+						tx = x + PAD;
+					}
+					drawText(tx, ty, line, bold, BODY);
+					ty -= LEAD;
+				}
+				x += widths[i];
+			}
+			y = bottom;
+		}
+
+		private void centerText(String s, float size, boolean bold) {
+			float tw = textWidth(s, bold, size);
+			y -= size + 3f;
+			drawText((PAGE_W - tw) / 2f, y, s, bold, size);
+			y -= 3f;
+		}
+
+		// ------------------------------------------------------------------
+		// Low level helpers
+		// ------------------------------------------------------------------
+		private void newPage() {
+			cur = new StringBuilder();
+			pages.add(cur);
+			y = PAGE_H - MARGIN;
+		}
+
+		private void drawText(float x, float baseline, String s, boolean bold, float size) {
+			if (s == null || s.isEmpty())
+				return;
+			cur.append("BT /").append(bold ? "F2" : "F1").append(' ').append(f(size)).append(" Tf ").append(f(x))
+					.append(' ').append(f(baseline)).append(" Td (").append(escape(s)).append(") Tj ET\n");
+		}
+
+		private List<String> wrap(String text, float maxWidth, boolean bold, float size) {
+			List<String> out = new ArrayList<>();
+			String t = text == null ? "" : text.replace('\r', ' ').replace('\n', ' ').trim();
+			if (t.isEmpty()) {
+				out.add("");
+				return out;
+			}
+			StringBuilder line = new StringBuilder();
+			for (String word : t.split("\\s+")) {
+				// hard-split a single word that is wider than the cell
+				while (textWidth(word, bold, size) > maxWidth && word.length() > 1) {
+					int cut = word.length() - 1;
+					while (cut > 1 && textWidth(word.substring(0, cut), bold, size) > maxWidth)
+						cut--;
+					if (line.length() > 0) {
+						out.add(line.toString());
+						line.setLength(0);
+					}
+					out.add(word.substring(0, cut));
+					word = word.substring(cut);
+				}
+				String candidate = line.length() == 0 ? word : line + " " + word;
+				if (textWidth(candidate, bold, size) <= maxWidth || line.length() == 0) {
+					line.setLength(0);
+					line.append(candidate);
+				} else {
+					out.add(line.toString());
+					line.setLength(0);
+					line.append(word);
+				}
+			}
+			if (line.length() > 0)
+				out.add(line.toString());
+			return out;
+		}
+
+		private static float textWidth(String s, boolean bold, float size) {
+			if (s == null)
+				return 0f;
+			float units = 0f;
+			for (int i = 0; i < s.length(); i++) {
+				char c = s.charAt(i);
+				float u = (c >= 32 && c <= 126) ? W[c - 32] : 556;
+				// Bold digits, '.' and ',' have the same width as regular; letters run ~6% wider.
+				if (bold && Character.isLetter(c)) {
+					u *= 1.06f;
+				}
+				units += u;
+			}
+			return units / 1000f * size;
+		}
+
+		private static String escape(String s) {
+			StringBuilder sb = new StringBuilder(s.length() + 8);
+			for (int i = 0; i < s.length(); i++) {
+				char c = s.charAt(i);
+				if (c == '\\' || c == '(' || c == ')') {
+					sb.append('\\').append(c);
+				} else if (c < 32) {
+					sb.append(' ');
+				} else if (c > 255) {
+					sb.append('?'); // outside WinAnsi
+				} else {
+					sb.append(c);
+				}
+			}
+			return sb.toString();
+		}
+
+		private static String f(float v) {
+			return String.format(Locale.US, "%.2f", v);
+		}
+
+		private static BigDecimal nz(BigDecimal v) {
+			return v == null ? BigDecimal.ZERO : v;
+		}
+
+		private static String nvl(String s) {
+			return s == null ? "" : s;
+		}
+
+		private static String fmt(BigDecimal v) {
+			DecimalFormat df = new DecimalFormat("#,##0.00", DecimalFormatSymbols.getInstance(Locale.US));
+			df.setRoundingMode(java.math.RoundingMode.HALF_UP); // same rounding as Excel
+			return df.format(nz(v));
+		}
+
+		// ------------------------------------------------------------------
+		// PDF file assembly
+		// ------------------------------------------------------------------
+		private byte[] assemble() throws IOException {
+			int n = pages.size();
+			// page footers
+			for (int i = 0; i < n; i++) {
+				StringBuilder sb = pages.get(i);
+				String label = "Page " + (i + 1) + " of " + n;
+				float tw = textWidth(label, false, 8f);
+				sb.append("BT /F1 8 Tf ").append(f(PAGE_W - MARGIN - tw)).append(' ').append(f(MARGIN - 18f))
+						.append(" Td (").append(label).append(") Tj ET\n");
+			}
+
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			List<Integer> offsets = new ArrayList<>();
+
+			write(out, "%PDF-1.4\n");
+
+			offsets.add(out.size());
+			write(out, "1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+
+			StringBuilder kids = new StringBuilder();
+			for (int i = 0; i < n; i++)
+				kids.append(5 + 2 * i).append(" 0 R ");
+			offsets.add(out.size());
+			write(out, "2 0 obj\n<< /Type /Pages /Kids [ " + kids + "] /Count " + n + " >>\nendobj\n");
+
+			offsets.add(out.size());
+			write(out,
+					"3 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>\nendobj\n");
+			offsets.add(out.size());
+			write(out,
+					"4 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>\nendobj\n");
+
+			for (int i = 0; i < n; i++) {
+				int pageObj = 5 + 2 * i;
+				int contentObj = 6 + 2 * i;
+				byte[] content = pages.get(i).toString().getBytes(StandardCharsets.ISO_8859_1);
+
+				offsets.add(out.size());
+				write(out, pageObj + " 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 " + f(PAGE_W) + " " + f(PAGE_H)
+						+ "] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents " + contentObj + " 0 R >>\nendobj\n");
+
+				offsets.add(out.size());
+				write(out, contentObj + " 0 obj\n<< /Length " + content.length + " >>\nstream\n");
+				out.write(content);
+				write(out, "\nendstream\nendobj\n");
+			}
+
+			int xref = out.size();
+			int objCount = offsets.size() + 1;
+			write(out, "xref\n0 " + objCount + "\n0000000000 65535 f \n");
+			for (int off : offsets)
+				write(out, String.format(Locale.US, "%010d 00000 n \n", off));
+			write(out, "trailer\n<< /Size " + objCount + " /Root 1 0 R >>\nstartxref\n" + xref + "\n%%EOF\n");
+
+			return out.toByteArray();
+		}
+
+		private static void write(ByteArrayOutputStream out, String s) throws IOException {
+			out.write(s.getBytes(StandardCharsets.ISO_8859_1));
 		}
 	}
 
