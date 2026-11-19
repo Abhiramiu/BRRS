@@ -94,6 +94,8 @@
 		// Central Maker/Checker flags — used by every mutating button.
 		var isMaker   = /^(MAKER|M|MAN|MANAGER|B|ADMIN|A)$/i.test(serverRole || '');
 		var isChecker = /^(CHECKER|C|MAN|MANAGER|B|ADMIN|A)$/i.test(serverRole || '');
+		// Pure Maker login (not MAN/ADMIN, which also have Checker rights) - no downloads.
+		var isMakerOnly = /^(MAKER|M)$/i.test(serverRole || '');
 
 		$(document).ready(function () {
 			$('#loader').modal('hide');
@@ -102,6 +104,16 @@
 			// but hide it up-front so there's no dead UI element).
 			if (!isMaker) {
 				$('#modifyBtn').hide();
+			}
+
+			// Maker accounts must not see the Excel / PDF download buttons.
+			if (isMakerOnly) {
+				$('#downloadExcelBtn, #downloadPdfBtn').hide();
+			}
+
+			// Regenerate is limited to Maker/Checker roles on the server (HTTP 403 otherwise).
+			if (!isMaker && !isChecker) {
+				$('#regenBtn').hide();
 			}
 		});
 
@@ -554,7 +566,7 @@
 						</button>
 
 						<!-- Regenerate -->
-						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary'}"
+						<button type="button" class="custom-tab-btn" id="regenBtn" th:if="${displaymode == 'summary'}"
 							title="Regenerate R27-R33 from database"
 							th:attr="data-reportid=${reportid}, data-asondate=${asondate}, data-todate=${todate}"
 							onclick="regenProcedure(this);">
@@ -563,7 +575,7 @@
 
 						<!-- Download Summary Excel -->
 						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary'}"
-							title="Download Excel"
+							id="downloadExcelBtn" title="Download Excel"
 							th:attr="data-reportid=${reportid}, data-asondate=${asondate}, data-fromdate=${fromdate},
 							         data-todate=${todate}, data-currency=${currency}, data-dtltype=${dtltype},
 							         data-filename='UFCE_CALCULATION.xlsx', data-type=${type}, data-version=${version}"
@@ -573,7 +585,7 @@
 
 						<!-- Download Summary PDF -->
 						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary'}"
-							title="Download PDF"
+							id="downloadPdfBtn" title="Download PDF"
 							th:attr="data-reportid=${reportid}, data-fromdate=${fromdate}, data-todate=${todate},
 							         data-currency=${currency}, data-type=${type}, data-version=${version},
 							         data-dtltype=${dtltype}, data-filename='UFCE_CALCULATION.xlsx'"
@@ -626,7 +638,7 @@
 										<td class="value-cell">
 											<input type="text"
 												class="form-control form-control-sm cell-input readonly-cell"
-												th:value="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r6_value : 'NIL'}"
+												th:value="${calcSummary != null and !calcSummary.isEmpty() and calcSummary[0].r6_value != null ? calcSummary[0].r6_value : 'NIL'}"
 												readonly
 												style="background: transparent; border: none; font-size: inherit; width: 100%; text-align: right;" />
 										</td>
