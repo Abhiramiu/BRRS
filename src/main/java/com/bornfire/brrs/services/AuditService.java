@@ -1571,6 +1571,8 @@ public class AuditService {
 			transferIRRBB_ADVData(auditRecord);
 		} else if (upperTable.contains("EXPOSURES")) {
 			transferExposuresData(auditRecord);
+		} else if (upperTable.contains("DBS10_FINCON_II_1A")) {
+			transferDBS10_FINCON_II_1AData(auditRecord);
 		} else if (upperTable.contains("NSFR")) {
 			transferNSFRData(auditRecord);
 		} else if (upperTable.contains("ANNEXURE_UFCE") 
@@ -3231,6 +3233,98 @@ try {
 
 		System.out.println("IRRBB_ADV Verification, Transfer and Summary Procedure Execution Completed Successfully");
 	}
+	
+	private void transferDBS10_FINCON_II_1AData(AuditServicesEntity auditRecord) {
+		final String liveTable = "BRRS_DBS10_FINCON_II_1A_MANUAL_SUMMARYTABLE";
+		final String modTable = "BRRS_DBS10_FINCON_II_1A_MOD_SUMMARYTABLE";
+
+		java.sql.Date reportDate = null;
+		String raw = auditRecord.getChange_details();
+		if (raw != null && !raw.trim().isEmpty()) {
+			try {
+				reportDate = new java.sql.Date(
+						new SimpleDateFormat("dd-MM-yyyy").parse(raw.trim()).getTime());
+			} catch (Exception ignored) {
+			}
+		}
+		if (reportDate == null) {
+			try {
+				reportDate = jdbcTemplate.queryForObject(
+						"SELECT MAX(REPORT_DATE) FROM " + modTable + " WHERE MODIFY_FLG = 'Y'",
+						java.sql.Date.class);
+			} catch (Exception ignored) {
+			}
+		}
+		if (reportDate == null) {
+			try {
+				reportDate = jdbcTemplate.queryForObject(
+						"SELECT MAX(REPORT_DATE) FROM " + modTable,
+						java.sql.Date.class);
+			} catch (Exception ignored) {
+			}
+		}
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified DBS10_FINCON_II_1A record available for verification.");
+		}
+
+		System.out.println("DBS10_FINCON_II_1A Report Date : " + reportDate);
+
+		String updateSql = "UPDATE " + liveTable + " M SET ("
+				+ "  R8_AMOUNT_X010, R12_AMOUNT_X010, R14_AMOUNT_X010, R22_AMOUNT_X010, "
+				+ "  R23_AMOUNT_X010, R25_AMOUNT_X010, R26_AMOUNT_X010, R27_AMOUNT_X010, "
+				+ "  R28_AMOUNT_X010, R31_AMOUNT_X010, R32_AMOUNT_X010, R35_AMOUNT_X010, "
+				+ "  R36_AMOUNT_X010, R37_AMOUNT_X010, R41_AMOUNT_X010, R42_AMOUNT_X010, "
+				+ "  ENTITY_FLG, MODIFY_FLG, DEL_FLG"
+				+ ") = ("
+				+ "  SELECT "
+				+ "    S.R8_AMOUNT_X010, S.R12_AMOUNT_X010, S.R14_AMOUNT_X010, S.R22_AMOUNT_X010, "
+				+ "    S.R23_AMOUNT_X010, S.R25_AMOUNT_X010, S.R26_AMOUNT_X010, S.R27_AMOUNT_X010, "
+				+ "    S.R28_AMOUNT_X010, S.R31_AMOUNT_X010, S.R32_AMOUNT_X010, S.R35_AMOUNT_X010, "
+				+ "    S.R36_AMOUNT_X010, S.R37_AMOUNT_X010, S.R41_AMOUNT_X010, S.R42_AMOUNT_X010, "
+				+ "    S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG "
+				+ "  FROM " + modTable + " S "
+				+ "  WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+				+ ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int inserted = jdbcTemplate.update(updateSql, reportDate);
+
+		if (inserted == 0) {
+			String insertSql = "INSERT INTO " + liveTable + " ("
+					+ "  REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+					+ "  R8_AMOUNT_X010, R12_AMOUNT_X010, R14_AMOUNT_X010, R22_AMOUNT_X010, "
+					+ "  R23_AMOUNT_X010, R25_AMOUNT_X010, R26_AMOUNT_X010, R27_AMOUNT_X010, "
+					+ "  R28_AMOUNT_X010, R31_AMOUNT_X010, R32_AMOUNT_X010, R35_AMOUNT_X010, "
+					+ "  R36_AMOUNT_X010, R37_AMOUNT_X010, R41_AMOUNT_X010, R42_AMOUNT_X010, "
+					+ "  ENTITY_FLG, MODIFY_FLG, DEL_FLG"
+					+ ") SELECT "
+					+ "  REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+					+ "  R8_AMOUNT_X010, R12_AMOUNT_X010, R14_AMOUNT_X010, R22_AMOUNT_X010, "
+					+ "  R23_AMOUNT_X010, R25_AMOUNT_X010, R26_AMOUNT_X010, R27_AMOUNT_X010, "
+					+ "  R28_AMOUNT_X010, R31_AMOUNT_X010, R32_AMOUNT_X010, R35_AMOUNT_X010, "
+					+ "  R36_AMOUNT_X010, R37_AMOUNT_X010, R41_AMOUNT_X010, R42_AMOUNT_X010, "
+					+ "  ENTITY_FLG, 'N', DEL_FLG "
+					+ "FROM " + modTable + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+			inserted = jdbcTemplate.update(insertSql, reportDate);
+			if (inserted == 0) {
+				throw new IllegalStateException("DBS10_FINCON_II_1A modification record not found for date : " + reportDate);
+			}
+		}
+
+		System.out.println("DBS10_FINCON_II_1A Main Updated : " + inserted);
+
+		String updateModSql = "UPDATE " + modTable + " SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+		int updated = jdbcTemplate.update(updateModSql, reportDate);
+
+		System.out.println("DBS10_FINCON_II_1A MOD Updated : " + updated);
+
+		// Execute stored procedure after verification/transfer
+		String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+		jdbcTemplate.update("BEGIN BRRS_DBS10_FINCON_II_1A_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+		System.out.println("DBS10_FINCON_II_1A Verification and Procedure Execution Completed Successfully");
+	}
+
 	
 	private void transferExposuresData(AuditServicesEntity auditRecord) {
 		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_EXPOSURES_MOD_SUMMARYTABLE";

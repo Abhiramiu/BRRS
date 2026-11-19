@@ -693,6 +693,16 @@ public class NavigationController {
 
 	}
 
+	@RequestMapping(value = "SLSArchival", method = { RequestMethod.GET, RequestMethod.POST })
+	public String SLSArchival(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- SLS Archival");
+		System.out.println("count" + rrReportlist.getReportListbrrsSLS().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsSLS());
+
+		return "BRRS/BRRSArchival";
+
+	}
+
 	@RequestMapping(value = "UFCEArchival", method = { RequestMethod.GET, RequestMethod.POST })
 	public String UFCEArchival(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- UFCE Archival");

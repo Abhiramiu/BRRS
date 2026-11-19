@@ -648,7 +648,11 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 				fields1.forEach(f => {
 					const selector = `#R${r}_${f}`;
 					if ($(selector).length) {
-						$(selector).css("background-color", "#FFF59D");
+						$(selector).prop("readonly", false).prop("disabled", false);
+						$(selector)[0].style.setProperty("background-color", "#FFF59D", "important");
+						if ($(selector).closest("td").length) {
+							$(selector).closest("td")[0].style.setProperty("background-color", "#FFF59D", "important");
+						}
 					}
 				});
 			});
@@ -954,6 +958,14 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 	<script>
 
 		$(document).ready(function () {
+
+			let rows1 = [8, 12, 14, 22, 23, 25, 26, 27, 28, 31, 32, 35, 36, 37, 41, 42];
+			rows1.forEach(r => {
+				const selector = `#R${r}_AMOUNT_X010`;
+				if ($(selector).length) {
+					$(selector).prop("readonly", true);
+				}
+			});
 
 			// Initial calculation for DB values
 			calculateAll();

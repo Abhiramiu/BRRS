@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -55,6 +56,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
@@ -84,7 +86,7 @@ public class BRRS_DBS10_FINCON_II_1A_ReportService {
 	// Fetch data by report date
 	public List<DBS10_FINCON_II_1A_Summary_Entity> getDataByDate(Date reportDate) {
 
-		String sql = "SELECT * FROM BRRS_DBS10_FINCON_II_1A_SUMMARYTABLE WHERE REPORT_DATE = ?";
+		String sql = "SELECT * FROM BRRS_DBS10_FINCON_II_1A_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 
 		return jdbcTemplate.query(sql, new Object[] { reportDate }, new DBS10_FINCON_II_1ARowMapper());
 	}
@@ -92,14 +94,14 @@ public class BRRS_DBS10_FINCON_II_1A_ReportService {
 	// Fetch data by report date
 	public List<DBS10_FINCON_II_1A_Manual_Summary_Entity> getDataByDateManual(Date reportDate) {
 
-		String sql = "SELECT * FROM BRRS_DBS10_FINCON_II_1A_MANUAL_SUMMARYTABLE WHERE REPORT_DATE = ?";
+		String sql = "SELECT * FROM BRRS_DBS10_FINCON_II_1A_MANUAL_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 
 		return jdbcTemplate.query(sql, new Object[] { reportDate }, new DBS10_FINCON_II_1AManualRowMapper());
 	}
 
 	public List<DBS10_FINCON_II_1A_Manual_Summary_Entity> getManualDataByDate(Date reportDate) {
 
-		String sql = "SELECT * FROM BRRS_DBS10_FINCON_II_1A_MANUAL_SUMMARYTABLE WHERE REPORT_DATE = ?";
+		String sql = "SELECT * FROM BRRS_DBS10_FINCON_II_1A_MANUAL_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 
 		return jdbcTemplate.query(sql, new Object[] { reportDate }, new DBS10_FINCON_II_1AManualRowMapper());
 	}
@@ -5051,6 +5053,19 @@ public class BRRS_DBS10_FINCON_II_1A_ReportService {
 		System.out.println("Type = " + type);
 		System.out.println("Version = " + version);
 
+		Date dt = null;
+		String rawDate = (todate != null && !todate.isEmpty()) ? todate : fromdate;
+		if (rawDate != null && !rawDate.isEmpty()) {
+			String[] patterns = { "dd-MMM-yyyy", "dd/MM/yyyy", "dd-MM-yyyy", "yyyy-MM-dd" };
+			for (String pattern : patterns) {
+				try {
+					dt = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(rawDate.trim());
+					break;
+				} catch (Exception ignored) {
+				}
+			}
+		}
+
 		// ARCHIVAL MODE
 
 		// ARCHIVAL + RESUB MODE
@@ -5060,8 +5075,9 @@ public class BRRS_DBS10_FINCON_II_1A_ReportService {
 			List<DBS10_FINCON_II_1A_Manual_Archival_Summary_Entity> T2Master = new ArrayList<>();
 
 			try {
-
-				Date dt = dateformat.parse(todate);
+				if (dt == null && todate != null && !todate.isEmpty()) {
+					dt = dateformat.parse(todate);
+				}
 
 				T1Master = getdatabydateListarchival(dt, version);
 				T2Master = getdatabydateListarchivalManual(dt, version);
@@ -5069,7 +5085,7 @@ public class BRRS_DBS10_FINCON_II_1A_ReportService {
 				System.out.println(type + " Summary size = " + T1Master.size());
 				System.out.println(type + " Manual Summary size = " + T2Master.size());
 
-				mv.addObject("REPORT_DATE", dateformat.format(dt));
+				mv.addObject("REPORT_DATE", dt != null ? dateformat.format(dt) : rawDate);
 				System.out.println("getishighestversion(dt, version) : " + getishighestversion(dt, version));
 				mv.addObject("allowdetail", getishighestversion(dt, version));
 
@@ -5086,14 +5102,48 @@ public class BRRS_DBS10_FINCON_II_1A_ReportService {
 			List<DBS10_FINCON_II_1A_Summary_Entity> T1Master = new ArrayList<>();
 			List<DBS10_FINCON_II_1A_Manual_Summary_Entity> T2Master = new ArrayList<>();
 			try {
-				Date dt = dateformat.parse(todate);
+				if (dt == null && todate != null && !todate.isEmpty()) {
+					dt = dateformat.parse(todate);
+				}
 
 				// SUMMARY NORMAL
 				T1Master = getDataByDate(dt);
 				T2Master = getDataByDateManual(dt);
+
+				// If no record exists in live MANUAL table, check MOD table for pending modifications
+				if (T2Master == null || T2Master.isEmpty()) {
+					String modSql = "SELECT * FROM BRRS_DBS10_FINCON_II_1A_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					T2Master = jdbcTemplate.query(modSql, new Object[] { dt }, new DBS10_FINCON_II_1AManualRowMapper());
+				}
+
+				// If still empty, supply an initialized default manual entity so reportsummary1 has size >= 1
+				// and Thymeleaf renders the editable input cells
+				if (T2Master == null || T2Master.isEmpty()) {
+					DBS10_FINCON_II_1A_Manual_Summary_Entity defaultManual = new DBS10_FINCON_II_1A_Manual_Summary_Entity();
+					defaultManual.setREPORT_DATE(dt);
+					defaultManual.setR8_AMOUNT_X010(BigDecimal.ZERO);
+					defaultManual.setR12_AMOUNT_X010(BigDecimal.ZERO);
+					defaultManual.setR14_AMOUNT_X010(BigDecimal.ZERO);
+					defaultManual.setR22_AMOUNT_X010(BigDecimal.ZERO);
+					defaultManual.setR23_AMOUNT_X010(BigDecimal.ZERO);
+					defaultManual.setR25_AMOUNT_X010(BigDecimal.ZERO);
+					defaultManual.setR26_AMOUNT_X010(BigDecimal.ZERO);
+					defaultManual.setR27_AMOUNT_X010(BigDecimal.ZERO);
+					defaultManual.setR28_AMOUNT_X010(BigDecimal.ZERO);
+					defaultManual.setR31_AMOUNT_X010(BigDecimal.ZERO);
+					defaultManual.setR32_AMOUNT_X010(BigDecimal.ZERO);
+					defaultManual.setR35_AMOUNT_X010(BigDecimal.ZERO);
+					defaultManual.setR36_AMOUNT_X010(BigDecimal.ZERO);
+					defaultManual.setR37_AMOUNT_X010(BigDecimal.ZERO);
+					defaultManual.setR41_AMOUNT_X010(BigDecimal.ZERO);
+					defaultManual.setR42_AMOUNT_X010(BigDecimal.ZERO);
+					T2Master = new ArrayList<>();
+					T2Master.add(defaultManual);
+				}
+
 				System.out.println("Summary size = " + T1Master.size());
 				System.out.println("Manual Summary size = " + T2Master.size());
-				mv.addObject("REPORT_DATE", dateformat.format(dt));
+				mv.addObject("REPORT_DATE", dt != null ? dateformat.format(dt) : rawDate);
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -6909,8 +6959,18 @@ int startRow = 4;
 
 		System.out.println("Came to DBS10_FINCON_II_1A Manual Update. Type: " + (isResub ? "RESUB" : "NORMAL"));
 
-		String tableName = isResub ? "BRRS_DBS10_FINCON_II_1A_MANUAL_ARCHIVALTABLE_SUMMARY"
-				: "BRRS_DBS10_FINCON_II_1A_MANUAL_SUMMARYTABLE";
+		if (!isResub) {
+			if (entity instanceof DBS10_FINCON_II_1A_Manual_Summary_Entity) {
+				updateReport1((DBS10_FINCON_II_1A_Manual_Summary_Entity) entity);
+			} else {
+				DBS10_FINCON_II_1A_Manual_Summary_Entity manualEntity = new DBS10_FINCON_II_1A_Manual_Summary_Entity();
+				BeanUtils.copyProperties(entity, manualEntity);
+				updateReport1(manualEntity);
+			}
+			return;
+		}
+
+		String tableName = "BRRS_DBS10_FINCON_II_1A_MANUAL_ARCHIVALTABLE_SUMMARY";
 
 		int[] rows = {8,12,14,22,23,25,26,27,28,31,32,35,36,37,41,42};
 
@@ -7034,6 +7094,213 @@ int startRow = 4;
 
 			throw new RuntimeException("Error while updating DBS10_FINCON_II_1A Manual fields for type: " + type, e);
 		}
+	}
+
+	public void updateReport1(DBS10_FINCON_II_1A_Manual_Summary_Entity updatedEntity) {
+		String selectSql = "SELECT * FROM BRRS_DBS10_FINCON_II_1A_MANUAL_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+		List<DBS10_FINCON_II_1A_Manual_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new DBS10_FINCON_II_1AManualRowMapper(), updatedEntity.getREPORT_DATE());
+
+		DBS10_FINCON_II_1A_Manual_Summary_Entity existing;
+
+		if (list.isEmpty()) {
+			existing = new DBS10_FINCON_II_1A_Manual_Summary_Entity();
+			existing.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+			existing.setREPORT_VERSION(updatedEntity.getREPORT_VERSION() != null ? updatedEntity.getREPORT_VERSION() : BigDecimal.ONE);
+			existing.setREPORT_FREQUENCY(updatedEntity.getREPORT_FREQUENCY() != null ? updatedEntity.getREPORT_FREQUENCY() : "Monthly");
+			existing.setREPORT_CODE(updatedEntity.getREPORT_CODE() != null ? updatedEntity.getREPORT_CODE() : "DBS10_FINCON_II_1A");
+			existing.setREPORT_DESC(updatedEntity.getREPORT_DESC() != null ? updatedEntity.getREPORT_DESC() : "DBS10_FINCON_II_1A");
+			System.out.println("⚠️ No existing record found — creating new record");
+		} else {
+			existing = list.get(0);
+			System.out.println("Updating existing record");
+		}
+
+		// 🔹 Audit copy: Create a clone of the original database state before making any changes
+		DBS10_FINCON_II_1A_Manual_Summary_Entity oldcopy = new DBS10_FINCON_II_1A_Manual_Summary_Entity();
+		BeanUtils.copyProperties(existing, oldcopy);
+
+		int[] rows = { 8, 12, 14, 22, 23, 25, 26, 27, 28, 31, 32, 35, 36, 37, 41, 42 };
+
+		try {
+			for (int r : rows) {
+				String getterName = "getR" + r + "_AMOUNT_X010";
+				String setterName = "setR" + r + "_AMOUNT_X010";
+
+				try {
+					Method getter = DBS10_FINCON_II_1A_Manual_Summary_Entity.class.getMethod(getterName);
+					Method setter = DBS10_FINCON_II_1A_Manual_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+					Object value = getter.invoke(updatedEntity);
+					Object existingValue = getter.invoke(existing);
+
+					String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+					String newValStr = (value == null) ? "" : value.toString().trim();
+
+					if (currentValStr.equals(newValStr)) {
+						continue;
+					}
+
+					setter.invoke(existing, value);
+				} catch (NoSuchMethodException e) {
+					System.out.println("Missing method: " + getterName);
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Error updating record fields", e);
+		}
+
+		// 🔹 Evaluate audit changes
+		String changes = auditService.getChanges(oldcopy, existing);
+		System.out.println("DBS10_FINCON_II_1A Changes Length = " + (changes != null ? changes.length() : 0));
+
+		// 🔹 Set Maker-Checker Flags
+		existing.setENTITY_FLG("Y");
+		existing.setMODIFY_FLG("Y");
+		existing.setDEL_FLG("N");
+
+		// 🔹 Save into MOD Summary Table for Checker Approval
+		saveModManualSummaryEntity(existing);
+		System.out.println("✔ Record saved into BRRS_DBS10_FINCON_II_1A_MOD_SUMMARYTABLE for Checker Approval");
+
+		// 🔹 Log Audit Trail if changes exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existing, updatedEntity.getREPORT_DATE().toString(),
+					"DBS10_FINCON_II_1A", "BRRS_DBS10_FINCON_II_1A_MOD_SUMMARYTABLE");
+		}
+
+		// 🔹 Post-Commit Transaction Synchronization to execute Stored Procedure
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+			@Override
+			public void afterCommit() {
+				try {
+					String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(updatedEntity.getREPORT_DATE());
+
+					logger.info("Transaction committed — calling BRRS_DBS10_FINCON_II_1A_SUMMARY_PROCEDURE({})", formattedDate);
+
+					jdbcTemplate.update("BEGIN BRRS_DBS10_FINCON_II_1A_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+					logger.info("BRRS_DBS10_FINCON_II_1A_SUMMARY_PROCEDURE executed successfully after commit.");
+				} catch (Exception e) {
+					logger.error("Procedure execution failed", e);
+					throw new RuntimeException("Procedure execution failed", e);
+				}
+			}
+		});
+	}
+
+	public void saveModManualSummaryEntity(DBS10_FINCON_II_1A_Manual_Summary_Entity entity) {
+		String sql = "MERGE INTO BRRS_DBS10_FINCON_II_1A_MOD_SUMMARYTABLE dest "
+				+ "USING (SELECT ? AS report_date FROM dual) src "
+				+ "ON (TRUNC(dest.REPORT_DATE) = TRUNC(src.report_date)) "
+				+ "WHEN MATCHED THEN "
+				+ "  UPDATE SET "
+				+ "    R8_AMOUNT_X010 = ?, R12_AMOUNT_X010 = ?, R14_AMOUNT_X010 = ?, R22_AMOUNT_X010 = ?, "
+				+ "    R23_AMOUNT_X010 = ?, R25_AMOUNT_X010 = ?, R26_AMOUNT_X010 = ?, R27_AMOUNT_X010 = ?, "
+				+ "    R28_AMOUNT_X010 = ?, R31_AMOUNT_X010 = ?, R32_AMOUNT_X010 = ?, R35_AMOUNT_X010 = ?, "
+				+ "    R36_AMOUNT_X010 = ?, R37_AMOUNT_X010 = ?, R41_AMOUNT_X010 = ?, R42_AMOUNT_X010 = ?, "
+				+ "    REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, REPORT_DESC = ?, "
+				+ "    ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
+				+ "WHEN NOT MATCHED THEN "
+				+ "  INSERT (REPORT_DATE, "
+				+ "    R8_AMOUNT_X010, R12_AMOUNT_X010, R14_AMOUNT_X010, R22_AMOUNT_X010, "
+				+ "    R23_AMOUNT_X010, R25_AMOUNT_X010, R26_AMOUNT_X010, R27_AMOUNT_X010, "
+				+ "    R28_AMOUNT_X010, R31_AMOUNT_X010, R32_AMOUNT_X010, R35_AMOUNT_X010, "
+				+ "    R36_AMOUNT_X010, R37_AMOUNT_X010, R41_AMOUNT_X010, R42_AMOUNT_X010, "
+				+ "    REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+				+ "    ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+				+ "  VALUES (?, "
+				+ "    ?, ?, ?, ?, "
+				+ "    ?, ?, ?, ?, "
+				+ "    ?, ?, ?, ?, "
+				+ "    ?, ?, ?, ?, "
+				+ "    ?, ?, ?, ?, "
+				+ "    ?, ?, ?)";
+
+		Object[] params = {
+				// USING clause
+				entity.getREPORT_DATE(),
+
+				// UPDATE parameters
+				entity.getR8_AMOUNT_X010(), entity.getR12_AMOUNT_X010(), entity.getR14_AMOUNT_X010(), entity.getR22_AMOUNT_X010(),
+				entity.getR23_AMOUNT_X010(), entity.getR25_AMOUNT_X010(), entity.getR26_AMOUNT_X010(), entity.getR27_AMOUNT_X010(),
+				entity.getR28_AMOUNT_X010(), entity.getR31_AMOUNT_X010(), entity.getR32_AMOUNT_X010(), entity.getR35_AMOUNT_X010(),
+				entity.getR36_AMOUNT_X010(), entity.getR37_AMOUNT_X010(), entity.getR41_AMOUNT_X010(), entity.getR42_AMOUNT_X010(),
+				entity.getREPORT_VERSION(), entity.getREPORT_FREQUENCY(), entity.getREPORT_CODE(), entity.getREPORT_DESC(),
+				entity.getENTITY_FLG(), entity.getMODIFY_FLG(), entity.getDEL_FLG(),
+
+				// INSERT parameters
+				entity.getREPORT_DATE(),
+				entity.getR8_AMOUNT_X010(), entity.getR12_AMOUNT_X010(), entity.getR14_AMOUNT_X010(), entity.getR22_AMOUNT_X010(),
+				entity.getR23_AMOUNT_X010(), entity.getR25_AMOUNT_X010(), entity.getR26_AMOUNT_X010(), entity.getR27_AMOUNT_X010(),
+				entity.getR28_AMOUNT_X010(), entity.getR31_AMOUNT_X010(), entity.getR32_AMOUNT_X010(), entity.getR35_AMOUNT_X010(),
+				entity.getR36_AMOUNT_X010(), entity.getR37_AMOUNT_X010(), entity.getR41_AMOUNT_X010(), entity.getR42_AMOUNT_X010(),
+				entity.getREPORT_VERSION(), entity.getREPORT_FREQUENCY(), entity.getREPORT_CODE(), entity.getREPORT_DESC(),
+				entity.getENTITY_FLG(), entity.getMODIFY_FLG(), entity.getDEL_FLG()
+		};
+
+		jdbcTemplate.update(sql, params);
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_DBS10_FINCON_II_1A_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND MODIFY_FLG='Y'";
+		List<DBS10_FINCON_II_1A_Manual_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new DBS10_FINCON_II_1AManualRowMapper(), reportDate);
+
+		if (list.isEmpty()) {
+			throw new RuntimeException("No pending modified record found for approval on date: " + reportDate);
+		}
+
+		// Copy/Merge MOD values to live MANUAL SUMMARY table
+		String updateLiveSql = "UPDATE BRRS_DBS10_FINCON_II_1A_MANUAL_SUMMARYTABLE M SET ("
+				+ "  R8_AMOUNT_X010, R12_AMOUNT_X010, R14_AMOUNT_X010, R22_AMOUNT_X010, "
+				+ "  R23_AMOUNT_X010, R25_AMOUNT_X010, R26_AMOUNT_X010, R27_AMOUNT_X010, "
+				+ "  R28_AMOUNT_X010, R31_AMOUNT_X010, R32_AMOUNT_X010, R35_AMOUNT_X010, "
+				+ "  R36_AMOUNT_X010, R37_AMOUNT_X010, R41_AMOUNT_X010, R42_AMOUNT_X010, "
+				+ "  ENTITY_FLG, MODIFY_FLG, DEL_FLG"
+				+ ") = ("
+				+ "  SELECT "
+				+ "    S.R8_AMOUNT_X010, S.R12_AMOUNT_X010, S.R14_AMOUNT_X010, S.R22_AMOUNT_X010, "
+				+ "    S.R23_AMOUNT_X010, S.R25_AMOUNT_X010, S.R26_AMOUNT_X010, S.R27_AMOUNT_X010, "
+				+ "    S.R28_AMOUNT_X010, S.R31_AMOUNT_X010, S.R32_AMOUNT_X010, S.R35_AMOUNT_X010, "
+				+ "    S.R36_AMOUNT_X010, S.R37_AMOUNT_X010, S.R41_AMOUNT_X010, S.R42_AMOUNT_X010, "
+				+ "    S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG "
+				+ "  FROM BRRS_DBS10_FINCON_II_1A_MOD_SUMMARYTABLE S "
+				+ "  WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+				+ ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int inserted = jdbcTemplate.update(updateLiveSql, reportDate);
+		if (inserted == 0) {
+			String insertLiveSql = "INSERT INTO BRRS_DBS10_FINCON_II_1A_MANUAL_SUMMARYTABLE ("
+					+ "  REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+					+ "  R8_AMOUNT_X010, R12_AMOUNT_X010, R14_AMOUNT_X010, R22_AMOUNT_X010, "
+					+ "  R23_AMOUNT_X010, R25_AMOUNT_X010, R26_AMOUNT_X010, R27_AMOUNT_X010, "
+					+ "  R28_AMOUNT_X010, R31_AMOUNT_X010, R32_AMOUNT_X010, R35_AMOUNT_X010, "
+					+ "  R36_AMOUNT_X010, R37_AMOUNT_X010, R41_AMOUNT_X010, R42_AMOUNT_X010, "
+					+ "  ENTITY_FLG, MODIFY_FLG, DEL_FLG"
+					+ ") SELECT "
+					+ "  REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+					+ "  R8_AMOUNT_X010, R12_AMOUNT_X010, R14_AMOUNT_X010, R22_AMOUNT_X010, "
+					+ "  R23_AMOUNT_X010, R25_AMOUNT_X010, R26_AMOUNT_X010, R27_AMOUNT_X010, "
+					+ "  R28_AMOUNT_X010, R31_AMOUNT_X010, R32_AMOUNT_X010, R35_AMOUNT_X010, "
+					+ "  R36_AMOUNT_X010, R37_AMOUNT_X010, R41_AMOUNT_X010, R42_AMOUNT_X010, "
+					+ "  ENTITY_FLG, 'N', DEL_FLG "
+					+ "FROM BRRS_DBS10_FINCON_II_1A_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+			jdbcTemplate.update(insertLiveSql, reportDate);
+		}
+
+		// Mark modified flag as 'N' (Approved) in the mod table
+		jdbcTemplate.update("UPDATE BRRS_DBS10_FINCON_II_1A_MOD_SUMMARYTABLE SET MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				reportDate);
+
+		String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+
+		// Run procedure after approval
+		jdbcTemplate.update("BEGIN BRRS_DBS10_FINCON_II_1A_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+		System.out.println("DBS10_FINCON_II_1A Checker Approved Successfully");
 	}
 
 }
