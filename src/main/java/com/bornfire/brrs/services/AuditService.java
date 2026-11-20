@@ -1580,6 +1580,8 @@ public class AuditService {
 		} else if (upperTable.contains("ANNEXURE_UFCE") 
 				|| upperTable.contains("UFCE_ANNEXURE")) {
 			transferUFCEAnnexureData(auditRecord);
+		} else if (upperTable.contains("BDISB1")) {
+			transferBDISB1Data(auditRecord);
 		} else if (upperTable.contains("BDISB2")) {
 			transferBDISB2Data(auditRecord);
 		} else if (upperTable.contains("BDISB3")) {
