@@ -9723,50 +9723,199 @@ public class BRRS_M_LCR_ReportService {
 
 	@Transactional
 	public void updateReport(M_LCR_Summary_Entity updatedEntity) {
-		logger.info("Came to M_LCR Update");
-		logger.info("Report Date: {}", updatedEntity.getREPORT_DATE());
 
-		// Fetch existing summary record for audit
-		M_LCR_Summary_Entity existingSummary = findSummaryByReportDate(updatedEntity.getREPORT_DATE());
+	    logger.info("======================================");
+	    logger.info("Came to M_LCR Maker Update");
+	    logger.info("Report Date : {}", updatedEntity.getREPORT_DATE());
+	    logger.info("======================================");
 
-		if (existingSummary == null) {
-			throw new RuntimeException("Record not found for REPORT_DATE : " + updatedEntity.getREPORT_DATE());
-		}
+	    try {
 
-		// Audit old copy
-		M_LCR_Summary_Entity oldcopy = new M_LCR_Summary_Entity();
-		BeanUtils.copyProperties(existingSummary, oldcopy);
+	        if (updatedEntity.getREPORT_DATE() == null) {
+	            throw new RuntimeException("REPORT_DATE cannot be null");
+	        }
 
-		try {
-			if (updatedEntity.getR14_bob_total_amount() != null) {
-				existingSummary.setR14_bob_total_amount(updatedEntity.getR14_bob_total_amount());
-				String sql = "UPDATE BRRS_M_LCR_SUMMARYTABLE SET R14_BOB_TOTAL_AMOUNT = ? WHERE REPORT_DATE = ?";
-				jdbcTemplate.update(sql, updatedEntity.getR14_bob_total_amount(), updatedEntity.getREPORT_DATE());
-			}
+	        // =========================================================
+	        // 1. FETCH LIVE SUMMARY
+	        // =========================================================
+	        M_LCR_Summary_Entity existingSummary =
+	                findSummaryByReportDate(updatedEntity.getREPORT_DATE());
 
-			if (updatedEntity.getR31_bob_total_amount() != null) {
-				existingSummary.setR31_bob_total_amount(updatedEntity.getR31_bob_total_amount());
-				String sql = "UPDATE BRRS_M_LCR_SUMMARYTABLE SET R31_BOB_TOTAL_AMOUNT = ? WHERE REPORT_DATE = ?";
-				jdbcTemplate.update(sql, updatedEntity.getR31_bob_total_amount(), updatedEntity.getREPORT_DATE());
-			}
+	        if (existingSummary == null) {
+	            throw new RuntimeException(
+	                    "Record not found for REPORT_DATE : "
+	                    + updatedEntity.getREPORT_DATE());
+	        }
 
-			if (updatedEntity.getR38_bob_total_amount() != null) {
-				existingSummary.setR38_bob_total_amount(updatedEntity.getR38_bob_total_amount());
-				String sql = "UPDATE BRRS_M_LCR_SUMMARYTABLE SET R38_BOB_TOTAL_AMOUNT = ? WHERE REPORT_DATE = ?";
-				jdbcTemplate.update(sql, updatedEntity.getR38_bob_total_amount(), updatedEntity.getREPORT_DATE());
-			}
+	        // =========================================================
+	        // 2. CREATE OLD COPY
+	        // =========================================================
+	        M_LCR_Summary_Entity oldcopy = new M_LCR_Summary_Entity();
+	        BeanUtils.copyProperties(existingSummary, oldcopy);
 
-			// Audit only if changes found
-			String changes = auditService.getChanges(oldcopy, existingSummary);
-			if (!changes.isEmpty()) {
-				auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getREPORT_DATE().toString(),
-						"M LCR Summary Screen", "BRRS_M_LCR_SUMMARY");
-			}
+	        // =========================================================
+	        // 3. CREATE MOD ENTITY FROM LIVE DATA
+	        // =========================================================
+	        M_LCR_Summary_Entity modEntity = new M_LCR_Summary_Entity();
+	        BeanUtils.copyProperties(existingSummary, modEntity);
 
-			logger.info("M_LCR Summary Update Completed");
-		} catch (Exception e) {
-			logger.error("Error while updating M_LCR fields", e);
-			throw new RuntimeException("Error while updating M_LCR fields", e);
-		}
+	        // =========================================================
+	        // 4. APPLY ONLY MANUAL EDITABLE FIELDS
+	        // =========================================================
+	        if (updatedEntity.getR14_bob_total_amount() != null) {
+	            modEntity.setR14_bob_total_amount(
+	                    updatedEntity.getR14_bob_total_amount());
+	        }
+
+	        if (updatedEntity.getR31_bob_total_amount() != null) {
+	            modEntity.setR31_bob_total_amount(
+	                    updatedEntity.getR31_bob_total_amount());
+	        }
+
+	        if (updatedEntity.getR38_bob_total_amount() != null) {
+	            modEntity.setR38_bob_total_amount(
+	                    updatedEntity.getR38_bob_total_amount());
+	        }
+
+	        // =========================================================
+	        // 5. CHECK CHANGES
+	        // =========================================================
+	        String changes = auditService.getChanges(oldcopy, modEntity);
+
+	        if (changes == null || changes.trim().isEmpty()) {
+	            logger.info("No changes found in M_LCR");
+	            return;
+	        }
+
+	        // =========================================================
+	        // 6. CHECK MOD RECORD EXISTENCE
+	        // =========================================================
+	        String countSql =
+	                "SELECT COUNT(*) "
+	                + "FROM BRRS_M_LCR_MOD_SUMMARYTABLE "
+	                + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+	        Integer modCount = jdbcTemplate.queryForObject(
+	                countSql,
+	                Integer.class,
+	                updatedEntity.getREPORT_DATE());
+
+	        // =========================================================
+	        // 7. INSERT MOD RECORD IF NOT EXISTS
+	        //    STORE ONLY 3 MANUAL FIELDS + FLAGS
+	        // =========================================================
+	        if (modCount == null || modCount == 0) {
+
+	            String insertSql =
+	                    "INSERT INTO BRRS_M_LCR_MOD_SUMMARYTABLE "
+	                    + "(REPORT_DATE, "
+	                    + " R14_BOB_TOTAL_AMOUNT, "
+	                    + " R31_BOB_TOTAL_AMOUNT, "
+	                    + " R38_BOB_TOTAL_AMOUNT, "
+	                    + " ENTITY_FLG, "
+	                    + " MODIFY_FLG, "
+	                    + " DEL_FLG) "
+	                    + "VALUES (?, ?, ?, ?, 'N', 'Y', 'N')";
+
+	            int inserted = jdbcTemplate.update(
+	                    insertSql,
+	                    updatedEntity.getREPORT_DATE(),
+	                    modEntity.getR14_bob_total_amount(),
+	                    modEntity.getR31_bob_total_amount(),
+	                    modEntity.getR38_bob_total_amount());
+
+	            if (inserted == 0) {
+	                throw new RuntimeException(
+	                        "M_LCR MOD record insert failed");
+	            }
+
+	            logger.info("M_LCR MOD record inserted");
+
+	        } else {
+
+	            // =====================================================
+	            // 8. UPDATE ONLY SUBMITTED FIELDS IN MOD TABLE
+	            // =====================================================
+
+	            if (updatedEntity.getR14_bob_total_amount() != null) {
+
+	                String sql =
+	                        "UPDATE BRRS_M_LCR_MOD_SUMMARYTABLE "
+	                        + "SET R14_BOB_TOTAL_AMOUNT = ? "
+	                        + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+	                jdbcTemplate.update(
+	                        sql,
+	                        updatedEntity.getR14_bob_total_amount(),
+	                        updatedEntity.getREPORT_DATE());
+	            }
+
+	            if (updatedEntity.getR31_bob_total_amount() != null) {
+
+	                String sql =
+	                        "UPDATE BRRS_M_LCR_MOD_SUMMARYTABLE "
+	                        + "SET R31_BOB_TOTAL_AMOUNT = ? "
+	                        + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+	                jdbcTemplate.update(
+	                        sql,
+	                        updatedEntity.getR31_bob_total_amount(),
+	                        updatedEntity.getREPORT_DATE());
+	            }
+
+	            if (updatedEntity.getR38_bob_total_amount() != null) {
+
+	                String sql =
+	                        "UPDATE BRRS_M_LCR_MOD_SUMMARYTABLE "
+	                        + "SET R38_BOB_TOTAL_AMOUNT = ? "
+	                        + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+	                jdbcTemplate.update(
+	                        sql,
+	                        updatedEntity.getR38_bob_total_amount(),
+	                        updatedEntity.getREPORT_DATE());
+	            }
+
+	            // =====================================================
+	            // 9. UPDATE MAKER FLAGS
+	            // =====================================================
+	            String flagSql =
+	                    "UPDATE BRRS_M_LCR_MOD_SUMMARYTABLE "
+	                    + "SET ENTITY_FLG = 'N', "
+	                    + "    MODIFY_FLG = 'Y', "
+	                    + "    DEL_FLG = 'N' "
+	                    + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+	            jdbcTemplate.update(
+	                    flagSql,
+	                    updatedEntity.getREPORT_DATE());
+
+	            logger.info("Existing M_LCR MOD record updated");
+	        }
+
+	        // =========================================================
+	        // 10. AUDIT
+	        // =========================================================
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                modEntity,
+	                updatedEntity.getREPORT_DATE().toString(),
+	                "M LCR Summary Screen",
+	                "BRRS_M_LCR_SUMMARY");
+
+	        logger.info("======================================");
+	        logger.info("M_LCR Maker Update Completed");
+	        logger.info("MODIFY_FLG = Y");
+	        logger.info("======================================");
+
+	    } catch (Exception e) {
+
+	        logger.error("Error while updating M_LCR MOD fields", e);
+
+	        throw new RuntimeException(
+	                "Error while updating M_LCR MOD fields", e);
+	    }
 	}
+	
+	
 }

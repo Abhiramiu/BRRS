@@ -1448,7 +1448,9 @@ public class AuditService {
 			transferSFINP1Data(auditRecord);
 		} else if (upperTable.contains("FAS")) {
 			transferFASData(auditRecord);
-		}else if (upperTable.contains("SLS")) {
+		}else if (upperTable.contains("M_LCR")) {
+           transferMLCRData(auditRecord);
+          }else if (upperTable.contains("SLS")) {
 			transferSLSData(auditRecord);
 		} else if (upperTable.contains("DEP3")) {
 			transferDEP3Data(auditRecord);
@@ -2003,6 +2005,214 @@ public class AuditService {
 	}
 	
 
+
+	// ============================================================
+	// MLCR - CHECKER TRANSFER (MOD -> LIVE SUMMARY)
+	// IDENTIFICATION USING REPORT_DATE ONLY
+	// ============================================================
+
+	@Transactional
+	private void transferMLCRData(AuditServicesEntity auditRecord) {
+
+	    try {
+
+	        System.out.println("======================================");
+	        System.out.println("MLCR CHECKER TRANSFER STARTED");
+	        System.out.println("======================================");
+
+	        // ----------------------------------------------------
+	        // 1. GET LATEST PENDING REPORT DATE
+	        // ----------------------------------------------------
+
+	        String dateSql =
+	                "SELECT MAX(REPORT_DATE) " +
+	                "FROM BRRS_M_LCR_MOD_SUMMARYTABLE " +
+	                "WHERE MODIFY_FLG = 'Y'";
+
+	        java.sql.Date reportDate =
+	                jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+
+	        if (reportDate == null) {
+	            throw new IllegalStateException(
+	                    "No pending MLCR modification found. " +
+	                    "Check MODIFY_FLG in BRRS_M_LCR_MOD_SUMMARYTABLE.");
+	        }
+
+	        System.out.println("MLCR Report Date : " + reportDate);
+
+	        // ----------------------------------------------------
+	        // 2. CHECK PENDING MOD RECORD
+	        // ----------------------------------------------------
+
+	        String checkSql =
+	                "SELECT COUNT(*) " +
+	                "FROM BRRS_M_LCR_MOD_SUMMARYTABLE " +
+	                "WHERE TRUNC(REPORT_DATE) = TRUNC(?) " +
+	                "AND MODIFY_FLG = 'Y'";
+
+	        Integer modCount = jdbcTemplate.queryForObject(
+	                checkSql,
+	                new Object[] { reportDate },
+	                Integer.class);
+
+	        if (modCount == null || modCount != 1) {
+	            throw new IllegalStateException(
+	                    "Expected one pending MLCR MOD record. Found: "
+	                    + modCount);
+	        }
+
+	        System.out.println("Pending MOD Records : " + modCount);
+
+	        // ----------------------------------------------------
+	        // 3. CHECK LIVE SUMMARY RECORD
+	        // ----------------------------------------------------
+
+	        String liveCheckSql =
+	                "SELECT COUNT(*) " +
+	                "FROM BRRS_M_LCR_SUMMARYTABLE " +
+	                "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+	        Integer liveCount = jdbcTemplate.queryForObject(
+	                liveCheckSql,
+	                new Object[] { reportDate },
+	                Integer.class);
+
+	        if (liveCount == null || liveCount != 1) {
+	            throw new IllegalStateException(
+	                    "Expected one MLCR LIVE summary record. Found: "
+	                    + liveCount);
+	        }
+
+	        System.out.println("LIVE SUMMARY RECORD COUNT : " + liveCount);
+
+	        // ----------------------------------------------------
+	        // 4. FETCH MOD VALUES
+	        // ----------------------------------------------------
+
+	        String selectModSql =
+	                "SELECT R14_BOB_TOTAL_AMOUNT, " +
+	                "R31_BOB_TOTAL_AMOUNT, " +
+	                "R38_BOB_TOTAL_AMOUNT " +
+	                "FROM BRRS_M_LCR_MOD_SUMMARYTABLE " +
+	                "WHERE TRUNC(REPORT_DATE) = TRUNC(?) " +
+	                "AND MODIFY_FLG = 'Y'";
+
+	        List<Map<String, Object>> modList =
+	                jdbcTemplate.queryForList(
+	                        selectModSql,
+	                        new Object[] { reportDate });
+
+	        if (modList == null || modList.size() != 1) {
+	            throw new IllegalStateException(
+	                    "Expected exactly one MLCR MOD record. Found: "
+	                    + (modList == null ? 0 : modList.size()));
+	        }
+
+	        Map<String, Object> modData = modList.get(0);
+
+	        Object r14Value = modData.get("R14_BOB_TOTAL_AMOUNT");
+	        Object r31Value = modData.get("R31_BOB_TOTAL_AMOUNT");
+	        Object r38Value = modData.get("R38_BOB_TOTAL_AMOUNT");
+
+	        System.out.println("MLCR MOD VALUES FETCHED:");
+	        System.out.println("R14_BOB_TOTAL_AMOUNT : " + r14Value);
+	        System.out.println("R31_BOB_TOTAL_AMOUNT : " + r31Value);
+	        System.out.println("R38_BOB_TOTAL_AMOUNT : " + r38Value);
+
+	        // ----------------------------------------------------
+	        // 5. UPDATE LIVE SUMMARY FROM MOD SUMMARY
+	        // ----------------------------------------------------
+
+	        String summarySql =
+	                "UPDATE BRRS_M_LCR_SUMMARYTABLE SET " +
+	                "R14_BOB_TOTAL_AMOUNT = ?, " +
+	                "R31_BOB_TOTAL_AMOUNT = ?, " +
+	                "R38_BOB_TOTAL_AMOUNT = ? " +
+	                "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+	        int summaryCount = jdbcTemplate.update(
+	                summarySql,
+	                new Object[] {
+	                        r14Value,
+	                        r31Value,
+	                        r38Value,
+	                        reportDate
+	                });
+
+	        if (summaryCount != 1) {
+	            throw new IllegalStateException(
+	                    "MLCR LIVE SUMMARY UPDATE FAILED. Rows updated: "
+	                    + summaryCount);
+	        }
+
+	        System.out.println(
+	                "MLCR LIVE SUMMARY UPDATED. Rows: " + summaryCount);
+
+	        // ----------------------------------------------------
+	        // 6. VERIFY LIVE SUMMARY RECORD
+	        // ----------------------------------------------------
+
+	        String verifySql =
+	                "SELECT COUNT(*) " +
+	                "FROM BRRS_M_LCR_SUMMARYTABLE " +
+	                "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+	        Integer verifyCount = jdbcTemplate.queryForObject(
+	                verifySql,
+	                new Object[] { reportDate },
+	                Integer.class);
+
+	        if (verifyCount == null || verifyCount != 1) {
+	            throw new IllegalStateException(
+	                    "MLCR LIVE SUMMARY VERIFICATION FAILED");
+	        }
+
+	        System.out.println("MLCR LIVE SUMMARY VERIFICATION SUCCESS");
+
+	        // ----------------------------------------------------
+	        // 7. RESET MOD STATUS AFTER SUCCESSFUL TRANSFER
+	        // ----------------------------------------------------
+
+	        String statusSql =
+	                "UPDATE BRRS_M_LCR_MOD_SUMMARYTABLE " +
+	                "SET ENTITY_FLG = 'Y', " +
+	                "MODIFY_FLG = 'N', " +
+	                "DEL_FLG = 'N' " +
+	                "WHERE TRUNC(REPORT_DATE) = TRUNC(?) " +
+	                "AND MODIFY_FLG = 'Y'";
+
+	        int statusCount = jdbcTemplate.update(
+	                statusSql,
+	                new Object[] { reportDate });
+
+	        if (statusCount != modCount) {
+	            throw new IllegalStateException(
+	                    "MLCR MOD STATUS UPDATE FAILED. Rows: "
+	                    + statusCount);
+	        }
+
+	        System.out.println("MLCR MOD STATUS UPDATED: " + statusCount);
+
+	        // ----------------------------------------------------
+	        // 8. COMPLETED
+	        // ----------------------------------------------------
+
+	        System.out.println("======================================");
+	        System.out.println("MLCR CHECKER TRANSFER COMPLETED");
+	        System.out.println("REPORT DATE : " + reportDate);
+	        System.out.println("LIVE ROWS UPDATED : " + summaryCount);
+	        System.out.println("MODIFY_FLG : N");
+	        System.out.println("======================================");
+
+	    } catch (Exception e) {
+
+	        e.printStackTrace();
+
+	        throw new RuntimeException(
+	                "Failed to verify and transfer MLCR report",
+	                e);
+	    }
+	}
 
 
 	// ============================================================
