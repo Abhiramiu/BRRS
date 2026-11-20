@@ -282,7 +282,7 @@ public class BRRS_M_SEC_ReportService {
 	}
 
 	public List<BRRS_M_SEC_Archival_Summary_Entity1> getdatabydateListWithVersion1() {
-		String sql = "SELECT * FROM BRRS_M_SEC_ARCHIVALTABLE_SUMMARY1 WHERE report_version IS NOT NULL ORDER BY report_version ASC";
+		String sql = "SELECT * FROM BRRS_M_SEC_ARCHIVALTABLE_SUMMARY1 WHERE report_version IS NOT NULL ORDER BY REPORT_DATE ASC";
 		return jdbcTemplate.query(sql, new BRRS_M_SEC_Archival_Summary_RowMapper1());
 	}
 

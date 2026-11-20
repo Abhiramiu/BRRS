@@ -3763,7 +3763,7 @@ public void updateReport(BASEL_III_COM_EQUITY_DISC_Summary_Entity updatedEntity)
 
 		if (changes != null && !changes.isEmpty()) {
 			auditService.compareEntitiesmanual(oldcopy, existingSummary,
-					updatedEntity.getReport_date().toString(), "B_III_CETD Summary Screen", BC_LIVE_TABLE);
+					updatedEntity.getReport_date().toString(), "B_III_CETD Summary Screen", BC_MOD_TABLE);
 		}
 
 		System.out.println("B_III_CETD Manual Update saved for Checker Approval");

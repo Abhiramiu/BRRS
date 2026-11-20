@@ -56411,7 +56411,7 @@ public void updateReport(GL_SCH_Manual_Summary_Entity updatedEntity) {
 		// 🔹 Audit
 		if (changed) {
 			auditService.compareEntitiesmanual(oldcopy, newcopy, updatedEntity.getREPORT_DATE().toString(),
-					"GL SCH Manual Screen", GL_LIVE_TABLE);
+					"GL SCH Manual Screen", GL_MOD_TABLE);
 		}
 
 	} catch (Exception e) {

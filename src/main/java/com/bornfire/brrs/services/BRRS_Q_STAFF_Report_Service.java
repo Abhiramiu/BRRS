@@ -131,7 +131,7 @@ public class BRRS_Q_STAFF_Report_Service {
 	public List<Q_STAFF_Archival_Summary_Entity> getarchivaldatabydateListWithVersion() {
 
 		String sql = "SELECT * FROM BRRS_Q_STAFF_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_VERSION IS NOT NULL "
-				+ "ORDER BY REPORT_VERSION ASC";
+				+ "ORDER BY REPORT_DATE ASC";
 
 		return jdbcTemplate.query(sql, new Q_STAFF_Archival_Summary_RowMapper());
 	}

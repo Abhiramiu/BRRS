@@ -85251,7 +85251,7 @@ return out.toByteArray();
 	// FETCH DATA WITH VERSION ALL
 	// ------------------------------
 	private <T> List<T> getdatabydateListWithVersion(String tableName, Class<T> clazz) {
-		String sql = "SELECT * FROM " + tableName + " WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC";
+		String sql = "SELECT * FROM " + tableName + " WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_DATE ASC";
 		return jdbcTemplate.query(sql, new GenericRowMapper<>(clazz));
 	}
 

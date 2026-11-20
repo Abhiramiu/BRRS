@@ -128,7 +128,7 @@ public class BRRS_Q_SMME_DEP_ReportService {
 	public List<Q_SMME_DEP_Archival_Summary_Entity> getarchivaldatabydateListWithVersion() {
 
 		String sql = "SELECT * FROM BRRS_Q_SMME_DEP_ARCHIVAL_SUMMARYTABLE " + "WHERE REPORT_VERSION IS NOT NULL "
-				+ "ORDER BY REPORT_VERSION ASC";
+				+ "ORDER BY REPORT_DATE ASC";
 
 		return jdbcTemplate.query(sql, new Q_SMME_DEP_Archival_Summary_RowMapper());
 	}

@@ -20277,7 +20277,7 @@ public class BRRS_PL_SCHS_ReportService {
 			if (changes != null && !changes.trim().isEmpty()) {
 				if (changes.length() <= 2000) {
 					auditService.compareEntitiesmanual(oldcopy, newcopy, updatedEntity.getREPORT_DATE().toString(),
-							"PL SCHS Summary Screen", PL_LIVE_TABLE);
+							"PL SCHS Summary Screen", PL_MOD_TABLE);
 				} else {
 					System.out.println("Audit skipped because MODI_DETAILS exceeds 2000 characters.");
 				}

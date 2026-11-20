@@ -1620,6 +1620,8 @@ public class AuditService {
 			transferIRRBBBORROWINGSData(auditRecord);
 		} else if (upperTable.equals("BRRS_ADISB1_MOD_SUMMARYTABLE_MANUAL")) {
 			transferADISB1Data(auditRecord);
+		}  else if (upperTable.equals("BRRS_MASTER_MOD_SUMMARYTABLE")) {
+			transferMasterData(auditRecord);
 		} else {
 			throw new IllegalArgumentException("Verification not configured for table: " + auditTable);
 		}
@@ -9518,5 +9520,100 @@ try {
 
     	System.out.println("SLS Verification and Procedure Execution Completed Successfully");
     }
+	private void transferMasterData(AuditServicesEntity auditRecord) {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_MASTER_MOD_SUMMARYTABLE";
+		java.sql.Date reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified MASTER record available for verification.");
+		}
+
+		System.out.println("MASTER Report Date : " + reportDate);
+
+		// ---- Column list (same columns the MASTER entity uses) ----
+		int[][] rowRanges = { { 11, 15 }, { 21, 24 }, { 30, 33 }, { 39, 41 }, { 50, 75 }, { 111, 128 }, { 135, 139 },
+				{ 144, 148 }, { 153, 155 }, { 161, 164 }, { 170, 172 }, { 179, 181 } };
+
+		String[][] rangeFields = { { "CUSTOMER_DEPOSIT", "NO_OF_ACCOUNTS", "TOTAL_DEPOSITS" },
+				{ "CUSTOMER_DEPOSIT", "NO_OF_CUSTOMER", "VALUE" },
+				{ "CUSTOMER_DEPOSIT", "LOW_CUSTOMER", "LOW_DEPOSIT", "MEDIUM_CUSTOMER", "MEDIUM_DEPOSIT",
+						"HIGH_CUSTOMER", "HIGH_DEPOSIT", "TOTAL_CUSTOMER", "TOTAL_DEPOSIT" },
+				{ "CUSTOMER_DEPOSIT", "NO_OF_ACCOUNTS", "DEPOSITS" },
+				{ "CUSTOMER_DEPOSIT", "NO_OF_ACCOUNTS", "DEPOSITS" },
+				{ "PAYMENT_MECHANISM", "PAYMENT_MECHANISM2", "NO_OF_TRANSFER", "VALUES_OF_TRANSFER" },
+				{ "FOREIGN_EXCHANGE", "FOREIGN_EXCHANGE2", "TRANSACTIONS" }, { "TYPES", "TRANSACTIONS" },
+				{ "PRODUCT", "NO_OF_CUSTOMER", "OUTSTANDING", "TURNOVER" }, { "TRADE", "NO_OF_CUSTOMER", "COMMITMENT" },
+				{ "PAYMENT", "PAYMENT1", "NO_OF_TRANSFER", "VALUE_OF_TRANSFER" },
+				{ "TRANSACTION", "NO_OF_TRANSACTION" } };
+
+		int[][] rowLists = { { 82, 83, 89, 90, 96, 97, 104, 105 }, { 187, 192, 196, 201 } };
+
+		String[][] listFields = { { "CUSTOMER", "LOAN", "DEPOSITS", "FUNDS", "TURNOVER" },
+				{ "TRANSACTION", "NO_OF_TRANSACTION", "VALUE_OF_TRANSACTION" } };
+
+		StringBuilder target = new StringBuilder();
+		StringBuilder source = new StringBuilder();
+
+		for (int g = 0; g < rowRanges.length; g++) {
+			for (int r = rowRanges[g][0]; r <= rowRanges[g][1]; r++) {
+				for (String f : rangeFields[g]) {
+					target.append("R").append(r).append("_").append(f).append(", ");
+					source.append("S.R").append(r).append("_").append(f).append(", ");
+				}
+			}
+		}
+		for (int g = 0; g < rowLists.length; g++) {
+			for (int r : rowLists[g]) {
+				for (String f : listFields[g]) {
+					target.append("R").append(r).append("_").append(f).append(", ");
+					source.append("S.R").append(r).append("_").append(f).append(", ");
+				}
+			}
+		}
+		target.append("ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+		source.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG ");
+
+		// 1. Update BRRS_MASTER_SUMMARYTABLE from MOD table
+		String updateSummarySql = "UPDATE BRRS_MASTER_SUMMARYTABLE M " + "SET (" + target + ") = (" + "    SELECT "
+				+ source + "    FROM BRRS_MASTER_MOD_SUMMARYTABLE S "
+				+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" + ") "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int summaryUpdated;
+		try {
+			summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+		} catch (Exception e) {
+			System.out.println("MASTER SUMMARY UPDATE FAILED : " + e.getMessage());
+			throw e;
+		}
+
+		if (summaryUpdated == 0) {
+			throw new IllegalStateException("MASTER modification record not found for date : " + reportDate);
+		}
+
+		System.out.println("MASTER Summary Table Updated : " + summaryUpdated);
+
+		// 2. Update BRRS_MASTER_DETAILTABLE from MOD table (Same column mapping)
+		String updateDetailSql = "UPDATE BRRS_MASTER_DETAILTABLE M " + "SET (" + target + ") = (" + "    SELECT "
+				+ source + "    FROM BRRS_MASTER_MOD_SUMMARYTABLE S "
+				+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" + ") "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int detailUpdated;
+		try {
+			detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+		} catch (Exception e) {
+			System.out.println("MASTER DETAIL UPDATE FAILED : " + e.getMessage());
+			throw e;
+		}
+		System.out.println("MASTER Detail Table Updated : " + detailUpdated);
+
+		// 3. Mark MOD record status as approved (MODIFY_FLG = 'N')
+		String updateModSql = "UPDATE BRRS_MASTER_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+		int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+
+		System.out.println("MASTER MOD Updated : " + modUpdated);
+		System.out.println("MASTER Verification and Transfer Completed Successfully");
+	}
 
 }

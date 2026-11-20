@@ -8583,5 +8583,66 @@ public class BRRS_ReportsController {
 		response.getOutputStream().write(file);
 		response.getOutputStream().flush();
 	}
+	@Autowired
+	BRRS_MASTER_ReportService MASTER_ReportService;
 
+	@RequestMapping(value = "/MASTERupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateAllReports(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute MASTER_Summary_Entity request1) {
+
+		try {
+			System.out.println("Came to single controller");
+
+			if (asondate != null) {
+				request1.setReport_date(asondate);
+			}
+
+			MASTER_ReportService.updateReport(request1);
+
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+
+	@RequestMapping(value = "/UpdateMASTER_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportReSub(
+
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+			@ModelAttribute BRRS_MASTER_ReportService.MASTER_Resub_Summary_Entity request,
+
+			HttpServletRequest req) {
+
+		try {
+
+			System.out.println("Came to Resub Controller");
+
+			if (asondate != null) {
+
+				request.setReport_date(asondate);
+				System.out.println("Set Report Date: " + asondate);
+
+			} else {
+
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
+			}
+
+			MASTER_ReportService.updateResubReport(request);
+
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Resubmission Update Failed: " + e.getMessage());
+		}
+	}
 }

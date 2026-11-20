@@ -1214,6 +1214,12 @@ public class RegulatoryReportServices {
 					currency, dtltype, pageable, type, version);
 
 			break;
+			
+		case "MASTER":
+			repsummary = brrs_master_reportservice.getMASTERView(reportId, fromdate, todate,
+					currency, dtltype, pageable, type, version, req, md);
+
+			break;
 		}
 
 		return repsummary;
@@ -1618,11 +1624,11 @@ public class RegulatoryReportServices {
 					pageable, Filter, type, version);
 			break;
 
-		case "MASTER":
-
-			repdetail = brrs_master_reportservice.getMASTERcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
+//		case "MASTER":
+//
+//			repdetail = brrs_master_reportservice.getMASTERcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+//					pageable, Filter, type, version);
+//			break;
 
 		case "NSFR":
 
@@ -2883,7 +2889,14 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-
+		case "MASTER":
+			try {
+				repfile = brrs_master_reportservice.getBRRS_MASTERExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, type, format, version);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
 		case "FORMAT_III":
 			try {
 				repfile = BRRS_FORMAT_III_ReportService.getFORMAT_IIIExcel(filename, reportId, fromdate, todate,
@@ -3112,9 +3125,9 @@ public class RegulatoryReportServices {
 		} else if ("MDISB3".equals(filename)) {
 			return brrs_mdisb3_reportservice.getMDISB3DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
-		} else if ("MASTER".equals(filename)) {
-			return brrs_master_reportservice.getMASTERDetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
+//		} else if ("MASTER".equals(filename)) {
+//			return brrs_master_reportservice.getMASTERDetailExcel(filename, fromdate, todate, currency, dtltype, type,
+//					version);
 		} else if ("NSFRDetail".equals(filename)) {
 			return BRRS_NSFR_ReportService.getNSFRDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
@@ -3935,15 +3948,13 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched MDISB3 archival data: " + MDISB3List.size());
 			break;
 
+	
 		case "MASTER":
-			try {
-				archivalData = brrs_master_reportservice.getMASTERArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> MASTERList = brrs_master_reportservice.getMASTERArchival();
+			archivalData.addAll(MASTERList);
+			System.out.println("Fetched MASTER archival data: " + MASTERList.size());
 			break;
-
+			
 		case "CPR_STRUCT_LIQ":
 			List<Object[]> cslList = BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQArchival();
 			archivalData.addAll(cslList);
@@ -4244,9 +4255,9 @@ public class RegulatoryReportServices {
 			fileData = brrs_mdisb3_reportservice.getMDISB3DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 
-		} else if (filename.equals("MASTERDetail")) {
-			fileData = brrs_master_reportservice.getMASTERDetailExcel(filename, fromdate, todate, currency, dtltype,
-					type, version);
+//		} else if (filename.equals("MASTERDetail")) {
+//			fileData = brrs_master_reportservice.getMASTERDetailExcel(filename, fromdate, todate, currency, dtltype,
+//					type, version);
 
 		} else if ("CAP_ADEQ".equals(filename)) {
 
@@ -4748,10 +4759,10 @@ public class RegulatoryReportServices {
 						request.getParameter("formmode"));
 				break;
 
-			case "MASTER":
-				modelAndView = brrs_master_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
-				break;
+//			case "MASTER":
+//				modelAndView = brrs_master_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+//						request.getParameter("formmode"));
+//				break;
 
 			case "NSFR":
 				modelAndView = BRRS_NSFR_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
@@ -4915,9 +4926,9 @@ public class RegulatoryReportServices {
 				response = brrs_mdisb3_reportservice.updateDetailEdit(request);
 				break;
 
-			case "MASTER":
-				response = brrs_master_reportservice.updateDetailEdit(request);
-				break;
+//			case "MASTER":
+//				response = brrs_master_reportservice.updateDetailEdit(request);
+//				break;
 
 			case "M_LA1":
 				response = BRRS_M_LA1_reportservice.updateDetailEdit(request);
@@ -5353,6 +5364,16 @@ public class RegulatoryReportServices {
 				System.out.println("Resubmission data fetched for Q_STAFF: " + resubList.size());
 			} catch (Exception e) {
 				System.err.println("Error fetching resubmission data for Q_STAFF: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+		case "MASTER":
+			try {
+				List<Object[]> resubList = brrs_master_reportservice.getMASTERResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for MASTER: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for MASTER: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;

@@ -1511,7 +1511,7 @@ public class BRRS_M_FAS_ReportService {
 		List<Object[]> archivalList = new ArrayList<>();
 
 		try {
-			String sql = "SELECT * FROM BRRS_M_FAS_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC";
+			String sql = "SELECT * FROM BRRS_M_FAS_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_DATE DESC";
 			List<M_FAS_Archival_Summary_Entity> repoData = jdbcTemplate.query(sql,
 					new GenericRowMapper<>(M_FAS_Archival_Summary_Entity.class));
 

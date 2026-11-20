@@ -40804,7 +40804,7 @@ public class BRRS_AS_11_ReportService {
 
 			if (changes != null && !changes.isEmpty()) {
 				auditService.compareEntitiesmanual(oldcopy, newcopy, updatedEntity.getREPORT_DATE().toString(),
-						"AS 11 Screen", AS11_LIVE_TABLE);
+						"AS 11 Screen", AS11_MOD_TABLE);
 			}
 
 			System.out.println("AS 11 Manual Update saved for Checker Approval");

@@ -132,7 +132,7 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 	public List<Q_SMME_Intrest_Income_Archival_Summary_Entity> getdatabydateListWithVersion() {
 
 		String sql = "SELECT * FROM BRRS_Q_SMME_INTREST_INCOME_ARCHIVALTABLE_SUMMARY "
-				+ "WHERE REPORT_VERSION IS NOT NULL " + "ORDER BY REPORT_VERSION ASC";
+				+ "WHERE REPORT_VERSION IS NOT NULL " + "ORDER BY REPORT_DATE ASC";
 
 		return jdbcTemplate.query(sql, new Q_SMME_Intrest_IncomeArchivalRowMapper());
 	}

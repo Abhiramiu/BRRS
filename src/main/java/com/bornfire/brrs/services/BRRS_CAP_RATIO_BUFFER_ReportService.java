@@ -2367,7 +2367,7 @@ public class BRRS_CAP_RATIO_BUFFER_ReportService {
 
 			if (changes != null && !changes.isEmpty()) {
 				auditService.compareEntitiesmanual(oldcopy, newcopy, updatedEntity.getReport_date().toString(),
-						"CAP RATIO BUFFER Screen", CRB_LIVE_TABLE);
+						"CAP RATIO BUFFER Screen", CRB_MOD_TABLE);
 			}
 
 			System.out.println("CAP_RATIO_BUFFER Manual Update saved for Checker Approval");
