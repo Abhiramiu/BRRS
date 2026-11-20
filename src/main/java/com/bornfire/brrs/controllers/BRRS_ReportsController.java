@@ -72,6 +72,7 @@ import com.bornfire.brrs.services.BRRS_AS_11_ReportService.AS_11_Summary_Entity1
 import com.bornfire.brrs.services.BRRS_EXPOSURES_ReportService.EXPOSURES_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_FORMAT_NEW_CPR_ReportService.FORMAT_NEW_CPR_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_FSI_ReportService.FSI_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_MASTER_ReportService.MASTER_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_CA2_ReportService.M_CA2_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_CA3_ReportService.M_CA3_Resub_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_CA3_ReportService.M_CA3_Summary_Entity;
