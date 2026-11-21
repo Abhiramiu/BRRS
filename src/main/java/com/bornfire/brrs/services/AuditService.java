@@ -3439,11 +3439,8 @@ try {
 
 		// Execute summary procedure after verification
 		String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
-//		try {
-//			jdbcTemplate.update("BEGIN BRRS_IRRBB_ADV_SUMMARY_PROCEDURE(?); END;", formattedDate);
-//		} catch (Exception ex) {
-//			jdbcTemplate.update("BEGIN BRRS_IRRBB_ADV_SUMMARY_PROCEDURE; END;");
-//		}
+		jdbcTemplate.update("BEGIN BRRS_IRRBB_ADV_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
 
 		System.out.println("IRRBB_ADV Verification, Transfer and Summary Procedure Execution Completed Successfully");
 	}
