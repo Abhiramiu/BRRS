@@ -368,38 +368,27 @@ PURPOSE		: BRRSREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
+		    // ✅ Guard against undefined globals
+		    if (typeof type === 'undefined' || typeof allowdetail === 'undefined') {
+		        showResultModal("Error", "Page configuration missing. Please reload.");
+		        return;
+		    }
 
-					if ((type === "RESUB" || type === "ARCHIVAL") && allowdetail === "NO") {
-						showResultModal("Information", "Detail page is only available for highest report version only");
-						return;
-					}
+		    if ((type === "RESUB" || type === "ARCHIVAL") && allowdetail === "NO") {
+		        showResultModal("Information", "Detail page is only available for highest report version only");
+		        return;
+		    }
 
-					var Callurl;
-								$('#loader').modal('show');
-								Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
-									location.href = Callurl;
-								console.log(Callurl);
-					/*  $.ajax({
-						 type: 'get',
-						 url: Callurl,
-						 beforeSend: function () {
-							 $('#loader').modal('show'); // 🔄 Show loader
-						 },
-						 success: function (data) {
-							 $('.content').html(data);
-							 //$("#detailsbtn").addClass("active");
-							 //tablepagination();
-						 },
-						 complete: function () {
-							 $('#loader').modal('hide'); 
-						 },
-						 error: function () {
-							   $('#loader').modal('hide');
-							 alert("Something went wrongss. Please try again.");
-						   
-						 }
-					 }); */
-				}
+		    var Callurl;
+		    $('#loader').modal('show');
+		    Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/ '';
+		    if (!Callurl) {
+		        $('#loader').modal('hide');
+		        showResultModal("Error", "Could not build detail URL.");
+		        return;
+		    }
+		    location.href = Callurl;
+		}
 		function showsummary() {
 					var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static', keyboard: false});
 					loader.show();
@@ -643,25 +632,32 @@ PURPOSE		: BRRSREPORT
 				}
 			});
 		}
+		
 		function regenerateProcedure() {
-			let rawDate = /*[[${todate}]]*/ 'fallback-string';
+		    let rawDate = /*[[${todate}]]*/ '';
 
-			let cleanDate = rawDate.replace(/['"]/g, '');
+		    // ✅ Null/undefined guard
+		    if (rawDate === null || rawDate === undefined || String(rawDate).trim() === '') {
+		        showResultModalDU('Error', 'Report date is missing. Please reload the page.');
+		        return;
+		    }
 
-			let formattedDate = cleanDate;
-			let dateParts = cleanDate.split(/[\/\-]/);
+		    let cleanDate = String(rawDate).replace(/['"]/g, '');
 
-			if (dateParts.length === 3) {
-				formattedDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0];
-			}
-			let formData = 'type=RESUB&entry=NO&reportDate=' + formattedDate;
+		    let formattedDate = cleanDate;
+		    let dateParts = cleanDate.split(/[\/\-]/);
 
-			$('#loader').modal('show');
+		    if (dateParts.length === 3) {
+		        formattedDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0];
+		    }
+		    let formData = 'type=RESUB&entry=NO&reportDate=' + formattedDate;
 
-			$.ajax({
-				url: '/BRRS/Reports/' + reportId + '/regenprocedure',
-				type: 'POST',
-				data: formData,
+		    $('#loader').modal('show');
+
+		    $.ajax({
+		        url: '/BRRS/Reports/' + reportId + '/regenprocedure',
+		        type: 'POST',
+		        data: formData,
 
 				success: function (response) {
 					$('#loader').modal('hide');
@@ -781,24 +777,32 @@ PURPOSE		: BRRSREPORT
 
 		function openm_la1Detail(elem, mode) {
 
-					var type = elem.getAttribute('data-type');
+		    var type = elem.getAttribute('data-type');
 
-					if (type === "ARCHIVAL") {
-						showResultModal('BRRS', "Archived Data cannot be modified");
-						return;
-					}
+		    if (type === "ARCHIVAL") {
+		        showResultModal('BRRS', "Archived Data cannot be modified");
+		        return;
+		    }
 
-					const acctNo = elem.getAttribute("data-acctNo");
-					const SNO = elem.getAttribute("data-SNo");
-					const asondate = elem.getAttribute("data-asondate");
-					const version = elem.getAttribute("data-version");
+		    const SNO = elem.getAttribute("data-SNo");
+		    const asondate = elem.getAttribute("data-asondate");
+		    const version = elem.getAttribute("data-version");
 
-					let url = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&SNO=${SNO}&asondate=${asondate}&type=${type}`;
-					if (version) {
-						url += `&version=${encodeURIComponent(version)}`;
-					}
-					location.href = url;
-				}
+		    // ✅ Validate required params
+		    if (!SNO || !asondate) {
+		        showResultModal("Error", "Missing record identifiers. Please refresh the page.");
+		        return;
+		    }
+
+		    let url = `/BRRS/Reports/${reportId}/Detailspage?formmode=${encodeURIComponent(mode)}`
+		            + `&SNO=${encodeURIComponent(SNO)}`
+		            + `&asondate=${encodeURIComponent(asondate)}`
+		            + `&type=${encodeURIComponent(type)}`;
+		    if (version) {
+		        url += `&version=${encodeURIComponent(version)}`;
+		    }
+		    location.href = url;
+		}
 
 		function downloadDetailfile(jobId, filename) {
 
@@ -927,65 +931,54 @@ PURPOSE		: BRRSREPORT
 			text-align: left !important;
 		}
 
-		/* Right-align header (7th column = ACCT BALANCE) */
+		/* Right-align header (6th column = ACCT BALANCE IN PULA) */
+		table.dataTable th.dt-type-numeric:nth-child(6) {
+		    text-align: right !important;
+		}
+
+		/* Right-align header (7th column = APPROVED LIMIT) */
 		table.dataTable th.dt-type-numeric:nth-child(7) {
-			text-align: right !important;
+		    text-align: right !important;
 		}
 
-
-		/* Right-align header (8th column = APPROVED LIMIT) */
-		table.dataTable th.dt-type-numeric:nth-child(8) {
-			text-align: right !important;
+		/* Right-align data (6th column = ACCT BALANCE IN PULA) */
+		#reportdetails td:nth-child(6),
+		.dataTables_scrollHeadInner table th:nth-child(6) {
+		    text-align: right !important;
+		    padding-right: 10px !important;
 		}
 
-		/* Right-align data (7th column = ACCT BALANCE) */
+		/* Right-align data (7th column = APPROVED LIMIT) */
 		#reportdetails td:nth-child(7),
 		.dataTables_scrollHeadInner table th:nth-child(7) {
-			text-align: right !important;
-			padding-right: 10px !important;
-		}
-
-		/* Right-align data (8th column = APPROVED LIMIT) */
-		#reportdetails td:nth-child(8),
-		.dataTables_scrollHeadInner table th:nth-child(8) {
-			text-align: right !important;
-			padding-right: 10px !important;
+		    text-align: right !important;
+		    padding-right: 10px !important;
 		}
 	</style>
 	<script th:inline="javascript">
 		$(document).ready(function () {
-			var table = $('#reportdetails').DataTable({
-				scrollY: "550px",
-				scrollX: true,
-				scrollCollapse: true,
-				autoWidth: false,
-				paging: true,
-				searching: true,
-				lengthChange: false,
-				ordering: true,
-				pageLength: 100,
-				fixedHeader: true, // ✅ You can simply set it to true
-				// ✅ Column width settings
-				columnDefs: [
-					{width: "60px", targets: 0},   // Edit icon column
-					{width: "100px", targets: 1},  // SNO column
-					{width: "100px", targets: 2},  // S No column
-					{width: "113px", targets: 8}    // REPORT LABEL column
+		    var table = $('#reportdetails').DataTable({
+		        scrollY: "550px",
+		        scrollX: true,
+		        scrollCollapse: true,
+		        autoWidth: false,
+		        paging: true,
+		        searching: true,
+		        lengthChange: false,
+		        ordering: true,
+		        pageLength: 100,
+		        fixedHeader: true,
+		        columnDefs: [
+		            { width: "60px",  targets: 0 },
+		            { width: "100px", targets: 1 },
+		            { width: "100px", targets: 2 },
+		            { width: "113px", targets: 7 }   // REPORT LABEL
+		        ],
+		        dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+		    });
 
-				],
-
-				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-			});
-
-			// ✅ Fix alignment on resize / zoom
-			$(window).on('resize', function () {
-				table.columns.adjust().draw(false);
-			});
-
-			// ✅ Fix initial misalignment if loaded at non-100% zoom
-			setTimeout(function () {
-				table.columns.adjust().draw(false);
-			}, 500);
+		    $(window).on('resize', function () { table.columns.adjust().draw(false); });
+		    setTimeout(function () { table.columns.adjust().draw(false); }, 500);
 		});
 	</script>
 
@@ -2191,7 +2184,7 @@ PURPOSE		: BRRSREPORT
 											<td>
 												<a data-toggle="tooltip" class="editrec"
 													title="Click to Edit this Record"
-													th:if="${allowdetail != 'NO' and and (role == 'M' or role == 'MAN')}">
+													th:if="${allowdetail != 'NO' and (role == 'M' or role == 'MAN')}">
 													<i class="fas fa-edit" th:attr="data-SNo=${report.sno},
 														data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')},
 														data-version=${version != null ? version : (report.data_entry_version != null ? report.data_entry_version : '')},
