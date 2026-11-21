@@ -83,6 +83,7 @@ import com.bornfire.brrs.services.AccessAndRolesServices;
 import com.bornfire.brrs.services.BDGF_Services;
 import com.bornfire.brrs.services.BFDB_Services;
 import com.bornfire.brrs.services.BLBF_Services;
+import com.bornfire.brrs.services.BRRS_CRB_ReportService;
 import com.bornfire.brrs.services.BRRS_SLS_INPUT_SHT_ReportService;
 import com.bornfire.brrs.services.BRRS_Validation_Services;
 import com.bornfire.brrs.services.BankBranchService;
@@ -91,6 +92,8 @@ import com.bornfire.brrs.services.LoginServices;
 import com.bornfire.brrs.services.MCBL_Services;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportServices;
+
+
 
 @Controller
 @ConfigurationProperties("default")
@@ -170,6 +173,10 @@ public class NavigationController {
 
 	@Autowired
 	BrrsCommonMappingRepo CommonMappingRepo;
+	
+	
+	@Autowired
+	BRRS_CRB_ReportService brrs_crb_reportservice;
 
 	@Autowired
 	BRRS_Validation_Services BRRSValidationServices;
@@ -568,6 +575,17 @@ public class NavigationController {
 		md.addAttribute("menu", "RBR Reports- SLS");
 		System.out.println("count" + rrReportlist.getReportListbrrsSLS().size());
 		md.addAttribute("reportlist", rrReportlist.getReportListbrrsSLS());
+
+		return "BRRS/RRReports";
+
+	}
+	
+	
+	@RequestMapping(value = "CRB", method = { RequestMethod.GET, RequestMethod.POST })
+	public String CRB(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- SLS");
+		System.out.println("count" + rrReportlist.getReportListbrrsCRB().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsCRB());
 
 		return "BRRS/RRReports";
 
@@ -2537,4 +2555,24 @@ public class NavigationController {
 
 		return map;
 	}
+	
+	
+	
+	@PostMapping("/Reports/CRB/upload")          // see the note on the path below
+	@ResponseBody
+	public ResponseEntity<String> uploadCRB(@RequestParam("file") MultipartFile file,
+	        @RequestParam("todate") String todate) {
+	    try {
+	        int count = brrs_crb_reportservice.uploadCRBFile(file, todate);
+	        return ResponseEntity.ok(count + " records uploaded successfully for " + todate + ".");
+	    } catch (IllegalArgumentException e) {
+	        return ResponseEntity.badRequest().body(e.getMessage());
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload failed: " + e.getMessage());
+	    }
+	}
+
+	
+
 }

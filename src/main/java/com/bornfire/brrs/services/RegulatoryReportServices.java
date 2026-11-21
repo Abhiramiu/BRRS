@@ -169,6 +169,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_SLS_INPUT_SHT_ReportService BRRS_SLS_INPUT_SHT_reportservice;
+	
+	@Autowired
+	BRRS_CRB_ReportService BRRS_CRB_reportservice;
 
 	@Autowired
 	BRRS_SLS_INR_ReportService BRRS_SLS_INR_reportservice;
@@ -509,6 +512,11 @@ public class RegulatoryReportServices {
 
 		case "SLS":
 			repsummary = BRRS_SLS_INPUT_SHT_reportservice.getSLSView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version, req, md);
+			break;
+			
+		case "CRB":
+			repsummary = BRRS_CRB_reportservice.getCRBView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version, req, md);
 			break;
 

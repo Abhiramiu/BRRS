@@ -1,0 +1,422 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+	<style>
+		div span {font-weight: bold; color: white !important;}
+		.card {box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 8px;}
+
+		.custom-tab-btn {
+			background-color: transparent; color: white; border: 2px solid white;
+			border-radius: 20px; padding: 6px 16px; margin-left: 8px;
+			font-family: Arial; font-weight: bold; cursor: pointer;
+			transition: background-color 0.2s, color 0.2s;
+		}
+		.custom-tab-btn:hover, .custom-tab-btn.active {background-color: white; color: #6b7a8f;}
+
+		.left-arrow-circle {
+			width: 36px; height: 36px; border-radius: 50%; border: 2px solid white;
+			display: flex; align-items: center; justify-content: center;
+			cursor: pointer; margin-right: 10px; color: white;
+		}
+
+		div.dataTables_scrollBody {border-bottom: 1px solid #dee2e6;}
+		div.dataTables_wrapper div.dataTables_paginate {text-align: right !important; float: right !important; width: auto; margin-top: 10px;}
+		div.dataTables_wrapper div.dataTables_info {float: left !important; margin-top: 10px;}
+		.pagination {margin: 0;}
+		.page-item.active .page-link {background-color: #386276; border-color: #386276;}
+		.page-link {color: #386276;}
+		.page-link:hover {color: #2a4a5c;}
+
+		#crbTbl td {white-space: nowrap;}
+		#crbTbl th {vertical-align: middle;}
+
+		/* Download split button */
+		.dl-split-wrap {position: relative; display: inline-flex; margin-left: 8px;}
+		.dl-main-btn {border-radius: 20px 0 0 20px !important; margin-left: 0 !important; border-right: none !important;}
+		.dl-caret-btn {
+			background-color: transparent; color: white; border: 2px solid white;
+			border-radius: 0 20px 20px 0; padding: 6px 10px; font-weight: bold;
+			cursor: pointer; transition: background-color 0.2s, color 0.2s;
+		}
+		.dl-caret-btn:hover {background-color: white; color: #6b7a8f;}
+		.dl-dropdown-menu {
+			display: none; position: absolute; top: 110%; right: 0; background: white;
+			border: 1px solid #ccc; border-radius: 6px; min-width: 200px; z-index: 999;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); padding: 6px 0;
+		}
+		.dl-dropdown-menu a {display: block; padding: 8px 16px; color: #333; text-decoration: none; font-size: 13px; font-family: Arial;}
+		.dl-dropdown-menu a:hover {background-color: #f5f5f5; color: #E77400;}
+	</style>
+
+	<script>
+		function back() {
+			$("#loader").modal("toggle");
+			window.history.back();
+		}
+
+		// ============================================================
+		// Excel download (summary / archival)
+		// ============================================================
+		function downloadExcel() {
+			var todate  = document.getElementById('hdnTodate').value;
+			var type    = document.getElementById('hdnType').value;
+			var version = document.getElementById('hdnVersion').value;
+			var isArchival = (type === 'ARCHIVAL');
+
+			var url = '/BRRS/Reports/CRB/downloadSummary?todate=' + encodeURIComponent(todate);
+			if (isArchival) {
+				url += '&type=ARCHIVAL';
+				if (version) url += '&version=' + encodeURIComponent(version);
+			}
+
+			$('#loader').modal('show');
+			jQuery.ajax({
+				url: url,
+				type: 'GET', xhrFields: {responseType: 'blob'},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						var a = document.createElement('a');
+						a.href = window.URL.createObjectURL(new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+						a.download = isArchival ? 'CRB_Archive_Summary.xlsx' : 'CRB_Summary.xlsx';
+						document.body.appendChild(a); a.click(); document.body.removeChild(a);
+					} else {alert('No data available.');}
+				},
+				error: function (jqXHR) {$('#loader').modal('hide'); alert('Download failed (HTTP ' + jqXHR.status + ').');}
+			});
+		}
+
+		// ============================================================
+		// File upload (Excel -> CRB table)
+		// ============================================================
+		var reloadAfterModal = false;
+
+		function showResultModal(title, message) {
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+			$('#resultModal').modal('show');
+		}
+
+		function uploadCrbFile(input) {
+			var file = input.files[0];
+			if (!file) return;
+
+			if (!/\.(xlsx|xls)$/i.test(file.name)) {
+				showResultModal('Upload Failed', 'Please select an Excel file (.xlsx or .xls).');
+				input.value = '';
+				return;
+			}
+
+			var fd = new FormData();
+			fd.append('file', file);
+			fd.append('todate', document.getElementById('hdnTodate').value);
+
+			$('#loader').modal('show');
+			jQuery.ajax({
+				url: '/BRRS/Reports/CRB/upload',
+				type: 'POST',
+				data: fd,
+				processData: false,
+				contentType: false,
+				success: function (msg) {
+					$('#loader').modal('hide');
+					reloadAfterModal = true;
+					setTimeout(function () {showResultModal('Upload Successful', msg);}, 400);
+				},
+				error: function (jqXHR) {
+					$('#loader').modal('hide');
+					var msg = jqXHR.responseText || ('Upload failed (HTTP ' + jqXHR.status + ').');
+					setTimeout(function () {showResultModal('Upload Failed', msg);}, 400);
+				},
+				complete: function () {input.value = '';}
+			});
+		}
+
+		function toggleDlMenu(menuId) {
+			var menu = document.getElementById(menuId);
+			menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+		}
+		document.addEventListener('click', function (evt) {
+			var wrap = document.getElementById('dlSumWrap');
+			var menu = wrap ? wrap.querySelector('.dl-dropdown-menu') : null;
+			if (wrap && menu && !wrap.contains(evt.target)) menu.style.display = 'none';
+		});
+	</script>
+
+	<title>CRB</title>
+</head>
+
+<body>
+	<div class="container-fluid" style="padding-left:0px; padding-right:0px;">
+		<div class="row">
+
+			<div th:insert="HeaderMenu :: header"></div>
+
+			<div class="card" style="width:100%;">
+
+				<!-- ===== CARD HEADER ===== -->
+				<div class="card-header"
+					style="background-color:rgb(107,122,143); display:flex; align-items:center; justify-content:space-between;">
+
+					<div style="display:flex; align-items:center;" onclick="back();">
+						<div class="left-arrow-circle">
+							<i class="fa fa-arrow-left"></i>
+						</div>
+						<h5 style="font-family:arial; font-size:20px; font-weight:bold; color:white; margin:0 10px;">
+							CRB
+						</h5>
+					</div>
+
+					<div style="display:flex; color:white; align-items:center;">
+						<span style="color:white !important; font-size:16px; margin-right:20px;">
+							Report Date:
+							<span th:text="${#strings.replace(asondate,'/','-')}">2025-07-04</span>
+						</span>
+
+						<input type="hidden" id="hdnFromdate" th:value="${fromdate}" />
+						<input type="hidden" id="hdnTodate" th:value="${todate}" />
+						<input type="hidden" id="hdnType" th:value="${type}" />
+						<input type="hidden" id="hdnVersion" th:value="${version}" />
+
+						<!-- File Upload button (Maker roles, live summary only) -->
+						<div th:if="${displaymode == 'summary' and type != 'ARCHIVAL'
+						             and (role == 'M' or role == 'MAKER' or role == 'MAN' or role == 'MANAGER' or role == 'ADMIN' or role == 'A' or role == 'B')}">
+							<input type="file" id="crbFile" accept=".xlsx,.xls" style="display:none;"
+								onchange="uploadCrbFile(this)" />
+							<button class="custom-tab-btn" onclick="document.getElementById('crbFile').click()">
+								<i class="fa fa-upload"></i> File Upload
+							</button>
+						</div>
+
+						<!-- Download split button -->
+						<div th:if="${displaymode == 'summary'
+						             and (role == 'C' or role == 'CHECKER' or role == 'MAN' or role == 'MANAGER' or role == 'ADMIN' or role == 'A' or role == 'B')}"
+							class="dl-split-wrap" id="dlSumWrap">
+							<button class="custom-tab-btn dl-main-btn" onclick="downloadExcel()">
+								<i class="fa fa-download"></i> Download
+							</button>
+							<button class="dl-caret-btn" onclick="toggleDlMenu('dlSumMenu')">&#9662;</button>
+							<div class="dl-dropdown-menu" id="dlSumMenu">
+								<a href="#" onclick="downloadExcel(); return false;"><i
+										class="fa fa-file-excel"></i> Excel &#8212; Summary</a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- ===== SECTION HEADING ===== -->
+				<h1 th:if="${displaymode == 'summary'}" style="text-align:left; font-family:arial; font-weight:bold; color:white; font-size:20px;
+                       background-color:rgb(107,122,143); margin-top:10px; margin-bottom:10px; padding:10px;">
+					Summary View - CRB
+				</h1>
+
+				<!-- ===================================================== -->
+				<!-- SUMMARY TABLE                                          -->
+				<!-- ===================================================== -->
+				<div th:if="${displaymode == 'summary'}">
+					<div class="row">
+						<div class="col-sm-12">
+							<table class="table table-bordered table-hover table-sm" id="crbTbl">
+								<thead>
+									<tr>
+								<th>Data</th>
+								<th>OMANG ID NUMBER</th>
+								<th>PASSPORT NUMBER</th>
+								<th>Gender</th>
+								<th>Date of Birth</th>
+								<th>Branch Code</th>
+								<th>Account Number</th>
+								<th>Sub Account Number</th>
+								<th>Surname</th>
+								<th>Title / Salutation</th>
+								<th>Forename or Initial 1</th>
+								<th>Forename or Initial 2</th>
+								<th>Forename or Initial 3</th>
+								<th>Residential Address Line 1</th>
+								<th>Residential Address Line 2</th>
+								<th>Residential Address Line 3</th>
+								<th>Residential Address Line 4</th>
+								<th>Postal Code of Residential Address</th>
+								<th>Owner/Tenant</th>
+								<th>Postal Address Line 1</th>
+								<th>Postal Address Line 2</th>
+								<th>Postal Address Line 3</th>
+								<th>Postal Address Line 4</th>
+								<th>Post Code of Postal Address</th>
+								<th>Account Ownership Type</th>
+								<th>Payment Type</th>
+								<th>Type of Account</th>
+								<th>Type of Account</th>
+								<th>Date Account Opened</th>
+								<th>Defferred Payment Start Date</th>
+								<th>Date on which Last Payment was Received</th>
+								<th>Opening Balance(Disbursed Amount/Credit Limit</th>
+								<th>Current Balance</th>
+								<th>Current Balance Debit Indicator</th>
+								<th>Amount Overdue</th>
+								<th>Instalment Amount</th>
+								<th>Months in Arrears</th>
+								<th>Status Code</th>
+								<th>Repayment Frequency</th>
+								<th>Loan Term / Duration</th>
+								<th>Status Date / Delinquency Date</th>
+								<th>Old Supplier Branch Code</th>
+								<th>Old Account Number</th>
+								<th>Old Sub Account No</th>
+								<th>Old Supplier Reference No</th>
+								<th>(H) Telephone</th>
+								<th>Cellular Telephone</th>
+								<th>(W) Telephone</th>
+								<th>Employer Detail</th>
+								<th>Income</th>
+								<th>Income Frequency</th>
+								<th>Occupation</th>
+								<th>Third Party Name</th>
+								<th>Account Sold to Third Party</th>
+								<th>No of Participants in Joint Loan</th>
+								<th>Filler</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="data : ${reportsummary}">
+								<td th:text="${data.DATA_RECORD}"></td>
+								<td th:text="${data.OMANG_ID}"></td>
+								<td th:text="${data.PASSPORT_NUMBER}"></td>
+								<td th:text="${data.GENDER}"></td>
+								<td th:text="${data.DATE_OF_BIRTH}"></td>
+								<td th:text="${data.BRANCH_CODE}"></td>
+								<td th:text="${data.ACCOUNT_NUMBER}"></td>
+								<td th:text="${data.SUB_ACCOUNT_NUMBER}"></td>
+								<td th:text="${data.SURNAME}"></td>
+								<td th:text="${data.TITLE}"></td>
+								<td th:text="${data.FORENAME_OR_INITIAL_1}"></td>
+								<td th:text="${data.FORENAME_OR_INITIAL_2}"></td>
+								<td th:text="${data.FORENAME_OR_INITIAL_3}"></td>
+								<td th:text="${data.RESIDENTIAL_ADDRESS_LINE_1}"></td>
+								<td th:text="${data.RESIDENTIAL_ADDRESS_LINE_2}"></td>
+								<td th:text="${data.RESIDENTIAL_ADDRESS_LINE_3}"></td>
+								<td th:text="${data.RESIDENTIAL_ADDRESS_LINE_4}"></td>
+								<td th:text="${data.POSTAL_CODE_RESIDENTIAL}"></td>
+								<td th:text="${data.OWNER_TENANT}"></td>
+								<td th:text="${data.POSTAL_ADDRESS_LINE_1}"></td>
+								<td th:text="${data.POSTAL_ADDRESS_LINE_2}"></td>
+								<td th:text="${data.POSTAL_ADDRESS_LINE_3}"></td>
+								<td th:text="${data.POSTAL_ADDRESS_LINE_4}"></td>
+								<td th:text="${data.POST_CODE_POSTAL}"></td>
+								<td th:text="${data.OWNERSHIP_TYPE}"></td>
+								<td th:text="${data.REASON}"></td>
+								<td th:text="${data.PAYMENT_TYPE}"></td>
+								<td th:text="${data.TYPE_OF_ACCOUNT}"></td>
+								<td th:text="${data.DATE_ACCOUNT_OPENED}"></td>
+								<td th:text="${data.DEFERRED_PAYMENT_START_DATE}"></td>
+								<td th:text="${data.LAST_PAYMENT_RECEIVED_DATE}"></td>
+								<td th:text="${data.OPENING_BALANCE_CREDIT_LIMIT}"></td>
+								<td th:text="${data.CURRENT_BALANCE}"></td>
+								<td th:text="${data.CURRENT_BALANCE_DEBIT_IND}"></td>
+								<td th:text="${data.AMOUNT_OVERDUE}"></td>
+								<td th:text="${data.INSTALMENT_AMOUNT}"></td>
+								<td th:text="${data.MONTHS_IN_ARREARS}"></td>
+								<td th:text="${data.STATUS_CODE}"></td>
+								<td th:text="${data.REPAYMENT_FREQUENCY}"></td>
+								<td th:text="${data.TERMS}"></td>
+								<td th:text="${data.STATUS_DATE}"></td>
+								<td th:text="${data.OLD_SUPPLIER_BRANCH_CODE}"></td>
+								<td th:text="${data.OLD_ACCOUNT_NUMBER}"></td>
+								<td th:text="${data.OLD_SUB_ACCOUNT_NO}"></td>
+								<td th:text="${data.OLD_SUPPLIER_REFERENCE_NO}"></td>
+								<td th:text="${data.H_TELEPHONE}"></td>
+								<td th:text="${data.CELLULAR_TELEPHONE}"></td>
+								<td th:text="${data.W_TELEPHONE}"></td>
+								<td th:text="${data.EMPLOYER_DETAIL}"></td>
+								<td th:text="${data.INCOME}"></td>
+								<td th:text="${data.INCOME_FREQUENCY}"></td>
+								<td th:text="${data.OCCUPATION}"></td>
+								<td th:text="${data.THIRD_PARTY_NAME}"></td>
+								<td th:text="${data.ACCOUNT_SOLD_TO_THIRD_PARTY}"></td>
+								<td th:text="${data.NO_OF_PARTICIPANTS_JOINT}"></td>
+								<td th:text="${data.FILLER}"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+			</div><!-- /.card -->
+		</div><!-- /.row -->
+	</div><!-- /.container-fluid -->
+
+	<!-- Loader modal -->
+	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background:transparent;">
+				<div class="modal-body" style="text-align:center;">
+					<div>
+						<img th:src="@{/images/loader.gif}" id="bfirelogo"
+							style="width:153px; height:auto; margin-left:18px; background-color:transparent; border-color:transparent;"
+							alt="Loading" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Result modal -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel" style="text-align:center; color:white;"></div>
+				</div>
+				<div class="modal-body" style="text-align:center; font-size:1.1rem;">
+					<p id="resultModalBody"></p>
+					<button type="button" class="custom-tab-btn" data-dismiss="modal"
+						style="color:#6b7a8f; border-color:#6b7a8f;">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		$('#resultModal').on('hidden.bs.modal', function () {
+			if (reloadAfterModal) {window.location.reload();}
+		});
+
+		$(document).ready(function () {
+			if ($('#crbTbl').length) {
+				$('#crbTbl').DataTable({
+					"pageLength": 25,
+					"lengthChange": false,   // removes the "10 entries per page" dropdown
+					"searching": false,      // removes the Search box
+					"order": [],
+					"scrollX": true,
+					"scrollY": "calc(100vh - 280px)",
+					"scrollCollapse": true,
+					"paging": true,
+					"autoWidth": false
+				});
+			}
+		});
+	</script>
+
+</body>
+
+</html>
