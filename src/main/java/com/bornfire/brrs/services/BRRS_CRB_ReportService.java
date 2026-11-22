@@ -50,6 +50,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.web.multipart.MultipartFile;
+import java.math.BigDecimal;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
 
 @Service
 @Transactional
@@ -197,6 +200,7 @@ public class BRRS_CRB_ReportService {
 
 	// ------------------------------
 	// Common Excel builder (header row + one row per record)
+	// Columns = DATA_COLUMNS (the same 56 columns the upload reads)
 	// ------------------------------
 	private byte[] buildExcel(List<?> dataList, Class<?> entityClass) throws Exception {
 		try (XSSFWorkbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
@@ -224,22 +228,24 @@ public class BRRS_CRB_ReportService {
 
 			SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
 
+			// ---- header row ----
 			XSSFRow headerRow = sheet.createRow(0);
-			for (int i = 0; i < CRB_COLUMNS.length; i++) {
+			for (int i = 0; i < DATA_COLUMNS.length; i++) {
 				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(CRB_COLUMNS[i]);
+				cell.setCellValue(DATA_COLUMNS[i]);
 				cell.setCellStyle(headerStyle);
 				sheet.setColumnWidth(i, 5000);
 			}
 
-			int rowIndex = 1;
+			// ---- data rows ----
+			int rowIndex = 1; // <-- this was missing
 			for (Object record : dataList) {
 				XSSFRow row = sheet.createRow(rowIndex++);
-				for (int c = 0; c < CRB_COLUMNS.length; c++) {
+				for (int c = 0; c < DATA_COLUMNS.length; c++) {
 					Cell cell = row.createCell(c);
 					cell.setCellStyle(dataStyle);
 					try {
-						Field field = entityClass.getDeclaredField(CRB_COLUMNS[c]);
+						Field field = entityClass.getDeclaredField(DATA_COLUMNS[c]); // <-- DATA_COLUMNS, not CRB_COLUMNS
 						field.setAccessible(true);
 						Object value = field.get(record);
 						if (value == null) {
@@ -253,7 +259,7 @@ public class BRRS_CRB_ReportService {
 						}
 					} catch (NoSuchFieldException | IllegalAccessException e) {
 						cell.setCellValue("");
-						logger.warn("Field not found or inaccessible: {}", CRB_COLUMNS[c]);
+						logger.warn("Field not found or inaccessible: {}", DATA_COLUMNS[c]);
 					}
 				}
 			}

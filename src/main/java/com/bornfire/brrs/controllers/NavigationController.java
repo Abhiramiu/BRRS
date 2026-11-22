@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.math.BigDecimal;
+
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -583,7 +585,7 @@ public class NavigationController {
 	
 	@RequestMapping(value = "CRB", method = { RequestMethod.GET, RequestMethod.POST })
 	public String CRB(Model md, HttpServletRequest req) {
-		md.addAttribute("menu", "RBR Reports- SLS");
+		md.addAttribute("menu", "RBR Reports- CRB");
 		System.out.println("count" + rrReportlist.getReportListbrrsCRB().size());
 		md.addAttribute("reportlist", rrReportlist.getReportListbrrsCRB());
 
@@ -2558,6 +2560,33 @@ public class NavigationController {
 	
 	
 	
+	@RequestMapping(value = "/Reports/CRB/downloadSummary", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<byte[]> downloadCRBSummary(
+	        @RequestParam String todate,
+	        @RequestParam(required = false) String type,
+	        @RequestParam(required = false) BigDecimal version) throws Exception {
+
+	    byte[] excel;
+	    String fileName;
+
+	    if ("ARCHIVAL".equals(type)) {
+	        excel = brrs_crb_reportservice.getExcelCRBARCHIVAL("CRB", "CRB", null, todate, null, null, type, version);
+	        fileName = "CRB_Archive_Summary.xlsx";
+	    } else {
+	        excel = brrs_crb_reportservice.getCRBExcel("CRB", "CRB", null, todate, null, null, type, version);
+	        fileName = "CRB_Summary.xlsx";
+	    }
+
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.setContentType(MediaType.parseMediaType(
+	            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+	    headers.setContentDispositionFormData("attachment", fileName);
+	    headers.setContentLength(excel.length);
+
+	    return new ResponseEntity<>(excel, headers, HttpStatus.OK);
+	}
+	
 	@PostMapping("/Reports/CRB/upload")          // see the note on the path below
 	@ResponseBody
 	public ResponseEntity<String> uploadCRB(@RequestParam("file") MultipartFile file,
@@ -2572,7 +2601,10 @@ public class NavigationController {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload failed: " + e.getMessage());
 	    }
 	}
+}
+	
+	    
+	
 
 	
 
-}
