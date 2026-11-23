@@ -109,9 +109,9 @@ public class BRRS_M_PLL_ReportService {
 	// Retrieves the M_PLL report summary view
 	// ------------------------------
 	public ModelAndView getM_PLLView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
+			Pageable pageable, String type, BigDecimal version, HttpServletRequest req1, Model md) {
 		ModelAndView mv = new ModelAndView();
-		
+
 		String userid = (String) req1.getSession().getAttribute("USERID");
 		System.out.println("User Id Maker and Checker: " + userid);
 		String role = userProfileRep.getUserRole(userid);
@@ -123,12 +123,13 @@ public class BRRS_M_PLL_ReportService {
 		int currentPage = pageable.getPageNumber();
 		int startItem = currentPage * pageSize;
 
-		System.out.println("testing");
-		System.out.println(version);
+		System.out.println("M_PLL View Called");
+		System.out.println("Type = " + type);
+		System.out.println("Version = " + version);
 
 		Date parsedDate = parseDateRobustly(todate);
 
-		if (type.equals("ARCHIVAL")) {
+		if ("ARCHIVAL".equals(type) || "RESUB".equals(type)) {
 			if (version == null && parsedDate != null) {
 				version = findMaxVersion(parsedDate);
 				System.out.println("✅ Auto-detected version inside service: " + version);
@@ -136,15 +137,18 @@ public class BRRS_M_PLL_ReportService {
 
 			List<M_PLL_Archival_Summary_Entity> T1Master = new ArrayList<M_PLL_Archival_Summary_Entity>();
 			if (version != null && parsedDate != null) {
-				System.out.println(type);
-				System.out.println(version);
-				T1Master = jdbcTemplate.query("SELECT * FROM BRRS_M_PLL_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?", new Object[] { parsedDate, version }, new M_PLLArchivalSummaryRowMapper());
+				T1Master = jdbcTemplate.query(
+						"SELECT * FROM BRRS_M_PLL_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+						new Object[] { parsedDate, version }, new M_PLLArchivalSummaryRowMapper());
+				mv.addObject("allowdetail", getishighestversion(parsedDate, version));
 			}
+			System.out.println(type + " Summary size = " + T1Master.size());
 			mv.addObject("reportsummary", T1Master);
 		} else {
 			List<M_PLL_Summary_Entity> T1Master = new ArrayList<M_PLL_Summary_Entity>();
 			if (parsedDate != null) {
-				T1Master = jdbcTemplate.query("SELECT * FROM BRRS_M_PLL_SUMMARYTABLE WHERE REPORT_DATE = ?", new Object[] { parsedDate }, new M_PLLSummaryRowMapper());
+				T1Master = jdbcTemplate.query("SELECT * FROM BRRS_M_PLL_SUMMARYTABLE WHERE REPORT_DATE = ?",
+						new Object[] { parsedDate }, new M_PLLSummaryRowMapper());
 			}
 			mv.addObject("reportsummary", T1Master);
 		}
@@ -160,13 +164,14 @@ public class BRRS_M_PLL_ReportService {
 	// Retrieves the M_PLL report details view
 	// ------------------------------
 	public ModelAndView getM_PLLcurrentDtl(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String Filter, String type, String version,HttpServletRequest req1,Model md) {
+			String dtltype, Pageable pageable, String Filter, String type, String version, HttpServletRequest req1,
+			Model md) {
 		int pageSize = pageable != null ? pageable.getPageSize() : 10;
 		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
 		int totalPages = 0;
 
 		ModelAndView mv = new ModelAndView();
-		
+
 		String userid = (String) req1.getSession().getAttribute("USERID");
 		System.out.println("User Id Maker and Checker: " + userid);
 		String role = userProfileRep.getUserRole(userid);
@@ -190,36 +195,56 @@ public class BRRS_M_PLL_ReportService {
 				}
 			}
 			System.out.println(type);
-			if ("ARCHIVAL".equals(type)) {
+
+			if ("ARCHIVAL".equals(type) || "RESUB".equals(type)) {
 				if ((version == null || version.isEmpty() || "null".equalsIgnoreCase(version)) && parsedDate != null) {
 					BigDecimal maxVer = findMaxVersion(parsedDate);
 					if (maxVer != null) {
 						version = maxVer.toString();
 					}
 				}
-				System.out.println(type);
-				// 🔹 Archival branch
+				System.out.println(type + " DETAIL MODE");
+
+				// 🔹 Archival / Resub branch
 				List<M_PLL_Archival_Detail_Entity> T1Dt1 = new ArrayList<>();
 				if (version != null && parsedDate != null) {
 					if (rowId != null && columnId != null) {
-						T1Dt1 = jdbcTemplate.query("SELECT * FROM BRRS_M_PLL_ARCHIVALTABLE_DETAIL WHERE ROW_ID = ? AND COLUMN_ID = ? AND REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?", new Object[] { rowId, columnId, parsedDate, version }, new M_PLLArchivalDetailRowMapper());
+						T1Dt1 = jdbcTemplate.query(
+								"SELECT * FROM BRRS_M_PLL_ARCHIVALTABLE_DETAIL WHERE ROW_ID = ? AND COLUMN_ID = ? AND REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?",
+								new Object[] { rowId, columnId, parsedDate, version },
+								new M_PLLArchivalDetailRowMapper());
 					} else {
-						T1Dt1 = jdbcTemplate.query("SELECT * FROM BRRS_M_PLL_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?", new Object[] { parsedDate, version }, new M_PLLArchivalDetailRowMapper());
+						T1Dt1 = jdbcTemplate.query(
+								"SELECT * FROM BRRS_M_PLL_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?",
+								new Object[] { parsedDate, version }, new M_PLLArchivalDetailRowMapper());
 					}
+
+					BigDecimal ver = null;
+					try {
+						ver = new BigDecimal(version);
+					} catch (Exception ignore) {
+					}
+					mv.addObject("allowdetail", ver != null ? getishighestversion(parsedDate, ver) : "NO");
 				}
 
 				mv.addObject("reportdetails", T1Dt1);
 				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+				System.out.println(type + " DETAIL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 
 			} else {
-				// 🔹 Current branch
+				// 🔹 Current branch (unchanged)
 				List<M_PLL_Detail_Entity> T1Dt1;
 				if (rowId != null && columnId != null) {
-					T1Dt1 = jdbcTemplate.query("SELECT * FROM BRRS_M_PLL_DETAILTABLE WHERE ROW_ID = ? AND COLUMN_ID = ? AND REPORT_DATE = ?", new Object[] { rowId, columnId, parsedDate }, new M_PLLDetailRowMapper());
+					T1Dt1 = jdbcTemplate.query(
+							"SELECT * FROM BRRS_M_PLL_DETAILTABLE WHERE ROW_ID = ? AND COLUMN_ID = ? AND REPORT_DATE = ?",
+							new Object[] { rowId, columnId, parsedDate }, new M_PLLDetailRowMapper());
 				} else {
-					T1Dt1 = jdbcTemplate.query("SELECT * FROM BRRS_M_PLL_DETAILTABLE WHERE REPORT_DATE = ? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY", new Object[] { parsedDate, currentPage, pageSize }, new M_PLLDetailRowMapper());
-					totalPages = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM BRRS_M_PLL_DETAILTABLE WHERE REPORT_DATE = ?", new Object[] { parsedDate }, Integer.class);
+					T1Dt1 = jdbcTemplate.query(
+							"SELECT * FROM BRRS_M_PLL_DETAILTABLE WHERE REPORT_DATE = ? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY",
+							new Object[] { parsedDate, currentPage, pageSize }, new M_PLLDetailRowMapper());
+					totalPages = jdbcTemplate.queryForObject(
+							"SELECT COUNT(*) FROM BRRS_M_PLL_DETAILTABLE WHERE REPORT_DATE = ?",
+							new Object[] { parsedDate }, Integer.class);
 					mv.addObject("pagination", "YES");
 				}
 
@@ -244,7 +269,7 @@ public class BRRS_M_PLL_ReportService {
 
 		return mv;
 	}
-
+	
 	// ------------------------------
 	// Generates Excel report for M_PLL summary
 	// ------------------------------
@@ -1070,6 +1095,37 @@ public class BRRS_M_PLL_ReportService {
 			logger.warn("No version found for date {}: {}", reportDate, e.getMessage());
 			return null;
 		}
+	}
+	
+	
+	// ------------------------------
+	// Resubmission list (all archival versions)
+	// ------------------------------
+	public List<Object[]> getM_PLLResub() {
+		List<Object[]> resubList = new ArrayList<>();
+		try {
+			String sql = "SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE FROM BRRS_M_PLL_ARCHIVALTABLE_SUMMARY"
+					+ " WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC";
+			resubList = jdbcTemplate.query(sql, (rs, rowNum) -> new Object[] {
+					rs.getDate("REPORT_DATE"),
+					rs.getBigDecimal("REPORT_VERSION"),
+					rs.getDate("REPORT_RESUBDATE")
+			});
+			System.out.println("Fetched " + resubList.size() + " M_PLL Resub records");
+		} catch (Exception e) {
+			System.err.println("Error fetching M_PLL Resub data: " + e.getMessage());
+			e.printStackTrace();
+		}
+		return resubList;
+	}
+
+	// ------------------------------
+	// Is this the latest version for the date? (YES = editable)
+	// ------------------------------
+	public String getishighestversion(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
+		String sql = "SELECT CASE WHEN ? = MAX(REPORT_VERSION) THEN 'YES' ELSE 'NO' END AS is_highest "
+				+ "FROM BRRS_M_PLL_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?";
+		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_VERSION, REPORT_DATE }, String.class);
 	}
 
 	// ------------------------------

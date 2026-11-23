@@ -6177,6 +6177,18 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_PLL":
+			try {
+				List<Object[]> resubList = BRRS_M_PLL_reportservice.getM_PLLResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_PLL: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_PLL: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+			
 
 		default:
 			System.out.println("Unsupported report code: " + rptcode);
