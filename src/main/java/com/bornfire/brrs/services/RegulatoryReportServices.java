@@ -4512,7 +4512,8 @@ public class RegulatoryReportServices {
 
 			case "M_SP":
 				modelAndView = BRRS_M_SP_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
+						request.getParameter("formmode"), request.getParameter("type"), request.getParameter("version"),
+						request.getParameter("reportDate"));
 				break;
 
 			case "M_LIQ":
@@ -4884,6 +4885,10 @@ public class RegulatoryReportServices {
 
 			case "M_SFINP2":
 				response = BRRS_M_SFINP2_reportservice.callregenprocedure(request);
+				break;
+
+			case "M_SP":
+				response = BRRS_M_SP_reportservice.callregenprocedure(request);
 				break;
 
 			default:
@@ -6189,6 +6194,17 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
+
+		case "M_SP":
+			try {
+				List<Object[]> resubList = BRRS_M_SP_reportservice.getM_SPResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_SP: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_SP: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
 
 		default:
 			System.out.println("Unsupported report code: " + rptcode);

@@ -370,7 +370,13 @@ $(window).on('beforeunload', function() {
 	
 	//to fetch summary from the database - called from the summary button
 	function showdetails() {
-    
+
+    // RESUB / ARCHIVAL: details only for the highest version (same rule as M_LA1)
+    if ((pageType === "RESUB" || pageType === "ARCHIVAL") && pageAllowDetail === "NO") {
+        showResultModal("Information", "Detail page is only available for highest report version only");
+        return;
+    }
+
     var Callurl;
     	$('#loader').modal('show');
        Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
@@ -708,6 +714,9 @@ function showdetailsbyRowAndColumn(a) {
 		<script th:inline="javascript">
 		    /*<![CDATA[*/
 		    const reportId = /*[[${reportid}]]*/ null;
+		    const pageType = /*[[${type}]]*/ '';
+		    const pageVersion = /*[[${version}]]*/ '';
+		    const pageAllowDetail = /*[[${allowdetail}]]*/ '';
 		    /*]]>*/
 		</script>
 <script>
@@ -721,7 +730,15 @@ function showdetailsbyRowAndColumn(a) {
 					        }
 		const acctNo = elem.getAttribute("data-acctNo");
 		 const asondate = elem.getAttribute("data-asondate");
-		location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+		let extra = '';
+		if (type === "RESUB") {
+			const version = elem.getAttribute("data-version");
+			// asondate is dd-MM-yyyy; the service expects yyyy-MM-dd
+			const p = (asondate || '').split('-');
+			const reportDate = p.length === 3 ? p[2] + '-' + p[1] + '-' + p[0] : '';
+			extra = `&type=${encodeURIComponent(type)}&version=${encodeURIComponent(version || '')}&reportDate=${reportDate}`;
+		}
+		location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}${extra}`;
 	}
 </script>
 
@@ -896,10 +913,44 @@ function showdetailsbyRowAndColumn(a) {
 			
 			<script>
 						function submitUpdate() {
-						    const formData = $('#DetailForm').serialize(); // Ensure correct form ID
+						    let formData = $('#DetailForm').serialize(); // Ensure correct form ID
+						    const isResub = new URLSearchParams(formData).get('type') === 'RESUB';
+
+						    // RESUB: ask whether to keep modifying (entry=YES) or regenerate (entry=NO) - same as M_LA1
+						    if (isResub && !$('#confirmModal').data('answered')) {
+						        $('#confirmModal').modal('show');
+						        $('#btnConfirmYes').off('click').on('click', function () {
+						            $('#confirmModal').modal('hide');
+						            $('#confirmModal').data('answered', 'YES');
+						            submitUpdate();
+						        });
+						        $('#btnConfirmNo').off('click').on('click', function () {
+						            $('#confirmModal').modal('hide');
+						            $('#confirmModal').data('answered', 'NO');
+						            submitUpdate();
+						        });
+						        return;
+						    }
+
+						    const answer = $('#confirmModal').data('answered');
+						    if (answer === 'NO') {
+						        formData += '&entry=NO';
+						    }
+						    $('#confirmModal').data('answered', null);
 
 						    // ✅ Store the previous page URL
 						    const previousUrl = document.referrer; // same as going back once in history
+
+						    // After a regenerate the new version lives on the resubmission list
+						    const goBack = () => {
+						        if (isResub && answer === 'NO') {
+						            window.location.href = '/BRRS/Resubmission?rptcode=' + reportId;
+						        } else if (previousUrl) {
+						            window.location.href = previousUrl;
+						        } else {
+						            window.history.back();
+						        }
+						    };
 
 						    // Show loader while processing
 						    $('#loader').modal('show');
@@ -918,15 +969,7 @@ function showdetailsbyRowAndColumn(a) {
 						                showResultModal('Information', response || 'No data updated.');
 						            }
 
-						            // ✅ Redirect back to the previous page after short delay
-						            setTimeout(() => {
-						                if (previousUrl) {
-						                    window.location.href = previousUrl;
-						                } else {
-						                    // fallback: just go back if referrer not found
-						                    window.history.back();
-						                }
-						            }, 1500);
+						            setTimeout(goBack, 1500);
 						        },
 						        error: function (xhr, status, error) {
 						            $('#loader').modal('hide');
@@ -1392,10 +1435,11 @@ function showdetailsbyRowAndColumn(a) {
 																		<tr th:each="report, srlno : ${reportdetails}">
 																			<td>
 																				<a data-toggle="tooltip" class="editrec"
-																					title="Click to Edit this Record" th:if="${role == 'M' or role == 'MAN'}">
+																					title="Click to Edit this Record" th:if="${allowdetail != 'NO' and (role == 'M' or role == 'MAN')}">
 																					<i class="fas fa-edit" style="color: black; cursor:pointer;"
 																						th:attr="data-acctNo=${report.acctNumber},
-																						data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
+																						data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type},
+																						data-version=${version != null ? version : (report.dataEntryVersion != null ? report.dataEntryVersion : '')}"
 																						onclick="openDetail(this, 'edit')"></i>
 
 																				</a>
@@ -1500,6 +1544,9 @@ function showdetailsbyRowAndColumn(a) {
 			        </div>
 			      </div>
 
+			      <input type="hidden" th:value="${type}" name="type" />
+			      <input type="hidden" th:value="${version}" name="version" />
+
 			      <!-- Update Button -->
 			      <div class="text-center mt-4">
 			        <button type="button" class="custom-tab-btn" 
@@ -1535,6 +1582,24 @@ function showdetailsbyRowAndColumn(a) {
 	</div>
 
 
+
+	<!-- RESUB: modify further or regenerate (same as M_LA1) -->
+	<div class="modal fade" id="confirmModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title" id="confirmModalLabel" style="text-align: center; color: white;">Confirmation</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="confirmModalBody">Would you like to make further modifications?</p>
+					<div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+						<button type="button" id="btnConfirmYes" class="custom-tab-btn" data-dismiss="modal">Modify</button>
+						<button type="button" id="btnConfirmNo" class="custom-tab-btn" data-dismiss="modal">Regenerate</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<!-- Custom Alert/Result Modal (Matches your existing style) -->
 	<div class="modal fade" id="resultModal">
