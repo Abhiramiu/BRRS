@@ -7772,7 +7772,7 @@ public class BRRS_M_LA1_ReportService {
 		List<Object[]> resubList = new ArrayList<>();
 		try {
 			String sql = "SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE FROM BRRS_M_LA1_ARCHIVALTABLE_SUMMARY"
-					+ " WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC";
+					+ " WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_DATE ASC";
 			resubList = jdbcTemplate.query(sql, (rs, rowNum) -> new Object[] {
 					rs.getDate("REPORT_DATE"),
 					rs.getBigDecimal("REPORT_VERSION"),

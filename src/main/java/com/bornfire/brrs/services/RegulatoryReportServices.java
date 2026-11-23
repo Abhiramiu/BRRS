@@ -4435,9 +4435,10 @@ public class RegulatoryReportServices {
 		try {
 			switch (reportId) {
 			case "M_PLL":
-				modelAndView = BRRS_M_PLL_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
-				break;
+			    modelAndView = BRRS_M_PLL_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+			            request.getParameter("formmode"), request.getParameter("type"),
+			            request.getParameter("version"), request.getParameter("asondate"));
+			    break;
 
 			case "IRRBB_PLACEMENTS":
 				modelAndView = BRRS_IRRBB_PLACEMENTS_reportservice.getIRRBB_PLACEMENTS_DetailView(

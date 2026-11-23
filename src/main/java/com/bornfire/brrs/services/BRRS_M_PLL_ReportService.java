@@ -44,6 +44,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
@@ -1951,12 +1952,38 @@ public class BRRS_M_PLL_ReportService {
 	// ------------------------------
 	// Returns the view or edit page for a specific account
 	// ------------------------------
+	// ------------------------------
+	// Returns the view or edit page for a specific account
+	// ------------------------------
 	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
-		ModelAndView mv = new ModelAndView("BRRS/M_PLL"); 
+		return getViewOrEditPage(acctNo, formMode, null, null, null);
+	}
+
+	public ModelAndView getViewOrEditPage(String acctNo, String formMode, String type, String version,
+			String asondate) {
+		ModelAndView mv = new ModelAndView("BRRS/M_PLL");
+
+		System.out.println("ACCT_NO : " + acctNo);
+		System.out.println("Type : " + type);
+		System.out.println("Version : " + version);
 
 		if (acctNo != null) {
-			List<M_PLL_Detail_Entity> list = jdbcTemplate.query("SELECT * FROM BRRS_M_PLL_DETAILTABLE WHERE ACCT_NUMBER = ?", new Object[] { acctNo }, new M_PLLDetailRowMapper());
+			List<M_PLL_Detail_Entity> list;
+
+			if ("RESUB".equals(type)) {
+				System.out.println("Inside RESUB FETCH");
+				list = jdbcTemplate.query(
+						"SELECT * FROM BRRS_M_PLL_ARCHIVALTABLE_DETAIL WHERE ACCT_NUMBER = ? AND DATA_ENTRY_VERSION = ? AND REPORT_DATE = ?",
+						new Object[] { acctNo, version, parseAsOnDate(asondate) }, new M_PLLDetailRowMapper());
+			} else {
+				System.out.println("Inside CURRENT FETCH");
+				list = jdbcTemplate.query("SELECT * FROM BRRS_M_PLL_DETAILTABLE WHERE ACCT_NUMBER = ?",
+						new Object[] { acctNo }, new M_PLLDetailRowMapper());
+			}
+
 			M_PLL_Detail_Entity mpllEntity = list.isEmpty() ? null : list.get(0);
+			System.out.println(type + " Data " + (mpllEntity == null ? "is NULL" : "Found : " + acctNo));
+
 			if (mpllEntity != null && mpllEntity.getReportDate() != null) {
 				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(mpllEntity.getReportDate());
 				mv.addObject("asondate", formattedDate);
@@ -1964,14 +1991,31 @@ public class BRRS_M_PLL_ReportService {
 			mv.addObject("mpllData", mpllEntity);
 		}
 
+		mv.addObject("type", type);
+		mv.addObject("version", version);
 		mv.addObject("displaymode", "edit");
 		mv.addObject("formmode", formMode != null ? formMode : "edit");
 		return mv;
 	}
 
+	// dd-MM-yyyy (edit link) first, then the robust parser
+	private Date parseAsOnDate(String s) {
+		if (s == null || s.trim().isEmpty()) {
+			return null;
+		}
+		try {
+			SimpleDateFormat f = new SimpleDateFormat("dd-MM-yyyy");
+			f.setLenient(false);
+			return f.parse(s);
+		} catch (ParseException e) {
+			return parseDateRobustly(s);
+		}
+	}
+
+
 	@Transactional
 	// ------------------------------
-	// Updates the M_PLL detail record and triggers summary procedure
+	// Updates the M_PLL detail record (current or RESUB archival version)
 	// ------------------------------
 	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
 		try {
@@ -1979,15 +2023,36 @@ public class BRRS_M_PLL_ReportService {
 			String provisionStr = request.getParameter("provision");
 			String acctName = request.getParameter("acctName");
 			String reportDateStr = request.getParameter("reportDate");
+			String type = request.getParameter("type");
+			String version = request.getParameter("version");
+			String entry = request.getParameter("entry") != null ? request.getParameter("entry") : "YES";
+			boolean isResub = "RESUB".equals(type);
 
-			logger.info("Received update for ACCT_NO: {}", acctNo);
+			logger.info("Received update for ACCT_NO: {} (type={}, version={}, entry={})", acctNo, type, version,
+					entry);
 
-			List<M_PLL_Detail_Entity> list = jdbcTemplate.query("SELECT * FROM BRRS_M_PLL_DETAILTABLE WHERE ACCT_NUMBER = ?", new Object[] { acctNo }, new M_PLLDetailRowMapper());
+			// reportDate arrives as yyyy-MM-dd from the form
+			Date reportDate = new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr);
+			String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+
+			List<M_PLL_Detail_Entity> list;
+			if (isResub) {
+				list = jdbcTemplate.query(
+						"SELECT * FROM BRRS_M_PLL_ARCHIVALTABLE_DETAIL WHERE ACCT_NUMBER = ? AND DATA_ENTRY_VERSION = ? AND REPORT_DATE = ?",
+						new Object[] { acctNo, version, reportDate }, new M_PLLDetailRowMapper());
+			} else {
+				list = jdbcTemplate.query("SELECT * FROM BRRS_M_PLL_DETAILTABLE WHERE ACCT_NUMBER = ?",
+						new Object[] { acctNo }, new M_PLLDetailRowMapper());
+			}
+
 			M_PLL_Detail_Entity existing = list.isEmpty() ? null : list.get(0);
 			if (existing == null) {
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
 			}
+
+			M_PLL_Detail_Entity oldcopy = new M_PLL_Detail_Entity();
+			BeanUtils.copyProperties(existing, oldcopy);
 
 			boolean isChanged = false;
 
@@ -2007,15 +2072,28 @@ public class BRRS_M_PLL_ReportService {
 					logger.info("Provision updated to {}", newProvision);
 				}
 			}
-			if (isChanged) {
-				jdbcTemplate.update("UPDATE BRRS_M_PLL_DETAILTABLE SET ACCT_NAME = ?, PROVISION = ? WHERE ACCT_NUMBER = ?", existing.getAcctName(), existing.getProvision(), existing.getAcctNumber());
+
+			if (!isChanged) {
+				logger.info("No changes detected for ACCT_NO: {}", acctNo);
+				return ResponseEntity.ok("No changes were made.");
+			}
+
+			if (isResub) {
+				jdbcTemplate.update(
+						"UPDATE BRRS_M_PLL_ARCHIVALTABLE_DETAIL SET ACCT_NAME = ?, PROVISION = ? WHERE ACCT_NUMBER = ? AND DATA_ENTRY_VERSION = ? AND REPORT_DATE = ?",
+						existing.getAcctName(), existing.getProvision(), existing.getAcctNumber(), version,
+						reportDate);
+				auditService.compareEntitiesmanual(oldcopy, existing, acctNo, "M_PLL Archival Screen",
+						"BRRS_M_PLL_ARCHIVALTABLE_DETAIL");
+				logger.info("RESUB record updated for account {} (version {})", acctNo, version);
+			} else {
+				jdbcTemplate.update("UPDATE BRRS_M_PLL_DETAILTABLE SET ACCT_NAME = ?, PROVISION = ? WHERE ACCT_NUMBER = ?",
+						existing.getAcctName(), existing.getProvision(), existing.getAcctNumber());
 				logger.info("Record updated successfully for account {}", acctNo);
+			}
 
-				// Format date for procedure
-				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
-
-				// Run summary procedure after commit
+			if (!isResub) {
+				// existing behaviour: run summary procedure after commit
 				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 					@Override
 					public void afterCommit() {
@@ -2029,17 +2107,137 @@ public class BRRS_M_PLL_ReportService {
 						}
 					}
 				});
-
 				return ResponseEntity.ok("Record updated successfully!");
-			} else {
-				logger.info("No changes detected for ACCT_NO: {}", acctNo);
-				return ResponseEntity.ok("No changes were made.");
 			}
+
+			// RESUB: only "Regenerate" (entry=NO) creates the next version
+			if ("NO".equals(entry)) {
+				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+					@Override
+					public void afterCommit() {
+						runM_PLLResubRegeneration(formattedDate);
+					}
+				});
+				return ResponseEntity.ok("Record updated and Report Regenerated successfully!");
+			}
+
+			return ResponseEntity.ok("Record updated successfully!");
 
 		} catch (Exception e) {
 			logger.error("Error updating M_PLL record", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error updating record: " + e.getMessage());
+		}
+	}
+
+	// ------------------------------
+	// Detail table columns (same list in DETAILTABLE and ARCHIVALTABLE_DETAIL)
+	// ------------------------------
+	private static final String[] PLL_DETAIL_COLS = { "CUST_ID", "ACCT_NUMBER", "ACCT_NAME", "DATA_TYPE", "ROW_ID",
+			"COLUMN_ID", "REPORT_REMARKS", "MODIFICATION_REMARKS", "DATA_ENTRY_VERSION", "ACCT_BALANCE_IN_PULA",
+			"REPORT_DATE", "REPORT_NAME", "CREATE_USER", "CREATE_TIME", "MODIFY_USER", "MODIFY_TIME", "VERIFY_USER",
+			"VERIFY_TIME", "ENTITY_FLG", "MODIFY_FLG", "DEL_FLG", "SEGMENT", "PAST_DUE", "PROVISION", "SNO",
+			"REPORT_LABEL", "REPORT_ADDL_CRITERIA_1", "REPORT_ADDL_CRITERIA_2", "REPORT_ADDL_CRITERIA_3", "ASSET" };
+
+	
+	private void runM_PLLResubRegeneration(String formattedDate) {
+		try {
+			java.sql.Date sqlDate = new java.sql.Date(
+					new SimpleDateFormat("dd-MM-yyyy").parse(formattedDate).getTime());
+			String detailCols = String.join(", ", PLL_DETAIL_COLS);
+
+			// Highest summary version for the date
+			Integer maxVal = jdbcTemplate.queryForObject(
+					"SELECT MAX(REPORT_VERSION) FROM BRRS_M_PLL_ARCHIVALTABLE_SUMMARY WHERE TRUNC(REPORT_DATE) = ?",
+					Integer.class, sqlDate);
+			int maxVersion = (maxVal != null) ? maxVal : 1;
+
+			// Highest version that actually has detail rows
+			Integer highestWithDetail = jdbcTemplate.queryForObject(
+					"SELECT MAX(TO_NUMBER(DATA_ENTRY_VERSION)) FROM BRRS_M_PLL_ARCHIVALTABLE_DETAIL "
+							+ "WHERE TRUNC(REPORT_DATE) = ?",
+					Integer.class, sqlDate);
+
+			if (highestWithDetail == null) {
+				logger.error("No archival detail rows exist for {} — cannot regenerate", formattedDate);
+				return;
+			}
+
+			// Orphan summary rows (summary exists but no detail) — delete them and fall back
+			if (maxVersion > highestWithDetail) {
+				int orphan = jdbcTemplate.update(
+						"DELETE FROM BRRS_M_PLL_ARCHIVALTABLE_SUMMARY "
+								+ "WHERE TRUNC(REPORT_DATE) = ? AND REPORT_VERSION > ?",
+						sqlDate, highestWithDetail);
+				logger.warn("Deleted {} orphan summary row(s) (> version {})", orphan, highestWithDetail);
+				maxVersion = highestWithDetail;
+			}
+
+			logger.info("Regenerating from version {} (highest detail version={})", maxVersion, highestWithDetail);
+
+			// 1. clean live detail for the date
+			int del1 = jdbcTemplate.update(
+					"DELETE FROM BRRS_M_PLL_DETAILTABLE WHERE TRUNC(REPORT_DATE) = ?", sqlDate);
+			logger.info("Successfully deleted before executing procedure {} rows.", del1);
+
+			// 2. restore latest archival version into live detail
+			int restored = jdbcTemplate.update(
+					"INSERT INTO BRRS_M_PLL_DETAILTABLE (" + detailCols + ") SELECT " + detailCols
+							+ " FROM BRRS_M_PLL_ARCHIVALTABLE_DETAIL "
+							+ "WHERE TRUNC(REPORT_DATE) = ? AND DATA_ENTRY_VERSION = ?",
+					sqlDate, String.valueOf(maxVersion));
+			logger.info("Successfully transferred {} rows from version {}", restored, maxVersion);
+			if (restored == 0) {
+				logger.error("Restore inserted 0 rows for version {} — aborting regeneration", maxVersion);
+				return;
+			}
+
+			// 3. rebuild live summary from the (edited) detail
+			jdbcTemplate.update("BEGIN BRRS_M_PLL_SUMMARY_PROCEDURE(?); END;", formattedDate);
+			logger.info("Procedure executed");
+
+			int highestValue = maxVersion + 1;
+
+			// 4. live detail -> archival detail as the new version
+			StringBuilder sel = new StringBuilder();
+			for (int i = 0; i < PLL_DETAIL_COLS.length; i++) {
+				if (i > 0) {
+					sel.append(", ");
+				}
+				sel.append("DATA_ENTRY_VERSION".equals(PLL_DETAIL_COLS[i]) ? "?" : PLL_DETAIL_COLS[i]);
+			}
+			int insDtl = jdbcTemplate.update(
+					"INSERT INTO BRRS_M_PLL_ARCHIVALTABLE_DETAIL (" + detailCols + ") SELECT " + sel
+							+ " FROM BRRS_M_PLL_DETAILTABLE WHERE TRUNC(REPORT_DATE) = ?",
+					String.valueOf(highestValue), sqlDate);
+			logger.info("Successfully inserted {} detail rows into ARCHIVAL for version {}", insDtl, highestValue);
+
+			int del2 = jdbcTemplate.update(
+					"DELETE FROM BRRS_M_PLL_DETAILTABLE WHERE TRUNC(REPORT_DATE) = ?", sqlDate);
+			logger.info("Successfully deleted after executing procedure {} rows.", del2);
+
+			// 5. live summary -> archival summary as the new version (with resub date)
+			StringBuilder rCols = new StringBuilder();
+			for (int i = 11; i <= 64; i++) {
+				rCols.append("R").append(i).append("_PROVI_INS_SEC, R").append(i).append("_PROVI_LOAN_LOSS, ");
+			}
+			int insSum = jdbcTemplate.update(
+					"INSERT INTO BRRS_M_PLL_ARCHIVALTABLE_SUMMARY (" + rCols
+							+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+							+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE) "
+							+ "SELECT " + rCols
+							+ "REPORT_DATE, ?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+							+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
+							+ "FROM BRRS_M_PLL_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = ?",
+					highestValue, sqlDate);
+			logger.info("Successfully transferred summary {} rows.", insSum);
+
+			int delSum = jdbcTemplate.update(
+					"DELETE FROM BRRS_M_PLL_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = ?", sqlDate);
+			logger.info("Deleted from summary {} rows after transfering.", delSum);
+
+		} catch (Exception e) {
+			logger.error("Error during M_PLL resubmission regeneration", e);
 		}
 	}
 
