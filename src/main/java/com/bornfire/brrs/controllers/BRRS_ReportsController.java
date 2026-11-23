@@ -1527,30 +1527,123 @@ public class BRRS_ReportsController {
 		}
 	}
 
+	
+	
 	@Autowired
 	private BRRS_M_LA3_ReportService LA3reportService;
 
-	@RequestMapping(value = "/LA3updateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@RequestMapping(value = "/LA3updateAll", method = {
+	        RequestMethod.GET, RequestMethod.POST
+	})
 	@ResponseBody
 	public ResponseEntity<String> updateLA3AllReports(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			@ModelAttribute M_LA3_Summary_Entity2 request) {
-		try {
-			System.out.println("Came to single controller");
+	        @RequestParam(value = "asondate", required = false)
+	        @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			// ✅ set report date
-			request.setREPORT_DATE(asondate);
+	        @RequestParam(value = "todate", required = false) String todate,
 
-			// ✅ directly update summary report
-			LA3reportService.updateReport(request);
+	        @RequestParam(value = "type", required = false) String type,
 
-			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
+	        @RequestParam(value = "version", required = false) String version,
+
+	        @ModelAttribute M_LA3_Summary_Entity2 request) {
+
+	    try {
+
+	        System.out.println("==================================");
+	        System.out.println("M_LA3 SINGLE UPDATE CONTROLLER");
+	        System.out.println("Report Date : " + asondate);
+	        System.out.println("To Date : " + todate);
+	        System.out.println("Type : " + type);
+	        System.out.println("Received Version Parameter : " + version);
+	        System.out.println("Entity Version Before : " + request.getREPORT_VERSION());
+	        System.out.println("==================================");
+
+	        // ==========================================
+	        // 1. GET REPORT DATE
+	        // ==========================================
+
+	        if (asondate == null && todate != null
+	                && !todate.trim().isEmpty()) {
+
+	            asondate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+	        }
+
+	        if (asondate == null) {
+
+	            return ResponseEntity.badRequest()
+	                    .body("Report date is missing.");
+	        }
+
+	        // ==========================================
+	        // 2. SET REPORT DATE
+	        // ==========================================
+
+	        request.setREPORT_DATE(asondate);
+
+	        // ==========================================
+	        // 3. VALIDATE REPORT TYPE
+	        // ==========================================
+
+	        if (type == null || type.trim().isEmpty()) {
+	            type = "BRRS";
+	        }
+
+	        // ==========================================
+	        // 4. RESUB VERSION HANDLING
+	        // ==========================================
+
+	        if ("RESUB".equalsIgnoreCase(type)) {
+
+	            // First use explicitly received version parameter
+	            if (version != null && !version.trim().isEmpty()) {
+
+	                request.setREPORT_VERSION(
+	                        new BigDecimal(version.trim())
+	                );
+
+	            } else if (request.getREPORT_VERSION() == null) {
+
+	                return ResponseEntity.badRequest()
+	                        .body("RESUB Report Version is missing.");
+	            }
+
+	            System.out.println("Final RESUB Version : "
+	                    + request.getREPORT_VERSION());
+	        }
+
+	        // ==========================================
+	        // 5. CALL SINGLE SERVICE METHOD
+	        // ==========================================
+
+	        LA3reportService.updateReport(request, type);
+
+	        // ==========================================
+	        // 6. SUCCESS RESPONSE
+	        // ==========================================
+
+	        if ("RESUB".equalsIgnoreCase(type)) {
+
+	            return ResponseEntity.ok(
+	                    "M_LA3 RESUB Modified Successfully.");
+
+	        } else {
+
+	            return ResponseEntity.ok(
+	                    "Modified Successfully. Record sent for Checker Approval.");
+	        }
+
+	    } catch (Exception e) {
+
+	        e.printStackTrace();
+
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed: " + e.getMessage());
+	    }
 	}
+	
+
 
 	@Autowired
 	private RegulatoryReportServices regulatoryReportServices;

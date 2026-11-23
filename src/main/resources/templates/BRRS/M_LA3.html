@@ -680,119 +680,284 @@ PURPOSE		: BRRSREPORT
 				location.reload();
 			}, 300);
 		}
+
+
 		function fileuploads(btn) {
+		    try {
 
-			try {
+		        const asondate = btn.getAttribute("data-todate");
 
-				const asondate = btn.getAttribute("data-todate");
+		        if (!asondate) {
+		            alert("Report date is missing.");
+		            return false;
+		        }
 
-				$('#loader').modal('show');
+		        const urlParams = new URLSearchParams(window.location.search);
 
-				// ✅ Step 1: Calculate totals
-				if (typeof calculateR36Totals === "function") {
-					calculateR36Totals();
-				}
+		        const urlType = urlParams.get("type") || "";
+		        const isResub = urlType.toUpperCase() === "RESUB";
 
-				if (typeof calculateR39Totals === "function") {
-					calculateR39Totals();
-				}
+		        // ==========================================
+		        // STEP 1: RESUB CONFIRMATION
+		        // ==========================================
 
-				if (typeof calculateR42Totals === "function") {
-					calculateR42Totals();
-				}
+		        if (isResub && !$('#confirmModal').data('answered')) {
 
-				// ✅ Step 2: Remove commas
-				$("#fileupload input[type='text']").each(function () {
-					const val = $(this).val();
+		            $('#btnConfirmYes, #btnConfirmNo').attr('type', 'button');
 
-					if (val && val.includes(",")) {
-						$(this).val(val.replace(/,/g, ''));
-					}
-				});
+		            $('#confirmModal').modal('show');
 
-				// ✅ Step 3: Validate form
-				if (!$("#fileupload").valid()) {
-					$('#loader').modal('hide');
-					return;
-				}
+		            $('#btnConfirmYes').off('click').on('click', function (e) {
+		                e.preventDefault();
+		                e.stopPropagation();
 
-				// ✅ Step 4: Get type from URL
-				const urlParams = new URLSearchParams(window.location.search);
-				const urlType = urlParams.get("type");
+		                $('#confirmModal').modal('hide');
+		                $('#confirmModal').data('answered', 'YES');
 
-				const isResub = urlType && urlType.toUpperCase() === 'RESUB';
+		                fileuploads(btn);
+		            });
 
-				// ✅ Step 5: Serialize form data
-				const formData =
-					$('#fileupload').serialize()
-					+ '&asondate=' + encodeURIComponent(asondate)
-					+ '&type=' + encodeURIComponent(urlType || '');
+		            $('#btnConfirmNo').off('click').on('click', function (e) {
+		                e.preventDefault();
+		                e.stopPropagation();
 
-				console.log("✅ Form data prepared");
+		                $('#confirmModal').modal('hide');
+		                $('#confirmModal').data('answered', 'NO');
 
-				// ✅ Step 6: Set API URL
-				let apiUrl = './LA3updateAll';
+		                fileuploads(btn);
+		            });
 
-				if (isResub) {
-					apiUrl = './UpdateLA3ReSub';
-				}
+		            return false;
+		        }
 
-				// ✅ Step 7: Ajax call
-				$.ajax({
-					url: apiUrl,
-					type: 'POST',
-					data: formData,
-					dataType: 'text',
+		        const answer = $('#confirmModal').data('answered');
 
-					success: function (response) {
+		        // ==========================================
+		        // STEP 2: SHOW LOADER
+		        // ==========================================
 
-						$("#resultModalLabel").text("BRRS");
-						$("#resultModalBody").text(
-							response || "Updated successfully."
-						);
+		        $('#loader').modal('show');
 
-						$("#resultModal").modal("show");
+		        // ==========================================
+		        // STEP 3: CALCULATE TOTALS
+		        // ==========================================
 
-						$("#resultModal")
-							.off("hidden.bs.modal")
-							.on("hidden.bs.modal", function () {
+		        if (typeof calculateR36Totals === "function") {
+		            calculateR36Totals();
+		        }
 
-								if (isResub) {
+		        if (typeof calculateR39Totals === "function") {
+		            calculateR39Totals();
+		        }
 
-									window.location.href =
-										window.previousUrl
-											? window.previousUrl
-											: "/BRRS/Resubmission?rptcode=LA3";
-								}
-							});
-					},
+		        if (typeof calculateR42Totals === "function") {
+		            calculateR42Totals();
+		        }
 
-					error: function (jqXHR) {
+		        // ==========================================
+		        // STEP 4: REMOVE COMMAS
+		        // ==========================================
 
-						console.log("Error response:", jqXHR.responseText);
+		        $("#fileupload input[type='text']").each(function () {
 
-						$("#resultModalLabel").text("Error");
+		            const val = $(this).val();
 
-						$("#resultModalBody").text(
-							"Update failed: " +
-							(jqXHR.responseText || "Unknown error")
-						);
+		            if (val && val.includes(",")) {
+		                $(this).val(val.replace(/,/g, ''));
+		            }
 
-						$("#resultModal").modal("show");
-					},
+		        });
 
-					complete: function () {
-						$('#loader').modal('hide');
-					}
-				});
+		        // ==========================================
+		        // STEP 5: VALIDATE FORM
+		        // ==========================================
 
-			} catch (error) {
+		        if (!$("#fileupload").valid()) {
 
-				$('#loader').modal('hide');
+		            $('#loader').modal('hide');
+		            $('#confirmModal').data('answered', null);
 
-				console.error("Error during file upload:", error);
-			}
+		            return false;
+		        }
+
+		        // ==========================================
+		        // STEP 6: GET VERSION
+		        // ==========================================
+
+		        let version = null;
+
+		        if (isResub) {
+
+		            // First check URL version
+		            version = urlParams.get("version");
+
+		            // Then check form version
+		            if (!version) {
+		                version = $('#fileupload').find('[name="version"]').val();
+		            }
+
+		            // Then check any version field on page
+		            if (!version) {
+		                version = $('[name="version"]').first().val();
+		            }
+
+		            // Finally check button attribute
+		            if (!version) {
+		                version = btn.getAttribute("data-version");
+		            }
+
+		            if (!version || version.trim() === "") {
+
+		                $('#loader').modal('hide');
+		                $('#confirmModal').data('answered', null);
+
+		                alert("RESUB Report Version is missing.");
+
+		                return false;
+		            }
+
+		            version = version.trim();
+		        }
+
+		        // ==========================================
+		        // STEP 7: SERIALIZE FORM
+		        // ==========================================
+
+		        let formData = $('#fileupload').serialize();
+
+		        formData += '&asondate=' + encodeURIComponent(asondate);
+		        formData += '&todate=' + encodeURIComponent(asondate);
+		        formData += '&type=' + encodeURIComponent(urlType);
+
+		        // ==========================================
+		        // FORCE VERSION INTO REQUEST FOR RESUB
+		        // ==========================================
+
+		        if (isResub) {
+
+		            // Remove existing version parameter to avoid duplicates
+		            formData = formData.replace(
+		                /(^|&)version=[^&]*/g,
+		                ''
+		            );
+
+		            // Append correct version
+		            formData += '&version=' + encodeURIComponent(version);
+		        }
+
+		        // ==========================================
+		        // STEP 8: ENTRY FOR REGENERATION
+		        // ==========================================
+
+		        if (answer === 'NO') {
+		            formData += '&entry=NO';
+		        }
+
+		        console.log("Report Date:", asondate);
+		        console.log("Report Type:", urlType);
+		        console.log("Report Version:", version);
+		        console.log("Entry:", answer);
+		        console.log("Form Data:", formData);
+
+		        // Reset only after capturing the answer
+		        $('#confirmModal').data('answered', null);
+
+		        // ==========================================
+		        // STEP 9: REDIRECT AFTER SUCCESS
+		        // ==========================================
+
+		        const previousUrl = document.referrer;
+
+		        const goBack = function () {
+
+		            if (isResub && answer === 'NO') {
+
+		                window.location.href = "/BRRS/Resubmission?rptcode=M_LA3";
+
+		            } else if (isResub) {
+
+		                if (previousUrl) {
+		                    window.location.href = previousUrl;
+		                } else {
+		                    window.location.href = "/BRRS/Resubmission?rptcode=M_LA3";
+		                }
+
+		            } else if (previousUrl) {
+
+		                window.location.href = previousUrl;
+
+		            } else {
+
+		                window.history.back();
+
+		            }
+		        };
+
+		        // ==========================================
+		        // STEP 10: AJAX
+		        // ==========================================
+
+		        $.ajax({
+
+		            url: './LA3updateAll',
+		            type: 'POST',
+		            data: formData,
+		            dataType: 'text',
+
+		            success: function (response) {
+
+		                $("#resultModalLabel").text("BRRS");
+
+		                $("#resultModalBody").text(
+		                    response || "Updated successfully."
+		                );
+
+		                $("#resultModal").modal("show");
+
+		                $("#resultModal")
+		                    .off("hidden.bs.modal")
+		                    .on("hidden.bs.modal", function () {
+		                        goBack();
+		                    });
+
+		            },
+
+		            error: function (jqXHR) {
+
+		                console.log("Error response:", jqXHR.responseText);
+
+		                $("#resultModalLabel").text("Error");
+
+		                $("#resultModalBody").text(
+		                    "Update failed: " +
+		                    (jqXHR.responseText || "Unknown error")
+		                );
+
+		                $("#resultModal").modal("show");
+
+		            },
+
+		            complete: function () {
+		                $('#loader').modal('hide');
+		            }
+
+		        });
+
+		    } catch (error) {
+
+		        $('#loader').modal('hide');
+		        $('#confirmModal').data('answered', null);
+
+		        console.error("Error during file upload:", error);
+
+		        alert("Error during update: " + error.message);
+
+		    }
+
+		    return false;
 		}
+	
+
 
 		/*		function fileuploads(btn) {
 					const asondate = btn.getAttribute("data-todate");
@@ -850,7 +1015,113 @@ PURPOSE		: BRRSREPORT
 
 	</script>
 	
+
 	<script>
+	    function submitUpdate() {
+
+	        let formData = $('#DetailForm').serialize();
+
+	        const isResub = new URLSearchParams(formData).get('type') === 'RESUB';
+
+	        // RESUB confirmation
+	        if (isResub && !$('#confirmModal').data('answered')) {
+
+	            $('#confirmModal').modal('show');
+
+	            $('#btnConfirmYes').off('click').on('click', function () {
+	                $('#confirmModal').modal('hide');
+	                $('#confirmModal').data('answered', 'YES');
+	                submitUpdate();
+	            });
+
+	            $('#btnConfirmNo').off('click').on('click', function () {
+	                $('#confirmModal').modal('hide');
+	                $('#confirmModal').data('answered', 'NO');
+	                submitUpdate();
+	            });
+
+	            return;
+	        }
+
+	        const answer = $('#confirmModal').data('answered');
+
+	        // Add entry=NO only for regeneration
+	        if (answer === 'NO') {
+	            formData += '&entry=NO';
+	        }
+
+	        // Reset confirmation
+	        $('#confirmModal').data('answered', null);
+
+	        // Previous page URL
+	        const previousUrl = document.referrer;
+
+	        // Redirect after update
+	        const goBack = function () {
+
+	            if (isResub && answer === 'NO') {
+
+	                window.location.href =
+	                    '/BRRS/Resubmission?rptcode=' + encodeURIComponent(reportId);
+
+	            } else if (previousUrl) {
+
+	                window.location.href = previousUrl;
+
+	            } else {
+
+	                window.history.back();
+	            }
+	        };
+
+	        // Show loader
+	        $('#loader').modal('show');
+
+	        $.ajax({
+
+	            url: `/BRRS/Reports/${reportId}/update`,
+
+	            type: 'POST',
+
+	            data: formData,
+
+	            success: function (response) {
+
+	                $('#loader').modal('hide');
+
+	                if (response && response.toLowerCase().includes('success')) {
+
+	                    showResultModal('BRRS', response);
+
+	                } else {
+
+	                    showResultModal(
+	                        'Information',
+	                        response || 'No data updated.'
+	                    );
+	                }
+
+	                setTimeout(goBack, 1500);
+	            },
+
+	            error: function (xhr, status, error) {
+
+	                $('#loader').modal('hide');
+
+	                console.error("Update error:", xhr.responseText);
+
+	                showResultModal(
+	                    'Error',
+	                    xhr.responseText || 'Failed to update record. Please try again.'
+	                );
+
+	                setTimeout(goBack, 1500);
+	            }
+	        });
+	    }
+	</script>
+
+<!--	<script>
 
 		function submitUpdate() {
 			const formData = $('#DetailForm').serialize(); // Ensure correct form ID
@@ -904,7 +1175,7 @@ PURPOSE		: BRRSREPORT
 				}
 			});
 		}
-	</script>
+	</script>-->
 	
 
 	<script>
@@ -1144,16 +1415,19 @@ PURPOSE		: BRRSREPORT
 			}
 		}
 	</script>
-
-
-	</script>
 	<script th:inline="javascript">
-		/*<![CDATA[*/
-		const reportId = /*[[${reportid}]]*/ null;
-		/*]]>*/
-	</script>
+			    /*<![CDATA[*/
+			    const reportId = /*[[${reportid}]]*/ null;
+			    const pageType = /*[[${type}]]*/ '';
+			    const pageVersion = /*[[${version}]]*/ '';
+			    const pageAllowDetail = /*[[${allowdetail}]]*/ '';
+			    /*]]>*/
+			</script>
 
-	<script>
+	</script>
+	
+
+	<!--<script>
 		function openDetail(elem, mode) {
 			var type = elem.getAttribute('data-type');
 
@@ -1168,10 +1442,31 @@ PURPOSE		: BRRSREPORT
 			location.href =
 				`/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&SNO=${SNO}&asondate=${asondate}&type=${type}`;
 		}
+	</script>-->
+
+
+	<script>
+		function openDetail(elem, mode) {
+			
+			var type = elem.getAttribute('data-type');   
+
+						        if (type === "ARCHIVAL") {
+						            showResultModal('BRRS',"Archived Data cannot be modified");
+						            return;
+						        }
+			const acctNo = elem.getAttribute("data-acctNo");
+			 const asondate = elem.getAttribute("data-asondate");
+			let extra = '';
+			if (type === "RESUB") {
+				const version = elem.getAttribute("data-version");
+				// asondate is dd-MM-yyyy; the service expects yyyy-MM-dd
+				const p = (asondate || '').split('-');
+				const reportDate = p.length === 3 ? p[2] + '-' + p[1] + '-' + p[0] : '';
+				extra = `&type=${encodeURIComponent(type)}&version=${encodeURIComponent(version || '')}&reportDate=${reportDate}`;
+			}
+			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}${extra}`;
+		}
 	</script>
-
-
-
 
 
 
@@ -2034,7 +2329,7 @@ PURPOSE		: BRRSREPORT
 										<tr th:each="report, srlno : ${reportdetails}">
 											<td>
 												<a data-toggle="tooltip" class="editrec"
-													title="Click to Edit this Record" th:if="${role == 'M' or role == 'MAN'}">
+													title="Click to Edit this Record" th:if="${allowdetail != 'NO' and (role == 'M' or role == 'MAN')}">
 													<i class="fas fa-edit" th:attr="data-SNo=${report.sno},
 																						            data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')},
 																						            data-type=${type}" onclick="openm_la3Detail(this, 'edit')">
@@ -2179,8 +2474,8 @@ PURPOSE		: BRRSREPORT
 								</div>
 							</div>
 							<input type="hidden" th:field="*{sno}" class="form-control form-control-sm" readonly />
-							<input type="hidden" th:value="${type}" name="type" class="form-control form-control-sm"
-								readonly />
+							<input type="hidden" th:value="${type}" name="type" class="form-control form-control-sm"/>
+							<input type="hidden" th:value="${version}" name="version" />
 
 							<!-- Update Button -->
 							<div style="text-align:center; margin-top:20px;">
@@ -2212,6 +2507,23 @@ PURPOSE		: BRRSREPORT
 			</div>
 		</div>
 
+		<!-- RESUB: modify further or regenerate (same as M_LA1) -->
+			<div class="modal fade" id="confirmModal">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="menu-title-header">
+							<div class="modal-title" id="confirmModalLabel" style="text-align: center; color: white;">Confirmation</div>
+						</div>
+						<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+							<p id="confirmModalBody">Would you like to make further modifications?</p>
+							<div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+								<button type="button" id="btnConfirmYes" class="custom-tab-btn" data-dismiss="modal">Modify</button>
+								<button type="button" id="btnConfirmNo" class="custom-tab-btn" data-dismiss="modal">Regenerate</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 
 
 		<!-- Custom Alert/Result Modal (Matches your existing style) -->

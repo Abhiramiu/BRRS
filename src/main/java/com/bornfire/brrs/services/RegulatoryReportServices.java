@@ -4830,6 +4830,10 @@ public class RegulatoryReportServices {
 			case "COMMON_DISCLOSURE":
 				response = BRRS_Common_Disclosure_Reportservice.callregenprocedure(request);
 				break;
+				
+			case "M_LA3":
+				response = BRRS_M_LA3_reportservice.callregenprocedure(request);
+				break;
 
 			case "Recon_Of_FS":
 				response = BRRS_RECON_OF_FS_ReportService.callregenprocedure(request);
@@ -5233,6 +5237,17 @@ public class RegulatoryReportServices {
 			}
 			break;
 
+		case "M_LA3":
+			try {
+				List<Object[]> resubList = BRRS_M_LA3_reportservice.getM_LA3Resub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_LA3 " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_LA3: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+			
 		case "DBS10_FINCON_III_1B":
 			try {
 				List<Object[]> resubList = BRRS_DBS10_FINCON_III_1B_ReportService.getDBS10_FINCON_III_1BResubList();

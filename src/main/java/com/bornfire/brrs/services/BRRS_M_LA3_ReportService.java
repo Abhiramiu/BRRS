@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import org.springframework.transaction.PlatformTransactionManager;
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -59,9 +59,11 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -248,26 +250,45 @@ public class BRRS_M_LA3_ReportService {
 		}
 	}
 
-	public M_LA3_Detail_Entity findBySno(String sno) {
-
-		String sql = "SELECT * FROM BRRS_M_LA3_DETAILTABLE WHERE SNO = ?";
-
-		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new M_LA3DetailRowMapper());
-	}
-
-	public M_LA3_Detail_Entity findBySnoArch(String sno) {
-
-		String sql = "SELECT * FROM BRRS_M_LA3_ARCHIVALTABLE_DETAIL WHERE SNO = ?";
-
-		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new M_LA3DetailRowMapper());
-	}
-
+	/*
+	 * public M_LA3_Detail_Entity findBySno(String sno) {
+	 * 
+	 * String sql = "SELECT * FROM BRRS_M_LA3_DETAILTABLE WHERE SNO = ?";
+	 * 
+	 * return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new
+	 * M_LA3DetailRowMapper()); }
+	 * 
+	 * public M_LA3_Detail_Entity findBySnoArch(String sno) {
+	 * 
+	 * String sql = "SELECT * FROM BRRS_M_LA3_ARCHIVALTABLE_DETAIL WHERE SNO = ?";
+	 * 
+	 * return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new
+	 * M_LA3DetailRowMapper()); }
+	 */
 	public String getishighestversion(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
 		String sql = "SELECT CASE WHEN ? = MAX(REPORT_VERSION) THEN 'YES' ELSE 'NO' END AS is_highest "
 				+ "FROM BRRS_M_LA3_ARCHIVALTABLE_SUMMARY1 " + "WHERE REPORT_DATE = ?";
 		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_VERSION, REPORT_DATE }, String.class);
 
 	}
+	
+	// ============================================================
+		// M_LA3 - HIGHEST ARCHIVAL VERSION FOR A REPORT DATE
+		// ============================================================
+
+		public BigDecimal findMaxVersion(Date reportDate) {
+
+		    return jdbcTemplate.queryForObject(
+
+		            "SELECT MAX(REPORT_VERSION) "
+		                    + "FROM BRRS_M_LA3_ARCHIVALTABLE_SUMMARY2 "
+		                    + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+
+		            new Object[] { reportDate },
+
+		            BigDecimal.class
+		    );
+		}
 
 	public String getishighestversion2(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
 		String sql = "SELECT CASE WHEN ? = MAX(REPORT_VERSION) THEN 'YES' ELSE 'NO' END AS is_highest "
@@ -5670,491 +5691,1358 @@ public class BRRS_M_LA3_ReportService {
 		}
 	}
 
-	private static final String LA3_LIVE_TABLE = "BRRS_M_LA3_SUMMARYTABLE2";
-	private static final String LA3_MOD_TABLE = "BRRS_M_LA3_MOD_SUMMARYTABLE2";
 
-	private static final String[] LA3_FIELDS = { "NO_OF_AC", "CREDIT_LIMIT", "AMOUNT_OUTSTANDING" };
+private static final String LA3_LIVE_TABLE =
+        "BRRS_M_LA3_SUMMARYTABLE2";
 
-	@Transactional
-	public void updateReport(M_LA3_Summary_Entity2 request) {
+private static final String LA3_MOD_TABLE =
+        "BRRS_M_LA3_MOD_SUMMARYTABLE2";
 
-		logger.info("Came to M_LA3 Manual Update (Services)");
-		logger.info("Report Date: {}", request.getREPORT_DATE());
+private static final String LA3_RESUB_TABLE =
+        "BRRS_M_LA3_ARCHIVALTABLE_SUMMARY2";
 
-		// 🔹 Fetch existing record from the live table
-		List<M_LA3_Summary_Entity2> records = getDataByDate2(request.getREPORT_DATE());
+private static final String[] LA3_FIELDS = {
+        "NO_OF_AC",
+        "CREDIT_LIMIT",
+        "AMOUNT_OUTSTANDING"
+};
 
-		if (records == null || records.isEmpty()) {
-			throw new RuntimeException("Record not found for REPORT_DATE: " + request.getREPORT_DATE());
-		}
 
-		M_LA3_Summary_Entity2 existing = records.get(0);
+// ============================================================
+// SINGLE UPDATE METHOD - BRRS + RESUB
+// ============================================================
 
-		// 🔹 Audit copy: clone of original DB state before altering any attributes
-		M_LA3_Summary_Entity2 oldcopy = new M_LA3_Summary_Entity2();
-		BeanUtils.copyProperties(existing, oldcopy);
+@Transactional
+public void updateReport(M_LA3_Summary_Entity2 request, String type) {
 
-		try {
-			// ✅ Loop rows 36 to 42 : NO_OF_AC, CREDIT_LIMIT, AMOUNT_OUTSTANDING
-			for (int i = 36; i <= 42; i++) {
-				for (String field : LA3_FIELDS) {
-					String getterName = "getR" + i + "_" + field;
-					String setterName = "setR" + i + "_" + field;
+    logger.info("==========================================");
+    logger.info("M_LA3 MANUAL UPDATE STARTED");
+    logger.info("Report Date : {}", request.getREPORT_DATE());
+    logger.info("Report Type : {}", type);
+    logger.info("Report Version : {}", request.getREPORT_VERSION());
+    logger.info("==========================================");
 
-					try {
-						Method getter = M_LA3_Summary_Entity2.class.getMethod(getterName);
-						Method setter = M_LA3_Summary_Entity2.class.getMethod(setterName, getter.getReturnType());
+    try {
 
-						Object newValue = getter.invoke(request);
-						Object existingValue = getter.invoke(existing);
+        // ====================================================
+        // RESUB UPDATE
+        // ====================================================
 
-						// --- Normalize state differences to keep audit log payload minimal ---
-						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
-						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+        if ("RESUB".equalsIgnoreCase(type)) {
 
-						if (currentValStr.equals(newValStr)) {
-							continue;
-						}
+            updateLA3ResubReport(request);
 
-						setter.invoke(existing, newValue);
-					} catch (NoSuchMethodException e) {
-						System.out.println("Missing method: " + getterName);
-					}
-				}
-			}
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating M_LA3 report fields", e);
-		}
+            return;
+        }
 
-		// 🔹 Evaluate audit changes
-		String changes = auditService.getChanges(oldcopy, existing);
-		System.out.println("M_LA3 Changes Length = " + (changes != null ? changes.length() : 0));
+        // ====================================================
+        // BRRS LIVE TO MOD UPDATE
+        // ====================================================
 
-		// 🔹 Set Maker-Checker Flags
-		existing.setENTITY_FLG("Y");
-		existing.setMODIFY_FLG("Y");
-		existing.setDEL_FLG("N");
+        logger.info("Came to M_LA3 BRRS Manual Update");
 
-		// 🔹 Save into MOD Summary Table for Checker Approval
-		saveModSummaryEntity(existing);
-		System.out.println("✔ Record saved into " + LA3_MOD_TABLE + " for Checker Approval");
+        // Fetch existing LIVE record
 
-		// 🔹 Log Audit Trail if changes exist
-		if (changes != null && !changes.isEmpty()) {
-			auditService.compareEntitiesmanual(oldcopy, existing, request.getREPORT_DATE().toString(),
-					"M LA3 Summary Screen", LA3_MOD_TABLE);
-			logger.info("Audit completed for REPORT_DATE {}", request.getREPORT_DATE());
-		} else {
-			logger.info("No changes detected for REPORT_DATE {}", request.getREPORT_DATE());
-		}
+        List<M_LA3_Summary_Entity2> records =
+                getDataByDate2(request.getREPORT_DATE());
 
-		// 🔹 Post-Commit Transaction Synchronization to execute Stored Procedure
-		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-			@Override
-			public void afterCommit() {
-				try {
-					String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(request.getREPORT_DATE());
+        if (records == null || records.isEmpty()) {
 
-					logger.info("Transaction committed — calling BRRS_M_LA3_SUMMARY_PROCEDURE({})", formattedDate);
+            throw new RuntimeException(
+                    "LIVE Record not found for REPORT_DATE: "
+                    + request.getREPORT_DATE());
+        }
 
-					jdbcTemplate.update("BEGIN BRRS_M_LA3_SUMMARY_PROCEDURE(?); END;", formattedDate);
+        M_LA3_Summary_Entity2 existing = records.get(0);
 
-					logger.info("BRRS_M_LA3_SUMMARY_PROCEDURE executed successfully after commit.");
-				} catch (Exception e) {
-					logger.error("Procedure execution failed", e);
-					throw new RuntimeException("Procedure execution failed", e);
-				}
-			}
-		});
-	}
+        // Audit old copy
 
-// Saves into BRRS_M_LA3_MOD_SUMMARYTABLE2
-	public void saveModSummaryEntity(M_LA3_Summary_Entity2 entity) {
-		saveToTable(entity, LA3_MOD_TABLE);
-	}
+        M_LA3_Summary_Entity2 oldcopy =
+                new M_LA3_Summary_Entity2();
 
-// Generic upsert (insert if no row for the report date, else update)
-	private void saveToTable(M_LA3_Summary_Entity2 entity, String tableName) {
-		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
+        BeanUtils.copyProperties(existing, oldcopy);
 
-		// 🔹 1. Check if record already exists for this report date
-		String checkSql = "SELECT COUNT(*) FROM " + tableName + " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
-		MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", entity.getREPORT_DATE());
-		Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
+        // Update R36 to R42
 
-		// 🔹 2. Build parameter map for all fields
-		MapSqlParameterSource params = new MapSqlParameterSource().addValue("reportDate", entity.getREPORT_DATE())
-				.addValue("entity_flg", entity.getENTITY_FLG()).addValue("modify_flg", entity.getMODIFY_FLG())
-				.addValue("del_flg", entity.getDEL_FLG());
+        for (int i = 36; i <= 42; i++) {
 
-		StringBuilder updateSet = new StringBuilder();
-		StringBuilder insertCols = new StringBuilder("REPORT_DATE");
-		StringBuilder insertVals = new StringBuilder(":reportDate");
+            for (String field : LA3_FIELDS) {
 
-		for (int i = 36; i <= 42; i++) {
-			for (String field : LA3_FIELDS) {
-				String paramName = "r" + i + "_" + field.toLowerCase();
-				String columnName = "R" + i + "_" + field;
+                String getterName = "getR" + i + "_" + field;
 
-				Object val = null;
-				try {
-					val = M_LA3_Summary_Entity2.class.getMethod("getR" + i + "_" + field).invoke(entity);
-				} catch (NoSuchMethodException e) {
-					System.out.println("Missing getter for R" + i + "_" + field);
-				} catch (Exception e) {
-					throw new RuntimeException("Error reading " + columnName, e);
-				}
+                String setterName = "setR" + i + "_" + field;
 
-				params.addValue(paramName, val);
+                try {
 
-				updateSet.append(columnName).append(" = :").append(paramName).append(", ");
-				insertCols.append(", ").append(columnName);
-				insertVals.append(", :").append(paramName);
-			}
-		}
+                    Method getter =
+                            M_LA3_Summary_Entity2.class.getMethod(getterName);
 
-		// Flags
-		updateSet.append("ENTITY_FLG = :entity_flg, MODIFY_FLG = :modify_flg, DEL_FLG = :del_flg");
-		insertCols.append(", ENTITY_FLG, MODIFY_FLG, DEL_FLG");
-		insertVals.append(", :entity_flg, :modify_flg, :del_flg");
+                    Method setter =
+                            M_LA3_Summary_Entity2.class.getMethod(
+                                    setterName,
+                                    getter.getReturnType());
 
-		if (count != null && count > 0) {
-			// 🔹 3. UPDATE existing record
-			String updateSql = "UPDATE " + tableName + " SET " + updateSet
-					+ " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
-			namedParamJdbc.update(updateSql, params);
-		} else {
-			// 🔹 4. INSERT new record
-			String insertSql = "INSERT INTO " + tableName + " (" + insertCols + ") VALUES (" + insertVals + ")";
-			namedParamJdbc.update(insertSql, params);
-		}
-	}
+                    Object newValue = getter.invoke(request);
 
-	@Transactional
-	public void approveReport(Date reportDate) {
-		M_LA3_Summary_Entity2 modRecord = jdbcTemplate.queryForObject(
-				"SELECT * FROM " + LA3_MOD_TABLE + " WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND MODIFY_FLG='Y'",
-				new BeanPropertyRowMapper<>(M_LA3_Summary_Entity2.class), reportDate);
+                    Object existingValue = getter.invoke(existing);
 
-		// Copy/Merge MOD values into the LIVE summary table
-		saveToTable(modRecord, LA3_LIVE_TABLE);
+                    String currentValStr =
+                            existingValue == null
+                                    ? ""
+                                    : existingValue.toString().trim();
 
-		// Mark modified flag as 'N' (Approved) in the MOD table
-		jdbcTemplate.update("UPDATE " + LA3_MOD_TABLE + " SET MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
-				reportDate);
+                    String newValStr =
+                            newValue == null
+                                    ? ""
+                                    : newValue.toString().trim();
 
-		String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+                    if (currentValStr.equals(newValStr)) {
+                        continue;
+                    }
 
-		// Run procedure after approval
-		jdbcTemplate.update("BEGIN BRRS_M_LA3_SUMMARY_PROCEDURE(?); END;", formattedDate);
+                    setter.invoke(existing, newValue);
 
-		System.out.println("M_LA3 Checker Approved Successfully");
-	}
+                } catch (NoSuchMethodException e) {
 
+                    logger.warn("Missing method: {}", getterName);
+
+                } catch (Exception e) {
+
+                    throw new RuntimeException(
+                            "Error updating " + getterName, e);
+                }
+            }
+        }
+
+        // Audit changes
+
+        String changes = auditService.getChanges(oldcopy, existing);
+
+        logger.info("M_LA3 Changes Length = {}",
+                changes != null ? changes.length() : 0);
+
+        // Maker Checker flags
+
+        existing.setENTITY_FLG("Y");
+        existing.setMODIFY_FLG("Y");
+        existing.setDEL_FLG("N");
+
+        // Save MOD summary
+
+        saveModSummaryEntity(existing);
+
+        logger.info(
+                "M_LA3 record saved into MOD table for Checker Approval");
+
+        // Audit trail
+
+        if (changes != null && !changes.isEmpty()) {
+
+            auditService.compareEntitiesmanual(
+                    oldcopy,
+                    existing,
+                    request.getREPORT_DATE().toString(),
+                    "M LA3 Summary Screen",
+                    LA3_MOD_TABLE);
+
+            logger.info("BRRS Audit completed.");
+
+        } else {
+
+            logger.info("No BRRS changes detected.");
+
+        }
+
+        // ====================================================
+        // AFTER COMMIT - STORED PROCEDURE
+        // ====================================================
+
+        TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+
+            @Override
+            public void afterCommit() {
+
+                try {
+
+                    String formattedDate =
+                            new SimpleDateFormat("dd-MM-yyyy")
+                                    .format(request.getREPORT_DATE());
+
+                    logger.info(
+                            "Transaction committed - calling LA3 procedure");
+
+                    jdbcTemplate.update(
+                            "BEGIN BRRS_M_LA3_SUMMARY_PROCEDURE(?); END;",
+                            formattedDate);
+
+                    logger.info(
+                            "BRRS_M_LA3_SUMMARY_PROCEDURE executed successfully.");
+
+                } catch (Exception e) {
+
+                    logger.error("Procedure execution failed", e);
+
+                    throw new RuntimeException(
+                            "Procedure execution failed", e);
+                }
+            }
+        });
+
+        logger.info("M_LA3 BRRS UPDATE COMPLETED");
+
+    } catch (Exception e) {
+
+        logger.error("M_LA3 UPDATE FAILED", e);
+
+        throw new RuntimeException(
+                "M_LA3 Update Failed: " + e.getMessage(), e);
+    }
+}
+
+
+
+//============================================================
+//RESUB UPDATE - SELECTED REPORT DATE + VERSION
+//UPDATE ONLY SELECTED ARCHIVAL SUMMARY RECORD
+//============================================================
+
+@Transactional
+public void updateLA3ResubReport(M_LA3_Summary_Entity2 request) {
+
+ logger.info("==========================================");
+ logger.info("M_LA3 RESUB UPDATE STARTED");
+ logger.info("Report Date    : {}", request.getREPORT_DATE());
+ logger.info("Report Version : {}", request.getREPORT_VERSION());
+ logger.info("==========================================");
+
+ try {
+
+     // ====================================================
+     // 1. VALIDATE REPORT DATE AND VERSION
+     // ====================================================
+
+     if (request.getREPORT_DATE() == null) {
+         throw new RuntimeException("RESUB Report Date is missing");
+     }
+
+     if (request.getREPORT_VERSION() == null) {
+         throw new RuntimeException("RESUB Report Version is missing");
+     }
+
+     // ====================================================
+     // 2. FETCH SELECTED ARCHIVAL RECORD
+     // ====================================================
+
+     String selectSql =
+             "SELECT * FROM " + LA3_RESUB_TABLE
+             + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)"
+             + " AND REPORT_VERSION = ?";
+
+     List<M_LA3_Summary_Entity2> records =
+             jdbcTemplate.query(
+                     selectSql,
+                     new BeanPropertyRowMapper<M_LA3_Summary_Entity2>(
+                             M_LA3_Summary_Entity2.class),
+                     request.getREPORT_DATE(),
+                     request.getREPORT_VERSION()
+             );
+
+     if (records == null || records.isEmpty()) {
+         throw new RuntimeException(
+                 "RESUB Record not found for REPORT_DATE: "
+                 + request.getREPORT_DATE()
+                 + ", REPORT_VERSION: "
+                 + request.getREPORT_VERSION()
+         );
+     }
+
+     if (records.size() > 1) {
+         throw new RuntimeException(
+                 "Multiple RESUB records found for the selected report date and version."
+         );
+     }
+
+     M_LA3_Summary_Entity2 existing = records.get(0);
+
+     // ====================================================
+     // 3. CREATE OLD COPY FOR AUDIT
+     // ====================================================
+
+     M_LA3_Summary_Entity2 oldcopy =
+             new M_LA3_Summary_Entity2();
+
+     BeanUtils.copyProperties(existing, oldcopy);
+
+     // ====================================================
+     // 4. UPDATE R36 TO R42 IN JAVA ENTITY
+     // ====================================================
+
+     for (int i = 36; i <= 42; i++) {
+
+         for (String field : LA3_FIELDS) {
+
+             String getterName = "getR" + i + "_" + field;
+             String setterName = "setR" + i + "_" + field;
+
+             try {
+
+                 Method getter =
+                         M_LA3_Summary_Entity2.class.getMethod(getterName);
+
+                 Method setter =
+                         M_LA3_Summary_Entity2.class.getMethod(
+                                 setterName,
+                                 getter.getReturnType()
+                         );
+
+                 Object newValue = getter.invoke(request);
+                 Object oldValue = getter.invoke(existing);
+
+                 String oldValueStr =
+                         oldValue == null ? "" : oldValue.toString().trim();
+
+                 String newValueStr =
+                         newValue == null ? "" : newValue.toString().trim();
+
+                 if (!oldValueStr.equals(newValueStr)) {
+                     setter.invoke(existing, newValue);
+                 }
+
+             } catch (NoSuchMethodException e) {
+
+                 logger.warn("Missing LA3 method: {}", getterName);
+
+             } catch (Exception e) {
+
+                 throw new RuntimeException(
+                         "Error updating RESUB field: " + getterName,
+                         e
+                 );
+             }
+         }
+     }
+
+     // ====================================================
+     // 5. BUILD UPDATE SQL
+     // ====================================================
+
+     NamedParameterJdbcTemplate namedParamJdbc =
+             new NamedParameterJdbcTemplate(jdbcTemplate);
+
+     MapSqlParameterSource params =
+             new MapSqlParameterSource();
+
+     params.addValue("reportDate", request.getREPORT_DATE());
+     params.addValue("reportVersion", request.getREPORT_VERSION());
+
+     StringBuilder updateSet = new StringBuilder();
+
+     for (int i = 36; i <= 42; i++) {
+
+         for (String field : LA3_FIELDS) {
+
+             String columnName = "R" + i + "_" + field;
+             String paramName =
+                     "r" + i + "_" + field.toLowerCase();
+
+             try {
+
+                 Object value =
+                         M_LA3_Summary_Entity2.class
+                                 .getMethod("getR" + i + "_" + field)
+                                 .invoke(existing);
+
+                 params.addValue(paramName, value);
+
+                 updateSet.append(columnName)
+                         .append(" = :")
+                         .append(paramName)
+                         .append(", ");
+
+             } catch (Exception e) {
+
+                 throw new RuntimeException(
+                         "Error reading RESUB column: " + columnName,
+                         e
+                 );
+             }
+         }
+     }
+
+     if (updateSet.length() == 0) {
+         throw new RuntimeException("No LA3 columns found for update.");
+     }
+
+     // ====================================================
+     // 6. UPDATE SELECTED ARCHIVAL VERSION ONLY
+     // ====================================================
+
+     String updateSql =
+             "UPDATE " + LA3_RESUB_TABLE
+             + " SET "
+             + updateSet.substring(0, updateSet.length() - 2)
+             + " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)"
+             + " AND REPORT_VERSION = :reportVersion";
+
+     int updated = namedParamJdbc.update(updateSql, params);
+
+     if (updated != 1) {
+         throw new RuntimeException(
+                 "Expected to update one selected RESUB record, but rows updated: "
+                 + updated
+         );
+     }
+
+     logger.info(
+             "M_LA3 selected RESUB archival record updated. Rows affected: {}",
+             updated
+     );
+
+     // ====================================================
+     // 7. AUDIT CHANGES
+     // ====================================================
+
+     String changes = auditService.getChanges(oldcopy, existing);
+
+     logger.info(
+             "M_LA3 RESUB Changes Length = {}",
+             changes != null ? changes.length() : 0
+     );
+
+     if (changes != null && !changes.isEmpty()) {
+
+         auditService.compareEntitiesmanual(
+                 oldcopy,
+                 existing,
+                 request.getREPORT_DATE().toString(),
+                 "M LA3 Archival Screen",
+                 LA3_RESUB_TABLE
+         );
+
+         logger.info("M_LA3 RESUB Audit completed.");
+
+     } else {
+
+         logger.info("No RESUB changes detected.");
+     }
+
+     logger.info("==========================================");
+     logger.info("M_LA3 RESUB UPDATE COMPLETED SUCCESSFULLY");
+     logger.info("Report Date    : {}", request.getREPORT_DATE());
+     logger.info("Report Version : {}", request.getREPORT_VERSION());
+     logger.info("==========================================");
+
+ } catch (Exception e) {
+
+     logger.error("M_LA3 RESUB UPDATE FAILED", e);
+
+     throw new RuntimeException(
+             "M_LA3 RESUB Update Failed: " + e.getMessage(),
+             e
+     );
+ }
+}
+
+// ============================================================
+// SAVE INTO MOD SUMMARY TABLE
+// ============================================================
+
+public void saveModSummaryEntity(M_LA3_Summary_Entity2 entity) {
+
+    saveToTable(entity, LA3_MOD_TABLE);
+}
+
+
+// ============================================================
+// GENERIC INSERT / UPDATE
+// ============================================================
+
+private void saveToTable(
+        M_LA3_Summary_Entity2 entity,
+        String tableName) {
+
+    NamedParameterJdbcTemplate namedParamJdbc =
+            new NamedParameterJdbcTemplate(jdbcTemplate);
+
+    // Check existing record
+
+    String checkSql =
+            "SELECT COUNT(*) FROM " + tableName
+            + " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+
+    MapSqlParameterSource checkParams =
+            new MapSqlParameterSource(
+                    "reportDate",
+                    entity.getREPORT_DATE());
+
+    Integer count = namedParamJdbc.queryForObject(
+            checkSql,
+            checkParams,
+            Integer.class);
+
+    // Parameters
+
+    MapSqlParameterSource params =
+            new MapSqlParameterSource()
+                    .addValue("reportDate", entity.getREPORT_DATE())
+                    .addValue("entity_flg", entity.getENTITY_FLG())
+                    .addValue("modify_flg", entity.getMODIFY_FLG())
+                    .addValue("del_flg", entity.getDEL_FLG());
+
+    StringBuilder updateSet = new StringBuilder();
+
+    StringBuilder insertCols =
+            new StringBuilder("REPORT_DATE");
+
+    StringBuilder insertVals =
+            new StringBuilder(":reportDate");
+
+    // R36 to R42
+
+    for (int i = 36; i <= 42; i++) {
+
+        for (String field : LA3_FIELDS) {
+
+            String paramName =
+                    "r" + i + "_" + field.toLowerCase();
+
+            String columnName =
+                    "R" + i + "_" + field;
+
+            Object val = null;
+
+            try {
+
+                val = M_LA3_Summary_Entity2.class
+                        .getMethod("getR" + i + "_" + field)
+                        .invoke(entity);
+
+            } catch (Exception e) {
+
+                throw new RuntimeException(
+                        "Error reading " + columnName, e);
+            }
+
+            params.addValue(paramName, val);
+
+            updateSet.append(columnName)
+                    .append(" = :")
+                    .append(paramName)
+                    .append(", ");
+
+            insertCols.append(", ").append(columnName);
+
+            insertVals.append(", :").append(paramName);
+        }
+    }
+
+    // Flags
+
+    updateSet.append(
+            "ENTITY_FLG = :entity_flg, "
+            + "MODIFY_FLG = :modify_flg, "
+            + "DEL_FLG = :del_flg");
+
+    insertCols.append(
+            ", ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+
+    insertVals.append(
+            ", :entity_flg, :modify_flg, :del_flg");
+
+    // UPDATE
+
+    if (count != null && count > 0) {
+
+        String updateSql =
+                "UPDATE " + tableName
+                + " SET " + updateSet
+                + " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+
+        namedParamJdbc.update(updateSql, params);
+
+    } else {
+
+        // INSERT
+
+        String insertSql =
+                "INSERT INTO " + tableName
+                + " (" + insertCols + ")"
+                + " VALUES (" + insertVals + ")";
+
+        namedParamJdbc.update(insertSql, params);
+    }
+}
+
+
+// ============================================================
+// CHECKER APPROVAL - MOD TO LIVE
+// ============================================================
+
+@Transactional
+public void approveReport(Date reportDate) {
+
+    logger.info("==========================================");
+    logger.info("M_LA3 CHECKER APPROVAL STARTED");
+    logger.info("Report Date: {}", reportDate);
+    logger.info("==========================================");
+
+    try {
+
+        // Fetch MOD record
+
+        M_LA3_Summary_Entity2 modRecord =
+                jdbcTemplate.queryForObject(
+                        "SELECT * FROM " + LA3_MOD_TABLE
+                        + " WHERE TRUNC(REPORT_DATE)=TRUNC(?)"
+                        + " AND MODIFY_FLG='Y'",
+                        new BeanPropertyRowMapper<>(
+                                M_LA3_Summary_Entity2.class),
+                        reportDate);
+
+        // Transfer MOD to LIVE
+
+        saveToTable(modRecord, LA3_LIVE_TABLE);
+
+        // Mark MOD approved
+
+        jdbcTemplate.update(
+                "UPDATE " + LA3_MOD_TABLE
+                + " SET MODIFY_FLG='N'"
+                + " WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+                reportDate);
+
+        // Execute procedure
+
+        String formattedDate =
+                new SimpleDateFormat("dd-MM-yyyy")
+                        .format(reportDate);
+
+        jdbcTemplate.update(
+                "BEGIN BRRS_M_LA3_SUMMARY_PROCEDURE(?); END;",
+                formattedDate);
+
+        logger.info("M_LA3 Checker Approved Successfully");
+
+    } catch (Exception e) {
+
+        logger.error("M_LA3 Checker Approval Failed", e);
+
+        throw new RuntimeException(
+                "M_LA3 Checker Approval Failed: " + e.getMessage(), e);
+    }
+}
+
+	
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	public ModelAndView getViewOrEditPage(String SNO, String formMode, String type) {
 
-		ModelAndView mv = new ModelAndView("BRRS/M_LA3");
+// ============================================================
+// M_LA3 - GET VIEW OR EDIT PAGE
+// ============================================================
 
-		System.out.println("SNO : " + SNO);
-		System.out.println("Type : " + type);
+public ModelAndView getViewOrEditPage(String SNO, String formMode, String type) {
 
-		if (SNO != null) {
+    ModelAndView mv = new ModelAndView("BRRS/M_LA3");
 
-			if (type == "RESUB" || type.equals("RESUB")) {
+    System.out.println("SNO : " + SNO);
+    System.out.println("Type : " + type);
 
-				System.out.println("Inside RESUB FETCH");
+    if (SNO != null && !SNO.trim().isEmpty()) {
 
-				M_LA3_Detail_Entity la3Entity = findBySnoArch(SNO);
+        M_LA3_Detail_Entity la3Entity = null;
 
-				if (la3Entity != null && la3Entity.getReport_date() != null) {
-					String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la3Entity.getReport_date());
-					mv.addObject("asondate", formattedDate);
-				}
+        if ("RESUB".equalsIgnoreCase(type)) {
 
-				mv.addObject("Data", la3Entity);
+            System.out.println("Inside RESUB FETCH");
 
-			} else {
+            la3Entity = findBySnoArch(SNO);
 
-				System.out.println("Inside CURRENT FETCH");
+        } else {
 
-				M_LA3_Detail_Entity la3Entity = findBySno(SNO);
+            System.out.println("Inside CURRENT FETCH");
 
-				if (la3Entity != null && la3Entity.getReport_date() != null) {
-					String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la3Entity.getReport_date());
-					mv.addObject("asondate", formattedDate);
-				}
+            la3Entity = findBySno(SNO);
+        }
 
-				mv.addObject("Data", la3Entity);
-			}
-		}
+        if (la3Entity != null && la3Entity.getReport_date() != null) {
 
-		mv.addObject("type", type);
-		mv.addObject("displaymode", "edit");
-		mv.addObject("formmode", formMode != null ? formMode : "edit");
+            String formattedDate = new SimpleDateFormat("dd/MM/yyyy")
+                    .format(la3Entity.getReport_date());
 
-		return mv;
-	}
+            mv.addObject("asondate", formattedDate);
+        }
 
-	@Transactional
-	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+        mv.addObject("Data", la3Entity);
+    }
 
-		try {
+    mv.addObject("type", type);
+    mv.addObject("displaymode", "edit");
+    mv.addObject("formmode", formMode != null ? formMode : "edit");
 
-			String sno = request.getParameter("sno");
-			String acctName = request.getParameter("acct_name");
-			String acctBalanceInpula = request.getParameter("acct_balance_in_pula");
-			String sanctionLimit = request.getParameter("sanction_limit");
-			String reportDateStr = request.getParameter("report_date");
+    return mv;
+}
 
-			System.out.println("Sno is : " + sno);
+// ============================================================
+// M_LA3 - FIND LIVE DETAIL BY SNO
+// ============================================================
 
-			String type = request.getParameter("type");
-			String entry = request.getParameter("entry") != null ? request.getParameter("entry") : "YES";
+public M_LA3_Detail_Entity findBySno(String sno) {
 
-			System.out.println("Type is : " + type);
+    try {
 
-			M_LA3_Detail_Entity existing = null;
+        List<M_LA3_Detail_Entity> list = jdbcTemplate.query(
+                "SELECT * FROM BRRS_M_LA3_DETAILTABLE WHERE SNO = ?",
+                new Object[] { sno },
+                new M_LA3DetailRowMapper()
+        );
 
-			if ("RESUB".equals(type)) {
-				existing = findBySnoArch(sno);
+        return list.isEmpty() ? null : list.get(0);
 
-			} else {
-				System.out.println("Sno is correct");
-				existing = findBySno(sno);
-			}
-			System.out.println("Sno is correct2");
-			if (existing == null) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
-			}
+    } catch (Exception e) {
 
-			M_LA3_Detail_Entity oldcopy = new M_LA3_Detail_Entity();
-			BeanUtils.copyProperties(existing, oldcopy);
+        e.printStackTrace();
+        return null;
+    }
+}
 
-			boolean isChanged = false;
+// ============================================================
+// M_LA3 - FIND ARCHIVAL DETAIL BY SNO
+// ============================================================
 
-			// Account Name
-			if (acctName != null && !acctName.isEmpty()) {
+public M_LA3_Detail_Entity findBySnoArch(String sno) {
 
-				if (existing.getAcct_name() == null || !existing.getAcct_name().equals(acctName)) {
+    try {
 
-					existing.setAcct_name(acctName);
-					isChanged = true;
-				}
-			}
+        List<M_LA3_Detail_Entity> list = jdbcTemplate.query(
+                "SELECT * FROM BRRS_M_LA3_ARCHIVALTABLE_DETAIL WHERE SNO = ? ORDER BY REPORT_DATE DESC",
+                new Object[] { sno },
+                new M_LA3DetailRowMapper()
+        );
 
-			// Account Balance
-			if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
+        return list.isEmpty() ? null : list.get(0);
 
-				BigDecimal newBalance = new BigDecimal(acctBalanceInpula);
+    } catch (Exception e) {
 
-				if (existing.getAcct_balance_in_pula() == null
-						|| existing.getAcct_balance_in_pula().compareTo(newBalance) != 0) {
+        e.printStackTrace();
+        return null;
+    }
+}
 
-					existing.setAcct_balance_in_pula(newBalance);
-					isChanged = true;
-				}
-			}
+// ============================================================
+// M_LA3 - UPDATE DETAIL EDIT
+// ============================================================
 
-			// Sanction Limit
-			if (sanctionLimit != null && !sanctionLimit.isEmpty()) {
+@Transactional
+public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
 
-				BigDecimal newLimit = new BigDecimal(sanctionLimit);
+    try {
 
-				if (existing.getSanction_limit() == null || existing.getSanction_limit().compareTo(newLimit) != 0) {
+        String sno = request.getParameter("sno");
 
-					existing.setSanction_limit(newLimit);
-					isChanged = true;
-				}
-			}
+        String acctName = request.getParameter("acct_name");
 
-			if (isChanged) {
+        String acctBalanceInpula =
+                request.getParameter("acct_balance_in_pula");
 
-				String sql;
+        String sanctionLimit =
+                request.getParameter("sanction_limit");
 
-				if ("RESUB".equals(type)) {
+        String reportDateStr =
+                request.getParameter("report_date");
 
-					System.out.println("Inside RESUB UPDATE");
+        String type = request.getParameter("type");
 
-					sql = "UPDATE BRRS_M_LA3_ARCHIVALTABLE_DETAIL " + "SET ACCT_NAME = ?, "
-							+ "ACCT_BALANCE_IN_PULA = ?, " + "SANCTION_LIMIT = ? " + "WHERE SNO = ?";
+        String entry = request.getParameter("entry") != null
+                ? request.getParameter("entry") : "YES";
 
-				} else {
+        System.out.println("======================================");
+        System.out.println("M_LA3 DETAIL UPDATE");
+        System.out.println("SNO : " + sno);
+        System.out.println("Type : " + type);
+        System.out.println("Report Date : " + reportDateStr);
+        System.out.println("Entry : " + entry);
+        System.out.println("======================================");
 
-					sql = "UPDATE BRRS_M_LA3_DETAILTABLE " + "SET ACCT_NAME = ?, " + "ACCT_BALANCE_IN_PULA = ?, "
-							+ "SANCTION_LIMIT = ? " + "WHERE SNO = ?";
-				}
+        if (sno == null || sno.trim().isEmpty()) {
 
-				jdbcTemplate.update(sql, existing.getAcct_name(), existing.getAcct_balance_in_pula(),
-						existing.getSanction_limit(), sno);
+            return ResponseEntity.badRequest()
+                    .body("SNO is missing.");
+        }
 
-				if ("RESUB".equals(type)) {
+        boolean isResub = "RESUB".equalsIgnoreCase(type);
 
-					auditService.compareEntitiesmanual(oldcopy, existing, sno, "M_LA3 Archival Screen",
-							"BRRS_M_LA3_ARCHIVALTABLE_DETAIL");
+        // ==========================================
+        // FETCH EXISTING RECORD
+        // ==========================================
 
-				} else {
+        M_LA3_Detail_Entity existing;
 
-					auditService.compareEntitiesmanual(oldcopy, existing, sno, "M_LA3 Screen",
-							"BRRS_M_LA3_DETAILTABLE");
-				}
+        if (isResub) {
 
-				System.out.println("Record updated using JDBC");
+            existing = findBySnoArch(sno);
 
-				Run_M_LA3_Procedure(reportDateStr, type, entry);
+        } else {
 
-				if ("RESUB".equals(type) && "NO".equals(entry)) {
-					return ResponseEntity.ok("Record updated and Report Regenerated successfully!");
-				}
+            existing = findBySno(sno);
+        }
 
-				return ResponseEntity.ok("Record updated successfully!");
-			}
+        if (existing == null) {
 
-			return ResponseEntity.ok("No changes were made.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Record not found for update.");
+        }
 
-		} catch (Exception e) {
+        // ==========================================
+        // OLD ENTITY COPY FOR AUDIT
+        // ==========================================
 
-			e.printStackTrace();
+        M_LA3_Detail_Entity oldcopy =
+                new M_LA3_Detail_Entity();
 
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error updating record: " + e.getMessage());
-		}
-	}
+        BeanUtils.copyProperties(existing, oldcopy);
 
-	@Transactional
-	public ResponseEntity<?> callregenprocedure(HttpServletRequest request) {
+        boolean isChanged = false;
 
-		try {
+        // ==========================================
+        // ACCOUNT NAME
+        // ==========================================
 
-			Run_M_LA3_Procedure(request.getParameter("reportDate"), request.getParameter("type"),
-					request.getParameter("entry"));
+        if (acctName != null && !acctName.isEmpty()) {
 
-			return ResponseEntity.ok("Resubmitted successfully!");
+            if (existing.getAcct_name() == null
+                    || !existing.getAcct_name().equals(acctName)) {
 
-		} catch (Exception e) {
+                existing.setAcct_name(acctName);
+                isChanged = true;
+            }
+        }
 
-			e.printStackTrace();
+        // ==========================================
+        // ACCOUNT BALANCE IN PULA
+        // ==========================================
 
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error updating record: " + e.getMessage());
-		}
-	}
+        if (acctBalanceInpula != null
+                && !acctBalanceInpula.trim().isEmpty()) {
 
-	private void Run_M_LA3_Procedure(String reportDateStr, String type, String entry) {
+            BigDecimal newBalance =
+                    new BigDecimal(acctBalanceInpula.trim());
 
-		String formattedDate;
+            if (existing.getAcct_balance_in_pula() == null
+                    || existing.getAcct_balance_in_pula()
+                            .compareTo(newBalance) != 0) {
 
-		try {
+                existing.setAcct_balance_in_pula(newBalance);
+                isChanged = true;
+            }
+        }
 
-			formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-					.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+        // ==========================================
+        // SANCTION LIMIT
+        // ==========================================
 
-		} catch (Exception e) {
+        if (sanctionLimit != null
+                && !sanctionLimit.trim().isEmpty()) {
 
-			System.out.println("Error parsing date. Post-commit logic aborted.");
-			e.printStackTrace();
-			return;
-		}
+            BigDecimal newLimit =
+                    new BigDecimal(sanctionLimit.trim());
 
-		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+            if (existing.getSanction_limit() == null
+                    || existing.getSanction_limit()
+                            .compareTo(newLimit) != 0) {
 
-			@Override
-			public void afterCommit() {
+                existing.setSanction_limit(newLimit);
+                isChanged = true;
+            }
+        }
 
-				try {
+        // ==========================================
+        // UPDATE DATABASE
+        // ==========================================
 
-					boolean isResubNoEntry = "RESUB".equals(type) && "NO".equals(entry);
+        if (isChanged) {
 
-					boolean shouldExecuteProcedure = !"RESUB".equals(type) || isResubNoEntry;
+            String sql;
 
-					/*-----------------------------------------
-					 * Restore Detail Table
-					 *-----------------------------------------*/
-					if (isResubNoEntry) {
+            if (isResub) {
 
-						String deleteSql = "DELETE FROM BRRS_M_LA3_DETAILTABLE " + "WHERE REPORT_DATE=?";
+                sql = "UPDATE BRRS_M_LA3_ARCHIVALTABLE_DETAIL "
+                        + "SET ACCT_NAME = ?, "
+                        + "ACCT_BALANCE_IN_PULA = ?, "
+                        + "SANCTION_LIMIT = ? "
+                        + "WHERE SNO = ?";
 
-						int rowsDeleted = jdbcTemplate.update(deleteSql, formattedDate);
+            } else {
 
-						System.out.println("Deleted " + rowsDeleted + " rows.");
+                sql = "UPDATE BRRS_M_LA3_DETAILTABLE "
+                        + "SET ACCT_NAME = ?, "
+                        + "ACCT_BALANCE_IN_PULA = ?, "
+                        + "SANCTION_LIMIT = ? "
+                        + "WHERE SNO = ?";
+            }
 
-						String transferSql = "INSERT INTO BRRS_M_LA3_DETAILTABLE ("
-								+ "SNO, CUST_ID, ACCT_NUMBER, ACCT_NAME, " + "ACCT_BALANCE_IN_PULA, SANCTION_LIMIT, "
-								+ "REPORT_LABEL, REPORT_ADDL_CRITERIA_1, " + "MODIFICATION_REMARKS, REPORT_REMARKS, "
-								+ "REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION) " + "SELECT "
-								+ "SNO, CUST_ID, ACCT_NUMBER, ACCT_NAME, " + "ACCT_BALANCE_IN_PULA, SANCTION_LIMIT, "
-								+ "REPORT_LABEL, REPORT_ADDL_CRITERIA_1, " + "MODIFICATION_REMARKS, REPORT_REMARKS, "
-								+ "REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION "
-								+ "FROM BRRS_M_LA3_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_DATE=?";
+            jdbcTemplate.update(
+                    sql,
+                    existing.getAcct_name(),
+                    existing.getAcct_balance_in_pula(),
+                    existing.getSanction_limit(),
+                    sno
+            );
 
-						int rowsInserted = jdbcTemplate.update(transferSql, formattedDate);
+            // ==========================================
+            // AUDIT COMPARISON
+            // ==========================================
 
-						System.out.println("Transferred " + rowsInserted + " rows.");
-					}
+            if (isResub) {
 
-					/*-----------------------------------------
-					 * Execute Procedure
-					 *-----------------------------------------*/
-					if (shouldExecuteProcedure) {
+                auditService.compareEntitiesmanual(
+                        oldcopy,
+                        existing,
+                        sno,
+                        "M_LA3 Archival Screen",
+                        "BRRS_M_LA3_ARCHIVALTABLE_DETAIL"
+                );
 
-						jdbcTemplate.update("BEGIN BRRS_M_LA3_SUMMARY_PROCEDURE(?); END;", formattedDate);
+            } else {
 
-						System.out.println("Procedure executed.");
-					}
+                auditService.compareEntitiesmanual(
+                        oldcopy,
+                        existing,
+                        sno,
+                        "M_LA3 Screen",
+                        "BRRS_M_LA3_DETAILTABLE"
+                );
+            }
 
-					/*-----------------------------------------
-					 * Archive Summary
-					 *-----------------------------------------*/
-					if (isResubNoEntry) {
+            System.out.println("M_LA3 Record updated successfully.");
 
-						String adsql = "DELETE FROM BRRS_M_LA3_DETAILTABLE WHERE REPORT_DATE = ?";
-						int rowsDeleted = jdbcTemplate.update(adsql, formattedDate);
-						System.out.println("Successfully deleted after executing procedure " + rowsDeleted + " rows.");
+            // ==========================================
+            // REGENERATE REPORT
+            // ==========================================
 
-						String ins_sum_sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_M_LA3_ARCHIVALTABLE_SUMMARY2 "
-								+ "WHERE REPORT_DATE = ?";
+            Run_M_LA3_Procedure(reportDateStr, type, entry);
 
-						Integer maxVersion = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, formattedDate);
+            if (isResub && "NO".equalsIgnoreCase(entry)) {
 
-						int highestValue = (maxVersion != null ? maxVersion : 0) + 1;
+                return ResponseEntity.ok(
+                        "Record updated and Report Regenerated successfully!"
+                );
+            }
 
-						StringBuilder columnsPart = new StringBuilder();
+            return ResponseEntity.ok(
+                    "Record updated successfully!"
+            );
+        }
 
-						String[] tokens = { "PRODUCT", "NO_OF_AC", "CREDIT_LIMIT", "AMOUNT_OUTSTANDING" };
+        return ResponseEntity.ok("No changes were made.");
 
-						// Generate R36 to R42 columns
-						for (int i = 10; i <= 42; i++) {
-							for (String token : tokens) {
-								columnsPart.append("R").append(i).append("_").append(token).append(", ");
-							}
-						}
+    } catch (Exception e) {
 
-						String finalsql = "INSERT INTO BRRS_M_LA3_ARCHIVALTABLE_SUMMARY2 (" + columnsPart.toString()
-								+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, "
-								+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE) " + "SELECT "
-								+ columnsPart.toString() + "REPORT_DATE, ?, REPORT_FREQUENCY, REPORT_CODE, "
-								+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
-								+ "FROM BRRS_M_LA3_SUMMARYTABLE " + "WHERE REPORT_DATE = ?";
+        e.printStackTrace();
 
-						int rowsInsertedSum = jdbcTemplate.update(finalsql, highestValue, formattedDate);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error updating record: " + e.getMessage());
+    }
+}
 
-						System.out.println("Successfully transferred " + rowsInsertedSum + " rows.");
 
-						String adsumsql = "DELETE FROM BRRS_M_LA3_SUMMARYTABLE WHERE REPORT_DATE = ?";
+//============================================================
+//M_LA3 - REGENERATE PROCEDURE
+//============================================================
 
-						int rowsDeletedSum = jdbcTemplate.update(adsumsql, formattedDate);
+@Transactional
+public ResponseEntity<?> callregenprocedure(HttpServletRequest request) {
 
-						System.out.println("Deleted from summary " + rowsDeletedSum + " rows after transferring.");
-					}
-				} catch (Exception e) {
+ try {
 
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+     Run_M_LA3_Procedure(
+             request.getParameter("reportDate"),
+             request.getParameter("type"),
+             request.getParameter("entry")
+     );
+
+     return ResponseEntity.ok("Resubmitted successfully!");
+
+ } catch (Exception e) {
+
+     e.printStackTrace();
+
+     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+             .body("Error updating record: " + e.getMessage());
+ }
+}
+
+
+//============================================================
+//M_LA3 - RUN PROCEDURE AFTER COMMIT
+//============================================================
+
+private void Run_M_LA3_Procedure(
+     String reportDateStr,
+     String type,
+     String entry) {
+
+ final java.sql.Date sqlDate;
+ final String formattedDate;
+
+ try {
+
+     java.util.Date parsedDate = null;
+
+     String[] formats = {
+             "yyyy-MM-dd",
+             "dd/MM/yyyy",
+             "dd-MM-yyyy"
+     };
+
+     for (String format : formats) {
+
+         try {
+
+             SimpleDateFormat sdf = new SimpleDateFormat(format);
+             sdf.setLenient(false);
+
+             parsedDate = sdf.parse(reportDateStr);
+
+             break;
+
+         } catch (ParseException ignored) {
+         }
+     }
+
+     if (parsedDate == null) {
+
+         throw new ParseException(
+                 "Invalid report date: " + reportDateStr, 0
+         );
+     }
+
+     formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+             .format(parsedDate);
+
+     sqlDate = new java.sql.Date(parsedDate.getTime());
+
+ } catch (Exception e) {
+
+     throw new IllegalArgumentException(
+             "Unable to parse M_LA3 report date: " + reportDateStr, e
+     );
+ }
+
+ final boolean isResub =
+         "RESUB".equalsIgnoreCase(type);
+
+ final boolean isResubNoEntry =
+         isResub && "NO".equalsIgnoreCase(entry);
+
+ final boolean shouldExecuteProcedure =
+         !isResub || isResubNoEntry;
+
+ TransactionSynchronizationManager.registerSynchronization(
+         new TransactionSynchronizationAdapter() {
+
+        	 
+        	 
+        	 @Autowired
+        	 private PlatformTransactionManager transactionManager;
+        	 
+     @Override
+     public void afterCommit() {
+
+         try {
+
+             TransactionTemplate transactionTemplate =
+                     new TransactionTemplate(transactionManager);
+
+             transactionTemplate.setPropagationBehavior(
+                     TransactionDefinition.PROPAGATION_REQUIRES_NEW
+             );
+
+             transactionTemplate.execute(status -> {
+
+                 System.out.println("======================================");
+                 System.out.println("M_LA3 POST COMMIT PROCESSING");
+                 System.out.println("Report Date : " + formattedDate);
+                 System.out.println("Type : " + type);
+                 System.out.println("Entry : " + entry);
+                 System.out.println("======================================");
+
+
+                 // ==================================================
+                 // STEP 1 - RESTORE LATEST ARCHIVAL DETAIL TO LIVE
+                 // RESUB + ENTRY = NO
+                 // ==================================================
+
+                 if (isResubNoEntry) {
+
+                     jdbcTemplate.update(
+                             "DELETE FROM BRRS_M_LA3_DETAILTABLE " +
+                             "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+                             sqlDate
+                     );
+
+                     String transferSql =
+
+                             "INSERT INTO BRRS_M_LA3_DETAILTABLE (" +
+                             "SNO, CUST_ID, ACCT_NUMBER, ACCT_NAME, " +
+                             "ACCT_BALANCE_IN_PULA, SANCTION_LIMIT, " +
+                             "REPORT_LABEL, REPORT_ADDL_CRITERIA_1, " +
+                             "MODIFICATION_REMARKS, REPORT_REMARKS, " +
+                             "REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION" +
+                             ") SELECT " +
+
+                             "SNO, CUST_ID, ACCT_NUMBER, ACCT_NAME, " +
+                             "ACCT_BALANCE_IN_PULA, SANCTION_LIMIT, " +
+                             "REPORT_LABEL, REPORT_ADDL_CRITERIA_1, " +
+                             "MODIFICATION_REMARKS, REPORT_REMARKS, " +
+                             "REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION " +
+
+                             "FROM BRRS_M_LA3_ARCHIVALTABLE_DETAIL " +
+                             "WHERE TRUNC(REPORT_DATE) = TRUNC(?) " +
+                             "AND TO_NUMBER(DATA_ENTRY_VERSION) = (" +
+                             " SELECT MAX(TO_NUMBER(DATA_ENTRY_VERSION)) " +
+                             " FROM BRRS_M_LA3_ARCHIVALTABLE_DETAIL " +
+                             " WHERE TRUNC(REPORT_DATE) = TRUNC(?) " +
+                             ")";
+
+                     int rowsInserted = jdbcTemplate.update(
+                             transferSql,
+                             sqlDate,
+                             sqlDate
+                     );
+
+                     System.out.println(
+                             "Restored latest archival detail rows : " + rowsInserted
+                     );
+                 }
+
+
+                 // ==================================================
+                 // STEP 2 - EXECUTE SUMMARY PROCEDURE
+                 // ==================================================
+
+                 if (shouldExecuteProcedure) {
+
+                     jdbcTemplate.update(
+                             "BEGIN BRRS_M_LA3_SUMMARY_PROCEDURE(?); END;",
+                             formattedDate
+                     );
+
+                     System.out.println(
+                             "M_LA3 Summary Procedure executed successfully."
+                     );
+                 }
+
+
+                 // ==================================================
+                 // STEP 3 - ARCHIVE REGENERATED DATA
+                 // RESUB + ENTRY = NO
+                 // ==================================================
+
+                 if (isResubNoEntry) {
+
+
+                     // ==================================================
+                     // STEP 3A - GET NEXT VERSION FOR SAME REPORT DATE
+                     // ==================================================
+
+                     Integer maxVersion = jdbcTemplate.queryForObject(
+
+                             "SELECT NVL(MAX(REPORT_VERSION), 0) " +
+                             "FROM BRRS_M_LA3_ARCHIVALTABLE_SUMMARY2 " +
+                             "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+
+                             new Object[] { sqlDate },
+
+                             Integer.class
+                     );
+
+                     int highestValue =
+                             (maxVersion != null ? maxVersion : 0) + 1;
+
+                     System.out.println(
+                             "New M_LA3 Archival Version : " + highestValue
+                     );
+
+
+                     // ==================================================
+                     // STEP 3B - COPY DETAIL TO ARCHIVAL
+                     // SAME REPORT DATE
+                     // NEXT DATA ENTRY VERSION
+                     // REPORT_RESUBDATE = SYSDATE
+                     // SNO GENERATED BY TRIGGER
+                     // ==================================================
+
+                     String detailInsertSql =
+
+                             "INSERT INTO BRRS_M_LA3_ARCHIVALTABLE_DETAIL (" +
+
+                             "CUST_ID, ACCT_NUMBER, ACCT_NAME, DATA_TYPE, " +
+                             "REPORT_ADDL_CRITERIA_1, REPORT_REMARKS, " +
+                             "MODIFICATION_REMARKS, DATA_ENTRY_VERSION, " +
+                             "ACCT_BALANCE_IN_PULA, REPORT_DATE, REPORT_NAME, " +
+                             "CREATE_USER, CREATE_TIME, MODIFY_USER, MODIFY_TIME, " +
+                             "VERIFY_USER, VERIFY_TIME, ENTITY_FLG, MODIFY_FLG, " +
+                             "DEL_FLG, REPORT_ADDL_CRITERIA_2, " +
+                             "REPORT_ADDL_CRITERIA_3, SEGMENT, INT_BUCKET, " +
+                             "FACILITY, MAT_BUCKET, SANCTION_LIMIT, REPORT_LABEL, " +
+                             "AMOUNT_OUTSTANDING, CREDIT_LIMIT, NO_OF_AC, " +
+                             "REPORT_RESUBDATE, REPORT_LABEL_1" +
+
+                             ") SELECT " +
+
+                             "CUST_ID, ACCT_NUMBER, ACCT_NAME, DATA_TYPE, " +
+                             "REPORT_ADDL_CRITERIA_1, REPORT_REMARKS, " +
+                             "MODIFICATION_REMARKS, ?, " +
+                             "ACCT_BALANCE_IN_PULA, REPORT_DATE, REPORT_NAME, " +
+                             "CREATE_USER, CREATE_TIME, MODIFY_USER, MODIFY_TIME, " +
+                             "VERIFY_USER, VERIFY_TIME, ENTITY_FLG, MODIFY_FLG, " +
+                             "DEL_FLG, REPORT_ADDL_CRITERIA_2, " +
+                             "REPORT_ADDL_CRITERIA_3, SEGMENT, INT_BUCKET, " +
+                             "FACILITY, MAT_BUCKET, SANCTION_LIMIT, REPORT_LABEL, " +
+                             "AMOUNT_OUTSTANDING, CREDIT_LIMIT, NO_OF_AC, " +
+                             "SYSDATE, REPORT_LABEL_1 " +
+
+                             "FROM BRRS_M_LA3_DETAILTABLE " +
+                             "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+                     int detailRows = jdbcTemplate.update(
+                             detailInsertSql,
+                             String.valueOf(highestValue),
+                             sqlDate
+                     );
+
+                     System.out.println(
+                             "Archived detail rows : " + detailRows
+                     );
+
+                     System.out.println(
+                             "Detail Version : " + highestValue
+                     );
+
+
+                     // ==================================================
+                     // STEP 3C - DELETE LIVE DETAIL
+                     // ==================================================
+
+                     jdbcTemplate.update(
+                             "DELETE FROM BRRS_M_LA3_DETAILTABLE " +
+                             "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+                             sqlDate
+                     );
+
+
+                     // ==================================================
+                     // STEP 3D - GENERATE SUMMARY COLUMN LIST
+                     // ==================================================
+
+                     StringBuilder columnsPart = new StringBuilder();
+
+                     String[] tokens = {
+                             "PRODUCT",
+                             "NO_OF_AC",
+                             "CREDIT_LIMIT",
+                             "AMOUNT_OUTSTANDING"
+                     };
+
+                     for (int i = 10; i <= 42; i++) {
+
+                         for (String token : tokens) {
+
+                             if (columnsPart.length() > 0) {
+                                 columnsPart.append(", ");
+                             }
+
+                             columnsPart.append("R")
+                                     .append(i)
+                                     .append("_")
+                                     .append(token);
+                         }
+                     }
+
+
+                     // ==================================================
+                     // STEP 3E - COPY SUMMARY TO ARCHIVAL
+                     // SAME REPORT DATE
+                     // NEXT REPORT VERSION
+                     // REPORT_RESUBDATE = SYSDATE
+                     // ==================================================
+
+                     String finalSql =
+
+                             "INSERT INTO BRRS_M_LA3_ARCHIVALTABLE_SUMMARY2 (" +
+
+                             columnsPart +
+
+                             ", REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, " +
+                             "REPORT_CODE, REPORT_DESC, ENTITY_FLG, " +
+                             "MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE) " +
+
+                             "SELECT " +
+
+                             columnsPart +
+
+                             ", REPORT_DATE, ?, REPORT_FREQUENCY, " +
+                             "REPORT_CODE, REPORT_DESC, ENTITY_FLG, " +
+                             "MODIFY_FLG, DEL_FLG, SYSDATE " +
+
+                             "FROM BRRS_M_LA3_SUMMARYTABLE " +
+                             "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+                     int summaryRows = jdbcTemplate.update(
+                             finalSql,
+                             highestValue,
+                             sqlDate
+                     );
+
+                     System.out.println(
+                             "Archived summary rows : " + summaryRows
+                     );
+
+                     System.out.println(
+                             "Summary Version : " + highestValue
+                     );
+
+
+                     // ==================================================
+                     // STEP 3F - DELETE LIVE SUMMARY
+                     // ==================================================
+
+                     jdbcTemplate.update(
+                             "DELETE FROM BRRS_M_LA3_SUMMARYTABLE " +
+                             "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+                             sqlDate
+                     );
+
+
+                     System.out.println("======================================");
+                     System.out.println("M_LA3 RESUB ARCHIVAL COMPLETED");
+                     System.out.println("REPORT_DATE : " + formattedDate);
+                     System.out.println("VERSION : " + highestValue);
+                     System.out.println("RESUB DATE : SYSDATE");
+                     System.out.println("======================================");
+                 }
+
+                 return null;
+             });
+
+         } catch (Exception e) {
+
+             System.err.println(
+                     "M_LA3 Post Commit Processing Failed"
+             );
+
+             e.printStackTrace();
+
+             throw new RuntimeException(
+                     "M_LA3 Post Commit Processing Failed", e
+             );
+         }
+     }
+ });
+}
+
 
 	public byte[] BRRS_M_LA3EmailExcel(String filename, String reportId, String fromdate, String todate,
 
@@ -8049,4 +8937,45 @@ public class BRRS_M_LA3_ReportService {
 			return out.toByteArray();
 		}
 	}
+	
+	// ============================================================
+	// M_LA3 - GET RESUBMISSION DETAILS
+	// ============================================================
+
+	public List<Object[]> getM_LA3Resub() {
+
+	    List<Object[]> M_LA3ResubList = new ArrayList<>();
+
+	    try {
+
+	        M_LA3ResubList = jdbcTemplate.query(
+
+	                "SELECT DISTINCT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE "
+	                        + "FROM BRRS_M_LA3_ARCHIVALTABLE_SUMMARY2 "
+	                        + "WHERE REPORT_VERSION IS NOT NULL "
+	                        + "ORDER BY REPORT_DATE, REPORT_VERSION",
+
+	                (rs, rowNum) -> new Object[] {
+	                        rs.getDate("REPORT_DATE"),
+	                        rs.getBigDecimal("REPORT_VERSION"),
+	                        rs.getDate("REPORT_RESUBDATE")
+	                }
+	        );
+
+	        logger.info("M_LA3 resubmission versions fetched: {}",
+	                M_LA3ResubList.size());
+
+	    } catch (Exception e) {
+
+	        logger.error("Error fetching M_LA3 resubmission data", e);
+	    }
+
+	    return M_LA3ResubList;
+	}
+
+
+	
+
+
+	
 }
