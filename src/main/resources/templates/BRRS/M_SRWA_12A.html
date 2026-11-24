@@ -1545,7 +1545,7 @@ PURPOSE		: BRRS REPORT
 			dataType: 'text',
 			success: function (msg) {
 				window.snapshotSrwaBaseline();   // current screen is now the saved state
-				showResult("BRRS", msg || "Modified Successfully.");
+				showResult("BRRS", msg || "Modified Successfully Record sent for Checker Approval.");
 			},
 			error: function (jqXHR) {
 				console.error("Error response:", jqXHR.responseText);
@@ -1692,7 +1692,7 @@ PURPOSE		: BRRS REPORT
 					success: function () {
 						hideLoader(function () {
 							$("#resultModalLabel").text("BRRS");
-							$("#resultModalBody").text(" Modified Successfully.");
+							$("#resultModalBody").text(" Modified Successfully Record sent for Checker Approval.");
 							$("#resultModal").modal("show");
 						});
 					},
