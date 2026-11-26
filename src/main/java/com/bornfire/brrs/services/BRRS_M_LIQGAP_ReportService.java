@@ -8546,6 +8546,14 @@ public class BRRS_M_LIQGAP_ReportService {
 					version);
 		}
 
+		// ================================
+		// ✅ EMAIL Format Routing
+		// ================================
+		if ("email".equalsIgnoreCase(format) || (filename != null && filename.toUpperCase().contains("EMAIL"))) {
+			logger.info("Service: Generating Email report for M_LIQGAP");
+			return BRRS_M_LIQGAPEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+		}
+
 		List<M_LIQGAP_Summary_Entity> dataList = getSummaryDataByDate(dateformat.parse(todate));
 
 		List<M_LIQGAP_Manual_Summary_Entity> dataList1 = getManualSummaryDataByDate(dateformat.parse(todate));
@@ -10985,7 +10993,7 @@ public class BRRS_M_LIQGAP_ReportService {
 			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 
-		if ("email".equalsIgnoreCase(format) && version != null) {
+		if (("email".equalsIgnoreCase(format) || (filename != null && filename.toUpperCase().contains("EMAIL"))) && version != null) {
 			try {
 				// Redirecting to Archival
 				return BRRS_M_LIQGAPArchivalEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
@@ -17312,6 +17320,7 @@ public class BRRS_M_LIQGAP_ReportService {
 				} catch (RuntimeException e) {
 					logger.warn("Skipping formula evaluation due to external references: {}", e.getMessage());
 				}
+				workbook.setForceFormulaRecalculation(true);
 			} else {
 
 			}
