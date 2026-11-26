@@ -370,6 +370,30 @@ public class BRRS_M_GALOR_ReportService {
 		return mv;
 	}
 
+	// ================= Helpers: formula totals in downloaded workbooks =================
+	// Convert "" (empty-string) cells to real blanks. A text "" breaks '+' based total
+	// formulas (=B11+B12+...) with #VALUE!, while a blank cell is treated as 0.
+	private void clearEmptyStringCells(Sheet sheet) {
+	    for (Row r : sheet) {
+	        for (Cell c : r) {
+	            if (c.getCellType() == Cell.CELL_TYPE_STRING && c.getStringCellValue().isEmpty()) {
+	                c.setCellType(Cell.CELL_TYPE_BLANK); // style is retained
+	            }
+	        }
+	    }
+	}
+
+	// Evaluate every formula so totals are written into the file; if evaluation fails,
+	// make Excel recalculate when the file is opened.
+	private void recalculateFormulas(Workbook workbook) {
+		try {
+			workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+		} catch (Exception e) {
+			logger.warn("Formula evaluation failed, forcing recalculation on open: {}", e.getMessage());
+			workbook.setForceFormulaRecalculation(true);
+		}
+	}
+
 	// Normal Format Excel
 	public byte[] getM_GALORExcel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, String format, BigDecimal version) throws Exception {
@@ -480,7 +504,8 @@ public class BRRS_M_GALOR_ReportService {
 				populateEntity3Data(sheet, dataList2.get(0), textStyle, numberStyle);
 			}
 
-			workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+			clearEmptyStringCells(sheet);
+			recalculateFormulas(workbook);
 			workbook.write(out);
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -16006,7 +16031,8 @@ public class BRRS_M_GALOR_ReportService {
 				populateEntity3Data(sheet, dataList2.get(0), textStyle, numberStyle);
 			}
 
-			workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+			clearEmptyStringCells(sheet);
+			recalculateFormulas(workbook);
 			workbook.write(out);
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -31647,8 +31673,9 @@ public class BRRS_M_GALOR_ReportService {
 				EmailpopulateEntity3Data(sheet, dataList2.get(0), textStyle, numberStyle);
 			}
 
-			// ❌ Removed formula evaluation to avoid extra 0 values
-			// workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+			// ✅ Recalculate total formulas so Email download shows computed totals
+			clearEmptyStringCells(sheet);
+			recalculateFormulas(workbook);
 
 			workbook.write(out);
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
@@ -36878,6 +36905,9 @@ public class BRRS_M_GALOR_ReportService {
 		// ROW R80 --> USING RECORD1
 		// -------------------------------------------------------
 
+		// R80 (d) Standing credit facility has no row in the Email template; writing it here
+		// overwrote the '36. Debt securities in issue' total formulas (row 80)
+		/*
 		row = sheet.getRow(79);
 
 		// Column B - BOTSWANA
@@ -36969,6 +36999,7 @@ public class BRRS_M_GALOR_ReportService {
 			cellJ.setCellValue("");
 			cellJ.setCellStyle(textStyle);
 		}
+		*/
 
 		// -------------------------------------------------------
 		// ROW R81 --> USING RECORD1
@@ -41238,7 +41269,8 @@ public class BRRS_M_GALOR_ReportService {
 				ArchivalEmailpopulateEntity3Data(sheet, dataList2.get(0), textStyle, numberStyle);
 			}
 
-			workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+			clearEmptyStringCells(sheet);
+			recalculateFormulas(workbook);
 			workbook.write(out);
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -46468,6 +46500,9 @@ public class BRRS_M_GALOR_ReportService {
 		// ROW R80 --> USING RECORD1
 		// -------------------------------------------------------
 
+		// R80 (d) Standing credit facility has no row in the Email template; writing it here
+		// overwrote the '36. Debt securities in issue' total formulas (row 80)
+		/*
 		row = sheet.getRow(79);
 
 		// Column B - BOTSWANA
@@ -46559,6 +46594,7 @@ public class BRRS_M_GALOR_ReportService {
 			cellJ.setCellValue("");
 			cellJ.setCellStyle(textStyle);
 		}
+		*/
 
 		// -------------------------------------------------------
 		// ROW R81 --> USING RECORD1
