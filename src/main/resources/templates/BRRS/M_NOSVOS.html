@@ -820,12 +820,20 @@ PURPOSE		: BWRBRREPORT
 				}
 				// Row 11 (DUE FROM RELATED FOREIGN BANKS): calculated cell stays locked
 				readonlyIds.push("R11_RISK_WEIGHTED_AMOUNT_NOSTRO1");
+				
+				// DUE FROM / DUE TO DOMESTIC BANKS: calculated TOTAL cells stay locked
+				readonlyIds.push("R101_TOTAL_DUE_FROM_DOMESTIC_AMOUNT", "R101_TOTAL_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT");
+				readonlyIds.push("R101_TOTAL_DUE_TO_DOMESTIC_AMOUNT", "R101_TOTAL_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT");
 
 			$(".Show_input").each(function () {
 				if (!readonlyIds.includes(this.id)) {
 					$(this).removeAttr("readonly").removeAttr("disabled");
 				}
 			});
+			
+			// Keep the entire TOTAL row of both domestic tables read-only (label + blank cells included)
+			$("#R101_TOTAL_DUE_FROM_DOMESTIC_AMOUNT, #R101_TOTAL_DUE_TO_DOMESTIC_AMOUNT")
+				.closest("tr").find("input").attr("readonly", true);
 
 			for (let i = 1; i <= 10; i++) {
 				$("#R" + i + "_TYPE_OF_ACCOUNT_NOSTRO_TEXT").hide();	//R11_TYPE_OF_ACC_TEXT
@@ -1471,6 +1479,44 @@ PURPOSE		: BWRBRREPORT
 			$("#R101_TOTAL_AMOUNT_TIME_VOSTRO1").val(totalAmountTimeVostro1.toLocaleString('en-IN', {maximumFractionDigits: 0}));
 		}
 
+		
+		// DUE FROM DOMESTIC BANKS (R1-R11) and DUE TO DOMESTIC BANKS (R1-R8)
+		// Total Amount = sum of row Amounts | Total Risk-Weighted Amount = sum of row Risk-Weighted Amounts
+		function calculateDomesticTotals() {
+			const num = id => parseFloat(($(id).val() || "").toString().replace(/,/g, "")) || 0;
+			const fmt = v => v.toLocaleString('en-US', {maximumFractionDigits: 0});
+
+			[
+				{ prefix: "DUE_FROM_DOMESTIC", rows: 11 },
+				{ prefix: "DUE_TO_DOMESTIC", rows: 8 }
+			].forEach(function (t) {
+				let totalAmount = 0;
+				let totalRiskWeightedAmount = 0;
+
+				for (let i = 1; i <= t.rows; i++) {
+					totalAmount += num("#R" + i + "_" + t.prefix + "_AMOUNT");
+					totalRiskWeightedAmount += num("#R" + i + "_" + t.prefix + "_RISK_WEIGHT_AMT");
+				}
+
+				$("#R101_TOTAL_" + t.prefix + "_AMOUNT").val(fmt(totalAmount));
+				$("#R101_TOTAL_" + t.prefix + "_RISK_WEIGHT_AMT").val(fmt(totalRiskWeightedAmount));
+			});
+		}
+
+		// Calculate on page load and recalculate whenever a domestic row value changes
+		$(document).ready(function () {
+			let domesticInputs = [];
+			for (let i = 1; i <= 11; i++) {
+				domesticInputs.push("#R" + i + "_DUE_FROM_DOMESTIC_AMOUNT", "#R" + i + "_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT");
+			}
+			for (let i = 1; i <= 8; i++) {
+				domesticInputs.push("#R" + i + "_DUE_TO_DOMESTIC_AMOUNT", "#R" + i + "_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT");
+			}
+
+			calculateDomesticTotals();
+			$(domesticInputs.join(", ")).on("input", calculateDomesticTotals);
+		});
+		
 		// Call on page load
 		$(document).ready(function () {
 
@@ -1518,6 +1564,7 @@ PURPOSE		: BWRBRREPORT
 			$('#loader').modal('show');
 
 			// ✅ Step 1: Calculate totals
+			calculateDomesticTotals();
 			calculateR101Totals();
 
 			// ✅ Step 2: Remove commas from inputs
