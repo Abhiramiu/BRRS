@@ -23501,68 +23501,68 @@ public class BRRS_M_SRWA_12D_ReportService {
 							cell20.setCellStyle(textStyle);
 						}
 
-						row = sheet.getRow(14);
-						if (row == null) {
-							row = sheet.createRow(14);
-						}
-
-						cell5 = row.createCell(5);
-						if (record.getR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS() != null) {
-							cell5.setCellValue(record.getR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS().doubleValue());
-							cell5.setCellStyle(numberStyle);
-						} else {
-							cell5.setCellValue("");
-							cell5.setCellStyle(textStyle);
-						}
-
-						cell6 = row.createCell(6);
-						if (record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() != null) {
-							cell6.setCellValue(
-									record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS().doubleValue());
-							cell6.setCellStyle(numberStyle);
-						} else {
-							cell6.setCellValue("");
-							cell6.setCellStyle(textStyle);
-						}
-
-						cell9 = row.createCell(9);
-						if (record.getR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() != null) {
-							cell9.setCellValue(
-									record.getR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS().doubleValue());
-							cell9.setCellStyle(numberStyle);
-						} else {
-							cell9.setCellValue("");
-							cell9.setCellStyle(textStyle);
-						}
-
-						cell16 = row.createCell(16);
-						if (record.getR15_TOTAL_CURRENT_INTEREST_CONTRACTS() != null) {
-							cell16.setCellValue(record.getR15_TOTAL_CURRENT_INTEREST_CONTRACTS().doubleValue());
-							cell16.setCellStyle(numberStyle);
-						} else {
-							cell16.setCellValue("");
-							cell16.setCellStyle(textStyle);
-						}
-
-						cell17 = row.createCell(17);
-						if (record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() != null) {
-							cell17.setCellValue(
-									record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS().doubleValue());
-							cell17.setCellStyle(numberStyle);
-						} else {
-							cell17.setCellValue("");
-							cell17.setCellStyle(textStyle);
-						}
-
-						cell20 = row.createCell(20);
-						if (record.getR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() != null) {
-							cell20.setCellValue(
-									record.getR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS().doubleValue());
-							cell20.setCellStyle(numberStyle);
-						} else {
-							cell20.setCellValue("");
-							cell20.setCellStyle(textStyle);
-						}
+//						row = sheet.getRow(14);
+//						if (row == null) {
+//							row = sheet.createRow(14);
+//						}
+//
+//						cell5 = row.createCell(5);
+//						if (record.getR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS() != null) {
+//							cell5.setCellValue(record.getR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS().doubleValue());
+//							cell5.setCellStyle(numberStyle);
+//						} else {
+//							cell5.setCellValue("");
+//							cell5.setCellStyle(textStyle);
+//						}
+//
+//						cell6 = row.createCell(6);
+//						if (record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() != null) {
+//							cell6.setCellValue(
+//									record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS().doubleValue());
+//							cell6.setCellStyle(numberStyle);
+//						} else {
+//							cell6.setCellValue("");
+//							cell6.setCellStyle(textStyle);
+//						}
+//
+//						cell9 = row.createCell(9);
+//						if (record.getR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() != null) {
+//							cell9.setCellValue(
+//									record.getR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS().doubleValue());
+//							cell9.setCellStyle(numberStyle);
+//						} else {
+//							cell9.setCellValue("");
+//							cell9.setCellStyle(textStyle);
+//						}
+//
+//						cell16 = row.createCell(16);
+//						if (record.getR15_TOTAL_CURRENT_INTEREST_CONTRACTS() != null) {
+//							cell16.setCellValue(record.getR15_TOTAL_CURRENT_INTEREST_CONTRACTS().doubleValue());
+//							cell16.setCellStyle(numberStyle);
+//						} else {
+//							cell16.setCellValue("");
+//							cell16.setCellStyle(textStyle);
+//						}
+//
+//						cell17 = row.createCell(17);
+//						if (record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() != null) {
+//							cell17.setCellValue(
+//									record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS().doubleValue());
+//							cell17.setCellStyle(numberStyle);
+//						} else {
+//							cell17.setCellValue("");
+//							cell17.setCellStyle(textStyle);
+//						}
+//
+//						cell20 = row.createCell(20);
+//						if (record.getR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() != null) {
+//							cell20.setCellValue(
+//									record.getR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS().doubleValue());
+//							cell20.setCellStyle(numberStyle);
+//						} else {
+//							cell20.setCellValue("");
+//							cell20.setCellStyle(textStyle);
+//						}
 
 						row = sheet.getRow(20);
 						if (row == null) {
@@ -23804,67 +23804,67 @@ public class BRRS_M_SRWA_12D_ReportService {
 							cell20.setCellStyle(textStyle);
 						}
 
-						row = sheet.getRow(23);
-						if (row == null) {
-							row = sheet.createRow(23);
-						}
-
-						cell5 = row.createCell(6);
-						if (record.getR24_TOTAL_CURRENT_EQUITY_CONTRACTS() != null) {
-							cell5.setCellValue(record.getR24_TOTAL_CURRENT_EQUITY_CONTRACTS().doubleValue());
-							cell5.setCellStyle(numberStyle);
-						} else {
-							cell5.setCellValue("");
-							cell5.setCellStyle(textStyle);
-						}
-
-						cell6 = row.createCell(7);
-						if (record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() != null) {
-							cell6.setCellValue(
-									record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS().doubleValue());
-							cell6.setCellStyle(numberStyle);
-						} else {
-							cell6.setCellValue("");
-							cell6.setCellStyle(textStyle);
-						}
-
-						cell9 = row.createCell(9);
-						if (record.getR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() != null) {
-							cell9.setCellValue(record.getR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS().doubleValue());
-							cell9.setCellStyle(numberStyle);
-						} else {
-							cell9.setCellValue("");
-							cell9.setCellStyle(textStyle);
-						}
-
-						cell16 = row.createCell(16);
-						if (record.getR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS() != null) {
-							cell16.setCellValue(record.getR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS().doubleValue());
-							cell16.setCellStyle(numberStyle);
-						} else {
-							cell16.setCellValue("");
-							cell16.setCellStyle(textStyle);
-						}
-
-						cell17 = row.createCell(17);
-						if (record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() != null) {
-							cell17.setCellValue(
-									record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS().doubleValue());
-							cell17.setCellStyle(numberStyle);
-						} else {
-							cell17.setCellValue("");
-							cell17.setCellStyle(textStyle);
-						}
-
-						cell20 = row.createCell(20);
-						if (record.getR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() != null) {
-							cell20.setCellValue(
-									record.getR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS().doubleValue());
-							cell20.setCellStyle(numberStyle);
-						} else {
-							cell20.setCellValue("");
-							cell20.setCellStyle(textStyle);
-						}
+//						row = sheet.getRow(23);
+//						if (row == null) {
+//							row = sheet.createRow(23);
+//						}
+//
+//						cell5 = row.createCell(6);
+//						if (record.getR24_TOTAL_CURRENT_EQUITY_CONTRACTS() != null) {
+//							cell5.setCellValue(record.getR24_TOTAL_CURRENT_EQUITY_CONTRACTS().doubleValue());
+//							cell5.setCellStyle(numberStyle);
+//						} else {
+//							cell5.setCellValue("");
+//							cell5.setCellStyle(textStyle);
+//						}
+//
+//						cell6 = row.createCell(7);
+//						if (record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() != null) {
+//							cell6.setCellValue(
+//									record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS().doubleValue());
+//							cell6.setCellStyle(numberStyle);
+//						} else {
+//							cell6.setCellValue("");
+//							cell6.setCellStyle(textStyle);
+//						}
+//
+//						cell9 = row.createCell(9);
+//						if (record.getR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() != null) {
+//							cell9.setCellValue(record.getR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS().doubleValue());
+//							cell9.setCellStyle(numberStyle);
+//						} else {
+//							cell9.setCellValue("");
+//							cell9.setCellStyle(textStyle);
+//						}
+//
+//						cell16 = row.createCell(16);
+//						if (record.getR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS() != null) {
+//							cell16.setCellValue(record.getR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS().doubleValue());
+//							cell16.setCellStyle(numberStyle);
+//						} else {
+//							cell16.setCellValue("");
+//							cell16.setCellStyle(textStyle);
+//						}
+//
+//						cell17 = row.createCell(17);
+//						if (record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() != null) {
+//							cell17.setCellValue(
+//									record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS().doubleValue());
+//							cell17.setCellStyle(numberStyle);
+//						} else {
+//							cell17.setCellValue("");
+//							cell17.setCellStyle(textStyle);
+//						}
+//
+//						cell20 = row.createCell(20);
+//						if (record.getR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() != null) {
+//							cell20.setCellValue(
+//									record.getR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS().doubleValue());
+//							cell20.setCellStyle(numberStyle);
+//						} else {
+//							cell20.setCellValue("");
+//							cell20.setCellStyle(textStyle);
+//						}
 
 						row = sheet.getRow(29);
 						if (row == null) {
@@ -24103,66 +24103,66 @@ public class BRRS_M_SRWA_12D_ReportService {
 							cell20.setCellStyle(textStyle);
 						}
 
-						row = sheet.getRow(32);
-						if (row == null) {
-							row = sheet.createRow(32);
-						}
-
-						cell5 = row.createCell(6);
-						if (record.getR33_TOTAL_CURRENT_DEBT_CONTRACTS() != null) {
-							cell5.setCellValue(record.getR33_TOTAL_CURRENT_DEBT_CONTRACTS().doubleValue());
-							cell5.setCellStyle(numberStyle);
-						} else {
-							cell5.setCellValue("");
-							cell5.setCellStyle(textStyle);
-						}
-
-						cell6 = row.createCell(7);
-						if (record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() != null) {
-							cell6.setCellValue(
-									record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS().doubleValue());
-							cell6.setCellStyle(numberStyle);
-						} else {
-							cell6.setCellValue("");
-							cell6.setCellStyle(textStyle);
-						}
-
-						cell9 = row.createCell(9);
-						if (record.getR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() != null) {
-							cell9.setCellValue(record.getR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS().doubleValue());
-							cell9.setCellStyle(numberStyle);
-						} else {
-							cell9.setCellValue("");
-							cell9.setCellStyle(textStyle);
-						}
-
-						cell16 = row.createCell(16);
-						if (record.getR33_TOTAL_CURRENT_CREDIT_CONTRACTS() != null) {
-							cell16.setCellValue(record.getR33_TOTAL_CURRENT_CREDIT_CONTRACTS().doubleValue());
-							cell16.setCellStyle(numberStyle);
-						} else {
-							cell16.setCellValue("");
-							cell16.setCellStyle(textStyle);
-						}
-
-						cell17 = row.createCell(17);
-						if (record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() != null) {
-							cell17.setCellValue(
-									record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS().doubleValue());
-							cell17.setCellStyle(numberStyle);
-						} else {
-							cell17.setCellValue("");
-							cell17.setCellStyle(textStyle);
-						}
-
-						cell20 = row.createCell(20);
-						if (record.getR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() != null) {
-							cell20.setCellValue(record.getR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS().doubleValue());
-							cell20.setCellStyle(numberStyle);
-						} else {
-							cell20.setCellValue("");
-							cell20.setCellStyle(textStyle);
-						}
+//						row = sheet.getRow(32);
+//						if (row == null) {
+//							row = sheet.createRow(32);
+//						}
+//
+//						cell5 = row.createCell(6);
+//						if (record.getR33_TOTAL_CURRENT_DEBT_CONTRACTS() != null) {
+//							cell5.setCellValue(record.getR33_TOTAL_CURRENT_DEBT_CONTRACTS().doubleValue());
+//							cell5.setCellStyle(numberStyle);
+//						} else {
+//							cell5.setCellValue("");
+//							cell5.setCellStyle(textStyle);
+//						}
+//
+//						cell6 = row.createCell(7);
+//						if (record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() != null) {
+//							cell6.setCellValue(
+//									record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS().doubleValue());
+//							cell6.setCellStyle(numberStyle);
+//						} else {
+//							cell6.setCellValue("");
+//							cell6.setCellStyle(textStyle);
+//						}
+//
+//						cell9 = row.createCell(9);
+//						if (record.getR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() != null) {
+//							cell9.setCellValue(record.getR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS().doubleValue());
+//							cell9.setCellStyle(numberStyle);
+//						} else {
+//							cell9.setCellValue("");
+//							cell9.setCellStyle(textStyle);
+//						}
+//
+//						cell16 = row.createCell(16);
+//						if (record.getR33_TOTAL_CURRENT_CREDIT_CONTRACTS() != null) {
+//							cell16.setCellValue(record.getR33_TOTAL_CURRENT_CREDIT_CONTRACTS().doubleValue());
+//							cell16.setCellStyle(numberStyle);
+//						} else {
+//							cell16.setCellValue("");
+//							cell16.setCellStyle(textStyle);
+//						}
+//
+//						cell17 = row.createCell(17);
+//						if (record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() != null) {
+//							cell17.setCellValue(
+//									record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS().doubleValue());
+//							cell17.setCellStyle(numberStyle);
+//						} else {
+//							cell17.setCellValue("");
+//							cell17.setCellStyle(textStyle);
+//						}
+//
+//						cell20 = row.createCell(20);
+//						if (record.getR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() != null) {
+//							cell20.setCellValue(record.getR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS().doubleValue());
+//							cell20.setCellStyle(numberStyle);
+//						} else {
+//							cell20.setCellValue("");
+//							cell20.setCellStyle(textStyle);
+//						}
 
 //						row = sheet.getRow(42);
 //						if (row == null) {
@@ -25531,1050 +25531,1071 @@ public class BRRS_M_SRWA_12D_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 5;
+			// --- End of Style Definitions ---
 
-			if (!dataList.isEmpty()) {
-				for (int i = 0; i < dataList.size(); i++) {
-					M_SRWA_12D_Archival_Summary_Entity record = dataList.get(i);
-					System.out.println("rownumber=" + startRow + i);
-					Row row = sheet.getRow(startRow + i);
-					if (row == null) {
-						row = sheet.createRow(startRow + i);
-					}
+				int startRow = 5;
+
+				if (!dataList.isEmpty()) {
+					for (int i = 0; i < dataList.size(); i++) {
+						M_SRWA_12D_Archival_Summary_Entity record = dataList.get(i);
+						System.out.println("rownumber=" + startRow + i);
+						Row row = sheet.getRow(startRow + i);
+						if (row == null) {
+							row = sheet.createRow(startRow + i);
+						}
 //EMAIL
-					Cell R12Cell = row.createCell(4);
-
-					if (record.getReport_date() != null) {
-
-						R12Cell.setCellValue(record.getReport_date());
-
-						R12Cell.setCellStyle(dateStyle);
-
-					} else {
-
-						R12Cell.setCellValue("");
-
-						R12Cell.setCellStyle(textStyle);
-					}
-					row = sheet.getRow(11);
-
-					Cell cell4 = row.createCell(4);
-					if (record.getR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() != null) {
-						cell4.setCellValue(record.getR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					Cell cell5 = row.createCell(5);
-					if (record.getR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					Cell cell6 = row.createCell(6);
-					if (record.getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					Cell cell9 = row.createCell(9);
-					if (record.getR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					Cell cell15 = row.createCell(15);
-					if (record.getR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() != null) {
-						cell15.setCellValue(record.getR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS().doubleValue());
-						cell15.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					Cell cell16 = row.createCell(16);
-					if (record.getR12_TOTAL_CURRENT_INTEREST_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR12_TOTAL_CURRENT_INTEREST_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					Cell cell17 = row.createCell(17);
-					if (record.getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					Cell cell20 = row.createCell(20);
-					if (record.getR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(12);
-					if (row == null) {
-						row = sheet.createRow(12);
-					}
-
-					cell4 = row.createCell(4);
-					if (record.getR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() != null) {
-						cell4.setCellValue(record.getR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(5);
-					if (record.getR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(6);
-					if (record.getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell15 = row.createCell(15);
-					if (record.getR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() != null) {
-						cell15.setCellValue(record.getR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS().doubleValue());
-						cell15.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR13_TOTAL_CURRENT_INTEREST_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR13_TOTAL_CURRENT_INTEREST_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(13);
-					if (row == null) {
-						row = sheet.createRow(13);
-					}
-
-					cell4 = row.createCell(4);
-					if (record.getR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() != null) {
-						cell4.setCellValue(record.getR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(5);
-					if (record.getR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(6);
-					if (record.getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell15 = row.createCell(15);
-					if (record.getR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() != null) {
-						cell15.setCellValue(record.getR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS().doubleValue());
-						cell15.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR14_TOTAL_CURRENT_INTEREST_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR14_TOTAL_CURRENT_INTEREST_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(14);
-					if (row == null) {
-						row = sheet.createRow(14);
-					}
-
-					cell5 = row.createCell(5);
-					if (record.getR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(6);
-					if (record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR15_TOTAL_CURRENT_INTEREST_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR15_TOTAL_CURRENT_INTEREST_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(20);
-					if (row == null) {
-						row = sheet.createRow(20);
-					}
-
-					cell4 = row.createCell(4);
-					if (record.getR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() != null) {
-						cell4.setCellValue(record.getR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(5);
-					if (record.getR21_TOTAL_CURRENT_EQUITY_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR21_TOTAL_CURRENT_EQUITY_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(6);
-					if (record.getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell15 = row.createCell(15);
-					if (record.getR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() != null) {
-						cell15.setCellValue(record.getR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS().doubleValue());
-						cell15.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(21);
-					if (row == null) {
-						row = sheet.createRow(21);
-					}
-
-					cell4 = row.createCell(4);
-					if (record.getR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() != null) {
-						cell4.setCellValue(record.getR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(5);
-					if (record.getR22_TOTAL_CURRENT_EQUITY_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR22_TOTAL_CURRENT_EQUITY_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(6);
-					if (record.getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell15 = row.createCell(15);
-					if (record.getR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() != null) {
-						cell15.setCellValue(record.getR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS().doubleValue());
-						cell15.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(22);
-					if (row == null) {
-						row = sheet.createRow(22);
-					}
-
-					cell4 = row.createCell(4);
-					if (record.getR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() != null) {
-						cell4.setCellValue(record.getR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(5);
-					if (record.getR23_TOTAL_CURRENT_EQUITY_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR23_TOTAL_CURRENT_EQUITY_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(6);
-					if (record.getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell15 = row.createCell(15);
-					if (record.getR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() != null) {
-						cell15.setCellValue(record.getR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS().doubleValue());
-						cell15.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(23);
-					if (row == null) {
-						row = sheet.createRow(23);
-					}
-
-					cell5 = row.createCell(6);
-					if (record.getR24_TOTAL_CURRENT_EQUITY_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR24_TOTAL_CURRENT_EQUITY_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(7);
-					if (record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(29);
-					if (row == null) {
-						row = sheet.createRow(29);
-					}
-
-					cell4 = row.createCell(4);
-					if (record.getR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() != null) {
-						cell4.setCellValue(record.getR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(5);
-					if (record.getR30_TOTAL_CURRENT_DEBT_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR30_TOTAL_CURRENT_DEBT_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(6);
-					if (record.getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell15 = row.createCell(15);
-					if (record.getR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() != null) {
-						cell15.setCellValue(record.getR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS().doubleValue());
-						cell15.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR30_TOTAL_CURRENT_CREDIT_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR30_TOTAL_CURRENT_CREDIT_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(30);
-					if (row == null) {
-						row = sheet.createRow(30);
-					}
-
-					cell4 = row.createCell(4);
-					if (record.getR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() != null) {
-						cell4.setCellValue(record.getR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(5);
-					if (record.getR31_TOTAL_CURRENT_DEBT_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR31_TOTAL_CURRENT_DEBT_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(6);
-					if (record.getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell15 = row.createCell(15);
-					if (record.getR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() != null) {
-						cell15.setCellValue(record.getR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS().doubleValue());
-						cell15.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR31_TOTAL_CURRENT_CREDIT_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR31_TOTAL_CURRENT_CREDIT_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(31);
-					if (row == null) {
-						row = sheet.createRow(31);
-					}
-
-					cell4 = row.createCell(4);
-					if (record.getR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() != null) {
-						cell4.setCellValue(record.getR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(5);
-					if (record.getR32_TOTAL_CURRENT_DEBT_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR32_TOTAL_CURRENT_DEBT_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(6);
-					if (record.getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell15 = row.createCell(15);
-					if (record.getR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() != null) {
-						cell15.setCellValue(record.getR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS().doubleValue());
-						cell15.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR32_TOTAL_CURRENT_CREDIT_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR32_TOTAL_CURRENT_CREDIT_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(32);
-					if (row == null) {
-						row = sheet.createRow(32);
-					}
-
-					cell5 = row.createCell(6);
-					if (record.getR33_TOTAL_CURRENT_DEBT_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR33_TOTAL_CURRENT_DEBT_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(7);
-					if (record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR33_TOTAL_CURRENT_CREDIT_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR33_TOTAL_CURRENT_CREDIT_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-//					row = sheet.getRow(42);
-//					if (row == null) {
-//						row = sheet.createRow(42);
-//					}
+						Cell R12Cell = row.createCell(4);
+
+						if (record.getReport_date() != null) {
+
+							R12Cell.setCellValue(record.getReport_date());
+
+							R12Cell.setCellStyle(dateStyle);
+
+						} else {
+
+							R12Cell.setCellValue("");
+
+							R12Cell.setCellStyle(textStyle);
+						}
+						row = sheet.getRow(11);
+
+						Cell cell4 = row.createCell(4);
+						if (record.getR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() != null) {
+							cell4.setCellValue(record.getR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						Cell cell5 = row.createCell(5);
+						if (record.getR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS() != null) {
+							cell5.setCellValue(record.getR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						Cell cell6 = row.createCell(6);
+						if (record.getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() != null) {
+							cell6.setCellValue(
+									record.getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						Cell cell9 = row.createCell(9);
+						if (record.getR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() != null) {
+							cell9.setCellValue(
+									record.getR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS().doubleValue());
+							cell9.setCellStyle(numberStyle);
+						} else {
+							cell9.setCellValue("");
+							cell9.setCellStyle(textStyle);
+						}
+
+						Cell cell15 = row.createCell(15);
+						if (record.getR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() != null) {
+							cell15.setCellValue(record.getR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS().doubleValue());
+							cell15.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						Cell cell16 = row.createCell(16);
+						if (record.getR12_TOTAL_CURRENT_INTEREST_CONTRACTS() != null) {
+							cell16.setCellValue(record.getR12_TOTAL_CURRENT_INTEREST_CONTRACTS().doubleValue());
+							cell16.setCellStyle(numberStyle);
+						} else {
+							cell16.setCellValue("");
+							cell16.setCellStyle(textStyle);
+						}
+
+						Cell cell17 = row.createCell(17);
+						if (record.getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() != null) {
+							cell17.setCellValue(
+									record.getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS().doubleValue());
+							cell17.setCellStyle(numberStyle);
+						} else {
+							cell17.setCellValue("");
+							cell17.setCellStyle(textStyle);
+						}
+
+						Cell cell20 = row.createCell(20);
+						if (record.getR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() != null) {
+							cell20.setCellValue(
+									record.getR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS().doubleValue());
+							cell20.setCellStyle(numberStyle);
+						} else {
+							cell20.setCellValue("");
+							cell20.setCellStyle(textStyle);
+						}
+
+						row = sheet.getRow(12);
+						if (row == null) {
+							row = sheet.createRow(12);
+						}
+
+						cell4 = row.createCell(4);
+						if (record.getR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() != null) {
+							cell4.setCellValue(record.getR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(5);
+						if (record.getR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS() != null) {
+							cell5.setCellValue(record.getR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(6);
+						if (record.getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() != null) {
+							cell6.setCellValue(
+									record.getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell9 = row.createCell(9);
+						if (record.getR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() != null) {
+							cell9.setCellValue(
+									record.getR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS().doubleValue());
+							cell9.setCellStyle(numberStyle);
+						} else {
+							cell9.setCellValue("");
+							cell9.setCellStyle(textStyle);
+						}
+
+						cell15 = row.createCell(15);
+						if (record.getR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() != null) {
+							cell15.setCellValue(record.getR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS().doubleValue());
+							cell15.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell16 = row.createCell(16);
+						if (record.getR13_TOTAL_CURRENT_INTEREST_CONTRACTS() != null) {
+							cell16.setCellValue(record.getR13_TOTAL_CURRENT_INTEREST_CONTRACTS().doubleValue());
+							cell16.setCellStyle(numberStyle);
+						} else {
+							cell16.setCellValue("");
+							cell16.setCellStyle(textStyle);
+						}
+
+						cell17 = row.createCell(17);
+						if (record.getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() != null) {
+							cell17.setCellValue(
+									record.getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS().doubleValue());
+							cell17.setCellStyle(numberStyle);
+						} else {
+							cell17.setCellValue("");
+							cell17.setCellStyle(textStyle);
+						}
+
+						cell20 = row.createCell(20);
+						if (record.getR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() != null) {
+							cell20.setCellValue(
+									record.getR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS().doubleValue());
+							cell20.setCellStyle(numberStyle);
+						} else {
+							cell20.setCellValue("");
+							cell20.setCellStyle(textStyle);
+						}
+
+						row = sheet.getRow(13);
+						if (row == null) {
+							row = sheet.createRow(13);
+						}
+
+						cell4 = row.createCell(4);
+						if (record.getR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() != null) {
+							cell4.setCellValue(record.getR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(5);
+						if (record.getR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS() != null) {
+							cell5.setCellValue(record.getR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(6);
+						if (record.getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() != null) {
+							cell6.setCellValue(
+									record.getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell9 = row.createCell(9);
+						if (record.getR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() != null) {
+							cell9.setCellValue(
+									record.getR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS().doubleValue());
+							cell9.setCellStyle(numberStyle);
+						} else {
+							cell9.setCellValue("");
+							cell9.setCellStyle(textStyle);
+						}
+
+						cell15 = row.createCell(15);
+						if (record.getR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() != null) {
+							cell15.setCellValue(record.getR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS().doubleValue());
+							cell15.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell16 = row.createCell(16);
+						if (record.getR14_TOTAL_CURRENT_INTEREST_CONTRACTS() != null) {
+							cell16.setCellValue(record.getR14_TOTAL_CURRENT_INTEREST_CONTRACTS().doubleValue());
+							cell16.setCellStyle(numberStyle);
+						} else {
+							cell16.setCellValue("");
+							cell16.setCellStyle(textStyle);
+						}
+
+						cell17 = row.createCell(17);
+						if (record.getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() != null) {
+							cell17.setCellValue(
+									record.getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS().doubleValue());
+							cell17.setCellStyle(numberStyle);
+						} else {
+							cell17.setCellValue("");
+							cell17.setCellStyle(textStyle);
+						}
+
+						cell20 = row.createCell(20);
+						if (record.getR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() != null) {
+							cell20.setCellValue(
+									record.getR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS().doubleValue());
+							cell20.setCellStyle(numberStyle);
+						} else {
+							cell20.setCellValue("");
+							cell20.setCellStyle(textStyle);
+						}
+
+//						row = sheet.getRow(14);
+//						if (row == null) {
+//							row = sheet.createRow(14);
+//						}
 //
-//					cell4 = row.createCell(4);
-//					if (record.getR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() != null) {
-//						cell4.setCellValue(record.getR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS().doubleValue());
-//						cell4.setCellStyle(numberStyle);
-//					} else {
-//						cell4.setCellValue("");
-//						cell4.setCellStyle(textStyle);
-//					}
+//						cell5 = row.createCell(5);
+//						if (record.getR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS() != null) {
+//							cell5.setCellValue(record.getR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS().doubleValue());
+//							cell5.setCellStyle(numberStyle);
+//						} else {
+//							cell5.setCellValue("");
+//							cell5.setCellStyle(textStyle);
+//						}
 //
-//					cell5 = row.createCell(5);
-//					if (record.getR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() != null) {
-//						cell5.setCellValue(record.getR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS().doubleValue());
-//						cell5.setCellStyle(numberStyle);
-//					} else {
-//						cell5.setCellValue("");
-//						cell5.setCellStyle(textStyle);
-//					}
+//						cell6 = row.createCell(6);
+//						if (record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() != null) {
+//							cell6.setCellValue(
+//									record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS().doubleValue());
+//							cell6.setCellStyle(numberStyle);
+//						} else {
+//							cell6.setCellValue("");
+//							cell6.setCellStyle(textStyle);
+//						}
 //
-//					cell6 = row.createCell(6);
-//					if (record.getR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() != null) {
-//						cell6.setCellValue(record.getR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS().doubleValue());
-//						cell6.setCellStyle(numberStyle);
-//					} else {
-//						cell6.setCellValue("");
-//						cell6.setCellStyle(textStyle);
-//					}
+//						cell9 = row.createCell(9);
+//						if (record.getR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() != null) {
+//							cell9.setCellValue(
+//									record.getR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS().doubleValue());
+//							cell9.setCellStyle(numberStyle);
+//						} else {
+//							cell9.setCellValue("");
+//							cell9.setCellStyle(textStyle);
+//						}
 //
-//					Cell cell8 = row.createCell(8);
-//					if (record.getR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() != null) {
-//						cell8.setCellValue(record.getR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS().doubleValue());
-//						cell8.setCellStyle(numberStyle);
-//					} else {
-//						cell8.setCellValue("");
-//						cell8.setCellStyle(textStyle);
-//					}
+//						cell16 = row.createCell(16);
+//						if (record.getR15_TOTAL_CURRENT_INTEREST_CONTRACTS() != null) {
+//							cell16.setCellValue(record.getR15_TOTAL_CURRENT_INTEREST_CONTRACTS().doubleValue());
+//							cell16.setCellStyle(numberStyle);
+//						} else {
+//							cell16.setCellValue("");
+//							cell16.setCellStyle(textStyle);
+//						}
 //
-//					row = sheet.getRow(43);
-//					if (row == null) {
-//						row = sheet.createRow(43);
-//					}
+//						cell17 = row.createCell(17);
+//						if (record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() != null) {
+//							cell17.setCellValue(
+//									record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS().doubleValue());
+//							cell17.setCellStyle(numberStyle);
+//						} else {
+//							cell17.setCellValue("");
+//							cell17.setCellStyle(textStyle);
+//						}
 //
-//					cell4 = row.createCell(4);
-//					if (record.getR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() != null) {
-//						cell4.setCellValue(record.getR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS().doubleValue());
-//						cell4.setCellStyle(numberStyle);
-//					} else {
-//						cell4.setCellValue("");
-//						cell4.setCellStyle(textStyle);
-//					}
-//
-//					cell5 = row.createCell(5);
-//					if (record.getR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() != null) {
-//						cell5.setCellValue(record.getR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS().doubleValue());
-//						cell5.setCellStyle(numberStyle);
-//					} else {
-//						cell5.setCellValue("");
-//						cell5.setCellStyle(textStyle);
-//					}
-//
-//					cell6 = row.createCell(6);
-//					if (record.getR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() != null) {
-//						cell6.setCellValue(record.getR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS().doubleValue());
-//						cell6.setCellStyle(numberStyle);
-//					} else {
-//						cell6.setCellValue("");
-//						cell6.setCellStyle(textStyle);
-//					}
-//
-//					cell8 = row.createCell(8);
-//					if (record.getR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() != null) {
-//						cell8.setCellValue(record.getR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS().doubleValue());
-//						cell8.setCellStyle(numberStyle);
-//					} else {
-//						cell8.setCellValue("");
-//						cell8.setCellStyle(textStyle);
-//					}
+//						cell20 = row.createCell(20);
+//						if (record.getR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() != null) {
+//							cell20.setCellValue(
+//									record.getR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS().doubleValue());
+//							cell20.setCellStyle(numberStyle);
+//						} else {
+//							cell20.setCellValue("");
+//							cell20.setCellStyle(textStyle);
+//						}
 
-					row = sheet.getRow(44);
-					if (row == null) {
-						row = sheet.createRow(44);
+						row = sheet.getRow(20);
+						if (row == null) {
+							row = sheet.createRow(20);
+						}
+
+						cell4 = row.createCell(4);
+						if (record.getR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() != null) {
+							cell4.setCellValue(record.getR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(5);
+						if (record.getR21_TOTAL_CURRENT_EQUITY_CONTRACTS() != null) {
+							cell5.setCellValue(record.getR21_TOTAL_CURRENT_EQUITY_CONTRACTS().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(6);
+						if (record.getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() != null) {
+							cell6.setCellValue(
+									record.getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell9 = row.createCell(9);
+						if (record.getR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() != null) {
+							cell9.setCellValue(record.getR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS().doubleValue());
+							cell9.setCellStyle(numberStyle);
+						} else {
+							cell9.setCellValue("");
+							cell9.setCellStyle(textStyle);
+						}
+
+						cell15 = row.createCell(15);
+						if (record.getR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() != null) {
+							cell15.setCellValue(record.getR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS().doubleValue());
+							cell15.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell16 = row.createCell(16);
+						if (record.getR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS() != null) {
+							cell16.setCellValue(record.getR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS().doubleValue());
+							cell16.setCellStyle(numberStyle);
+						} else {
+							cell16.setCellValue("");
+							cell16.setCellStyle(textStyle);
+						}
+
+						cell17 = row.createCell(17);
+						if (record.getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() != null) {
+							cell17.setCellValue(
+									record.getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS().doubleValue());
+							cell17.setCellStyle(numberStyle);
+						} else {
+							cell17.setCellValue("");
+							cell17.setCellStyle(textStyle);
+						}
+
+						cell20 = row.createCell(20);
+						if (record.getR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() != null) {
+							cell20.setCellValue(
+									record.getR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS().doubleValue());
+							cell20.setCellStyle(numberStyle);
+						} else {
+							cell20.setCellValue("");
+							cell20.setCellStyle(textStyle);
+						}
+
+						row = sheet.getRow(21);
+						if (row == null) {
+							row = sheet.createRow(21);
+						}
+
+						cell4 = row.createCell(4);
+						if (record.getR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() != null) {
+							cell4.setCellValue(record.getR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(5);
+						if (record.getR22_TOTAL_CURRENT_EQUITY_CONTRACTS() != null) {
+							cell5.setCellValue(record.getR22_TOTAL_CURRENT_EQUITY_CONTRACTS().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(6);
+						if (record.getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() != null) {
+							cell6.setCellValue(
+									record.getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell9 = row.createCell(9);
+						if (record.getR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() != null) {
+							cell9.setCellValue(record.getR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS().doubleValue());
+							cell9.setCellStyle(numberStyle);
+						} else {
+							cell9.setCellValue("");
+							cell9.setCellStyle(textStyle);
+						}
+
+						cell15 = row.createCell(15);
+						if (record.getR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() != null) {
+							cell15.setCellValue(record.getR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS().doubleValue());
+							cell15.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell16 = row.createCell(16);
+						if (record.getR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS() != null) {
+							cell16.setCellValue(record.getR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS().doubleValue());
+							cell16.setCellStyle(numberStyle);
+						} else {
+							cell16.setCellValue("");
+							cell16.setCellStyle(textStyle);
+						}
+
+						cell17 = row.createCell(17);
+						if (record.getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() != null) {
+							cell17.setCellValue(
+									record.getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS().doubleValue());
+							cell17.setCellStyle(numberStyle);
+						} else {
+							cell17.setCellValue("");
+							cell17.setCellStyle(textStyle);
+						}
+
+						cell20 = row.createCell(20);
+						if (record.getR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() != null) {
+							cell20.setCellValue(
+									record.getR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS().doubleValue());
+							cell20.setCellStyle(numberStyle);
+						} else {
+							cell20.setCellValue("");
+							cell20.setCellStyle(textStyle);
+						}
+
+						row = sheet.getRow(22);
+						if (row == null) {
+							row = sheet.createRow(22);
+						}
+
+						cell4 = row.createCell(4);
+						if (record.getR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() != null) {
+							cell4.setCellValue(record.getR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(5);
+						if (record.getR23_TOTAL_CURRENT_EQUITY_CONTRACTS() != null) {
+							cell5.setCellValue(record.getR23_TOTAL_CURRENT_EQUITY_CONTRACTS().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(6);
+						if (record.getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() != null) {
+							cell6.setCellValue(
+									record.getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell9 = row.createCell(9);
+						if (record.getR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() != null) {
+							cell9.setCellValue(record.getR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS().doubleValue());
+							cell9.setCellStyle(numberStyle);
+						} else {
+							cell9.setCellValue("");
+							cell9.setCellStyle(textStyle);
+						}
+
+						cell15 = row.createCell(15);
+						if (record.getR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() != null) {
+							cell15.setCellValue(record.getR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS().doubleValue());
+							cell15.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell16 = row.createCell(16);
+						if (record.getR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS() != null) {
+							cell16.setCellValue(record.getR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS().doubleValue());
+							cell16.setCellStyle(numberStyle);
+						} else {
+							cell16.setCellValue("");
+							cell16.setCellStyle(textStyle);
+						}
+
+						cell17 = row.createCell(17);
+						if (record.getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() != null) {
+							cell17.setCellValue(
+									record.getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS().doubleValue());
+							cell17.setCellStyle(numberStyle);
+						} else {
+							cell17.setCellValue("");
+							cell17.setCellStyle(textStyle);
+						}
+
+						cell20 = row.createCell(20);
+						if (record.getR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() != null) {
+							cell20.setCellValue(
+									record.getR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS().doubleValue());
+							cell20.setCellStyle(numberStyle);
+						} else {
+							cell20.setCellValue("");
+							cell20.setCellStyle(textStyle);
+						}
+
+//						row = sheet.getRow(23);
+//						if (row == null) {
+//							row = sheet.createRow(23);
+//						}
+//
+//						cell5 = row.createCell(6);
+//						if (record.getR24_TOTAL_CURRENT_EQUITY_CONTRACTS() != null) {
+//							cell5.setCellValue(record.getR24_TOTAL_CURRENT_EQUITY_CONTRACTS().doubleValue());
+//							cell5.setCellStyle(numberStyle);
+//						} else {
+//							cell5.setCellValue("");
+//							cell5.setCellStyle(textStyle);
+//						}
+//
+//						cell6 = row.createCell(7);
+//						if (record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() != null) {
+//							cell6.setCellValue(
+//									record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS().doubleValue());
+//							cell6.setCellStyle(numberStyle);
+//						} else {
+//							cell6.setCellValue("");
+//							cell6.setCellStyle(textStyle);
+//						}
+//
+//						cell9 = row.createCell(9);
+//						if (record.getR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() != null) {
+//							cell9.setCellValue(record.getR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS().doubleValue());
+//							cell9.setCellStyle(numberStyle);
+//						} else {
+//							cell9.setCellValue("");
+//							cell9.setCellStyle(textStyle);
+//						}
+//
+//						cell16 = row.createCell(16);
+//						if (record.getR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS() != null) {
+//							cell16.setCellValue(record.getR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS().doubleValue());
+//							cell16.setCellStyle(numberStyle);
+//						} else {
+//							cell16.setCellValue("");
+//							cell16.setCellStyle(textStyle);
+//						}
+//
+//						cell17 = row.createCell(17);
+//						if (record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() != null) {
+//							cell17.setCellValue(
+//									record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS().doubleValue());
+//							cell17.setCellStyle(numberStyle);
+//						} else {
+//							cell17.setCellValue("");
+//							cell17.setCellStyle(textStyle);
+//						}
+//
+//						cell20 = row.createCell(20);
+//						if (record.getR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() != null) {
+//							cell20.setCellValue(
+//									record.getR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS().doubleValue());
+//							cell20.setCellStyle(numberStyle);
+//						} else {
+//							cell20.setCellValue("");
+//							cell20.setCellStyle(textStyle);
+//						}
+
+						row = sheet.getRow(29);
+						if (row == null) {
+							row = sheet.createRow(29);
+						}
+
+						cell4 = row.createCell(4);
+						if (record.getR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() != null) {
+							cell4.setCellValue(record.getR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(5);
+						if (record.getR30_TOTAL_CURRENT_DEBT_CONTRACTS() != null) {
+							cell5.setCellValue(record.getR30_TOTAL_CURRENT_DEBT_CONTRACTS().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(6);
+						if (record.getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() != null) {
+							cell6.setCellValue(
+									record.getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell9 = row.createCell(9);
+						if (record.getR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() != null) {
+							cell9.setCellValue(record.getR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS().doubleValue());
+							cell9.setCellStyle(numberStyle);
+						} else {
+							cell9.setCellValue("");
+							cell9.setCellStyle(textStyle);
+						}
+
+						cell15 = row.createCell(15);
+						if (record.getR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() != null) {
+							cell15.setCellValue(record.getR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS().doubleValue());
+							cell15.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell16 = row.createCell(16);
+						if (record.getR30_TOTAL_CURRENT_CREDIT_CONTRACTS() != null) {
+							cell16.setCellValue(record.getR30_TOTAL_CURRENT_CREDIT_CONTRACTS().doubleValue());
+							cell16.setCellStyle(numberStyle);
+						} else {
+							cell16.setCellValue("");
+							cell16.setCellStyle(textStyle);
+						}
+
+						cell17 = row.createCell(17);
+						if (record.getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() != null) {
+							cell17.setCellValue(
+									record.getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS().doubleValue());
+							cell17.setCellStyle(numberStyle);
+						} else {
+							cell17.setCellValue("");
+							cell17.setCellStyle(textStyle);
+						}
+
+						cell20 = row.createCell(20);
+						if (record.getR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() != null) {
+							cell20.setCellValue(record.getR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS().doubleValue());
+							cell20.setCellStyle(numberStyle);
+						} else {
+							cell20.setCellValue("");
+							cell20.setCellStyle(textStyle);
+						}
+
+						row = sheet.getRow(30);
+						if (row == null) {
+							row = sheet.createRow(30);
+						}
+
+						cell4 = row.createCell(4);
+						if (record.getR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() != null) {
+							cell4.setCellValue(record.getR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(5);
+						if (record.getR31_TOTAL_CURRENT_DEBT_CONTRACTS() != null) {
+							cell5.setCellValue(record.getR31_TOTAL_CURRENT_DEBT_CONTRACTS().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(6);
+						if (record.getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() != null) {
+							cell6.setCellValue(
+									record.getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell9 = row.createCell(9);
+						if (record.getR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() != null) {
+							cell9.setCellValue(record.getR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS().doubleValue());
+							cell9.setCellStyle(numberStyle);
+						} else {
+							cell9.setCellValue("");
+							cell9.setCellStyle(textStyle);
+						}
+
+						cell15 = row.createCell(15);
+						if (record.getR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() != null) {
+							cell15.setCellValue(record.getR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS().doubleValue());
+							cell15.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell16 = row.createCell(16);
+						if (record.getR31_TOTAL_CURRENT_CREDIT_CONTRACTS() != null) {
+							cell16.setCellValue(record.getR31_TOTAL_CURRENT_CREDIT_CONTRACTS().doubleValue());
+							cell16.setCellStyle(numberStyle);
+						} else {
+							cell16.setCellValue("");
+							cell16.setCellStyle(textStyle);
+						}
+
+						cell17 = row.createCell(17);
+						if (record.getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() != null) {
+							cell17.setCellValue(
+									record.getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS().doubleValue());
+							cell17.setCellStyle(numberStyle);
+						} else {
+							cell17.setCellValue("");
+							cell17.setCellStyle(textStyle);
+						}
+
+						cell20 = row.createCell(20);
+						if (record.getR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() != null) {
+							cell20.setCellValue(record.getR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS().doubleValue());
+							cell20.setCellStyle(numberStyle);
+						} else {
+							cell20.setCellValue("");
+							cell20.setCellStyle(textStyle);
+						}
+
+						row = sheet.getRow(31);
+						if (row == null) {
+							row = sheet.createRow(31);
+						}
+
+						cell4 = row.createCell(4);
+						if (record.getR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() != null) {
+							cell4.setCellValue(record.getR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(5);
+						if (record.getR32_TOTAL_CURRENT_DEBT_CONTRACTS() != null) {
+							cell5.setCellValue(record.getR32_TOTAL_CURRENT_DEBT_CONTRACTS().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(6);
+						if (record.getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() != null) {
+							cell6.setCellValue(
+									record.getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell9 = row.createCell(9);
+						if (record.getR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() != null) {
+							cell9.setCellValue(record.getR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS().doubleValue());
+							cell9.setCellStyle(numberStyle);
+						} else {
+							cell9.setCellValue("");
+							cell9.setCellStyle(textStyle);
+						}
+
+						cell15 = row.createCell(15);
+						if (record.getR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() != null) {
+							cell15.setCellValue(record.getR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS().doubleValue());
+							cell15.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell16 = row.createCell(16);
+						if (record.getR32_TOTAL_CURRENT_CREDIT_CONTRACTS() != null) {
+							cell16.setCellValue(record.getR32_TOTAL_CURRENT_CREDIT_CONTRACTS().doubleValue());
+							cell16.setCellStyle(numberStyle);
+						} else {
+							cell16.setCellValue("");
+							cell16.setCellStyle(textStyle);
+						}
+
+						cell17 = row.createCell(17);
+						if (record.getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() != null) {
+							cell17.setCellValue(
+									record.getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS().doubleValue());
+							cell17.setCellStyle(numberStyle);
+						} else {
+							cell17.setCellValue("");
+							cell17.setCellStyle(textStyle);
+						}
+
+						cell20 = row.createCell(20);
+						if (record.getR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() != null) {
+							cell20.setCellValue(record.getR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS().doubleValue());
+							cell20.setCellStyle(numberStyle);
+						} else {
+							cell20.setCellValue("");
+							cell20.setCellStyle(textStyle);
+						}
+
+//						row = sheet.getRow(32);
+//						if (row == null) {
+//							row = sheet.createRow(32);
+//						}
+//
+//						cell5 = row.createCell(6);
+//						if (record.getR33_TOTAL_CURRENT_DEBT_CONTRACTS() != null) {
+//							cell5.setCellValue(record.getR33_TOTAL_CURRENT_DEBT_CONTRACTS().doubleValue());
+//							cell5.setCellStyle(numberStyle);
+//						} else {
+//							cell5.setCellValue("");
+//							cell5.setCellStyle(textStyle);
+//						}
+//
+//						cell6 = row.createCell(7);
+//						if (record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() != null) {
+//							cell6.setCellValue(
+//									record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS().doubleValue());
+//							cell6.setCellStyle(numberStyle);
+//						} else {
+//							cell6.setCellValue("");
+//							cell6.setCellStyle(textStyle);
+//						}
+//
+//						cell9 = row.createCell(9);
+//						if (record.getR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() != null) {
+//							cell9.setCellValue(record.getR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS().doubleValue());
+//							cell9.setCellStyle(numberStyle);
+//						} else {
+//							cell9.setCellValue("");
+//							cell9.setCellStyle(textStyle);
+//						}
+//
+//						cell16 = row.createCell(16);
+//						if (record.getR33_TOTAL_CURRENT_CREDIT_CONTRACTS() != null) {
+//							cell16.setCellValue(record.getR33_TOTAL_CURRENT_CREDIT_CONTRACTS().doubleValue());
+//							cell16.setCellStyle(numberStyle);
+//						} else {
+//							cell16.setCellValue("");
+//							cell16.setCellStyle(textStyle);
+//						}
+//
+//						cell17 = row.createCell(17);
+//						if (record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() != null) {
+//							cell17.setCellValue(
+//									record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS().doubleValue());
+//							cell17.setCellStyle(numberStyle);
+//						} else {
+//							cell17.setCellValue("");
+//							cell17.setCellStyle(textStyle);
+//						}
+//
+//						cell20 = row.createCell(20);
+//						if (record.getR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() != null) {
+//							cell20.setCellValue(record.getR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS().doubleValue());
+//							cell20.setCellStyle(numberStyle);
+//						} else {
+//							cell20.setCellValue("");
+//							cell20.setCellStyle(textStyle);
+//						}
+
+//						row = sheet.getRow(42);
+//						if (row == null) {
+//							row = sheet.createRow(42);
+//						}
+//
+//						cell4 = row.createCell(4);
+//						if (record.getR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() != null) {
+//							cell4.setCellValue(record.getR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS().doubleValue());
+//							cell4.setCellStyle(numberStyle);
+//						} else {
+//							cell4.setCellValue("");
+//							cell4.setCellStyle(textStyle);
+//						}
+//
+//						cell5 = row.createCell(5);
+//						if (record.getR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() != null) {
+//							cell5.setCellValue(
+//									record.getR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS().doubleValue());
+//							cell5.setCellStyle(numberStyle);
+//						} else {
+//							cell5.setCellValue("");
+//							cell5.setCellStyle(textStyle);
+//						}
+//
+//						cell6 = row.createCell(6);
+//						if (record.getR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() != null) {
+//							cell6.setCellValue(record.getR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS().doubleValue());
+//							cell6.setCellStyle(numberStyle);
+//						} else {
+//							cell6.setCellValue("");
+//							cell6.setCellStyle(textStyle);
+//						}
+//
+//						Cell cell8 = row.createCell(8);
+//						if (record.getR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() != null) {
+//							cell8.setCellValue(
+//									record.getR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS().doubleValue());
+//							cell8.setCellStyle(numberStyle);
+//						} else {
+//							cell8.setCellValue("");
+//							cell8.setCellStyle(textStyle);
+//						}
+//
+//						row = sheet.getRow(43);
+//						if (row == null) {
+//							row = sheet.createRow(43);
+//						}
+//
+//						cell4 = row.createCell(4);
+//						if (record.getR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() != null) {
+//							cell4.setCellValue(record.getR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS().doubleValue());
+//							cell4.setCellStyle(numberStyle);
+//						} else {
+//							cell4.setCellValue("");
+//							cell4.setCellStyle(textStyle);
+//						}
+//
+//						cell5 = row.createCell(5);
+//						if (record.getR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() != null) {
+//							cell5.setCellValue(
+//									record.getR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS().doubleValue());
+//							cell5.setCellStyle(numberStyle);
+//						} else {
+//							cell5.setCellValue("");
+//							cell5.setCellStyle(textStyle);
+//						}
+//
+//						cell6 = row.createCell(6);
+//						if (record.getR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() != null) {
+//							cell6.setCellValue(record.getR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS().doubleValue());
+//							cell6.setCellStyle(numberStyle);
+//						} else {
+//							cell6.setCellValue("");
+//							cell6.setCellStyle(textStyle);
+//						}
+//
+//						cell8 = row.createCell(8);
+//						if (record.getR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() != null) {
+//							cell8.setCellValue(
+//									record.getR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS().doubleValue());
+//							cell8.setCellStyle(numberStyle);
+//						} else {
+//							cell8.setCellValue("");
+//							cell8.setCellStyle(textStyle);
+//						}
+
+						row = sheet.getRow(42);
+						if (row == null) {
+							row = sheet.createRow(42);
+						}
+
+						cell5 = row.createCell(5);
+						if (record.getR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() != null) {
+							cell5.setCellValue(
+									record.getR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(6);
+						if (record.getR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() != null) {
+							cell6.setCellValue(record.getR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						Cell cell7 = row.createCell(7);
+						if (record.getR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() != null) {
+							cell7.setCellValue(record.getR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS().doubleValue());
+							cell7.setCellStyle(numberStyle);
+						} else {
+							cell7.setCellValue("");
+							cell7.setCellStyle(textStyle);
+						}
+
+//						Cell cell8 = row.createCell(8);
+//						if (record.getR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() != null) {
+//							cell8.setCellValue(
+//									record.getR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS().doubleValue());
+//							cell8.setCellStyle(numberStyle);
+//						} else {
+//							cell8.setCellValue("");
+//							cell8.setCellStyle(textStyle);
+//						}
+
 					}
 
-					cell5 = row.createCell(5);
-					if (record.getR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(6);
-					if (record.getR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() != null) {
-						cell6.setCellValue(record.getR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					Cell cell7 = row.createCell(7);
-					if (record.getR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() != null) {
-						cell7.setCellValue(record.getR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS().doubleValue());
-						cell7.setCellStyle(numberStyle);
-					} else {
-						cell7.setCellValue("");
-						cell7.setCellStyle(textStyle);
-					}
-
-//					cell8 = row.createCell(8);
-//					if (record.getR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() != null) {
-//						cell8.setCellValue(record.getR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS().doubleValue());
-//						cell8.setCellStyle(numberStyle);
-//					} else {
-//						cell8.setCellValue("");
-//						cell8.setCellStyle(textStyle);
-//					}
+					workbook.setForceFormulaRecalculation(true);
+				} else {
 
 				}
-				workbook.setForceFormulaRecalculation(true);
-			} else {
-
-			}
 
 			// Write the final workbook content to the in-memory stream.
 			workbook.write(out);
@@ -27810,1050 +27831,1071 @@ public class BRRS_M_SRWA_12D_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 5;
+			// --- End of Style Definitions ---
 
-			if (!dataList.isEmpty()) {
-				for (int i = 0; i < dataList.size(); i++) {
-					M_SRWA_12D_Resub_Summary_Entity record = dataList.get(i);
-					System.out.println("rownumber=" + startRow + i);
-					Row row = sheet.getRow(startRow + i);
-					if (row == null) {
-						row = sheet.createRow(startRow + i);
-					}
+				int startRow = 5;
+
+				if (!dataList.isEmpty()) {
+					for (int i = 0; i < dataList.size(); i++) {
+						M_SRWA_12D_Resub_Summary_Entity record = dataList.get(i);
+						System.out.println("rownumber=" + startRow + i);
+						Row row = sheet.getRow(startRow + i);
+						if (row == null) {
+							row = sheet.createRow(startRow + i);
+						}
 //EMAIL
-					Cell R12Cell = row.createCell(4);
-
-					if (record.getReport_date() != null) {
-
-						R12Cell.setCellValue(record.getReport_date());
-
-						R12Cell.setCellStyle(dateStyle);
-
-					} else {
-
-						R12Cell.setCellValue("");
-
-						R12Cell.setCellStyle(textStyle);
-					}
-					row = sheet.getRow(11);
-
-					Cell cell4 = row.createCell(4);
-					if (record.getR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() != null) {
-						cell4.setCellValue(record.getR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					Cell cell5 = row.createCell(5);
-					if (record.getR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					Cell cell6 = row.createCell(6);
-					if (record.getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					Cell cell9 = row.createCell(9);
-					if (record.getR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					Cell cell15 = row.createCell(15);
-					if (record.getR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() != null) {
-						cell15.setCellValue(record.getR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS().doubleValue());
-						cell15.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					Cell cell16 = row.createCell(16);
-					if (record.getR12_TOTAL_CURRENT_INTEREST_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR12_TOTAL_CURRENT_INTEREST_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					Cell cell17 = row.createCell(17);
-					if (record.getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					Cell cell20 = row.createCell(20);
-					if (record.getR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(12);
-					if (row == null) {
-						row = sheet.createRow(12);
-					}
-
-					cell4 = row.createCell(4);
-					if (record.getR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() != null) {
-						cell4.setCellValue(record.getR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(5);
-					if (record.getR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(6);
-					if (record.getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell15 = row.createCell(15);
-					if (record.getR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() != null) {
-						cell15.setCellValue(record.getR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS().doubleValue());
-						cell15.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR13_TOTAL_CURRENT_INTEREST_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR13_TOTAL_CURRENT_INTEREST_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(13);
-					if (row == null) {
-						row = sheet.createRow(13);
-					}
-
-					cell4 = row.createCell(4);
-					if (record.getR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() != null) {
-						cell4.setCellValue(record.getR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(5);
-					if (record.getR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(6);
-					if (record.getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell15 = row.createCell(15);
-					if (record.getR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() != null) {
-						cell15.setCellValue(record.getR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS().doubleValue());
-						cell15.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR14_TOTAL_CURRENT_INTEREST_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR14_TOTAL_CURRENT_INTEREST_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(14);
-					if (row == null) {
-						row = sheet.createRow(14);
-					}
-
-					cell5 = row.createCell(5);
-					if (record.getR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(6);
-					if (record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR15_TOTAL_CURRENT_INTEREST_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR15_TOTAL_CURRENT_INTEREST_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(20);
-					if (row == null) {
-						row = sheet.createRow(20);
-					}
-
-					cell4 = row.createCell(4);
-					if (record.getR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() != null) {
-						cell4.setCellValue(record.getR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(5);
-					if (record.getR21_TOTAL_CURRENT_EQUITY_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR21_TOTAL_CURRENT_EQUITY_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(6);
-					if (record.getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell15 = row.createCell(15);
-					if (record.getR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() != null) {
-						cell15.setCellValue(record.getR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS().doubleValue());
-						cell15.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(21);
-					if (row == null) {
-						row = sheet.createRow(21);
-					}
-
-					cell4 = row.createCell(4);
-					if (record.getR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() != null) {
-						cell4.setCellValue(record.getR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(5);
-					if (record.getR22_TOTAL_CURRENT_EQUITY_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR22_TOTAL_CURRENT_EQUITY_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(6);
-					if (record.getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell15 = row.createCell(15);
-					if (record.getR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() != null) {
-						cell15.setCellValue(record.getR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS().doubleValue());
-						cell15.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(22);
-					if (row == null) {
-						row = sheet.createRow(22);
-					}
-
-					cell4 = row.createCell(4);
-					if (record.getR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() != null) {
-						cell4.setCellValue(record.getR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(5);
-					if (record.getR23_TOTAL_CURRENT_EQUITY_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR23_TOTAL_CURRENT_EQUITY_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(6);
-					if (record.getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell15 = row.createCell(15);
-					if (record.getR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() != null) {
-						cell15.setCellValue(record.getR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS().doubleValue());
-						cell15.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(23);
-					if (row == null) {
-						row = sheet.createRow(23);
-					}
-
-					cell5 = row.createCell(6);
-					if (record.getR24_TOTAL_CURRENT_EQUITY_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR24_TOTAL_CURRENT_EQUITY_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(7);
-					if (record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(29);
-					if (row == null) {
-						row = sheet.createRow(29);
-					}
-
-					cell4 = row.createCell(4);
-					if (record.getR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() != null) {
-						cell4.setCellValue(record.getR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(5);
-					if (record.getR30_TOTAL_CURRENT_DEBT_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR30_TOTAL_CURRENT_DEBT_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(6);
-					if (record.getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell15 = row.createCell(15);
-					if (record.getR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() != null) {
-						cell15.setCellValue(record.getR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS().doubleValue());
-						cell15.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR30_TOTAL_CURRENT_CREDIT_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR30_TOTAL_CURRENT_CREDIT_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(30);
-					if (row == null) {
-						row = sheet.createRow(30);
-					}
-
-					cell4 = row.createCell(4);
-					if (record.getR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() != null) {
-						cell4.setCellValue(record.getR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(5);
-					if (record.getR31_TOTAL_CURRENT_DEBT_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR31_TOTAL_CURRENT_DEBT_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(6);
-					if (record.getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell15 = row.createCell(15);
-					if (record.getR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() != null) {
-						cell15.setCellValue(record.getR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS().doubleValue());
-						cell15.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR31_TOTAL_CURRENT_CREDIT_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR31_TOTAL_CURRENT_CREDIT_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(31);
-					if (row == null) {
-						row = sheet.createRow(31);
-					}
-
-					cell4 = row.createCell(4);
-					if (record.getR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() != null) {
-						cell4.setCellValue(record.getR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(5);
-					if (record.getR32_TOTAL_CURRENT_DEBT_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR32_TOTAL_CURRENT_DEBT_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(6);
-					if (record.getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell15 = row.createCell(15);
-					if (record.getR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() != null) {
-						cell15.setCellValue(record.getR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS().doubleValue());
-						cell15.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR32_TOTAL_CURRENT_CREDIT_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR32_TOTAL_CURRENT_CREDIT_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-					row = sheet.getRow(32);
-					if (row == null) {
-						row = sheet.createRow(32);
-					}
-
-					cell5 = row.createCell(6);
-					if (record.getR33_TOTAL_CURRENT_DEBT_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR33_TOTAL_CURRENT_DEBT_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(7);
-					if (record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() != null) {
-						cell6.setCellValue(
-								record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					cell9 = row.createCell(9);
-					if (record.getR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() != null) {
-						cell9.setCellValue(record.getR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS().doubleValue());
-						cell9.setCellStyle(numberStyle);
-					} else {
-						cell9.setCellValue("");
-						cell9.setCellStyle(textStyle);
-					}
-
-					cell16 = row.createCell(16);
-					if (record.getR33_TOTAL_CURRENT_CREDIT_CONTRACTS() != null) {
-						cell16.setCellValue(record.getR33_TOTAL_CURRENT_CREDIT_CONTRACTS().doubleValue());
-						cell16.setCellStyle(numberStyle);
-					} else {
-						cell16.setCellValue("");
-						cell16.setCellStyle(textStyle);
-					}
-
-					cell17 = row.createCell(17);
-					if (record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() != null) {
-						cell17.setCellValue(
-								record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS().doubleValue());
-						cell17.setCellStyle(numberStyle);
-					} else {
-						cell17.setCellValue("");
-						cell17.setCellStyle(textStyle);
-					}
-
-					cell20 = row.createCell(20);
-					if (record.getR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() != null) {
-						cell20.setCellValue(record.getR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS().doubleValue());
-						cell20.setCellStyle(numberStyle);
-					} else {
-						cell20.setCellValue("");
-						cell20.setCellStyle(textStyle);
-					}
-
-//					row = sheet.getRow(42);
-//					if (row == null) {
-//						row = sheet.createRow(42);
-//					}
+						Cell R12Cell = row.createCell(4);
+
+						if (record.getReport_date() != null) {
+
+							R12Cell.setCellValue(record.getReport_date());
+
+							R12Cell.setCellStyle(dateStyle);
+
+						} else {
+
+							R12Cell.setCellValue("");
+
+							R12Cell.setCellStyle(textStyle);
+						}
+						row = sheet.getRow(11);
+
+						Cell cell4 = row.createCell(4);
+						if (record.getR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() != null) {
+							cell4.setCellValue(record.getR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						Cell cell5 = row.createCell(5);
+						if (record.getR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS() != null) {
+							cell5.setCellValue(record.getR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						Cell cell6 = row.createCell(6);
+						if (record.getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() != null) {
+							cell6.setCellValue(
+									record.getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						Cell cell9 = row.createCell(9);
+						if (record.getR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() != null) {
+							cell9.setCellValue(
+									record.getR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS().doubleValue());
+							cell9.setCellStyle(numberStyle);
+						} else {
+							cell9.setCellValue("");
+							cell9.setCellStyle(textStyle);
+						}
+
+						Cell cell15 = row.createCell(15);
+						if (record.getR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() != null) {
+							cell15.setCellValue(record.getR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS().doubleValue());
+							cell15.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						Cell cell16 = row.createCell(16);
+						if (record.getR12_TOTAL_CURRENT_INTEREST_CONTRACTS() != null) {
+							cell16.setCellValue(record.getR12_TOTAL_CURRENT_INTEREST_CONTRACTS().doubleValue());
+							cell16.setCellStyle(numberStyle);
+						} else {
+							cell16.setCellValue("");
+							cell16.setCellStyle(textStyle);
+						}
+
+						Cell cell17 = row.createCell(17);
+						if (record.getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() != null) {
+							cell17.setCellValue(
+									record.getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS().doubleValue());
+							cell17.setCellStyle(numberStyle);
+						} else {
+							cell17.setCellValue("");
+							cell17.setCellStyle(textStyle);
+						}
+
+						Cell cell20 = row.createCell(20);
+						if (record.getR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() != null) {
+							cell20.setCellValue(
+									record.getR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS().doubleValue());
+							cell20.setCellStyle(numberStyle);
+						} else {
+							cell20.setCellValue("");
+							cell20.setCellStyle(textStyle);
+						}
+
+						row = sheet.getRow(12);
+						if (row == null) {
+							row = sheet.createRow(12);
+						}
+
+						cell4 = row.createCell(4);
+						if (record.getR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() != null) {
+							cell4.setCellValue(record.getR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(5);
+						if (record.getR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS() != null) {
+							cell5.setCellValue(record.getR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(6);
+						if (record.getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() != null) {
+							cell6.setCellValue(
+									record.getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell9 = row.createCell(9);
+						if (record.getR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() != null) {
+							cell9.setCellValue(
+									record.getR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS().doubleValue());
+							cell9.setCellStyle(numberStyle);
+						} else {
+							cell9.setCellValue("");
+							cell9.setCellStyle(textStyle);
+						}
+
+						cell15 = row.createCell(15);
+						if (record.getR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() != null) {
+							cell15.setCellValue(record.getR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS().doubleValue());
+							cell15.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell16 = row.createCell(16);
+						if (record.getR13_TOTAL_CURRENT_INTEREST_CONTRACTS() != null) {
+							cell16.setCellValue(record.getR13_TOTAL_CURRENT_INTEREST_CONTRACTS().doubleValue());
+							cell16.setCellStyle(numberStyle);
+						} else {
+							cell16.setCellValue("");
+							cell16.setCellStyle(textStyle);
+						}
+
+						cell17 = row.createCell(17);
+						if (record.getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() != null) {
+							cell17.setCellValue(
+									record.getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS().doubleValue());
+							cell17.setCellStyle(numberStyle);
+						} else {
+							cell17.setCellValue("");
+							cell17.setCellStyle(textStyle);
+						}
+
+						cell20 = row.createCell(20);
+						if (record.getR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() != null) {
+							cell20.setCellValue(
+									record.getR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS().doubleValue());
+							cell20.setCellStyle(numberStyle);
+						} else {
+							cell20.setCellValue("");
+							cell20.setCellStyle(textStyle);
+						}
+
+						row = sheet.getRow(13);
+						if (row == null) {
+							row = sheet.createRow(13);
+						}
+
+						cell4 = row.createCell(4);
+						if (record.getR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() != null) {
+							cell4.setCellValue(record.getR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(5);
+						if (record.getR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS() != null) {
+							cell5.setCellValue(record.getR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(6);
+						if (record.getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() != null) {
+							cell6.setCellValue(
+									record.getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell9 = row.createCell(9);
+						if (record.getR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() != null) {
+							cell9.setCellValue(
+									record.getR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS().doubleValue());
+							cell9.setCellStyle(numberStyle);
+						} else {
+							cell9.setCellValue("");
+							cell9.setCellStyle(textStyle);
+						}
+
+						cell15 = row.createCell(15);
+						if (record.getR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() != null) {
+							cell15.setCellValue(record.getR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS().doubleValue());
+							cell15.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell16 = row.createCell(16);
+						if (record.getR14_TOTAL_CURRENT_INTEREST_CONTRACTS() != null) {
+							cell16.setCellValue(record.getR14_TOTAL_CURRENT_INTEREST_CONTRACTS().doubleValue());
+							cell16.setCellStyle(numberStyle);
+						} else {
+							cell16.setCellValue("");
+							cell16.setCellStyle(textStyle);
+						}
+
+						cell17 = row.createCell(17);
+						if (record.getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() != null) {
+							cell17.setCellValue(
+									record.getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS().doubleValue());
+							cell17.setCellStyle(numberStyle);
+						} else {
+							cell17.setCellValue("");
+							cell17.setCellStyle(textStyle);
+						}
+
+						cell20 = row.createCell(20);
+						if (record.getR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() != null) {
+							cell20.setCellValue(
+									record.getR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS().doubleValue());
+							cell20.setCellStyle(numberStyle);
+						} else {
+							cell20.setCellValue("");
+							cell20.setCellStyle(textStyle);
+						}
+
+//						row = sheet.getRow(14);
+//						if (row == null) {
+//							row = sheet.createRow(14);
+//						}
 //
-//					cell4 = row.createCell(4);
-//					if (record.getR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() != null) {
-//						cell4.setCellValue(record.getR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS().doubleValue());
-//						cell4.setCellStyle(numberStyle);
-//					} else {
-//						cell4.setCellValue("");
-//						cell4.setCellStyle(textStyle);
-//					}
+//						cell5 = row.createCell(5);
+//						if (record.getR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS() != null) {
+//							cell5.setCellValue(record.getR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS().doubleValue());
+//							cell5.setCellStyle(numberStyle);
+//						} else {
+//							cell5.setCellValue("");
+//							cell5.setCellStyle(textStyle);
+//						}
 //
-//					cell5 = row.createCell(5);
-//					if (record.getR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() != null) {
-//						cell5.setCellValue(record.getR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS().doubleValue());
-//						cell5.setCellStyle(numberStyle);
-//					} else {
-//						cell5.setCellValue("");
-//						cell5.setCellStyle(textStyle);
-//					}
+//						cell6 = row.createCell(6);
+//						if (record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() != null) {
+//							cell6.setCellValue(
+//									record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS().doubleValue());
+//							cell6.setCellStyle(numberStyle);
+//						} else {
+//							cell6.setCellValue("");
+//							cell6.setCellStyle(textStyle);
+//						}
 //
-//					cell6 = row.createCell(6);
-//					if (record.getR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() != null) {
-//						cell6.setCellValue(record.getR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS().doubleValue());
-//						cell6.setCellStyle(numberStyle);
-//					} else {
-//						cell6.setCellValue("");
-//						cell6.setCellStyle(textStyle);
-//					}
+//						cell9 = row.createCell(9);
+//						if (record.getR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() != null) {
+//							cell9.setCellValue(
+//									record.getR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS().doubleValue());
+//							cell9.setCellStyle(numberStyle);
+//						} else {
+//							cell9.setCellValue("");
+//							cell9.setCellStyle(textStyle);
+//						}
 //
-//					Cell cell8 = row.createCell(8);
-//					if (record.getR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() != null) {
-//						cell8.setCellValue(record.getR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS().doubleValue());
-//						cell8.setCellStyle(numberStyle);
-//					} else {
-//						cell8.setCellValue("");
-//						cell8.setCellStyle(textStyle);
-//					}
+//						cell16 = row.createCell(16);
+//						if (record.getR15_TOTAL_CURRENT_INTEREST_CONTRACTS() != null) {
+//							cell16.setCellValue(record.getR15_TOTAL_CURRENT_INTEREST_CONTRACTS().doubleValue());
+//							cell16.setCellStyle(numberStyle);
+//						} else {
+//							cell16.setCellValue("");
+//							cell16.setCellStyle(textStyle);
+//						}
 //
-//					row = sheet.getRow(43);
-//					if (row == null) {
-//						row = sheet.createRow(43);
-//					}
+//						cell17 = row.createCell(17);
+//						if (record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() != null) {
+//							cell17.setCellValue(
+//									record.getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS().doubleValue());
+//							cell17.setCellStyle(numberStyle);
+//						} else {
+//							cell17.setCellValue("");
+//							cell17.setCellStyle(textStyle);
+//						}
 //
-//					cell4 = row.createCell(4);
-//					if (record.getR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() != null) {
-//						cell4.setCellValue(record.getR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS().doubleValue());
-//						cell4.setCellStyle(numberStyle);
-//					} else {
-//						cell4.setCellValue("");
-//						cell4.setCellStyle(textStyle);
-//					}
-//
-//					cell5 = row.createCell(5);
-//					if (record.getR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() != null) {
-//						cell5.setCellValue(record.getR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS().doubleValue());
-//						cell5.setCellStyle(numberStyle);
-//					} else {
-//						cell5.setCellValue("");
-//						cell5.setCellStyle(textStyle);
-//					}
-//
-//					cell6 = row.createCell(6);
-//					if (record.getR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() != null) {
-//						cell6.setCellValue(record.getR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS().doubleValue());
-//						cell6.setCellStyle(numberStyle);
-//					} else {
-//						cell6.setCellValue("");
-//						cell6.setCellStyle(textStyle);
-//					}
-//
-//					cell8 = row.createCell(8);
-//					if (record.getR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() != null) {
-//						cell8.setCellValue(record.getR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS().doubleValue());
-//						cell8.setCellStyle(numberStyle);
-//					} else {
-//						cell8.setCellValue("");
-//						cell8.setCellStyle(textStyle);
-//					}
+//						cell20 = row.createCell(20);
+//						if (record.getR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() != null) {
+//							cell20.setCellValue(
+//									record.getR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS().doubleValue());
+//							cell20.setCellStyle(numberStyle);
+//						} else {
+//							cell20.setCellValue("");
+//							cell20.setCellStyle(textStyle);
+//						}
 
-					row = sheet.getRow(44);
-					if (row == null) {
-						row = sheet.createRow(44);
+						row = sheet.getRow(20);
+						if (row == null) {
+							row = sheet.createRow(20);
+						}
+
+						cell4 = row.createCell(4);
+						if (record.getR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() != null) {
+							cell4.setCellValue(record.getR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(5);
+						if (record.getR21_TOTAL_CURRENT_EQUITY_CONTRACTS() != null) {
+							cell5.setCellValue(record.getR21_TOTAL_CURRENT_EQUITY_CONTRACTS().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(6);
+						if (record.getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() != null) {
+							cell6.setCellValue(
+									record.getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell9 = row.createCell(9);
+						if (record.getR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() != null) {
+							cell9.setCellValue(record.getR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS().doubleValue());
+							cell9.setCellStyle(numberStyle);
+						} else {
+							cell9.setCellValue("");
+							cell9.setCellStyle(textStyle);
+						}
+
+						cell15 = row.createCell(15);
+						if (record.getR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() != null) {
+							cell15.setCellValue(record.getR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS().doubleValue());
+							cell15.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell16 = row.createCell(16);
+						if (record.getR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS() != null) {
+							cell16.setCellValue(record.getR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS().doubleValue());
+							cell16.setCellStyle(numberStyle);
+						} else {
+							cell16.setCellValue("");
+							cell16.setCellStyle(textStyle);
+						}
+
+						cell17 = row.createCell(17);
+						if (record.getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() != null) {
+							cell17.setCellValue(
+									record.getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS().doubleValue());
+							cell17.setCellStyle(numberStyle);
+						} else {
+							cell17.setCellValue("");
+							cell17.setCellStyle(textStyle);
+						}
+
+						cell20 = row.createCell(20);
+						if (record.getR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() != null) {
+							cell20.setCellValue(
+									record.getR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS().doubleValue());
+							cell20.setCellStyle(numberStyle);
+						} else {
+							cell20.setCellValue("");
+							cell20.setCellStyle(textStyle);
+						}
+
+						row = sheet.getRow(21);
+						if (row == null) {
+							row = sheet.createRow(21);
+						}
+
+						cell4 = row.createCell(4);
+						if (record.getR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() != null) {
+							cell4.setCellValue(record.getR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(5);
+						if (record.getR22_TOTAL_CURRENT_EQUITY_CONTRACTS() != null) {
+							cell5.setCellValue(record.getR22_TOTAL_CURRENT_EQUITY_CONTRACTS().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(6);
+						if (record.getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() != null) {
+							cell6.setCellValue(
+									record.getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell9 = row.createCell(9);
+						if (record.getR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() != null) {
+							cell9.setCellValue(record.getR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS().doubleValue());
+							cell9.setCellStyle(numberStyle);
+						} else {
+							cell9.setCellValue("");
+							cell9.setCellStyle(textStyle);
+						}
+
+						cell15 = row.createCell(15);
+						if (record.getR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() != null) {
+							cell15.setCellValue(record.getR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS().doubleValue());
+							cell15.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell16 = row.createCell(16);
+						if (record.getR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS() != null) {
+							cell16.setCellValue(record.getR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS().doubleValue());
+							cell16.setCellStyle(numberStyle);
+						} else {
+							cell16.setCellValue("");
+							cell16.setCellStyle(textStyle);
+						}
+
+						cell17 = row.createCell(17);
+						if (record.getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() != null) {
+							cell17.setCellValue(
+									record.getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS().doubleValue());
+							cell17.setCellStyle(numberStyle);
+						} else {
+							cell17.setCellValue("");
+							cell17.setCellStyle(textStyle);
+						}
+
+						cell20 = row.createCell(20);
+						if (record.getR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() != null) {
+							cell20.setCellValue(
+									record.getR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS().doubleValue());
+							cell20.setCellStyle(numberStyle);
+						} else {
+							cell20.setCellValue("");
+							cell20.setCellStyle(textStyle);
+						}
+
+						row = sheet.getRow(22);
+						if (row == null) {
+							row = sheet.createRow(22);
+						}
+
+						cell4 = row.createCell(4);
+						if (record.getR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() != null) {
+							cell4.setCellValue(record.getR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(5);
+						if (record.getR23_TOTAL_CURRENT_EQUITY_CONTRACTS() != null) {
+							cell5.setCellValue(record.getR23_TOTAL_CURRENT_EQUITY_CONTRACTS().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(6);
+						if (record.getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() != null) {
+							cell6.setCellValue(
+									record.getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell9 = row.createCell(9);
+						if (record.getR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() != null) {
+							cell9.setCellValue(record.getR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS().doubleValue());
+							cell9.setCellStyle(numberStyle);
+						} else {
+							cell9.setCellValue("");
+							cell9.setCellStyle(textStyle);
+						}
+
+						cell15 = row.createCell(15);
+						if (record.getR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() != null) {
+							cell15.setCellValue(record.getR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS().doubleValue());
+							cell15.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell16 = row.createCell(16);
+						if (record.getR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS() != null) {
+							cell16.setCellValue(record.getR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS().doubleValue());
+							cell16.setCellStyle(numberStyle);
+						} else {
+							cell16.setCellValue("");
+							cell16.setCellStyle(textStyle);
+						}
+
+						cell17 = row.createCell(17);
+						if (record.getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() != null) {
+							cell17.setCellValue(
+									record.getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS().doubleValue());
+							cell17.setCellStyle(numberStyle);
+						} else {
+							cell17.setCellValue("");
+							cell17.setCellStyle(textStyle);
+						}
+
+						cell20 = row.createCell(20);
+						if (record.getR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() != null) {
+							cell20.setCellValue(
+									record.getR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS().doubleValue());
+							cell20.setCellStyle(numberStyle);
+						} else {
+							cell20.setCellValue("");
+							cell20.setCellStyle(textStyle);
+						}
+
+//						row = sheet.getRow(23);
+//						if (row == null) {
+//							row = sheet.createRow(23);
+//						}
+//
+//						cell5 = row.createCell(6);
+//						if (record.getR24_TOTAL_CURRENT_EQUITY_CONTRACTS() != null) {
+//							cell5.setCellValue(record.getR24_TOTAL_CURRENT_EQUITY_CONTRACTS().doubleValue());
+//							cell5.setCellStyle(numberStyle);
+//						} else {
+//							cell5.setCellValue("");
+//							cell5.setCellStyle(textStyle);
+//						}
+//
+//						cell6 = row.createCell(7);
+//						if (record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() != null) {
+//							cell6.setCellValue(
+//									record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS().doubleValue());
+//							cell6.setCellStyle(numberStyle);
+//						} else {
+//							cell6.setCellValue("");
+//							cell6.setCellStyle(textStyle);
+//						}
+//
+//						cell9 = row.createCell(9);
+//						if (record.getR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() != null) {
+//							cell9.setCellValue(record.getR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS().doubleValue());
+//							cell9.setCellStyle(numberStyle);
+//						} else {
+//							cell9.setCellValue("");
+//							cell9.setCellStyle(textStyle);
+//						}
+//
+//						cell16 = row.createCell(16);
+//						if (record.getR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS() != null) {
+//							cell16.setCellValue(record.getR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS().doubleValue());
+//							cell16.setCellStyle(numberStyle);
+//						} else {
+//							cell16.setCellValue("");
+//							cell16.setCellStyle(textStyle);
+//						}
+//
+//						cell17 = row.createCell(17);
+//						if (record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() != null) {
+//							cell17.setCellValue(
+//									record.getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS().doubleValue());
+//							cell17.setCellStyle(numberStyle);
+//						} else {
+//							cell17.setCellValue("");
+//							cell17.setCellStyle(textStyle);
+//						}
+//
+//						cell20 = row.createCell(20);
+//						if (record.getR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() != null) {
+//							cell20.setCellValue(
+//									record.getR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS().doubleValue());
+//							cell20.setCellStyle(numberStyle);
+//						} else {
+//							cell20.setCellValue("");
+//							cell20.setCellStyle(textStyle);
+//						}
+
+						row = sheet.getRow(29);
+						if (row == null) {
+							row = sheet.createRow(29);
+						}
+
+						cell4 = row.createCell(4);
+						if (record.getR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() != null) {
+							cell4.setCellValue(record.getR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(5);
+						if (record.getR30_TOTAL_CURRENT_DEBT_CONTRACTS() != null) {
+							cell5.setCellValue(record.getR30_TOTAL_CURRENT_DEBT_CONTRACTS().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(6);
+						if (record.getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() != null) {
+							cell6.setCellValue(
+									record.getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell9 = row.createCell(9);
+						if (record.getR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() != null) {
+							cell9.setCellValue(record.getR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS().doubleValue());
+							cell9.setCellStyle(numberStyle);
+						} else {
+							cell9.setCellValue("");
+							cell9.setCellStyle(textStyle);
+						}
+
+						cell15 = row.createCell(15);
+						if (record.getR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() != null) {
+							cell15.setCellValue(record.getR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS().doubleValue());
+							cell15.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell16 = row.createCell(16);
+						if (record.getR30_TOTAL_CURRENT_CREDIT_CONTRACTS() != null) {
+							cell16.setCellValue(record.getR30_TOTAL_CURRENT_CREDIT_CONTRACTS().doubleValue());
+							cell16.setCellStyle(numberStyle);
+						} else {
+							cell16.setCellValue("");
+							cell16.setCellStyle(textStyle);
+						}
+
+						cell17 = row.createCell(17);
+						if (record.getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() != null) {
+							cell17.setCellValue(
+									record.getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS().doubleValue());
+							cell17.setCellStyle(numberStyle);
+						} else {
+							cell17.setCellValue("");
+							cell17.setCellStyle(textStyle);
+						}
+
+						cell20 = row.createCell(20);
+						if (record.getR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() != null) {
+							cell20.setCellValue(record.getR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS().doubleValue());
+							cell20.setCellStyle(numberStyle);
+						} else {
+							cell20.setCellValue("");
+							cell20.setCellStyle(textStyle);
+						}
+
+						row = sheet.getRow(30);
+						if (row == null) {
+							row = sheet.createRow(30);
+						}
+
+						cell4 = row.createCell(4);
+						if (record.getR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() != null) {
+							cell4.setCellValue(record.getR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(5);
+						if (record.getR31_TOTAL_CURRENT_DEBT_CONTRACTS() != null) {
+							cell5.setCellValue(record.getR31_TOTAL_CURRENT_DEBT_CONTRACTS().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(6);
+						if (record.getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() != null) {
+							cell6.setCellValue(
+									record.getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell9 = row.createCell(9);
+						if (record.getR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() != null) {
+							cell9.setCellValue(record.getR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS().doubleValue());
+							cell9.setCellStyle(numberStyle);
+						} else {
+							cell9.setCellValue("");
+							cell9.setCellStyle(textStyle);
+						}
+
+						cell15 = row.createCell(15);
+						if (record.getR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() != null) {
+							cell15.setCellValue(record.getR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS().doubleValue());
+							cell15.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell16 = row.createCell(16);
+						if (record.getR31_TOTAL_CURRENT_CREDIT_CONTRACTS() != null) {
+							cell16.setCellValue(record.getR31_TOTAL_CURRENT_CREDIT_CONTRACTS().doubleValue());
+							cell16.setCellStyle(numberStyle);
+						} else {
+							cell16.setCellValue("");
+							cell16.setCellStyle(textStyle);
+						}
+
+						cell17 = row.createCell(17);
+						if (record.getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() != null) {
+							cell17.setCellValue(
+									record.getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS().doubleValue());
+							cell17.setCellStyle(numberStyle);
+						} else {
+							cell17.setCellValue("");
+							cell17.setCellStyle(textStyle);
+						}
+
+						cell20 = row.createCell(20);
+						if (record.getR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() != null) {
+							cell20.setCellValue(record.getR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS().doubleValue());
+							cell20.setCellStyle(numberStyle);
+						} else {
+							cell20.setCellValue("");
+							cell20.setCellStyle(textStyle);
+						}
+
+						row = sheet.getRow(31);
+						if (row == null) {
+							row = sheet.createRow(31);
+						}
+
+						cell4 = row.createCell(4);
+						if (record.getR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() != null) {
+							cell4.setCellValue(record.getR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(5);
+						if (record.getR32_TOTAL_CURRENT_DEBT_CONTRACTS() != null) {
+							cell5.setCellValue(record.getR32_TOTAL_CURRENT_DEBT_CONTRACTS().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(6);
+						if (record.getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() != null) {
+							cell6.setCellValue(
+									record.getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell9 = row.createCell(9);
+						if (record.getR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() != null) {
+							cell9.setCellValue(record.getR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS().doubleValue());
+							cell9.setCellStyle(numberStyle);
+						} else {
+							cell9.setCellValue("");
+							cell9.setCellStyle(textStyle);
+						}
+
+						cell15 = row.createCell(15);
+						if (record.getR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() != null) {
+							cell15.setCellValue(record.getR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS().doubleValue());
+							cell15.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						cell16 = row.createCell(16);
+						if (record.getR32_TOTAL_CURRENT_CREDIT_CONTRACTS() != null) {
+							cell16.setCellValue(record.getR32_TOTAL_CURRENT_CREDIT_CONTRACTS().doubleValue());
+							cell16.setCellStyle(numberStyle);
+						} else {
+							cell16.setCellValue("");
+							cell16.setCellStyle(textStyle);
+						}
+
+						cell17 = row.createCell(17);
+						if (record.getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() != null) {
+							cell17.setCellValue(
+									record.getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS().doubleValue());
+							cell17.setCellStyle(numberStyle);
+						} else {
+							cell17.setCellValue("");
+							cell17.setCellStyle(textStyle);
+						}
+
+						cell20 = row.createCell(20);
+						if (record.getR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() != null) {
+							cell20.setCellValue(record.getR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS().doubleValue());
+							cell20.setCellStyle(numberStyle);
+						} else {
+							cell20.setCellValue("");
+							cell20.setCellStyle(textStyle);
+						}
+
+//						row = sheet.getRow(32);
+//						if (row == null) {
+//							row = sheet.createRow(32);
+//						}
+//
+//						cell5 = row.createCell(6);
+//						if (record.getR33_TOTAL_CURRENT_DEBT_CONTRACTS() != null) {
+//							cell5.setCellValue(record.getR33_TOTAL_CURRENT_DEBT_CONTRACTS().doubleValue());
+//							cell5.setCellStyle(numberStyle);
+//						} else {
+//							cell5.setCellValue("");
+//							cell5.setCellStyle(textStyle);
+//						}
+//
+//						cell6 = row.createCell(7);
+//						if (record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() != null) {
+//							cell6.setCellValue(
+//									record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS().doubleValue());
+//							cell6.setCellStyle(numberStyle);
+//						} else {
+//							cell6.setCellValue("");
+//							cell6.setCellStyle(textStyle);
+//						}
+//
+//						cell9 = row.createCell(9);
+//						if (record.getR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() != null) {
+//							cell9.setCellValue(record.getR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS().doubleValue());
+//							cell9.setCellStyle(numberStyle);
+//						} else {
+//							cell9.setCellValue("");
+//							cell9.setCellStyle(textStyle);
+//						}
+//
+//						cell16 = row.createCell(16);
+//						if (record.getR33_TOTAL_CURRENT_CREDIT_CONTRACTS() != null) {
+//							cell16.setCellValue(record.getR33_TOTAL_CURRENT_CREDIT_CONTRACTS().doubleValue());
+//							cell16.setCellStyle(numberStyle);
+//						} else {
+//							cell16.setCellValue("");
+//							cell16.setCellStyle(textStyle);
+//						}
+//
+//						cell17 = row.createCell(17);
+//						if (record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() != null) {
+//							cell17.setCellValue(
+//									record.getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS().doubleValue());
+//							cell17.setCellStyle(numberStyle);
+//						} else {
+//							cell17.setCellValue("");
+//							cell17.setCellStyle(textStyle);
+//						}
+//
+//						cell20 = row.createCell(20);
+//						if (record.getR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() != null) {
+//							cell20.setCellValue(record.getR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS().doubleValue());
+//							cell20.setCellStyle(numberStyle);
+//						} else {
+//							cell20.setCellValue("");
+//							cell20.setCellStyle(textStyle);
+//						}
+
+//						row = sheet.getRow(42);
+//						if (row == null) {
+//							row = sheet.createRow(42);
+//						}
+//
+//						cell4 = row.createCell(4);
+//						if (record.getR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() != null) {
+//							cell4.setCellValue(record.getR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS().doubleValue());
+//							cell4.setCellStyle(numberStyle);
+//						} else {
+//							cell4.setCellValue("");
+//							cell4.setCellStyle(textStyle);
+//						}
+//
+//						cell5 = row.createCell(5);
+//						if (record.getR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() != null) {
+//							cell5.setCellValue(
+//									record.getR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS().doubleValue());
+//							cell5.setCellStyle(numberStyle);
+//						} else {
+//							cell5.setCellValue("");
+//							cell5.setCellStyle(textStyle);
+//						}
+//
+//						cell6 = row.createCell(6);
+//						if (record.getR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() != null) {
+//							cell6.setCellValue(record.getR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS().doubleValue());
+//							cell6.setCellStyle(numberStyle);
+//						} else {
+//							cell6.setCellValue("");
+//							cell6.setCellStyle(textStyle);
+//						}
+//
+//						Cell cell8 = row.createCell(8);
+//						if (record.getR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() != null) {
+//							cell8.setCellValue(
+//									record.getR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS().doubleValue());
+//							cell8.setCellStyle(numberStyle);
+//						} else {
+//							cell8.setCellValue("");
+//							cell8.setCellStyle(textStyle);
+//						}
+//
+//						row = sheet.getRow(43);
+//						if (row == null) {
+//							row = sheet.createRow(43);
+//						}
+//
+//						cell4 = row.createCell(4);
+//						if (record.getR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() != null) {
+//							cell4.setCellValue(record.getR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS().doubleValue());
+//							cell4.setCellStyle(numberStyle);
+//						} else {
+//							cell4.setCellValue("");
+//							cell4.setCellStyle(textStyle);
+//						}
+//
+//						cell5 = row.createCell(5);
+//						if (record.getR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() != null) {
+//							cell5.setCellValue(
+//									record.getR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS().doubleValue());
+//							cell5.setCellStyle(numberStyle);
+//						} else {
+//							cell5.setCellValue("");
+//							cell5.setCellStyle(textStyle);
+//						}
+//
+//						cell6 = row.createCell(6);
+//						if (record.getR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() != null) {
+//							cell6.setCellValue(record.getR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS().doubleValue());
+//							cell6.setCellStyle(numberStyle);
+//						} else {
+//							cell6.setCellValue("");
+//							cell6.setCellStyle(textStyle);
+//						}
+//
+//						cell8 = row.createCell(8);
+//						if (record.getR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() != null) {
+//							cell8.setCellValue(
+//									record.getR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS().doubleValue());
+//							cell8.setCellStyle(numberStyle);
+//						} else {
+//							cell8.setCellValue("");
+//							cell8.setCellStyle(textStyle);
+//						}
+
+						row = sheet.getRow(42);
+						if (row == null) {
+							row = sheet.createRow(42);
+						}
+
+						cell5 = row.createCell(5);
+						if (record.getR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() != null) {
+							cell5.setCellValue(
+									record.getR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(6);
+						if (record.getR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() != null) {
+							cell6.setCellValue(record.getR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						Cell cell7 = row.createCell(7);
+						if (record.getR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() != null) {
+							cell7.setCellValue(record.getR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS().doubleValue());
+							cell7.setCellStyle(numberStyle);
+						} else {
+							cell7.setCellValue("");
+							cell7.setCellStyle(textStyle);
+						}
+
+//						Cell cell8 = row.createCell(8);
+//						if (record.getR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() != null) {
+//							cell8.setCellValue(
+//									record.getR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS().doubleValue());
+//							cell8.setCellStyle(numberStyle);
+//						} else {
+//							cell8.setCellValue("");
+//							cell8.setCellStyle(textStyle);
+//						}
+
 					}
 
-					cell5 = row.createCell(5);
-					if (record.getR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() != null) {
-						cell5.setCellValue(record.getR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(6);
-					if (record.getR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() != null) {
-						cell6.setCellValue(record.getR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					Cell cell7 = row.createCell(7);
-					if (record.getR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() != null) {
-						cell7.setCellValue(record.getR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS().doubleValue());
-						cell7.setCellStyle(numberStyle);
-					} else {
-						cell7.setCellValue("");
-						cell7.setCellStyle(textStyle);
-					}
-
-//					cell8 = row.createCell(8);
-//					if (record.getR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() != null) {
-//						cell8.setCellValue(record.getR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS().doubleValue());
-//						cell8.setCellStyle(numberStyle);
-//					} else {
-//						cell8.setCellValue("");
-//						cell8.setCellStyle(textStyle);
-//					}
+					workbook.setForceFormulaRecalculation(true);
+				} else {
 
 				}
-				workbook.setForceFormulaRecalculation(true);
-			} else {
-
-			}
 
 			// Write the final workbook content to the in-memory stream.
 			workbook.write(out);
