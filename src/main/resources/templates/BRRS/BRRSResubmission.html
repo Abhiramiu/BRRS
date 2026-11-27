@@ -161,6 +161,28 @@ td {
   text-overflow: ellipsis;
 }
 
+/* Row colours (same as RRReports) */
+.userlist td {
+  background-color: #ffffff !important;
+  font-weight: 550;
+  letter-spacing: 0.3px;
+  color: #7d6608;
+}
+
+.fm-row td {
+  background-color: rgb(255, 244, 202) !important;
+  font-weight: 550;
+  letter-spacing: 0.3px;
+  color: #7d6608;
+}
+
+.fman-row td {
+  background-color: rgb(225, 231, 234) !important;
+  font-weight: 550;
+  letter-spacing: 0.3px;
+  color: #7d6608;
+}
+
 </style>
  
 
@@ -272,6 +294,44 @@ label.error {
   overflow-x: hidden;
 }
 
+/* Colour legend styles (same as RRReports) */
+.rpt-legend {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  font-family: Arial;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.rpt-legend .legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.rpt-legend .legend-box {
+  display: inline-block;
+  width: 26px;
+  height: 20px;
+  border: 2px solid rgb(0, 164, 166);
+  border-radius: 3px;
+}
+
+.rpt-legend .legend-yellow {
+  background-color: rgb(255, 244, 202);
+}
+
+.rpt-legend .legend-grey {
+  background-color: rgb(225, 231, 234);
+}
+
+.rpt-legend .legend-white {
+  background-color: #ffffff;
+}
+
 </style>
     
 
@@ -358,7 +418,7 @@ function getVali(a) {
 			<div class="row">
 				<div class="col-sm-12">
 					<div class="table-container">
-						<table class="table table-striped table-bordered table-hover"
+						<table class="table table-bordered table-hover"
 							id="BRRSvalidation">
 							<thead style="background-color:#e9ecf0; font-family: Arial;">
 								<tr>									
@@ -371,7 +431,9 @@ function getVali(a) {
 								
 								<tr th:each="userProfile : ${reportlist}"
 									th:attr="data-cust_id=${userProfile.srlNo}"
-									th:id="${userProfile.srlNo}" class="userlist">
+									th:id="${userProfile.srlNo}" class="userlist"
+									th:classappend="${userProfile.reportSeg == 'FM'} ? ' fm-row' : 
+									               (${userProfile.reportSeg == 'FMAN'} ? ' fman-row' : '')">
 								
 									<td class="underline" style="color: #08a6f1;" onclick="getVali(this);"
 										th:attr="data-rptcode=${userProfile.rptCode},
@@ -385,6 +447,22 @@ function getVali(a) {
 								
 							</tbody>
 						</table>
+					</div>
+
+					<!-- BOTTOM BAR : legend on the left -->
+					<div id="rptBottomBar"
+						style="display:flex !important; flex-wrap:nowrap !important; flex-direction:row !important; justify-content:flex-start !important; align-items:center !important; padding:8px 0 8px 10px;">
+						<div id="rptLegend" class="rpt-legend">
+							<span class="legend-item">
+								<span class="legend-box legend-yellow"></span>NO MANUAL
+							</span>
+							<span class="legend-item">
+								<span class="legend-box legend-grey"></span>FULL MANUAL
+							</span>
+							<span class="legend-item">
+								<span class="legend-box legend-white"></span>PARTIAL MANUAL
+							</span>
+						</div>
 					</div>
 				
 					
