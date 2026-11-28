@@ -44,6 +44,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -96,7 +98,7 @@ public class BRRS_M_DEP4_ReportService {
 		int currentPage = pageable.getPageNumber();
 		int startItem = currentPage * pageSize;
 
-		if (type.equals("ARCHIVAL") & version != null) {
+		if ((type.equals("ARCHIVAL") || type.equals("RESUB")) && version != null) {
 			List<M_DEP4_Archival_Summary_Entity1> T1Master = new ArrayList<M_DEP4_Archival_Summary_Entity1>();
 			List<M_DEP4_Archival_Summary_Entity2> T1Master1 = new ArrayList<M_DEP4_Archival_Summary_Entity2>();
 			List<M_DEP4_Archival_Summary_Entity3> T1Master2 = new ArrayList<M_DEP4_Archival_Summary_Entity3>();
@@ -121,6 +123,12 @@ public class BRRS_M_DEP4_ReportService {
 				e.printStackTrace();
 			}
 			mv.addObject("reportsummary", T1Master);
+			// the Detail button / edit is only allowed on the highest version of the report date
+			try {
+				mv.addObject("allowdetail", getishighestversion(dateformat.parse(todate), version));
+			} catch (Exception ex) {
+				mv.addObject("allowdetail", "NO");
+			}
 			mv.addObject("reportsummary1", T1Master1);
 			mv.addObject("reportsummary2", T1Master2);
 
@@ -204,7 +212,7 @@ public class BRRS_M_DEP4_ReportService {
 				}
 			}
 
-			if ("ARCHIVAL".equals(type) && version != null) {
+			if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 				// 🔹 Archival branch
 				List<M_DEP4_Archival_Detail_Entity> T1Dt1;
 				if (rowId != null && columnId != null) {
@@ -221,6 +229,7 @@ public class BRRS_M_DEP4_ReportService {
 
 				mv.addObject("reportdetails", T1Dt1);
 				mv.addObject("reportmaster12", T1Dt1);
+				mv.addObject("allowdetail", getishighestversion(parsedDate, new BigDecimal(version.trim())));
 				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 
 			} else {
@@ -263,6 +272,261 @@ public class BRRS_M_DEP4_ReportService {
 		mv.addObject("menu", reportId);
 
 		return mv;
+	}
+
+	// ------------------------------
+	// Opens a single M_DEP4 detail row for edit (keyed by SNO; RESUB reads the archival table)
+	// ------------------------------
+	public ModelAndView getViewOrEditPage(String sno, String formMode, String type, String version,
+			String asondate) {
+
+		ModelAndView mv = new ModelAndView("BRRS/M_DEP4");
+
+		try {
+			if (sno != null && !sno.trim().isEmpty()) {
+				List<M_DEP4_Detail_Entity> rows;
+
+				if ("RESUB".equals(type) && version != null && !version.trim().isEmpty()) {
+					Date reportDate = new SimpleDateFormat("dd-MM-yyyy").parse(asondate);
+					rows = jdbcTemplate.query(
+							"SELECT * FROM BRRS_M_DEP4_ARCHIVALTABLE_DETAIL WHERE SNO = ? AND REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?",
+							new Object[] { Long.valueOf(sno.trim()), reportDate, version.trim() },
+							new BeanPropertyRowMapper<>(M_DEP4_Detail_Entity.class));
+				} else {
+					rows = jdbcTemplate.query("SELECT * FROM BRRS_M_DEP4_DETAILTABLE WHERE SNO = ?",
+							new Object[] { Long.valueOf(sno.trim()) },
+							new BeanPropertyRowMapper<>(M_DEP4_Detail_Entity.class));
+				}
+
+				if (!rows.isEmpty()) {
+					mv.addObject("dep4Data", rows.get(0));
+				} else {
+					mv.addObject("errorMessage", "No record found for SNO: " + sno);
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Error loading M_DEP4 detail record for SNO {}", sno, e);
+			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
+		}
+
+		mv.addObject("formmode", formMode != null ? formMode : "edit");
+		mv.addObject("displaymode", "Edit");
+		mv.addObject("type", type);
+		mv.addObject("version", version);
+		mv.addObject("reportid", "M_DEP4");
+		mv.addObject("reportsflag", "reportsflag");
+		mv.addObject("menu", "M_DEP4");
+		return mv;
+	}
+
+	// ------------------------------
+	// Saves an edited M_DEP4 detail row (live table, or archival table for RESUB)
+	// ------------------------------
+	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+		try {
+			String sno = request.getParameter("sno");
+			String type = request.getParameter("type");
+			String version = request.getParameter("version");
+			String reportDateStr = request.getParameter("reportDate"); // yyyy-MM-dd from the form
+			String balStr = request.getParameter("acctBalanceInPula");
+			String rateStr = request.getParameter("rateOfInterest");
+
+			if (sno == null || sno.trim().isEmpty()) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("SNO is missing. Update failed.");
+			}
+			if (balStr == null || balStr.trim().isEmpty()) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body("Account balance is required. Update failed.");
+			}
+
+			BigDecimal balance = new BigDecimal(balStr.trim());
+			BigDecimal rate = (rateStr == null || rateStr.trim().isEmpty()) ? null : new BigDecimal(rateStr.trim());
+			String userid = (String) request.getSession().getAttribute("USERID");
+
+			int rows;
+			if ("RESUB".equals(type) && version != null && !version.trim().isEmpty()) {
+				Date reportDate = new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr);
+				rows = jdbcTemplate.update(
+						"UPDATE BRRS_M_DEP4_ARCHIVALTABLE_DETAIL SET ACCT_BALANCE_IN_PULA = ?, RATE_OF_INTEREST = ?, "
+								+ "MODIFY_FLG = 'Y', MODIFY_USER = ?, MODIFY_TIME = SYSDATE "
+								+ "WHERE SNO = ? AND REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?",
+						balance, rate, userid, Long.valueOf(sno.trim()), reportDate, version.trim());
+			} else {
+				rows = jdbcTemplate.update(
+						"UPDATE BRRS_M_DEP4_DETAILTABLE SET ACCT_BALANCE_IN_PULA = ?, RATE_OF_INTEREST = ?, "
+								+ "MODIFY_FLG = 'Y', MODIFY_USER = ?, MODIFY_TIME = SYSDATE WHERE SNO = ?",
+						balance, rate, userid, Long.valueOf(sno.trim()));
+			}
+
+			if (rows == 0) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No record found for SNO: " + sno);
+			}
+			// "Regenerate" (entry = NO) on a resubmission: rebuild the summary from the edited data and
+			// store it as the next report version
+			String entry = request.getParameter("entry") != null ? request.getParameter("entry") : "YES";
+			if ("RESUB".equals(type) && "NO".equals(entry) && version != null && !version.trim().isEmpty()) {
+				try {
+					regenerateM_DEP4(reportDateStr);
+				} catch (Exception e) {
+					logger.error("M_DEP4 regeneration failed", e);
+					return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+							.body("Record updated but regeneration failed: " + e.getMessage());
+				}
+				return ResponseEntity.ok("Record updated and Report Regenerated successfully!");
+			}
+			return ResponseEntity.ok("Record updated successfully");
+
+		} catch (Exception e) {
+			logger.error("M_DEP4 detail update failed", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update failed: " + e.getMessage());
+		}
+	}
+
+
+	// ------------------------------
+	// Highest report version of a report date (resubmission list = BRRS_M_DEP4_ARCHIVALTABLE_SUMMARY1)
+	// ------------------------------
+	public String getishighestversion(Date reportDate, BigDecimal reportVersion) {
+		String sql = "SELECT CASE WHEN ? = MAX(REPORT_VERSION) THEN 'YES' ELSE 'NO' END AS is_highest "
+				+ "FROM BRRS_M_DEP4_ARCHIVALTABLE_SUMMARY1 WHERE REPORT_DATE = ?";
+		return jdbcTemplate.queryForObject(sql, new Object[] { reportVersion, reportDate }, String.class);
+	}
+
+	// Detail columns shared by BRRS_M_DEP4_DETAILTABLE and BRRS_M_DEP4_ARCHIVALTABLE_DETAIL (without DATA_ENTRY_VERSION)
+	private static final String DEP4_DETAIL_COLS = "CUST_ID, ACCT_NUMBER, ACCT_NAME, DATA_TYPE, REPORT_LABEL, "
+			+ "REPORT_ADDL_CRITERIA_1, REPORT_REMARKS, MODIFICATION_REMARKS, ACCT_BALANCE_IN_PULA, REPORT_DATE, "
+			+ "REPORT_NAME, CREATE_USER, CREATE_TIME, MODIFY_USER, MODIFY_TIME, VERIFY_USER, VERIFY_TIME, ENTITY_FLG, "
+			+ "MODIFY_FLG, DEL_FLG, SANCTION_LIMIT, REPORT_ADDL_CRITERIA_2, REPORT_ADDL_CRITERIA_3, SEGMENT, MAT_BUC_2, "
+			+ "LIQGAP_BUCKET, SNO, TYPE_OF_ACCOUNTS, RATE_OF_INTEREST";
+
+	// Columns present in both tables, minus the excluded ones (summary tables have hundreds of columns)
+	private String commonColumns(String tableA, String tableB, String... exclude) {
+		String sql = "SELECT COLUMN_NAME FROM ALL_TAB_COLUMNS "
+				+ "WHERE OWNER = SYS_CONTEXT('USERENV','CURRENT_SCHEMA') AND TABLE_NAME = ? ORDER BY COLUMN_ID";
+		List<String> a = jdbcTemplate.queryForList(sql, String.class, tableA);
+		List<String> b = jdbcTemplate.queryForList(sql, String.class, tableB);
+		List<String> out = new ArrayList<>();
+		for (String c : a) {
+			boolean skip = !b.contains(c);
+			for (String x : exclude) {
+				if (x.equalsIgnoreCase(c)) {
+					skip = true;
+				}
+			}
+			if (!skip) {
+				out.add(c);
+			}
+		}
+		if (out.isEmpty()) {
+			throw new IllegalStateException("No common columns between " + tableA + " and " + tableB);
+		}
+		return String.join(", ", out);
+	}
+
+	// ------------------------------
+	// Regenerates M_DEP4 for a report date after a resubmission edit:
+	//  1. restore the latest archived detail version into the live detail table
+	//  2. run BRRS_M_DEP4_SUMMARY_PROCEDURE
+	//  3. store detail + the 3 summary tables as the NEXT version (REPORT_RESUBDATE = SYSDATE)
+	//  4. clean the live tables for that date
+	// ------------------------------
+	private boolean hasColumn(String table, String column) {
+		Integer c = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM ALL_TAB_COLUMNS WHERE OWNER = "
+				+ "SYS_CONTEXT('USERENV','CURRENT_SCHEMA') AND TABLE_NAME = ? AND COLUMN_NAME = ?", Integer.class, table,
+				column);
+		return c != null && c > 0;
+	}
+
+	private void regenerateM_DEP4(String reportDateIso) throws Exception {
+		java.sql.Date rd = java.sql.Date.valueOf(reportDateIso.trim()); // yyyy-MM-dd
+		String ddMMyyyy = new SimpleDateFormat("dd-MM-yyyy").format(rd);
+		final String DTL = "BRRS_M_DEP4_DETAILTABLE";
+		final String ARCH_DTL = "BRRS_M_DEP4_ARCHIVALTABLE_DETAIL";
+
+		Integer srcVersion = jdbcTemplate.queryForObject("SELECT MAX(TO_NUMBER(DATA_ENTRY_VERSION)) FROM " + ARCH_DTL
+				+ " WHERE REPORT_DATE = ? AND REGEXP_LIKE(DATA_ENTRY_VERSION, '^[0-9]+$')", Integer.class, rd);
+		if (srcVersion == null) {
+			throw new IllegalStateException("No archived detail found for " + ddMMyyyy);
+		}
+
+		Integer newVersion = null;
+		boolean done = false;
+		try {
+			int del = jdbcTemplate.update("DELETE FROM " + DTL + " WHERE REPORT_DATE = ?", rd);
+			System.out.println("Successfully deleted before executing procedure " + del + " rows.");
+
+			int restored = jdbcTemplate.update("INSERT INTO " + DTL + " (" + DEP4_DETAIL_COLS + ") SELECT "
+					+ DEP4_DETAIL_COLS + " FROM " + ARCH_DTL + " WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?", rd,
+					String.valueOf(srcVersion));
+			System.out.println("Successfully transferred " + restored + " rows from version " + srcVersion);
+
+			jdbcTemplate.update("BEGIN BRRS_M_DEP4_SUMMARY_PROCEDURE(?); END;", ddMMyyyy);
+			System.out.println("Procedure executed");
+
+			Integer produced = jdbcTemplate.queryForObject(
+					"SELECT COUNT(*) FROM BRRS_M_DEP4_SUMMARYTABLE1 WHERE REPORT_DATE = ?", Integer.class, rd);
+			if (produced == null || produced == 0) {
+				throw new IllegalStateException("Summary procedure produced no rows for " + ddMMyyyy);
+			}
+
+			Integer maxVersion = jdbcTemplate.queryForObject(
+					"SELECT MAX(REPORT_VERSION) FROM BRRS_M_DEP4_ARCHIVALTABLE_SUMMARY1 WHERE REPORT_DATE = ?",
+					Integer.class, rd);
+			newVersion = (maxVersion != null ? maxVersion : 0) + 1;
+
+			int dtlRows = jdbcTemplate.update("INSERT INTO " + ARCH_DTL + " (" + DEP4_DETAIL_COLS
+					+ ", DATA_ENTRY_VERSION) SELECT " + DEP4_DETAIL_COLS + ", ? FROM " + DTL + " WHERE REPORT_DATE = ?",
+					String.valueOf(newVersion), rd);
+			System.out.println("Successfully inserted " + dtlRows + " detail rows into ARCHIVAL for version " + newVersion);
+
+			for (int i = 1; i <= 3; i++) {
+				String cur = "BRRS_M_DEP4_SUMMARYTABLE" + i;
+				String arc = "BRRS_M_DEP4_ARCHIVALTABLE_SUMMARY" + i;
+				String cols = commonColumns(cur, arc, "REPORT_VERSION", "REPORT_RESUBDATE");
+				// the resubdate column is optional: archive tables created without it still get the new version
+				boolean withResubDate = hasColumn(arc, "REPORT_RESUBDATE");
+				if (!withResubDate) {
+					if (i == 1) {
+						throw new IllegalStateException(
+								"REPORT_RESUBDATE column is missing from " + arc
+									+ ". Add this column before regenerating so the resubmission date is recorded.");
+					}
+					logger.warn("{} has no REPORT_RESUBDATE column; this summary table is not used for the resubmission list", arc);
+				}
+				String sql = "INSERT INTO " + arc + " (" + cols + ", REPORT_VERSION"
+						+ (withResubDate ? ", REPORT_RESUBDATE" : "") + ") SELECT " + cols + ", ?"
+						+ (withResubDate ? ", SYSDATE" : "") + " FROM " + cur + " WHERE REPORT_DATE = ?";
+				int sumRows = jdbcTemplate.update(sql, newVersion, rd);
+				System.out.println("Successfully transferred " + sumRows + " rows into " + arc);
+				int delSum = jdbcTemplate.update("DELETE FROM " + cur + " WHERE REPORT_DATE = ?", rd);
+				System.out.println("Deleted from " + cur + " " + delSum + " rows after transfering.");
+			}
+			done = true;
+		} catch (Exception e) {
+			// the procedure commits, so earlier steps are already persisted: remove the half-built version
+			if (newVersion != null) {
+				try {
+					jdbcTemplate.update("DELETE FROM " + ARCH_DTL + " WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?", rd,
+							String.valueOf(newVersion));
+					for (int i = 1; i <= 3; i++) {
+						jdbcTemplate.update("DELETE FROM BRRS_M_DEP4_ARCHIVALTABLE_SUMMARY" + i
+								+ " WHERE REPORT_DATE = ? AND REPORT_VERSION = ?", rd, newVersion);
+					}
+					logger.warn("Rolled back partial version {} for {}", newVersion, ddMMyyyy);
+				} catch (Exception cleanup) {
+					logger.error("Cleanup of partial version {} failed", newVersion, cleanup);
+				}
+			}
+			throw e;
+		} finally {
+			// the live tables must not keep the regenerated rows (success path already emptied the summaries)
+			jdbcTemplate.update("DELETE FROM " + DTL + " WHERE REPORT_DATE = ?", rd);
+			if (!done) {
+				for (int i = 1; i <= 3; i++) {
+					jdbcTemplate.update("DELETE FROM BRRS_M_DEP4_SUMMARYTABLE" + i + " WHERE REPORT_DATE = ?", rd);
+				}
+			}
+		}
 	}
 
 	// ------------------------------
@@ -29595,22 +29859,22 @@ public class BRRS_M_DEP4_ReportService {
 	public List<Object[]> getM_DEP4Resub() {
 		List<Object[]> resubList = new ArrayList<>();
 		try {
-			List<M_DEP4_Archival_Summary_Entity1> latestArchivalList = jdbcTemplate.query(
-					"SELECT * FROM BRRS_M_DEP4_ARCHIVALTABLE_SUMMARY1 WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC",
-					new BeanPropertyRowMapper<>(M_DEP4_Archival_Summary_Entity1.class));
+			// Same three-column contract as DEP1:
+			// [0] report date, [1] report version, [2] resubmission timestamp.
+			String sql = "SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE "
+					+ "FROM BRRS_M_DEP4_ARCHIVALTABLE_SUMMARY1 "
+					+ "WHERE REPORT_VERSION IS NOT NULL "
+					+ "ORDER BY REPORT_DATE ASC, REPORT_VERSION ASC";
 
-			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
-				for (M_DEP4_Archival_Summary_Entity1 entity : latestArchivalList) {
-					resubList.add(new Object[] { entity.getReportDate(), entity.getReportVersion() });
-				}
-				System.out.println("Fetched " + resubList.size() + " record(s)");
-			} else {
-				System.out.println("No archival data found.");
-			}
+			resubList = jdbcTemplate.query(sql, (rs, rowNum) -> new Object[] {
+					rs.getDate("REPORT_DATE"),
+					rs.getBigDecimal("REPORT_VERSION"),
+					rs.getTimestamp("REPORT_RESUBDATE")
+			});
 
+			System.out.println("Fetched " + resubList.size() + " M_DEP4 Resub records");
 		} catch (Exception e) {
-			System.err.println("Error fetching M_dep4 Resub data: " + e.getMessage());
-			e.printStackTrace();
+			logger.error("Error fetching M_DEP4 resubmission list", e);
 		}
 		return resubList;
 	}
@@ -56528,21 +56792,21 @@ public class BRRS_M_DEP4_ReportService {
 					row.createCell(0).setCellValue(item.getCustId());
 					row.createCell(1).setCellValue(item.getAcctNumber());
 					row.createCell(2).setCellValue(item.getAcctName());
-					row.createCell(3).setCellValue(item.getTypeofaccounts());
+					row.createCell(3).setCellValue(item.getTypeOfAccounts());
 
 					// Interest Rate
 					Cell intCell = row.createCell(4);
-					intCell.setCellValue(item.getRateofinterest() != null ? item.getRateofinterest().doubleValue() : 0);
+					intCell.setCellValue(item.getRateOfInterest() != null ? item.getRateOfInterest().doubleValue() : 0);
 					intCell.setCellStyle(interestStyle);
 
 					// Balance
 					Cell balCell = row.createCell(5);
 					balCell.setCellValue(
-							item.getAcctBalanceInpula() != null ? item.getAcctBalanceInpula().doubleValue() : 0);
+							item.getAcctBalanceInPula() != null ? item.getAcctBalanceInPula().doubleValue() : 0);
 					balCell.setCellStyle(balanceStyle);
 
 					// REPORT LABEL (FIXED missing column)
-					row.createCell(6).setCellValue(item.getReportLable());
+					row.createCell(6).setCellValue(item.getReportLabel());
 
 					// REPORT DATE
 					row.createCell(7)
@@ -56667,21 +56931,21 @@ public class BRRS_M_DEP4_ReportService {
 					row.createCell(0).setCellValue(item.getCustId());
 					row.createCell(1).setCellValue(item.getAcctNumber());
 					row.createCell(2).setCellValue(item.getAcctName());
-					row.createCell(3).setCellValue(item.getTypeofaccounts());
+					row.createCell(3).setCellValue(item.getTypeOfAccounts());
 
 					// Interest Rate
 					Cell intCell = row.createCell(4);
-					intCell.setCellValue(item.getRateofinterest() != null ? item.getRateofinterest().doubleValue() : 0);
+					intCell.setCellValue(item.getRateOfInterest() != null ? item.getRateOfInterest().doubleValue() : 0);
 					intCell.setCellStyle(interestStyle);
 
 					// Balance
 					Cell balCell = row.createCell(5);
 					balCell.setCellValue(
-							item.getAcctBalanceInpula() != null ? item.getAcctBalanceInpula().doubleValue() : 0);
+							item.getAcctBalanceInPula() != null ? item.getAcctBalanceInPula().doubleValue() : 0);
 					balCell.setCellStyle(balanceStyle);
 
 					// REPORT LABEL (FIXED)
-					row.createCell(6).setCellValue(item.getReportLable());
+					row.createCell(6).setCellValue(item.getReportLabel());
 
 					// REPORT DATE
 					row.createCell(7)
@@ -94063,7 +94327,7 @@ public class BRRS_M_DEP4_ReportService {
 		private String dataEntryVersion;
 
 		@Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
-		private BigDecimal acctBalanceInpula;
+		private BigDecimal acctBalanceInPula;
 
 		@Column(name = "REPORT_DATE")
 		@DateTimeFormat(pattern = "dd-MM-yyyy")
@@ -94100,10 +94364,10 @@ public class BRRS_M_DEP4_ReportService {
 		private String delFlg;
 
 		@Column(name = "TYPE_OF_ACCOUNTS")
-		private String typeofaccounts;
+		private String typeOfAccounts;
 
 		@Column(name = "RATE_OF_INTEREST")
-		private BigDecimal rateofinterest;
+		private BigDecimal rateOfInterest;
 
 		public Long getSno() {
 			return sno;
@@ -94153,11 +94417,11 @@ public class BRRS_M_DEP4_ReportService {
 			this.reportName = reportName;
 		}
 
-		public String getReportLable() {
+		public String getReportLabel() {
 			return reportLabel;
 		}
 
-		public void setReportLable(String reportLable) {
+		public void setReportLabel(String reportLabel) {
 			this.reportLabel = reportLabel;
 		}
 
@@ -94217,12 +94481,12 @@ public class BRRS_M_DEP4_ReportService {
 			this.dataEntryVersion = dataEntryVersion;
 		}
 
-		public BigDecimal getAcctBalanceInpula() {
-			return acctBalanceInpula;
+		public BigDecimal getAcctBalanceInPula() {
+			return acctBalanceInPula;
 		}
 
-		public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
-			this.acctBalanceInpula = acctBalanceInpula;
+		public void setAcctBalanceInPula(BigDecimal acctBalanceInPula) {
+			this.acctBalanceInPula = acctBalanceInPula;
 		}
 
 		public Date getReportDate() {
@@ -94305,20 +94569,20 @@ public class BRRS_M_DEP4_ReportService {
 			this.delFlg = delFlg;
 		}
 
-		public String getTypeofaccounts() {
-			return typeofaccounts;
+		public String getTypeOfAccounts() {
+			return typeOfAccounts;
 		}
 
-		public void setTypeofaccounts(String typeofaccounts) {
-			this.typeofaccounts = typeofaccounts;
+		public void setTypeOfAccounts(String typeOfAccounts) {
+			this.typeOfAccounts = typeOfAccounts;
 		}
 
-		public BigDecimal getRateofinterest() {
-			return rateofinterest;
+		public BigDecimal getRateOfInterest() {
+			return rateOfInterest;
 		}
 
-		public void setRateofinterest(BigDecimal rateofinterest) {
-			this.rateofinterest = rateofinterest;
+		public void setRateOfInterest(BigDecimal rateOfInterest) {
+			this.rateOfInterest = rateOfInterest;
 		}
 
 		public M_DEP4_Detail_Entity() {
@@ -94353,7 +94617,7 @@ public class BRRS_M_DEP4_ReportService {
 		private String reportName;
 
 		@Column(name = "REPORT_LABEL")
-		private String reportLable;
+		private String reportLabel;
 
 		@Column(name = "REPORT_ADDL_CRITERIA_1")
 		private String reportAddlCriteria_1;
@@ -94377,7 +94641,7 @@ public class BRRS_M_DEP4_ReportService {
 		private String dataEntryVersion;
 
 		@Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
-		private BigDecimal acctBalanceInpula;
+		private BigDecimal acctBalanceInPula;
 
 		@Column(name = "REPORT_DATE")
 		@DateTimeFormat(pattern = "dd-MM-yyyy")
@@ -94414,10 +94678,10 @@ public class BRRS_M_DEP4_ReportService {
 		private String delFlg;
 
 		@Column(name = "TYPE_OF_ACCOUNTS")
-		private String typeofaccounts;
+		private String typeOfAccounts;
 
 		@Column(name = "RATE_OF_INTEREST")
-		private BigDecimal rateofinterest;
+		private BigDecimal rateOfInterest;
 
 		public Long getSno() {
 			return sno;
@@ -94467,12 +94731,12 @@ public class BRRS_M_DEP4_ReportService {
 			this.reportName = reportName;
 		}
 
-		public String getReportLable() {
-			return reportLable;
+		public String getReportLabel() {
+			return reportLabel;
 		}
 
-		public void setReportLable(String reportLable) {
-			this.reportLable = reportLable;
+		public void setReportLabel(String reportLabel) {
+			this.reportLabel = reportLabel;
 		}
 
 		public String getReportAddlCriteria_1() {
@@ -94531,12 +94795,12 @@ public class BRRS_M_DEP4_ReportService {
 			this.dataEntryVersion = dataEntryVersion;
 		}
 
-		public BigDecimal getAcctBalanceInpula() {
-			return acctBalanceInpula;
+		public BigDecimal getAcctBalanceInPula() {
+			return acctBalanceInPula;
 		}
 
-		public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
-			this.acctBalanceInpula = acctBalanceInpula;
+		public void setAcctBalanceInPula(BigDecimal acctBalanceInPula) {
+			this.acctBalanceInPula = acctBalanceInPula;
 		}
 
 		public Date getReportDate() {
@@ -94619,20 +94883,20 @@ public class BRRS_M_DEP4_ReportService {
 			this.delFlg = delFlg;
 		}
 
-		public String getTypeofaccounts() {
-			return typeofaccounts;
+		public String getTypeOfAccounts() {
+			return typeOfAccounts;
 		}
 
-		public void setTypeofaccounts(String typeofaccounts) {
-			this.typeofaccounts = typeofaccounts;
+		public void setTypeOfAccounts(String typeOfAccounts) {
+			this.typeOfAccounts = typeOfAccounts;
 		}
 
-		public BigDecimal getRateofinterest() {
-			return rateofinterest;
+		public BigDecimal getRateOfInterest() {
+			return rateOfInterest;
 		}
 
-		public void setRateofinterest(BigDecimal rateofinterest) {
-			this.rateofinterest = rateofinterest;
+		public void setRateOfInterest(BigDecimal rateOfInterest) {
+			this.rateOfInterest = rateOfInterest;
 		}
 
 		public M_DEP4_Archival_Detail_Entity() {

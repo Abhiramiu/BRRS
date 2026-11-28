@@ -370,6 +370,10 @@ PURPOSE		: BRRSREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
+			if ((type === "RESUB" || type === "ARCHIVAL") && allowdetail === "NO") {
+				showResultModal("Information", "Detail page is only available for highest report version only");
+				return;
+			}
 
 			var Callurl;
 			$('#loader').modal('show');
@@ -625,6 +629,8 @@ PURPOSE		: BRRSREPORT
 	<script th:inline="javascript">
 		/*<![CDATA[*/
 		const reportId = /*[[${reportid}]]*/ null;
+		const type = /*[[${type}]]*/ '';
+		const allowdetail = /*[[${allowdetail}]]*/ 'NO';
 		/*]]>*/
 	</script>
 
@@ -637,20 +643,49 @@ PURPOSE		: BRRSREPORT
 								            showResultModal('BRRS',"Archived Data cannot be modified");
 								            return;
 								        }
-			const acctNo = elem.getAttribute("data-acctNo");
+								        if (type === "RESUB" && allowdetail === "NO") {
+								            showResultModal('BRRS',"This version is not the highest version and cannot be modified");
+								            return;
+								        }
+			const sno = elem.getAttribute("data-sno");
 			const asondate = elem.getAttribute("data-asondate");
-			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+			const version = elem.getAttribute("data-version") || '';
+			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&sno=${sno}&asondate=${asondate}&type=${type}&version=${version}`;
 		}
 	</script>
 
 	<script>
 		function submitUpdate() {
-			const formData = $('#DetailForm').serialize(); // Ensure correct form ID
+			let formData = $('#DetailForm').serialize(); // Ensure correct form ID
+			let userAnswer = null;
 
-			// ✅ Store the previous page URL
-			const previousUrl = document.referrer; // same as going back once in history
+			// Resubmission: ask whether to modify further or regenerate the report
+			if (new URLSearchParams(formData).get('type') === 'RESUB' && !$('#confirmModal').data('answered')) {
+				$('#confirmModal').modal('show');
 
-			// Show loader while processing
+				$('#btnConfirmYes').off('click').on('click', function () {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'YES');
+					submitUpdate();
+				});
+
+				$('#btnConfirmNo').off('click').on('click', function () {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'NO');
+					submitUpdate();
+				});
+
+				return;
+			}
+
+			userAnswer = $('#confirmModal').data('answered');
+			if (userAnswer === 'NO') {
+				formData += '&entry=NO';
+			}
+			$('#confirmModal').data('answered', null);
+
+			const previousUrl = document.referrer;
+
 			$('#loader').modal('show');
 
 			$.ajax({
@@ -660,19 +695,20 @@ PURPOSE		: BRRSREPORT
 				success: function (response) {
 					$('#loader').modal('hide');
 
-					// Show message via modal
 					if (response && response.toLowerCase().includes('success')) {
 						showResultModal('BRRS', response);
 					} else {
 						showResultModal('Information', response || 'No data updated.');
 					}
 
-					// ✅ Redirect back to the previous page after short delay
+					// Redirect to Resubmission list when regenerated
+					const regenerated = response && response.toLowerCase().includes('report regenerated');
 					setTimeout(() => {
-						if (previousUrl) {
+						if (regenerated) {
+							window.location.href = '/BRRS/Resubmission?rptcode=' + encodeURIComponent(reportId);
+						} else if (previousUrl) {
 							window.location.href = previousUrl;
 						} else {
-							// fallback: just go back if referrer not found
 							window.history.back();
 						}
 					}, 1500);
@@ -680,10 +716,8 @@ PURPOSE		: BRRSREPORT
 				error: function (xhr, status, error) {
 					$('#loader').modal('hide');
 					console.error("Update error:", error);
-
 					showResultModal('Error', 'Failed to update record. Please try again.');
 
-					// ✅ On error also return to previous page after delay
 					setTimeout(() => {
 						if (previousUrl) {
 							window.location.href = previousUrl;
@@ -820,6 +854,10 @@ PURPOSE		: BRRSREPORT
 
 	<script th:inline="javascript">
 		function showdetailsbyRowAndColumn(a) {
+			if ((type === "RESUB" || type === "ARCHIVAL") && allowdetail === "NO") {
+				showResultModal("Information", "Detail page is only available for highest report version only");
+				return;
+			}
 			var rowId = a.getAttribute('RowId') || "";
 			var columnId = a.getAttribute('ColumnId') || "";
 			var columnId1 = a.getAttribute('ColumnId1') || "";
@@ -7675,7 +7713,7 @@ PURPOSE		: BRRSREPORT
 																		<td>
 																			<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record"
 																				 th:if="${role == 'M' or role == 'MAN'}">
-																				<i class="fas fa-edit" style="color: black; cursor:pointer;" th:attr="data-acctNo=${report.acctNumber},
+																				<i class="fas fa-edit" style="color: black; cursor:pointer;" th:attr="data-sno=${report.sno},data-version=${version},
 																														data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
 																					onclick="openDetail(this, 'edit')"></i>
 
@@ -7685,15 +7723,15 @@ PURPOSE		: BRRSREPORT
 																		<td th:text="${report.custId != null ? report.custId : '-'}"></td>
 																		<td th:text="${report.acctNumber != null ? report.acctNumber : '-'}"></td>
 																		<td th:text="${report.acctName != null ? report.acctName : '-'}"></td>
-																		<td th:text="${report.typeofaccounts != null ? report.typeofaccounts : '-'}"></td>
-																		<td th:text="${report.rateofinterest != null ? report.rateofinterest : '-'}"></td>
+																		<td th:text="${report.typeOfAccounts != null ? report.typeOfAccounts : '-'}"></td>
+																		<td th:text="${report.rateOfInterest != null ? report.rateOfInterest : '-'}"></td>
 
 																		<td style="text-align:right;"
-																			th:text="${#numbers.formatDecimal(report.acctBalanceInpula,1,'COMMA',0,'POINT')}">
+																			th:text="${#numbers.formatDecimal(report.acctBalanceInPula,1,'COMMA',0,'POINT')}">
 																		</td>
 
 																		<td style="text-align:left;"
-																			th:text="${report.reportLable != null ? report.reportLable : '-'}">
+																			th:text="${report.reportLabel != null ? report.reportLabel : '-'}">
 																		</td>
 																		
 																		<td
@@ -7720,7 +7758,10 @@ PURPOSE		: BRRSREPORT
 											<!-- M_DEP4 Detail Form Screen -->
 											<div th:if="${formmode == 'edit'}" class="card">
 												<div class="card-body">
-													<form th:object="${Data}" method="post" id="DetailForm">
+													<form th:object="${dep4Data}" method="post" id="DetailForm">
+														<input type="hidden" th:field="*{sno}" />
+														<input type="hidden" name="type" th:value="${type}" />
+														<input type="hidden" name="version" th:value="${version}" />
 
 														<!-- Row 1 -->
 														<div class="row formline" style="margin-top:10px;">
@@ -7750,7 +7791,7 @@ PURPOSE		: BRRSREPORT
 
 															<label class="col-sm-2">Acct Balance</label>
 															<div class="col-sm-3">
-																<input type="number" step="0.01" th:field="*{acctBalanceInpula}"
+																<input type="number" step="0.01" th:field="*{acctBalanceInPula}"
 																	class="form-control form-control-sm" style="text-align:right;" />
 															</div>
 														</div>
@@ -7761,7 +7802,7 @@ PURPOSE		: BRRSREPORT
 														<div class="row formline" style="margin-top:10px;">
 															<label class="col-sm-2">TYPE OF ACCOUNT</label>
 															<div class="col-sm-3">
-																<input type="text" th:field="*{typeofaccounts}" class="form-control form-control-sm"
+																<input type="text" th:field="*{typeOfAccounts}" class="form-control form-control-sm"
 																	readonly />
 															</div>
 
@@ -7769,7 +7810,7 @@ PURPOSE		: BRRSREPORT
 
 															<label class="col-sm-2">INTEREST RATE</label>
 															<div class="col-sm-3">
-																<input type="number" step="0.01" th:field="*{rateofinterest}"
+																<input type="number" step="0.01" th:field="*{rateOfInterest}"
 																	class="form-control form-control-sm" style="text-align:right;" />
 															</div>
 														</div>													
@@ -7787,7 +7828,7 @@ PURPOSE		: BRRSREPORT
 															<label class="col-sm-2">Report Date</label>
 																														<div class="col-sm-3">
 																															<input type="date" name="reportDate" class="form-control form-control-sm"
-																																th:value="${#dates.format(Data.reportDate, 'yyyy-MM-dd')}" readonly />
+																																th:value="${#dates.format(dep4Data.reportDate, 'yyyy-MM-dd')}" readonly />
 																														</div>
 														</div>
 
@@ -7827,6 +7868,23 @@ PURPOSE		: BRRSREPORT
 
 
 									<!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
+									<div class="modal fade" id="confirmModal">
+										<div class="modal-dialog modal-dialog-centered">
+											<div class="modal-content">
+												<div class="menu-title-header">
+													<div class="modal-title" id="confirmModalLabel" style="text-align: center; color: white;">Confirmation</div>
+												</div>
+												<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+													<p id="confirmModalBody">Would you like to make further modifications?</p>
+													<div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+														<button type="button" id="btnConfirmYes" class="custom-tab-btn" data-dismiss="modal">Modify</button>
+														<button type="button" id="btnConfirmNo" class="custom-tab-btn" data-dismiss="modal">Regenerate</button>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+
 									<div class="modal fade" id="resultModal">
 										<div class="modal-dialog modal-dialog-centered">
 											<div class="modal-content">

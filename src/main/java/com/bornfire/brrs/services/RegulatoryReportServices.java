@@ -4557,6 +4557,12 @@ public class RegulatoryReportServices {
 						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 
+			case "M_DEP4":
+				modelAndView = BRRS_M_DEP4_ReportService.getViewOrEditPage(request.getParameter("sno"),
+						request.getParameter("formmode"), request.getParameter("type"),
+						request.getParameter("version"), request.getParameter("asondate"));
+				break;
+
 			case "M_SRWA_12A":
 				modelAndView = brrs_m_srwa_12a_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
@@ -5023,6 +5029,10 @@ public class RegulatoryReportServices {
 
 			case "M_DEP2":
 				response = BRRS_M_DEP2_reportservice.updateDetailEdit(request);
+				break;
+
+			case "M_DEP4":
+				response = BRRS_M_DEP4_ReportService.updateDetailEdit(request);
 				break;
 
 			case "M_SRWA_12A":
