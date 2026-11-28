@@ -111,6 +111,29 @@ public class BRRS_M_DEP1_ReportService {
 		return count != null ? count : 0;
 	}
 
+	private int getArchivalDetailCount(Date reportDate, String dataEntryVersion) {
+		String sql = "SELECT COUNT(*) FROM " + TBL_ARCH_DETAIL + " WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
+		Integer count = jdbcTemplate.queryForObject(sql, Integer.class, reportDate, dataEntryVersion);
+		return count != null ? count : 0;
+	}
+
+	// accepts yyyy-MM-dd, dd/MM/yyyy, dd-MM-yyyy or dd-MMM-yyyy and returns yyyy-MM-dd (null when unparsable)
+	private String toIsoDate(String s) {
+		if (s == null || s.trim().isEmpty() || "null".equals(s)) {
+			return null;
+		}
+		String[] fmts = { "yyyy-MM-dd", "dd/MM/yyyy", "dd-MM-yyyy", "dd-MMM-yyyy" };
+		for (String f : fmts) {
+			try {
+				SimpleDateFormat in = new SimpleDateFormat(f);
+				in.setLenient(false);
+				return new SimpleDateFormat("yyyy-MM-dd").format(in.parse(s.trim()));
+			} catch (Exception ignore) {
+			}
+		}
+		return null;
+	}
+
 	private List<M_DEP1_Detail_Entity> getDetailByLabelAndCriteria(String reportLabel, String reportAddlCriteria1,
 			Date reportDate) {
 		String sql = "SELECT * FROM " + TBL_DETAIL
@@ -128,6 +151,44 @@ public class BRRS_M_DEP1_ReportService {
 		String sql = "SELECT * FROM " + TBL_ARCH_DETAIL + " WHERE ACCT_NUMBER = ?";
 		List<M_DEP1_Archival_Detail_Entity> rows = jdbcTemplate.query(sql, new M_DEP1ArchivalDetailRowMapper(), acctNumber);
 		return rows.isEmpty() ? null : rows.get(0);
+	}
+
+	// Archival detail row of ONE version: account + version, narrowed by report date and SNO when given.
+	// Falls back to the old account-only lookup when no version is supplied.
+	private M_DEP1_Archival_Detail_Entity findArchivalDetailKeyed(String acctNumber, String version,
+			String reportDateStr, String sno) {
+		if (version == null || version.trim().isEmpty() || "null".equals(version)) {
+			return findArchivalDetailByAcctNumber(acctNumber);
+		}
+		List<Object> args = new ArrayList<>();
+		String where = archivalKeyWhere(acctNumber, version, reportDateStr, sno, args);
+		List<M_DEP1_Archival_Detail_Entity> rows = jdbcTemplate.query(
+				"SELECT * FROM " + TBL_ARCH_DETAIL + where + " ORDER BY REPORT_DATE DESC", new M_DEP1ArchivalDetailRowMapper(),
+				args.toArray());
+		return rows.isEmpty() ? null : rows.get(0);
+	}
+
+	private String archivalKeyWhere(String acctNumber, String version, String reportDateStr, String sno,
+			List<Object> args) {
+		StringBuilder w = new StringBuilder(" WHERE ACCT_NUMBER = ? AND DATA_ENTRY_VERSION = ?");
+		args.add(acctNumber);
+		args.add(version.trim());
+		if (reportDateStr != null && !reportDateStr.trim().isEmpty()) {
+			try {
+				args.add(java.sql.Date.valueOf(reportDateStr.trim())); // yyyy-MM-dd
+				w.append(" AND REPORT_DATE = ?");
+			} catch (IllegalArgumentException ignore) {
+				// unparsable date: leave it out of the key
+			}
+		}
+		if (sno != null && !sno.trim().isEmpty() && !"null".equals(sno)) {
+			try {
+				args.add(new BigDecimal(sno.trim()));
+				w.append(" AND SNO = ?");
+			} catch (NumberFormatException ignore) {
+			}
+		}
+		return w.toString();
 	}
 
 	private void saveDetailEntity(M_DEP1_Detail_Entity entity) {
@@ -342,7 +403,9 @@ public class BRRS_M_DEP1_ReportService {
 					T1Dt1 = getArchivalDetailByLabelAndCriteria(reportLabel, reportAddlCriteria1, parsedDate, version);
 				} else {
 					T1Dt1 = getArchivalDetailByDate(parsedDate, version);
-					totalPages = getDetailCount(parsedDate);
+					// was getDetailCount(parsedDate) = count of the CURRENT detail table, which is empty
+					// after a regeneration, so totalPages was always 0 for RESUB/ARCHIVAL
+					totalPages = getArchivalDetailCount(parsedDate, version);
 					System.out.println(T1Dt1.size());
 					mv.addObject("pagination", "YES");
 
@@ -5834,11 +5897,12 @@ public class BRRS_M_DEP1_ReportService {
 		List<Object[]> resubList = new ArrayList<>();
 		try {
 			String sql = "SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE FROM " + TBL_ARCH_SUMMARY
-					+ " WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC";
+					+ " WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_DATE ASC, REPORT_VERSION ASC";
 			resubList = jdbcTemplate.query(sql, (rs, rowNum) -> new Object[] {
 					rs.getDate("REPORT_DATE"),
 					rs.getBigDecimal("REPORT_VERSION"),
-					rs.getDate("REPORT_RESUBDATE")
+					// timestamp so the regeneration time is available, not just the date
+					rs.getTimestamp("REPORT_RESUBDATE")
 			});
 			System.out.println("Fetched " + resubList.size() + " M_DEP1 Resub records");
 		} catch (Exception e) {
@@ -11284,11 +11348,18 @@ public class BRRS_M_DEP1_ReportService {
 	}
 
 	public ModelAndView getViewOrEditPage(String acctNo, String formMode, String type) {
+		return getViewOrEditPage(acctNo, formMode, type, null, null, null);
+	}
+
+	// RESUB-aware: the row is taken from the selected archival version (and date / SNO when supplied)
+	// instead of the first row found for the account number in any version.
+	public ModelAndView getViewOrEditPage(String acctNo, String formMode, String type, String version,
+			String reportDateStr, String sno) {
 		ModelAndView mv = new ModelAndView("BRRS/M_DEP1"); // ✅ match the report name
 		System.out.println("Hello type: " + type);
 		if (acctNo != null) {
 			if ("RESUB".equals(type)) {
-				M_DEP1_Archival_Detail_Entity archivalEntity = findArchivalDetailByAcctNumber(acctNo);
+				M_DEP1_Archival_Detail_Entity archivalEntity = findArchivalDetailKeyed(acctNo, version, toIsoDate(reportDateStr), sno);
 				if (archivalEntity != null && archivalEntity.getReportDate() != null) {
 					String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(archivalEntity.getReportDate());
 					mv.addObject("asondate", formattedDate);
@@ -11305,6 +11376,7 @@ public class BRRS_M_DEP1_ReportService {
 		}
 
 		mv.addObject("type", type);
+		mv.addObject("version", version);
 		mv.addObject("displaymode", "edit");
 		mv.addObject("formmode", formMode != null ? formMode : "edit");
 		return mv;
@@ -11339,15 +11411,28 @@ public class BRRS_M_DEP1_ReportService {
 			String reportDateStr = request.getParameter("reportDate");
 			String type = request.getParameter("type");
 			String entry = (request.getParameter("entry") != null) ? request.getParameter("entry") : "YES";
+			String version = request.getParameter("version");
+			String sno = request.getParameter("sno");
 
-			logger.info("Received update for ACCT_NO: {} with type: {}, entry: {}", acctNo, type, entry);
+			logger.info("Received update for ACCT_NO: {} with type: {}, entry: {}, version: {}", acctNo, type, entry, version);
 
 			boolean isResub = "RESUB".equals(type);
 			Object existing = null;
 			Object oldcopy = null;
 
 			if (isResub) {
-				existing = findArchivalDetailByAcctNumber(acctNo);
+				if (version == null || version.trim().isEmpty() || "null".equals(version)) {
+					// without a version the UPDATE would hit this account in EVERY version and month
+					logger.warn("RESUB update rejected - no version supplied for ACCT_NO: {}", acctNo);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Report version is required for resubmission update.");
+				}
+				reportDateStr = toIsoDate(reportDateStr);
+				existing = findArchivalDetailKeyed(acctNo, version, reportDateStr, sno);
+				if (existing != null && ((M_DEP1_Archival_Detail_Entity) existing).getReportDate() != null) {
+					// regenerate the date of the row that was actually edited
+					reportDateStr = new SimpleDateFormat("yyyy-MM-dd")
+							.format(((M_DEP1_Archival_Detail_Entity) existing).getReportDate());
+				}
 				if (existing != null) {
 					M_DEP1_Archival_Detail_Entity copy = new M_DEP1_Archival_Detail_Entity();
 					BeanUtils.copyProperties(existing, copy);
@@ -11399,11 +11484,21 @@ public class BRRS_M_DEP1_ReportService {
 			if (isChanged) {
 				String sql;
 				if (isResub) {
-					sql = "UPDATE " + TBL_ARCH_DETAIL + " SET ACCT_NAME = ?, ACCT_BALANCE_IN_PULA = ? WHERE ACCT_NUMBER = ?";
-					jdbcTemplate.update(sql, 
-						((M_DEP1_Archival_Detail_Entity) existing).getAcctName(), 
-						((M_DEP1_Archival_Detail_Entity) existing).getAcctBalanceInpula(), 
-						acctNo);
+					// only the selected version's row - not the same account in every version / month
+					if (version != null && !version.trim().isEmpty() && !"null".equals(version)) {
+						List<Object> uargs = new ArrayList<>();
+						uargs.add(((M_DEP1_Archival_Detail_Entity) existing).getAcctName());
+						uargs.add(((M_DEP1_Archival_Detail_Entity) existing).getAcctBalanceInpula());
+						String where = archivalKeyWhere(acctNo, version, reportDateStr, sno, uargs);
+						sql = "UPDATE " + TBL_ARCH_DETAIL + " SET ACCT_NAME = ?, ACCT_BALANCE_IN_PULA = ?" + where;
+						jdbcTemplate.update(sql, uargs.toArray());
+					} else {
+						sql = "UPDATE " + TBL_ARCH_DETAIL + " SET ACCT_NAME = ?, ACCT_BALANCE_IN_PULA = ? WHERE ACCT_NUMBER = ?";
+						jdbcTemplate.update(sql, 
+							((M_DEP1_Archival_Detail_Entity) existing).getAcctName(), 
+							((M_DEP1_Archival_Detail_Entity) existing).getAcctBalanceInpula(), 
+							acctNo);
+					}
 					auditService.compareEntitiesmanual(oldcopy, existing, acctNo, "M DEP1 Archival Detail Screen", TBL_ARCH_DETAIL);
 				} else {
 					sql = "UPDATE " + TBL_DETAIL + " SET ACCT_NAME = ?, ACCT_BALANCE_IN_PULA = ? WHERE ACCT_NUMBER = ?";
@@ -11435,6 +11530,9 @@ public class BRRS_M_DEP1_ReportService {
 		}
 	}
 
+	// All columns of BRRS_M_DEP1_DETAILTABLE / BRRS_M_DEP1_ARCHIVALTABLE_DETAIL except DATA_ENTRY_VERSION
+	private static final String DEP1_DETAIL_COLS = "SNO, CUST_ID, ACCT_NUMBER, ACCT_NAME, DATA_TYPE, REPORT_NAME, REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_ADDL_CRITERIA_2, REPORT_ADDL_CRITERIA_3, REPORT_REMARKS, SANCTION_LIMIT, MODIFICATION_REMARKS, ACCT_BALANCE_IN_PULA, REPORT_DATE, CREATE_USER, CREATE_TIME, MODIFY_USER, MODIFY_TIME, VERIFY_USER, VERIFY_TIME, ENTITY_FLG, MODIFY_FLG, DEL_FLG, SEGMENT, CCY, TYPE, MAT_BUCK_1, REPORT_CODE";
+
 	private void Run_M_DEP1_Procedure(String reportDateStr, String type, String entry) {
 		String formattedDate;
 		try {
@@ -11454,16 +11552,25 @@ public class BRRS_M_DEP1_ReportService {
 					boolean shouldExecuteProcedure = !"RESUB".equals(type) || isResubNoEntry;
 
 					if (isResubNoEntry) {
+						// Latest archived version that really has detail rows for this date
+						Integer srcVersion = jdbcTemplate.queryForObject("SELECT MAX(TO_NUMBER(DATA_ENTRY_VERSION)) FROM "
+								+ TBL_ARCH_DETAIL + " WHERE REPORT_DATE = ? AND REGEXP_LIKE(DATA_ENTRY_VERSION, '^[0-9]+$')",
+								Integer.class, formattedDate);
+						if (srcVersion == null) {
+							System.out.println("No archived detail found for " + formattedDate + ". Regeneration aborted.");
+							return;
+						}
+
 						String bdsql = "DELETE FROM " + TBL_DETAIL + " WHERE REPORT_DATE = ?";
 						int rowsDeleted = jdbcTemplate.update(bdsql, formattedDate);
 						System.out.println("Successfully deleted before executing procedure " + rowsDeleted + " rows.");
 
-						String sqltransfer = "INSERT INTO " + TBL_DETAIL + " "
-								+ " (SNO, CUST_ID, ACCT_NUMBER, ACCT_NAME, DATA_TYPE, REPORT_ADDL_CRITERIA_1, REPORT_ADDL_CRITERIA_2, REPORT_ADDL_CRITERIA_3, REPORT_LABEL, REPORT_REMARKS, MODIFICATION_REMARKS, DATA_ENTRY_VERSION, ACCT_BALANCE_IN_PULA, SANCTION_LIMIT, REPORT_DATE, REPORT_NAME, CREATE_USER, CREATE_TIME, MODIFY_USER, MODIFY_TIME, VERIFY_USER, VERIFY_TIME, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-								+ "SELECT SNO, CUST_ID, ACCT_NUMBER, ACCT_NAME, DATA_TYPE, REPORT_ADDL_CRITERIA_1, REPORT_ADDL_CRITERIA_2, REPORT_ADDL_CRITERIA_3, REPORT_LABEL, REPORT_REMARKS, MODIFICATION_REMARKS, DATA_ENTRY_VERSION, ACCT_BALANCE_IN_PULA, SANCTION_LIMIT, REPORT_DATE, REPORT_NAME, CREATE_USER, CREATE_TIME, MODIFY_USER, MODIFY_TIME, VERIFY_USER, VERIFY_TIME, ENTITY_FLG, MODIFY_FLG, DEL_FLG "
-								+ "FROM " + TBL_ARCH_DETAIL + " WHERE REPORT_DATE = ?";
-						int rowsInserted = jdbcTemplate.update(sqltransfer, formattedDate);
-						System.out.println("Successfully transferred " + rowsInserted + " rows.");
+						// restore ONLY that version (previously every version of the date was copied back)
+						String sqltransfer = "INSERT INTO " + TBL_DETAIL + " (" + DEP1_DETAIL_COLS + ", DATA_ENTRY_VERSION) "
+								+ "SELECT " + DEP1_DETAIL_COLS + ", DATA_ENTRY_VERSION "
+								+ "FROM " + TBL_ARCH_DETAIL + " WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
+						int rowsInserted = jdbcTemplate.update(sqltransfer, formattedDate, String.valueOf(srcVersion));
+						System.out.println("Successfully transferred " + rowsInserted + " rows from version " + srcVersion);
 					}
 
 					if (shouldExecuteProcedure) {
@@ -11472,13 +11579,20 @@ public class BRRS_M_DEP1_ReportService {
 					}
 
 					if (isResubNoEntry) {
-						String adsql = "DELETE FROM " + TBL_DETAIL + " WHERE REPORT_DATE = ?";
-						int rowsDeleted = jdbcTemplate.update(adsql, formattedDate);
-						System.out.println("Successfully deleted after executing procedure " + rowsDeleted + " rows.");
-
 						String ins_sum_sql = "SELECT MAX(REPORT_VERSION) FROM " + TBL_ARCH_SUMMARY + " WHERE REPORT_DATE = ?";
 						Integer maxVersion = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, formattedDate);
 						int highestValue = (maxVersion != null ? maxVersion : 0) + 1;
+
+						// Store the regenerated detail as the NEW version (this was missing, so the latest
+						// version had a summary but no detail rows)
+						String ins_dtl_sql = "INSERT INTO " + TBL_ARCH_DETAIL + " (" + DEP1_DETAIL_COLS + ", DATA_ENTRY_VERSION) "
+								+ "SELECT " + DEP1_DETAIL_COLS + ", ? FROM " + TBL_DETAIL + " WHERE REPORT_DATE = ?";
+						int rowsInsertedDtl = jdbcTemplate.update(ins_dtl_sql, String.valueOf(highestValue), formattedDate);
+						System.out.println("Successfully inserted " + rowsInsertedDtl + " detail rows into ARCHIVAL for version " + highestValue);
+
+						String adsql = "DELETE FROM " + TBL_DETAIL + " WHERE REPORT_DATE = ?";
+						int rowsDeleted = jdbcTemplate.update(adsql, formattedDate);
+						System.out.println("Successfully deleted after executing procedure " + rowsDeleted + " rows.");
 
 						StringBuilder columnsPart = new StringBuilder();
 						String[] tokens = {

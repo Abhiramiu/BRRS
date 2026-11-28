@@ -4543,8 +4543,13 @@ public class RegulatoryReportServices {
 				break;
 
 			case "M_DEP1":
+				// version / date / sno are needed so a RESUB edit opens the row of the selected version
+				// (not the first row found for the account in any version / month)
 				modelAndView = BRRS_M_DEP1_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"), request.getParameter("type"));
+						request.getParameter("formmode"), request.getParameter("type"), request.getParameter("version"),
+						request.getParameter("reportDate") != null ? request.getParameter("reportDate")
+								: request.getParameter("asondate"),
+						request.getParameter("sno"));
 				break;
 
 			case "M_DEP2":
