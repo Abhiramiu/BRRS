@@ -1143,7 +1143,8 @@ PURPOSE		: BWRBRREPORT
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
 
-							(8) QUARTERLY SCHEDULE: <br>Q-STAFF: STAFFING AND EMPLOYMENT </h5>
+							DATA GATHERING TEMPLATE - AML / CFT
+						</h5>
 
 						<!-- Moving bus-board text -->
 						<div class="boards">
@@ -1193,7 +1194,7 @@ PURPOSE		: BWRBRREPORT
 							<i class="fa fa-download"></i> Format
 						</button>
 
-		
+
 
 						<div class="nav-item dropdown PDF-download-menu"
 							style="list-style: none; display: inline-block;"
@@ -1221,39 +1222,39 @@ PURPOSE		: BWRBRREPORT
 				</div>
 				<p th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold; 
 						color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
-						margin-top:10px; margin-bottom:10px;padding: 5px;">Summary View - MASTER</p>
+						margin-top:10px; margin-bottom:10px;padding: 5px;">Summary View - AML</p>
 
 				<!-- Detail text -->
 				<p th:if="${displaymode == 'detail' and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold;
 					 color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
-					 margin-top:10px; margin-bottom:10px;padding: 5px;">Detail View - MASTER</p>
+					 margin-top:10px; margin-bottom:10px;padding: 5px;">Detail View - AML</p>
 
 				<p th:if="${type == 'ARCHIVAL' and displaymode == 'summary'}" style="text-align: left; font-weight: bold; 
           color: white; font-size: 20px;
           background-color: rgb(107, 122, 143); 
           margin-top:10px; margin-bottom:10px; padding: 5px;">
-					Archival Summary View - MASTER
+					Archival Summary View - AML
 				</p>
 
 				<p th:if="${type == 'ARCHIVAL' and displaymode == 'detail'}" style="text-align: left; font-weight: bold;
           color: white; font-size: 20px;
           background-color: rgb(107, 122, 143); 
           margin-top:10px; margin-bottom:10px; padding: 5px;">
-					Archival Detail View - MASTER
+					Archival Detail View - AML
 				</p>
 
 				<p th:if="${type == 'RESUB' and displaymode == 'resubSummary'}" style="text-align: left; font-weight: bold; 
 						          color: white; font-size: 20px;
 						          background-color: rgb(107, 122, 143); 
 						          margin-top:10px; margin-bottom:10px; padding: 5px;">
-					Resubmission Summary View -MASTER
+					Resubmission Summary View - AML
 				</p>
 
 				<p th:if="${type == 'RESUB' and displaymode == 'resubDetail'}" style="text-align: left; font-weight: bold;
 						          color: white; font-size: 20px;
 						          background-color: rgb(107, 122, 143); 
 						          margin-top:10px; margin-bottom:10px; padding: 5px;">
-					Resubmission Detail View -MASTER
+					Resubmission Detail View - AML
 				</p>
 
 				<div
